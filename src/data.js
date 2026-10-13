@@ -126,19 +126,19 @@ export const securityResearch = [
   {
     cite:
       "Haq, M. I. U., Manj, U. J., Qamar, D., Imam, Y., Yasin, J., & Perwaiz, N. (2026). Rethinking intrusion detection evaluation: evidence of performance inflation under random data splits.",
-    venue: "FIT26, Machine Learning and its Applications Track.",
+    venue: "FIT26, Machine Learning and its Applications Track. (UR)",
     status: "Submitted",
   },
   {
     cite:
       "Murad, M. A., Manj, U. J., Haq, M. I. U., Qamar, D., & Imam, Y. (2026). Rethinking intrusion detection evaluation: evidence from temporal and unseen attack generalization.",
-    venue: "FIT26, Machine Learning and its Applications Track.",
+    venue: "FIT26, Machine Learning and its Applications Track. (UR)",
     status: "Submitted",
   },
   {
     cite:
       "Haq, M. I. U., Manj, U. J., Qamar, D., Fatima, K., Imam, Y., & Rizvi, H. (2026). Quantized CNN–Transformer inference on FPGA for real-time RF spectrum intelligence and adaptive jamming defense.",
-    venue: "Engineering Reports.",
+    venue: "Engineering Reports. (UR)",
     status: "Submitted",
   },
 ];

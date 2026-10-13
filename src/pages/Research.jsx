@@ -11,7 +11,7 @@ export default function Research() {
         <Reveal as="p" delay={0.1}>
           Security focused research from COGNET Lab and ongoing collaborations: zero trust network
           design, secure communication for cyber-physical systems, cryptography and adversarial
-          machine learning. My name is in bold.
+          machine learning. My name is in bold and (UR) marks work under review.
         </Reveal>
       </div>
 
@@ -20,7 +20,6 @@ export default function Research() {
           <Reveal as="li" className="pub-item" key={i} delay={i * 0.05}>
             <p className="pub-cite" dangerouslySetInnerHTML={{ __html: p.cite.replace("Manj, U. J.", "<strong>Manj, U. J.</strong>") }} />
             <p className="pub-venue">{p.venue}</p>
-            <span className="pub-badge">{p.status}</span>
           </Reveal>
         ))}
       </ol>
