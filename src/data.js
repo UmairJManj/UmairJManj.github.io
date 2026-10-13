@@ -120,7 +120,7 @@ export const securityResearch = [
   {
     cite:
       "Haq, M. I. U., Manj, U. J., Paracha, S. Q., Imam, Y., Rizvi, D. Q., & Farooqi, A. R. (2026). Neuro-symbolic AI-driven secure communication framework for autonomous cyber-physical systems.",
-    venue: "APAN 2026, Track 2: AI, Machine Learning and Computer Vision.",
+    venue: "APAN 2026, Track 2: AI, Machine Learning and Computer Vision, 1–6. https://doi.org/10.1109/apan70967.2026.11709696",
     status: "Published",
   },
   {
