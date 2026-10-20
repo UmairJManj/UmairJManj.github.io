@@ -1,0 +1,973 @@
+{
+  "exam": "secai-plus",
+  "domain": "d2",
+  "lessons": [
+    {
+      "id": "secai-plus.d2.4.01",
+      "objective": "d2.4",
+      "seq": 1,
+      "title": "Encryption in transit and at rest",
+      "short": "AI data needs encryption in transit (TLS on every API call, including model, vector database and tool traffic) and at rest (training sets, model weights, embeddings, logs and backups encrypted with keys you manage in a KMS or HSM).",
+      "deep": "An AI system moves and stores far more sensitive data than a normal app: prompts, retrieved documents, embeddings, fine-tuning datasets, model weights and conversation logs.\n\n**In transit** means data crossing a network. Use **TLS 1.2 or later** (prefer 1.3) for client-to-gateway, gateway-to-model, orchestrator-to-vector-database and agent-to-tool calls. Use **mutual TLS (mTLS)** between internal services so both sides prove identity.\n\n**At rest** means stored data. Encrypt:\n- training and fine-tuning datasets in object storage\n- model artifacts and weights in the model registry\n- vector databases and their snapshots\n- prompt and response logs, and backups\nTypically this is **AES-256**.\n\n**Key management** is where exam scenarios usually go. Provider-managed keys are easy. **Customer-managed keys (CMK)** held in a **KMS** or **HSM** let you set rotation, separate duties and revoke access. Revoking a key makes the data unreadable (crypto-shredding).\n\nEncryption at rest does not protect data once it is decrypted into memory for processing. That gap is covered by encryption in use (next lesson).",
+      "terms": [
+        { "t": "TLS", "d": "Transport Layer Security; encrypts data in transit between client and server. Use 1.2 or later." },
+        { "t": "mTLS", "d": "Mutual TLS; both client and server present certificates, authenticating service-to-service traffic." },
+        { "t": "Customer-managed key (CMK)", "d": "An encryption key the customer controls in a KMS/HSM, including rotation and revocation." },
+        { "t": "KMS / HSM", "d": "Key management service / hardware security module used to generate, store and control keys." }
+      ],
+      "trap": "Exams offer TLS as the fix for stored model weights, or disk encryption as the fix for interception on the wire; match the control to the data state.",
+      "example": "A bank stores its fine-tuning dataset and model weights in object storage encrypted with a customer-managed key, and all calls from the chatbot to the model endpoint use TLS 1.3.",
+      "diagram": { "kind": "compare", "cols": ["State", "Example data", "Control"], "rows": [["In transit", "Prompts on the wire", "TLS 1.2+/mTLS"], ["At rest", "Weights, vectors, logs", "AES-256 + CMK"], ["In use", "Data in RAM/GPU", "TEE, confidential VM"]] }
+    },
+    {
+      "id": "secai-plus.d2.4.02",
+      "objective": "d2.4",
+      "seq": 2,
+      "title": "Encryption in use and confidential computing",
+      "short": "Encryption in use protects data while it is being processed. Confidential computing runs workloads inside a hardware trusted execution environment (TEE) whose memory is encrypted, with remote attestation proving the enclave is genuine. Homomorphic encryption allows computation directly on ciphertext.",
+      "deep": "To run inference or training, data must be decrypted into CPU or GPU memory. A cloud operator, a compromised hypervisor or memory-scraping malware could read it there. **Encryption in use** closes that gap.\n\n**Confidential computing** uses a hardware-based **trusted execution environment (TEE)**, also called an enclave or confidential VM. Memory inside the TEE is encrypted and isolated from the host OS and hypervisor. Confidential GPUs extend this to AI accelerators, so prompts and model weights stay protected during inference.\n\n**Remote attestation** lets a client or key service check cryptographic evidence that the code is running in a genuine, unmodified TEE *before* releasing data or decryption keys to it.\n\n**Homomorphic encryption** lets you compute on encrypted data without decrypting it. It is mathematically strong but very slow, so it is used only for narrow workloads.\n\nRelated privacy-preserving techniques you may see: **secure multi-party computation** and **federated learning**, where training happens locally and only model updates are shared.\n\nUse these when the scenario says data must stay protected *even from the infrastructure operator* during processing.",
+      "terms": [
+        { "t": "Trusted execution environment (TEE)", "d": "Hardware-isolated, memory-encrypted area where code and data are protected during processing." },
+        { "t": "Remote attestation", "d": "Cryptographic proof that a workload runs in a genuine TEE with expected code, checked before sending data." },
+        { "t": "Homomorphic encryption", "d": "Encryption that allows computation on ciphertext; results decrypt to the correct answer." }
+      ],
+      "trap": "Candidates pick full-disk encryption or TLS when the scenario stresses protecting data during processing or from the cloud operator; that calls for a TEE/confidential computing.",
+      "example": "A hospital runs a diagnostic model in confidential VMs with confidential GPUs, and its key service releases the model decryption key only after attestation succeeds.",
+      "diagram": { "kind": "flow", "items": ["Client", "Attest TEE", "Release key", "Process in TEE", "Encrypted result"] }
+    },
+    {
+      "id": "secai-plus.d2.4.03",
+      "objective": "d2.4",
+      "seq": 3,
+      "title": "Data classification labels and data minimization",
+      "short": "Data classification labels (such as Public, Internal, Confidential, Restricted) tell AI pipelines what data may be ingested, retrieved, logged or sent to which model. Data minimization means collecting and sending only the data a task actually needs.",
+      "deep": "**Data classification** assigns each dataset or document a sensitivity level. **Labels** are the machine-readable tags that carry that level, for example in file metadata or a data catalog. For AI they drive automated decisions:\n- the ingestion pipeline refuses to index Restricted documents into a general chatbot's RAG store\n- the gateway blocks Confidential data from going to an external, third-party model\n- retrieval returns a document only if the user is cleared for its label\n- logs that hold labelled data get stricter retention and access\n\nLabels must **travel with the data**. When documents are chunked and embedded, copy the label into each chunk's metadata so retrieval can filter on it.\n\n**Data minimization** is a privacy principle (in GDPR and similar laws): collect, keep and process only what is needed for the stated purpose. For AI this means trimming prompts to the fields needed, not training on whole customer tables 'just in case', and shortening retention for prompts and logs. Less data in the system means less to leak through disclosure, inversion or logs.",
+      "terms": [
+        { "t": "Classification label", "d": "Machine-readable tag recording a data item's sensitivity, used to enforce handling rules." },
+        { "t": "Data minimization", "d": "Collecting, processing and retaining only the data necessary for the purpose." },
+        { "t": "Label inheritance", "d": "Copying a source document's label onto derived items such as chunks, embeddings or outputs." }
+      ],
+      "trap": "Minimization is about how much data you use, not how it is disguised; do not confuse it with masking or anonymization.",
+      "example": "An insurer's RAG pipeline skips any file labelled Restricted-Medical, and its claim-summary prompt sends only claim number, date and damage description rather than the full policyholder record.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.4.04",
+      "objective": "d2.4",
+      "seq": 4,
+      "title": "Anonymization, redaction and masking",
+      "short": "Anonymization irreversibly removes the link to individuals. Redaction deletes or blacks out sensitive values. Masking hides part or all of a value with substitute characters, either permanently (static) or per viewer at query time (dynamic). Pseudonymization and tokenization are reversible.",
+      "deep": "These techniques reduce the sensitive data that reaches prompts, training sets, outputs and logs.\n\n- **Anonymization**: transform data so individuals can no longer be identified by any reasonable means, and the change cannot be reversed. Methods include removing identifiers, generalization (exact age becomes an age band), suppression and adding noise. Properly anonymized data generally falls outside privacy laws such as GDPR. Beware re-identification from quasi-identifiers like postcode plus birth date.\n- **Pseudonymization / tokenization**: replace identifiers with a pseudonym or token, keeping a separate mapping. It is **reversible**, so the data is still personal data.\n- **Redaction**: remove the sensitive value entirely, or replace it with a placeholder like [REDACTED]. Common before sending documents to a model or writing logs.\n- **Masking**: hide characters while keeping format, e.g. ****-****-1234. **Static masking** permanently changes a copy (good for test data). **Dynamic masking** changes what a viewer sees based on role while the stored value stays intact.\n\nFor training data, redact or anonymize *before* training: a model can memorize and later regurgitate values it was trained on.",
+      "terms": [
+        { "t": "Anonymization", "d": "Irreversible removal of identifying information so individuals cannot be re-identified." },
+        { "t": "Pseudonymization", "d": "Replacing identifiers with pseudonyms while keeping a separate key; reversible." },
+        { "t": "Dynamic data masking", "d": "Hiding values at query/display time based on the viewer's role, without changing stored data." },
+        { "t": "Redaction", "d": "Removing or replacing a sensitive value so it is no longer present in the output." }
+      ],
+      "trap": "Tokenized or pseudonymized data is still personal data because it can be reversed; the exam answer for 'cannot be re-identified' is anonymization.",
+      "example": "Before fine-tuning on call transcripts, a telecom redacts names and account numbers, generalizes ages into bands, and uses dynamic masking so agents see only the last four digits of account numbers.",
+      "diagram": { "kind": "compare", "cols": ["Technique", "Reversible?", "Typical AI use"], "rows": [["Anonymization", "No", "Training/analytics"], ["Pseudonymization", "Yes (with key)", "Linkable datasets"], ["Redaction", "No", "Prompts, logs"], ["Dynamic masking", "Stored value kept", "Role-based views"]] }
+    },
+    {
+      "id": "secai-plus.d2.5.01",
+      "objective": "d2.5",
+      "seq": 1,
+      "title": "Prompt monitoring: queries and responses",
+      "short": "Prompt monitoring inspects both what goes into a model (the query, including system prompt and retrieved context) and what comes out (the response). Query-side monitoring spots injection and abuse; response-side monitoring spots leaks, policy violations and harmful output.",
+      "deep": "An AI model is a new attack surface where the 'payload' is natural language, so you watch the conversation itself.\n\n**Query (input) monitoring** looks at the full assembled prompt, not just the user's typed text:\n- attempts to override instructions or extract the system prompt\n- obfuscation such as encoded blocks, odd Unicode or language switching\n- sensitive data users paste in (secrets, personal data)\n- retrieved RAG documents and tool results, because **indirect prompt injection** arrives through that content\n\n**Response (output) monitoring** looks at what the model returns:\n- system prompt or internal data appearing in answers\n- personal data, credentials or classified content (output DLP)\n- toxic or policy-violating content, and refusals (a burst of refusals can mean someone is probing)\n- unexpected tool calls or code in the output\n\nMonitor both sides, because a harmless-looking query can still produce a harmful response. Send detections to a **SIEM** so they can be correlated with identity, network and endpoint events, and keep a record of every conversation's ID, user, model version and timestamps.",
+      "terms": [
+        { "t": "Query monitoring", "d": "Inspecting the full prompt input, including system prompt, user text and retrieved context." },
+        { "t": "Response monitoring", "d": "Inspecting model outputs for leaks, policy violations and unexpected actions." },
+        { "t": "Output DLP", "d": "Data loss prevention scanning applied to model responses to catch sensitive data." }
+      ],
+      "trap": "A common wrong choice is monitoring only user prompts; leaks and indirect injection are only visible on the response side or in retrieved context.",
+      "example": "A retailer's AI gateway flags a reply containing fragments of the hidden system prompt, even though the user's question looked ordinary, and raises a SIEM alert.",
+      "diagram": { "kind": "flow", "items": ["User query", "Inspect input", "Model", "Inspect output", "SIEM alert"] }
+    },
+    {
+      "id": "secai-plus.d2.5.02",
+      "objective": "d2.5",
+      "seq": 2,
+      "title": "Log monitoring for AI systems",
+      "short": "Log monitoring collects events from the AI gateway, application, model endpoint, vector database, agent tool calls and identity provider into a central SIEM, sets baselines, and alerts on anomalies such as unusual callers, locations, volumes or tool usage.",
+      "deep": "AI systems have several log sources, and attacks often only show up when you correlate them:\n- **AI gateway / API logs**: caller identity, API key, source IP, model, token counts, latency, status codes\n- **Application logs**: sessions, user actions, errors\n- **Agent / orchestration logs**: which tools or plug-ins were called, with what parameters, and the result\n- **Vector database and data store logs**: queries, which documents were retrieved, write and delete events\n- **Model registry and pipeline logs**: who uploaded, changed or downloaded models and datasets\n- **Identity logs**: sign-ins and token issuance for users and service accounts\n\nThe monitoring process: identify sources, normalize and forward them to a SIEM, define baselines (normal volume, geography, tool mix), write detection rules, alert and triage, then tune.\n\nExam-style anomalies: one API key used from many countries (credential compromise), an agent calling a tool it never used before (injection or excessive agency), mass downloads from the model registry (model theft), or sudden writes to a training bucket (poisoning).",
+      "terms": [
+        { "t": "SIEM", "d": "Security information and event management; centralizes, correlates and alerts on logs." },
+        { "t": "Baseline", "d": "The normal pattern of activity used to spot deviations." },
+        { "t": "Tool-call log", "d": "Record of each tool or plug-in an agent invoked, with parameters and results." }
+      ],
+      "trap": "Do not pick training metrics or loss curves as security log sources; the exam wants gateway, agent tool-call, data store and identity logs.",
+      "example": "The SOC links a new agent tool call that exports CRM records to a retrieved web page that contained hidden instructions, by correlating tool-call logs with retrieval logs.",
+      "diagram": { "kind": "cycle", "items": ["Collect", "Normalize", "Baseline", "Detect", "Respond", "Tune"] }
+    },
+    {
+      "id": "secai-plus.d2.5.03",
+      "objective": "d2.5",
+      "seq": 3,
+      "title": "Log sanitization",
+      "short": "Log sanitization removes or replaces sensitive values (personal data, secrets, card numbers) and neutralizes dangerous characters before prompts, responses and tool data are written to logs, so logs do not become a data leak or a log-injection path.",
+      "deep": "AI logs are risky because prompts and responses are free text. Users paste passwords, customers type card numbers, and RAG answers quote confidential documents. If you log everything raw, your log store becomes the easiest place to steal that data.\n\n**Sanitizing for privacy:**\n- detect patterns (email, phone, government IDs, card numbers, API keys) and replace them with placeholders such as [REDACTED-EMAIL]\n- hash or tokenize identifiers you need for correlation, such as user IDs\n- log metadata (token counts, model, latency) instead of full text where full text is not needed\n\n**Sanitizing for integrity:**\n- strip or encode control characters such as carriage return and line feed (CR/LF) so a crafted prompt cannot forge extra log lines (**log injection**)\n- encode content so it cannot run as script when an analyst views it in a web log viewer\n\nSanitize **before** the log is written and before it is forwarded to third-party tools. Document what is removed, because investigators still need enough detail to reconstruct an incident.",
+      "terms": [
+        { "t": "Log sanitization", "d": "Removing or neutralizing sensitive data and dangerous characters before logging." },
+        { "t": "Log injection", "d": "Inserting crafted characters such as CR/LF so fake entries appear in logs." },
+        { "t": "Placeholder token", "d": "Text such as [REDACTED] that replaces a removed sensitive value." }
+      ],
+      "trap": "Sanitization changes what goes into the log; protection (encryption, immutability, access control) guards the log after it is written. The exam tests the difference.",
+      "example": "An AI help desk replaces any detected API key in chat transcripts with [REDACTED-KEY] and encodes newline characters before writing to the central log store.",
+      "diagram": { "kind": "flow", "items": ["Prompt/response", "Detect PII", "Redact/encode", "Write log", "Forward"] }
+    },
+    {
+      "id": "secai-plus.d2.5.04",
+      "objective": "d2.5",
+      "seq": 4,
+      "title": "Log protection",
+      "short": "Log protection keeps AI logs confidential, intact and available: encrypt them, restrict access with least privilege, store them in separate append-only (WORM/immutable) storage, use hashing to detect tampering, and set retention to meet legal and investigation needs.",
+      "deep": "Logs are evidence. An attacker who compromises an AI application will try to delete or alter its logs, and AI logs often hold sensitive prompts, so they also need confidentiality.\n\n**Confidentiality**: encrypt logs at rest and in transit; restrict read access to the security team with role-based access control; mask fields for wider audiences.\n\n**Integrity**: write to **append-only / WORM (write once, read many)** or immutable storage; hash each record or chain hashes so any change is detectable; synchronize time sources so events correlate.\n\n**Separation of duties**: send logs to a separate account or subscription that application administrators cannot change. An attacker with admin rights on the AI app should not be able to erase its audit trail.\n\n**Availability and retention**: forward logs off-host quickly, back them up and keep them as long as regulation, contracts and incident investigation require, then delete them on schedule (keeping them longer than needed is a privacy risk too).\n\nMonitor the log pipeline itself: a sudden stop in logs from an AI service is an alert condition.",
+      "terms": [
+        { "t": "WORM storage", "d": "Write once, read many; data cannot be modified or deleted during the retention period." },
+        { "t": "Hash chaining", "d": "Each log record includes a hash of the previous one, so edits break the chain." },
+        { "t": "Retention policy", "d": "Rules for how long logs are kept and when they are deleted." }
+      ],
+      "trap": "Storing logs on the same server or account as the AI app looks convenient but fails separation of duties; pick a separate immutable store.",
+      "example": "A fintech streams its LLM gateway logs to an immutable bucket in a dedicated security account with a 1-year retention lock; developers cannot delete them.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.5.05",
+      "objective": "d2.5",
+      "seq": 5,
+      "title": "Response confidence level",
+      "short": "A response confidence level is the model's estimated certainty in an output, such as a class probability or an uncertainty score. Monitor it to route low-confidence answers to humans, detect drift or attack, and limit how much detail is exposed to callers.",
+      "deep": "Many ML models output a **confidence score**, for example 'fraud: 0.52'. LLMs do not give one clear number, but signals such as token log-probabilities, self-consistency across repeated answers, or groundedness scores against retrieved sources can act as confidence indicators.\n\nSecurity and quality uses:\n- **Thresholds and human-in-the-loop**: route predictions below a set confidence (say 0.8) to a human reviewer, or have the LLM say it does not know instead of guessing.\n- **Drift and attack detection**: a sudden fall in average confidence, or many inputs sitting just at the decision boundary, can signal data drift, input manipulation or a poisoned model.\n- **Calibration**: check that a stated 90% confidence really is right about 90% of the time; poorly calibrated models mislead users and feed overreliance.\n\nThere is a security trade-off: returning **full, precise probability vectors** to external callers helps attackers perform **model extraction, model inversion and membership inference**. Return only the top label, or rounded confidence bands, unless the caller truly needs more.",
+      "terms": [
+        { "t": "Confidence score", "d": "A model's estimated probability or certainty that an output is correct." },
+        { "t": "Calibration", "d": "How well stated confidence matches actual accuracy." },
+        { "t": "Confidence threshold", "d": "A cut-off below which outputs are rejected, flagged or sent for human review." }
+      ],
+      "trap": "Exams may suggest exposing more precise scores for transparency; for external APIs, coarser scores reduce extraction and inference attacks.",
+      "example": "A claims model auto-approves only claims scored above 0.9 confidence; everything else is queued for an adjuster, and a weekly report tracks average confidence for drift.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.5.06",
+      "objective": "d2.5",
+      "seq": 6,
+      "title": "Rate monitoring",
+      "short": "Rate monitoring tracks requests and tokens per user, API key, IP address and time window, compares them with baselines, and alerts on spikes or steady automated patterns that suggest model DoS, scraping, extraction or credential abuse.",
+      "deep": "Rate limiting (a gateway control) caps traffic; **rate monitoring** watches the rates so you can see abuse, tune the limits and respond.\n\nMetrics to track:\n- **requests per minute (RPM)** and **tokens per minute (TPM)** per identity, key, IP and application\n- average and maximum **tokens per request** (very long prompts can be a DoS or cost attack)\n- error and throttling counts (many 429 'too many requests' responses mean someone is pushing the limits)\n- concurrency and queue depth at the model endpoint\n\nPatterns and what they suggest:\n- sudden spike from one key: compromised or leaked credential, scripted abuse\n- steady, round-the-clock, systematic queries sweeping across inputs: **model extraction/theft** or membership inference probing\n- huge prompts or outputs from a few clients: **model denial of service** or **denial of wallet**\n- many identities just under the limit: a distributed attempt to evade per-user limits\n\nRespond with alerts, tighter per-identity limits, step-up authentication, temporary blocks and key rotation.",
+      "terms": [
+        { "t": "RPM / TPM", "d": "Requests per minute / tokens per minute; core rate metrics for AI endpoints." },
+        { "t": "HTTP 429", "d": "'Too Many Requests' status returned when a rate limit is exceeded." },
+        { "t": "Denial of wallet", "d": "Abuse aimed at running up an organization's pay-per-use AI costs." }
+      ],
+      "trap": "Rate monitoring is detection; rate limiting is enforcement. When a question asks how you would notice abuse, choose monitoring and alerting.",
+      "example": "Rate dashboards show one partner key sending a steady 3 requests per second all night with systematically varied inputs; the SOC suspects model extraction and throttles the key.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.5.07",
+      "objective": "d2.5",
+      "seq": 7,
+      "title": "AI cost monitoring",
+      "short": "AI cost monitoring tracks spend across prompts (input tokens), responses (output tokens), storage (vector stores, datasets, logs) and processing (GPU or compute time), with budgets and alerts, because runaway cost can signal abuse or misconfiguration.",
+      "deep": "Most hosted AI is **pay-per-use**, so cost is both a business metric and a security signal.\n\nCost categories in the objectives:\n- **Prompts**: input tokens. Grows with long system prompts, large retrieved context and full conversation history resent each turn.\n- **Responses**: output tokens, often priced higher per token than input. Grows when answers get longer or agents produce verbose reasoning.\n- **Storage**: vector databases, embeddings, training datasets, model artifacts, and prompt/response logs.\n- **Processing**: GPU/compute hours for training, fine-tuning, self-hosted inference and embedding jobs.\n\nControls and monitoring:\n- tag usage by application, team and API key so spend can be attributed\n- set **budgets with alerts** and hard spending caps or quotas\n- set **max output tokens**, iteration caps for agents and context-size limits\n- dashboards for cost per request and per user, with anomaly alerts\n\nSecurity link: a sudden cost spike may be a **denial-of-wallet** attack, a leaked API key, an agent stuck in a loop or a model DoS. Treat it as a possible incident, not just a billing issue.",
+      "terms": [
+        { "t": "Input / output tokens", "d": "Billing units for text sent to and generated by a model." },
+        { "t": "Budget alert", "d": "Notification when spend reaches a set threshold of a budget." },
+        { "t": "Cost attribution", "d": "Tagging usage so costs map to an app, team or key." }
+      ],
+      "trap": "Do not assume only prompt count drives cost; longer responses, larger context and storage growth all raise spend with a flat request count.",
+      "example": "A budget alert fires at 80% of monthly AI spend in week one; investigation finds an agent retrying a failing tool in a loop and resending its whole history each time.",
+      "diagram": { "kind": "compare", "cols": ["Cost area", "Driver", "Control"], "rows": [["Prompts", "Input tokens", "Context limits"], ["Responses", "Output tokens", "Max output tokens"], ["Storage", "Vectors, logs", "Retention rules"], ["Processing", "GPU time", "Quotas, budgets"]] }
+    },
+    {
+      "id": "secai-plus.d2.5.08",
+      "objective": "d2.5",
+      "seq": 8,
+      "title": "Auditing for hallucinations and accuracy",
+      "short": "Quality audits measure whether AI outputs are correct and grounded. Use a ground-truth test set, sample production responses, check claims and citations against sources, track accuracy and hallucination rates against thresholds, and remediate when they slip.",
+      "deep": "A **hallucination** is a fluent, confident output that is false or not supported by the source data, such as an invented citation, policy or product. **Accuracy** is how often outputs are correct against a known answer.\n\nAn audit process:\n1. Define metrics and acceptable thresholds (accuracy, hallucination rate, groundedness, citation validity).\n2. Build a **ground-truth (golden) test set** of questions with verified answers.\n3. Run the test set and a **sample of real production responses** through evaluation: human reviewers, automated groundedness checks that compare each claim to retrieved documents, or an evaluator model.\n4. Record results, compare them with thresholds and earlier audits.\n5. Remediate (better retrieval, tighter prompts, fine-tuning, guardrails) and re-test.\n\nRepeat audits after every model, prompt or data change, and on a schedule, because models and data **drift**. Keep evidence (test sets, results, sign-offs) so auditors and regulators can see that quality is controlled. In RAG systems, also check that cited sources exist and actually say what the answer claims.",
+      "terms": [
+        { "t": "Hallucination", "d": "Model output that is fluent but false or unsupported by its sources." },
+        { "t": "Groundedness", "d": "The degree to which a response is supported by the provided source content." },
+        { "t": "Ground-truth test set", "d": "Inputs with verified correct answers used to measure accuracy." }
+      ],
+      "trap": "Infrastructure metrics such as latency or token count say nothing about accuracy; hallucination audits compare outputs with verified sources.",
+      "example": "Each month a law firm samples 200 answers from its research assistant and checks every cited case exists and supports the claim; the hallucination rate must stay under 1%.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.5.09",
+      "objective": "d2.5",
+      "seq": 9,
+      "title": "Auditing bias, fairness and access",
+      "short": "Bias and fairness audits compare model outcomes across groups (for example approval rates or error rates by protected attribute) and look for proxy features. Access audits review who and what can use models, data and agents, and confirm logs prove it.",
+      "deep": "**Bias and fairness**: a model can treat groups differently because of skewed training data, proxy features or deliberate manipulation. Audits:\n- measure outcomes across groups using fairness metrics such as **demographic parity** (similar positive-outcome rates) or **equal opportunity** (similar true-positive rates)\n- look for **proxy variables** such as postcode or first name that correlate with protected attributes\n- compare results before and after each retraining\n- document findings and mitigations for regulators and internal governance\n\n**Access auditing**: confirm that only authorized users, service accounts and agents can query a model, change it, read its training data or call its tools:\n- review role assignments and API keys, and remove stale or excessive ones (least privilege)\n- check logs for access outside normal patterns\n- verify separation of duties between those who train, approve and deploy models\n\n**Compliance auditing** pulls these together with evidence: logs of who accessed what and when, test results, model cards and approvals. Audits are recurring, not a one-time pre-launch step.",
+      "terms": [
+        { "t": "Demographic parity", "d": "Fairness measure comparing positive-outcome rates across groups." },
+        { "t": "Proxy variable", "d": "A feature that indirectly encodes a protected attribute, such as postcode." },
+        { "t": "Access review", "d": "Periodic check that each identity's access to AI resources is still needed and appropriate." }
+      ],
+      "trap": "Simply removing the protected attribute does not prove fairness; proxies can carry the same bias, so audits measure outcomes.",
+      "example": "A lender's quarterly audit finds approval rates differ by 18 points between postcode groups, traces it to a postcode feature, and removes it before the next release.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.6.01",
+      "objective": "d2.6",
+      "seq": 1,
+      "title": "Prompt injection: direct and indirect",
+      "short": "Prompt injection is when crafted input changes an LLM's behaviour against its instructions. Direct injection comes from the user's own prompt; indirect injection hides instructions in content the model processes, such as web pages, emails, documents or tool results.",
+      "deep": "LLMs cannot reliably tell instructions from data: everything in the context window is text. **Prompt injection** exploits that. It is first in the OWASP Top 10 for LLM Applications (LLM01).\n\n- **Direct**: the user types input meant to override the system prompt.\n- **Indirect**: an attacker plants instructions in external content (a web page, a shared file, an email, a RAG document, a product review). When the model retrieves or summarizes it, it may follow those instructions, possibly without the user knowing.\n\n**Evidence to look for:**\n- responses that reveal or reference the system prompt\n- the model acting against policy right after processing an external document\n- agent tool calls the user did not ask for (sending email, exporting data)\n- retrieved content with hidden text, odd formatting or instruction-like language aimed at an AI\n\n**Compensating controls:** treat all external content as untrusted; separate instructions from data with **prompt templates** and clear delimiters; **prompt firewalls** on inputs and retrieved content; output guardrails; **least privilege** for tools; and **human approval** for high-impact actions. No single control fully prevents injection, so layer them.",
+      "terms": [
+        { "t": "Direct prompt injection", "d": "Malicious instructions supplied in the user's own prompt." },
+        { "t": "Indirect prompt injection", "d": "Malicious instructions embedded in external content the model processes." },
+        { "t": "Untrusted content", "d": "Any data from outside the system's control, which must be treated as data, never as instructions." }
+      ],
+      "trap": "When the malicious text came from a document, web page or email rather than the user, the answer is indirect prompt injection, not data poisoning (which affects training data).",
+      "example": "An email assistant summarizes a message containing hidden text aimed at the AI and then tries to forward the inbox; logs show the tool call came straight after reading that email.",
+      "diagram": { "kind": "flow", "items": ["External doc", "Retrieved", "Mixed into prompt", "Model obeys", "Unwanted action"] }
+    },
+    {
+      "id": "secai-plus.d2.6.02",
+      "objective": "d2.6",
+      "seq": 2,
+      "title": "Jailbreaking and circumventing AI guardrails",
+      "short": "Jailbreaking is a form of prompt injection aimed at making a model ignore its safety rules. Circumventing guardrails covers any technique that slips past the filters around a model, such as rephrasing, role-play, encoding, translation or splitting a request across turns.",
+      "deep": "**Guardrails** are the safety checks inside and around a model: alignment training, system prompt rules, input filters and output filters. Attackers try to get around them.\n\n**Jailbreaking** targets the model's own safety behaviour, usually through persuasion: fictional framing, role-play personas, claimed authority or long, layered scenarios. OWASP treats jailbreaking as a type of prompt injection.\n\n**Circumventing guardrails** is broader. It includes evading external filters by obfuscation (encoding, misspelling, other languages, splitting content across messages or files) so that no single check sees the full harmful request.\n\n**Evidence:**\n- repeated refusals from one user followed by a sudden compliant answer\n- many near-duplicate prompts with small changes, language switches or encoded text\n- multi-turn conversations that slowly escalate toward prohibited topics\n- outputs flagged by output filters although inputs passed\n\n**Compensating controls:** layered guardrails on input **and** output; filters that evaluate the **whole conversation**, not just the latest message; decoding/normalizing input before checking it; alerting and throttling on repeated refusals; regular **red-team testing** of guardrails; and account action against persistent abusers.",
+      "terms": [
+        { "t": "Jailbreak", "d": "Input designed to make a model disregard its safety policies." },
+        { "t": "Guardrail", "d": "A control that constrains model inputs or outputs to enforce policy." },
+        { "t": "Multi-turn escalation", "d": "Spreading a harmful request across several conversation turns to avoid detection." }
+      ],
+      "trap": "Making the system prompt stricter alone is a weak answer; exams prefer layered input and output guardrails plus monitoring of conversation patterns.",
+      "example": "Logs show a user was refused 14 times, then switched language and split the request over three turns until a reply passed; output filtering then caught and blocked it.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.6.03",
+      "objective": "d2.6",
+      "seq": 3,
+      "title": "Poisoning attacks and introducing biases",
+      "short": "Data poisoning corrupts training, fine-tuning or RAG data so the model learns wrong behaviour or a hidden backdoor. Model poisoning tampers directly with the model's parameters or artifacts. Introducing biases is poisoning aimed at making outcomes unfair for certain groups.",
+      "deep": "**Data poisoning** (OWASP ML02; LLM04 'Data and Model Poisoning' in the 2025 LLM list) means inserting or altering data the model learns from: public web scrapes, crowd-sourced labels, user feedback, fine-tuning sets or a RAG knowledge base. Effects range from lower accuracy to a **backdoor** that triggers only on a specific pattern.\n\n**Model poisoning** (ML10) means changing the model itself, for example editing weights in a registry or swapping a model file, to embed malicious behaviour.\n\n**Introducing biases** means skewing data so the model treats a group unfairly, for example over-representing one group's rejected applications.\n\n**Evidence:**\n- accuracy or fairness metrics shift after a retrain, traced to a specific data batch or contributor\n- odd behaviour on rare trigger inputs while normal tests pass\n- unexpected writes to training buckets or model registries\n- model file hashes that differ from the registry record\n\n**Compensating controls:** **data provenance and lineage**, signed and hashed datasets and models (**data integrity controls**), validation and outlier detection before training, least-privilege write access, versioning to roll back, fairness and robustness testing as a release gate.",
+      "terms": [
+        { "t": "Data poisoning", "d": "Corrupting the data a model learns from to change its behaviour." },
+        { "t": "Model poisoning", "d": "Directly altering model parameters or files to embed malicious behaviour." },
+        { "t": "Backdoor (trojan)", "d": "Hidden behaviour that activates only when a specific trigger appears in input." }
+      ],
+      "trap": "If the attacker changed the data, it is data poisoning; if they changed the weights or model file, it is model poisoning.",
+      "example": "After a scheduled retrain, a spam filter starts passing messages containing one rare phrase; lineage records trace it to a scraped forum dataset added that week.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.6.04",
+      "objective": "d2.6",
+      "seq": 4,
+      "title": "Hallucinations, input manipulation and integration abuse",
+      "short": "Hallucinations are false but confident outputs, which attackers can exploit. Input manipulation (evasion, adversarial examples) alters inputs so a model misclassifies them. Manipulating application integrations abuses the connectors, APIs and plug-ins that link a model to other systems.",
+      "deep": "**Hallucinations** can happen with no attacker, but they become a security issue when people or systems act on them, and when attackers exploit them, for example by publishing a malicious package under a name that coding assistants often invent. Controls: grounding with RAG, citation checks, confidence thresholds, human review.\n\n**Input manipulation** (OWASP ML01) changes an input, often in ways humans barely notice, so the model gives a wrong result at inference time: a perturbed image, padded malware or reworded text that slips past a classifier. **Evidence:** inputs with unusual noise or padding, many samples just across the decision boundary, detections dropping for one family of samples. **Controls:** adversarial training, input preprocessing and normalization, ensembles, monitoring confidence, and rate limits that slow trial-and-error.\n\n**Manipulating application integrations** targets the plumbing: changing connector or webhook settings, abusing over-privileged integration tokens, tampering with data an integration feeds the model, or replaying API calls. **Evidence:** configuration changes, new outbound destinations, integration actions outside normal patterns. **Controls:** per-integration least-privilege credentials, change control, egress allowlists, input validation and integration activity logging.",
+      "terms": [
+        { "t": "Input manipulation (evasion)", "d": "Altering inputs at inference time so a model produces a wrong output." },
+        { "t": "Adversarial example", "d": "A deliberately perturbed input designed to fool a model." },
+        { "t": "Adversarial training", "d": "Training with adversarial examples to make a model more robust." }
+      ],
+      "trap": "Input manipulation happens at inference time without changing training data; if training data was altered, the answer is poisoning.",
+      "example": "A malware classifier's detection rate for one family drops sharply; analysts find the new samples carry large blocks of benign-looking padding that push scores below the threshold.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.6.05",
+      "objective": "d2.6",
+      "seq": 5,
+      "title": "Model inversion and membership inference",
+      "short": "Model inversion reconstructs sensitive features of training data from a model's outputs. Membership inference determines whether a specific record was in the training set. Both abuse detailed outputs and overfitting; differential privacy and coarse outputs reduce them.",
+      "deep": "Both are privacy attacks run by querying a model and studying its answers.\n\n**Model inversion** (OWASP ML03): the attacker uses outputs and confidence scores to reconstruct what training data looked like, for example a recognizable face for a name in a face-recognition model, or sensitive attributes of a person.\n\n**Membership inference** (ML04): the attacker decides whether a particular record (say, one patient) was in the training data. Models often behave differently on data they trained on, for example higher confidence, especially when **overfitted**. Simply revealing membership can be a privacy breach: being in a cancer-study dataset reveals a diagnosis.\n\n**Evidence:** many queries about specific individuals or near-identical inputs with small variations, heavy interest in confidence scores, systematic probing from few accounts.\n\n**Compensating controls:**\n- **differential privacy** during training, which limits how much any one record influences the model\n- regularization and avoiding overfitting\n- returning labels or **coarse confidence** instead of full probability vectors\n- **rate limiting** and query monitoring\n- **access controls** on the model API\n- minimizing and de-identifying training data",
+      "terms": [
+        { "t": "Model inversion", "d": "Reconstructing training data features from a model's outputs." },
+        { "t": "Membership inference", "d": "Determining whether a given record was part of a model's training data." },
+        { "t": "Differential privacy", "d": "Adding calibrated noise during training so individual records cannot be singled out." }
+      ],
+      "trap": "Inversion reconstructs data; membership inference only answers 'was this record used?'. Read the stem for which one the attacker achieved.",
+      "example": "A researcher shows a clinic's model gives much higher confidence for patients in its training set, letting anyone infer who attended; the clinic retrains with differential privacy.",
+      "diagram": { "kind": "compare", "cols": ["Attack", "Attacker learns", "Key control"], "rows": [["Model inversion", "Training data traits", "Coarse outputs, DP"], ["Membership inf.", "Was record used?", "DP, less overfit"], ["Model theft", "Model copy", "Rate limits, authZ"]] }
+    },
+    {
+      "id": "secai-plus.d2.6.06",
+      "objective": "d2.6",
+      "seq": 6,
+      "title": "Model theft",
+      "short": "Model theft means stealing a model's weights or functionality. Attackers either take the files (from registries, storage or endpoints) or perform model extraction: query the API at scale and train a copy on the answers.",
+      "deep": "A trained model is valuable intellectual property and may also contain memorized sensitive data. Model theft is OWASP ML05 (and was LLM10 in the 2023 LLM list).\n\n**Two routes:**\n- **Direct exfiltration**: copying weights from a model registry, storage bucket, build pipeline, container image or edge device, often with stolen credentials or insider access.\n- **Model extraction**: sending many crafted queries to the inference API and using input-output pairs to train a 'knock-off' model with similar behaviour.\n\n**Evidence:**\n- mass or unusual downloads from the model registry or storage\n- access from new identities, locations or at odd hours\n- very high, steady, systematic query volumes covering the input space from few accounts\n- callers collecting full probability outputs\n\n**Compensating controls:** strong **access controls** and least privilege on registries and storage; **encryption** at rest with customer-managed keys; **rate limiting** and quotas; returning minimal output detail; query anomaly detection; legal terms of use; and **model watermarking or fingerprinting** to prove a suspect model is a copy. For incidents: revoke credentials, preserve evidence, scope what was taken, rotate keys and tighten access.",
+      "terms": [
+        { "t": "Model extraction", "d": "Recreating a model's functionality by training on its query responses." },
+        { "t": "Model watermarking", "d": "Embedding a verifiable signature in a model or its outputs to prove ownership." },
+        { "t": "Model registry", "d": "Repository storing versioned model artifacts and metadata." }
+      ],
+      "trap": "Extraction via the API is still model theft even though no file was copied; rate limiting and output minimization are the expected controls.",
+      "example": "Registry logs show a contractor's token downloaded every production model version at 3 a.m.; the team revokes the token and checks which artifacts left the environment.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.6.07",
+      "objective": "d2.6",
+      "seq": 7,
+      "title": "AI supply chain and transfer learning attacks",
+      "short": "AI supply chain attacks compromise third-party models, datasets, libraries or services you build on. Transfer learning attacks are a specific case: a malicious or backdoored pretrained model passes its hidden behaviour to the model you fine-tune from it.",
+      "deep": "Few organizations build AI from scratch. They download **pretrained models**, public datasets, ML libraries and plug-ins, and call third-party APIs. Each is a supply chain link (OWASP ML06; LLM03 in the 2025 LLM list).\n\n**Supply chain risks:** tampered or typosquatted packages; model files in unsafe serialization formats that can run code when loaded; poisoned public datasets; compromised model hubs; unvetted third-party plug-ins.\n\n**Transfer learning attack** (ML07): the attacker publishes or alters a base model with a backdoor. When you fine-tune it for your task, the backdoor often survives, so your model misbehaves on the attacker's trigger even though your own data is clean.\n\n**Evidence:** unexpected behaviour on specific trigger patterns; model files from unverified uploaders; hashes or signatures that do not match; dependencies that changed without approval.\n\n**Compensating controls:**\n- use trusted sources; verify **hashes and signatures**\n- scan model files; prefer safe formats such as safetensors over pickle-based ones\n- keep an **AI bill of materials (AI-BOM)** listing models, datasets and dependencies\n- pin versions; review vendor security\n- test fine-tuned models for backdoors and robustness before release",
+      "terms": [
+        { "t": "AI-BOM", "d": "AI bill of materials; inventory of models, datasets and components in an AI system." },
+        { "t": "Transfer learning", "d": "Reusing a pretrained model as the starting point for a new task." },
+        { "t": "Unsafe deserialization", "d": "Loading a file format (such as pickle) that can execute embedded code." }
+      ],
+      "trap": "If the backdoor came from the pretrained base model rather than your own data, the specific answer is a transfer learning attack.",
+      "example": "A team fine-tunes a public vision model for badge checking; red-team tests show a small printed pattern always yields 'authorized', traced to the unverified base model.",
+      "diagram": { "kind": "flow", "items": ["Public base model", "Hidden backdoor", "Your fine-tune", "Deployed model", "Trigger works"] }
+    },
+    {
+      "id": "secai-plus.d2.6.08",
+      "objective": "d2.6",
+      "seq": 8,
+      "title": "Model skewing and output integrity attacks",
+      "short": "Model skewing manipulates the data a model keeps learning from, such as feedback or live training data, so its predictions drift in the attacker's favour. Output integrity attacks alter a model's results after inference, before the consumer receives them.",
+      "deep": "**Model skewing** (OWASP ML08) targets models that retrain or adapt from production feedback. By flooding the feedback loop with false labels or crafted interactions over time, the attacker shifts the model's outputs, for example making a fraud model treat a fraud pattern as legitimate. The attacker does not need access to the weights.\n**Evidence:** gradual drift in predictions for one pattern, feedback volume concentrated in a few accounts, metrics that worsen after each incremental update.\n**Controls:** validate and rate-limit feedback, weight trusted sources, detect anomalies in training data, review before retraining, keep known-good versions to roll back, and monitor drift.\n\n**Output integrity attack** (ML09): the model itself is fine, but its output is modified **in transit or in storage** before a person or system uses it, for example changing 'malicious' to 'benign' between the classifier and the SOAR platform.\n**Evidence:** decisions that do not match model logs; mismatched values between the model and the consuming app.\n**Controls:** TLS/mTLS, **digital signatures or HMACs** on outputs, integrity checks at the consumer, tamper-evident logging and comparing model-side and consumer-side records.",
+      "terms": [
+        { "t": "Model skewing", "d": "Manipulating ongoing training or feedback data to shift a model's outputs." },
+        { "t": "Output integrity attack", "d": "Tampering with model results after inference, before they are used." },
+        { "t": "HMAC", "d": "Keyed hash that lets a receiver verify a message was not altered." }
+      ],
+      "trap": "Skewing works through the feedback/training loop; output integrity attacks leave the model untouched and change results in transit.",
+      "example": "A SOC finds its triage platform recorded 'benign' for alerts the classifier logged as 'malicious'; a compromised message relay was rewriting results, so outputs are now signed.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.6.09",
+      "objective": "d2.6",
+      "seq": 9,
+      "title": "Insecure output handling and insecure plug-in design",
+      "short": "Insecure output handling means passing model output to browsers, shells, databases or APIs without validation or encoding, enabling XSS, injection or code execution. Insecure plug-in design means tools that accept loose free-text input, run with excessive privilege or skip authorization.",
+      "deep": "Treat model output like **untrusted user input**, because an attacker may control it through prompt injection.\n\n**Insecure output handling** (LLM02 in 2023; 'Improper Output Handling', LLM05, in 2025):\n- rendering output as HTML without encoding leads to cross-site scripting (XSS)\n- inserting output into SQL by string concatenation leads to SQL injection\n- passing output to a shell or code interpreter leads to remote code execution\n**Evidence:** script tags or markup in responses, database errors, unexpected commands in tool logs.\n**Controls:** context-aware **output encoding**, **parameterized queries**, allowlist validation against a schema, sandboxing code execution, content security policy.\n\n**Insecure plug-in design** (LLM07 in 2023): plug-ins and tools are what let a model act. Poor designs accept a single free-text parameter (for example a raw query or URL), trust the model's input without validation, run with admin credentials or do not check that the *end user* is allowed to perform the action.\n**Controls:** strictly typed, validated parameters; parameterized backends; least-privilege per-plug-in credentials; per-user authorization (for example OAuth with narrow scopes); and confirmation for sensitive actions.",
+      "terms": [
+        { "t": "Output encoding", "d": "Converting special characters so output is treated as data in its context (HTML, SQL, shell)." },
+        { "t": "Parameterized query", "d": "Database call where values are passed separately from the SQL text, preventing injection." },
+        { "t": "Plug-in / tool", "d": "An extension that lets a model call external functions or services." }
+      ],
+      "trap": "Adding 'do not output harmful code' to the system prompt is not a control for insecure output handling; encode, validate and parameterize downstream.",
+      "example": "A support bot's answers are rendered into an agent console; after an injected review caused script to run, the team HTML-encodes all model output before display.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.6.10",
+      "objective": "d2.6",
+      "seq": 10,
+      "title": "Model denial of service",
+      "short": "Model denial of service overwhelms an AI system with expensive requests, such as very long or recursive prompts, huge volumes or maximum-length outputs, degrading service and running up cost. Rate limits, token limits, input quotas and timeouts are the main controls.",
+      "deep": "LLM inference is costly: each request uses GPU time roughly in proportion to input plus output tokens. **Model DoS** (LLM04 in 2023; folded into 'Unbounded Consumption', LLM10, in 2025) exploits that.\n\n**Techniques:**\n- floods of requests from one or many sources\n- prompts that fill the **context window** or ask for maximum-length output\n- inputs that trigger recursive expansion or long agent loops\n- large or unusual file and image inputs\n\n**Evidence:**\n- latency and queue depth spike while request count is only modest\n- average tokens per request jumps, often from a few clients\n- many requests hit the maximum context length or time out\n- cost alerts fire (denial of wallet)\n\n**Compensating controls:**\n- **rate limiting** per user, key and IP (requests and tokens)\n- **token limits** on input and output, plus **input quotas** on data size, file count and modality\n- request timeouts and caps on agent steps\n- autoscaling with spending caps\n- queue prioritization for authenticated users\n- monitoring and alerting on resource use",
+      "terms": [
+        { "t": "Context window", "d": "Maximum number of tokens a model can process in one request." },
+        { "t": "Unbounded consumption", "d": "OWASP 2025 term for uncontrolled resource use, including DoS and denial of wallet." },
+        { "t": "Input quota", "d": "Limit on input size, quantity or modality accepted per request or user." }
+      ],
+      "trap": "Model DoS is not only about request count; a few huge prompts can do it, so token and size limits matter as much as request rate limits.",
+      "example": "A chatbot slows to a crawl although traffic is normal; logs show a handful of clients sending prompts at the maximum context size, and the team adds per-user token limits.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.6.11",
+      "objective": "d2.6",
+      "seq": 11,
+      "title": "Sensitive information disclosure",
+      "short": "Sensitive information disclosure is when an AI system reveals personal data, secrets, proprietary information or its system prompt. Causes include training on unsanitized data, retrieval without per-user permissions and secrets placed in prompts.",
+      "deep": "Sensitive information disclosure is LLM02 in the 2025 OWASP list (LLM06 in 2023). Common causes:\n- **Training or fine-tuning** on data containing personal data or secrets, which the model memorizes and can repeat.\n- **RAG without access control**: the retriever searches every document, so a user gets content they could never open directly.\n- **Secrets in prompts**: API keys or internal rules in the system prompt can be extracted (the 2025 list adds 'System Prompt Leakage' as LLM07).\n- **Over-sharing tools** that return more fields than needed.\n\n**Evidence:** responses containing other users' data, credentials or internal documents; output DLP alerts; users reporting answers they should not have seen; system prompt text in replies.\n\n**Compensating controls:**\n- sanitize, minimize and redact training and RAG data\n- enforce **document-level access control** in retrieval (permission-aware search, security trimming by user identity)\n- keep secrets out of prompts; use a secrets manager and server-side calls\n- **output filtering/DLP** and data classification labels\n- encryption and least privilege on data stores\n\nAn instruction in the system prompt asking the model to keep secrets is not a security control.",
+      "terms": [
+        { "t": "Security trimming", "d": "Filtering retrieval results to only what the requesting user is permitted to access." },
+        { "t": "System prompt leakage", "d": "Exposure of hidden system instructions or the secrets inside them." },
+        { "t": "Memorization", "d": "A model reproducing specific training examples verbatim." }
+      ],
+      "trap": "When users see documents they lack rights to, the fix is permission-aware retrieval, not a better system prompt.",
+      "example": "An internal assistant answers a junior employee's question with figures from a board-only document; the RAG index had no per-user filtering, so the team adds security trimming.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.6.12",
+      "objective": "d2.6",
+      "seq": 12,
+      "title": "Excessive agency and overreliance",
+      "short": "Excessive agency is when an AI agent has more functionality, permissions or autonomy than it needs, so a mistake or injection causes real damage. Overreliance is when people or systems trust AI output without verification.",
+      "deep": "**Excessive agency** (LLM08 in 2023, LLM06 in 2025) has three parts:\n- **excessive functionality**: the agent can reach tools it does not need (a calendar helper that can also delete files)\n- **excessive permissions**: its tools use broad credentials (full mailbox read/write/send instead of read-only calendar)\n- **excessive autonomy**: high-impact actions happen with no human approval\n**Evidence:** tool calls outside the agent's purpose, actions on many records at once, privileged API calls by an agent identity.\n**Controls:** least privilege and minimal tool sets; scoped, per-user OAuth tokens; **human-in-the-loop** approval for destructive or financial actions; rate limits on actions; full tool-call logging.\n\n**Overreliance** (LLM09 in 2023; covered under 'Misinformation' in 2025): users accept output as fact. Examples: shipping AI-generated code without review, quoting invented legal citations, or installing a package a model hallucinated (which an attacker may have registered).\n**Evidence:** errors traced to unreviewed AI output, missing review records.\n**Controls:** human review and testing, verification against trusted sources, clear UI warnings and confidence indicators, training staff, and policies defining where AI output may be used.",
+      "terms": [
+        { "t": "Excessive agency", "d": "An AI agent holding more functions, permissions or autonomy than its task requires." },
+        { "t": "Overreliance", "d": "Uncritical trust in AI output without adequate human oversight or verification." },
+        { "t": "Human-in-the-loop", "d": "Requiring human approval before certain AI actions take effect." }
+      ],
+      "trap": "Excessive agency is about what the AI can do; overreliance is about humans trusting what the AI says. Map the stem to the right one.",
+      "example": "A scheduling agent that only needed read-only calendar access had a token able to send and delete email; an injected meeting invite made it email a contact list externally.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.6.13",
+      "objective": "d2.6",
+      "seq": 13,
+      "title": "Compensating controls: prompt firewalls, guardrails, templates, rate limiting",
+      "short": "Prompt-layer compensating controls sit around the model: prompt firewalls inspect inputs and outputs, model guardrails enforce policy, prompt templates separate fixed instructions from user data, and rate limiting caps request and token volume.",
+      "deep": "Compensating controls reduce risk when you cannot fix the root cause directly, which is common with LLMs because injection cannot be fully prevented. Layer them on the request path:\n\n1. **Access control** at the gateway: authenticate the caller.\n2. **Rate limiting**: requests and tokens per user/key/IP; stops DoS, extraction, brute-force jailbreak attempts and denial of wallet.\n3. **Prompt firewall**: inspects prompts and retrieved content for injection patterns, obfuscation and sensitive data; can block, redact or alert. Many also scan responses.\n4. **Prompt template**: the app inserts user input into a fixed, reviewed template with clear delimiters and role separation, so users cannot freely rewrite instructions. This reduces, but does not eliminate, injection.\n5. **Model guardrails**: safety alignment and policy rules plus output filters for harmful content, sensitive data and schema conformity.\n\n**Mapping evidence to control:**\n- injection or jailbreak attempts: prompt firewall, templates, guardrails\n- harmful or leaking output: output guardrails, DLP\n- high volume or giant prompts: rate and token limits\n- extraction probing: rate limits plus coarse outputs",
+      "terms": [
+        { "t": "Compensating control", "d": "An alternative control that reduces risk when the primary fix is not feasible." },
+        { "t": "Prompt firewall", "d": "Gateway component that inspects and filters prompts (and often responses) for attacks and sensitive data." },
+        { "t": "Prompt template", "d": "Fixed instruction structure with defined slots for user input." }
+      ],
+      "trap": "Rate limiting does not stop prompt injection in a single request, and a prompt firewall does not stop data poisoning; match each control to the evidence.",
+      "example": "After seeing injection attempts in logs, a bank puts a prompt firewall in front of its chatbot, moves to a locked prompt template and adds per-user token limits.",
+      "diagram": { "kind": "flow", "items": ["Authenticate", "Rate/token limit", "Prompt firewall", "Template + model", "Output guardrail"] }
+    },
+    {
+      "id": "secai-plus.d2.6.14",
+      "objective": "d2.6",
+      "seq": 14,
+      "title": "Compensating controls: access, least privilege, integrity, encryption",
+      "short": "Data and identity compensating controls protect what the model can reach: access controls and least privilege limit who and what can use models, data and tools; data integrity controls detect tampering; encryption protects confidentiality in transit, at rest and in use.",
+      "deep": "These controls address attacks that prompt filters cannot see.\n\n**Access controls**: authenticate every user, service and agent; use role-based or attribute-based access to models, registries, datasets, vector stores and tools; MFA and short-lived tokens for administrators and pipelines.\n\n**Least privilege**: give each identity, including **agent identities and plug-in credentials**, only the permissions its task needs; separate read from write; scope tokens per user; review access regularly. This limits the blast radius of injection, excessive agency and stolen credentials.\n\n**Data integrity controls**: hashes and digital signatures on datasets and model files; verification before training or loading; versioning and immutable storage; provenance and lineage tracking; signed outputs. These detect **poisoning, model tampering, supply chain** and **output integrity** attacks.\n\n**Encryption**: TLS/mTLS in transit, AES-256 with customer-managed keys at rest, TEEs in use. This protects against **model theft** and **data disclosure** from stolen storage or intercepted traffic.\n\nMapping: dataset swapped in a bucket calls for integrity checks plus least-privilege write access; weights copied from storage call for access control, encryption and monitoring; an agent misusing a broad token calls for least privilege.",
+      "terms": [
+        { "t": "Least privilege", "d": "Granting only the minimum access needed to perform a task." },
+        { "t": "Data integrity control", "d": "A mechanism such as hashing, signing or versioning that detects or prevents unauthorized change." },
+        { "t": "Blast radius", "d": "The extent of damage possible if a component or identity is compromised." }
+      ],
+      "trap": "Encryption protects confidentiality but does not detect a poisoned dataset written by an authorized-looking identity; that needs integrity controls and least privilege.",
+      "example": "After a stolen pipeline token was used to swap a training file, the team signs every dataset version, verifies signatures before training and limits write access to one release role.",
+      "diagram": null
+    }
+  ],
+  "questions": [
+    {
+      "id": "secai-plus.d2b.q001",
+      "lesson": "secai-plus.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A mobile app sends customer prompts to a hosted LLM API over the internet. Which control protects the prompts from interception on the network?",
+      "options": [
+        "TLS 1.2 or later on the connection to the API endpoint",
+        "AES-256 encryption of the vector database volumes",
+        "Dynamic data masking applied to the model's responses",
+        "A trusted execution environment on the inference server"
+      ],
+      "answer": [0],
+      "explain": "Data crossing a network is in transit, so TLS is the control. Volume encryption protects stored data at rest. Masking changes what viewers see but does not encrypt traffic. A TEE protects data in use during processing, not on the wire."
+    },
+    {
+      "id": "secai-plus.d2b.q002",
+      "lesson": "secai-plus.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A team is hardening a RAG system. Which TWO controls address encryption at rest? Select TWO.",
+      "options": [
+        "Encrypt the vector database storage with keys held in a KMS",
+        "Enable mutual TLS between the orchestrator and the vector database",
+        "Encrypt snapshots and backups of the embedding store",
+        "Run the embedding model inside a confidential VM",
+        "Mask personal data in prompts before they are embedded"
+      ],
+      "answer": [0, 2],
+      "explain": "Encrypting the vector store and its backups protects stored data at rest. mTLS protects data in transit. A confidential VM protects data in use. Masking is a data safety technique, not encryption."
+    },
+    {
+      "id": "secai-plus.d2b.q003",
+      "lesson": "secai-plus.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A credit union stores its fine-tuning datasets and model weights in cloud object storage. They are encrypted with provider-managed keys. A new regulation requires the credit union itself to control key rotation and to be able to make the data unreadable immediately if the provider relationship ends.",
+      "stem": "Which change best meets the requirement?",
+      "options": [
+        "Upgrade all API connections to TLS 1.3",
+        "Tokenize the customer identifiers in the datasets",
+        "Use customer-managed keys in a KMS or HSM with a defined rotation policy",
+        "Enable dynamic data masking on the storage bucket"
+      ],
+      "answer": [2],
+      "explain": "Customer-managed keys give the organization control of rotation and revocation; revoking the key makes the data unreadable. TLS protects data in transit only. Tokenization protects some fields but not weights. Masking changes views, not key ownership."
+    },
+    {
+      "id": "secai-plus.d2b.q004",
+      "lesson": "secai-plus.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which technology protects prompts and model weights while they are being processed in memory, even from the cloud host's administrators?",
+      "options": [
+        "Full-disk encryption on the inference servers",
+        "TLS termination at the API gateway",
+        "Salted hashing of every prompt before inference",
+        "A trusted execution environment (confidential computing)"
+      ],
+      "answer": [3],
+      "explain": "A TEE keeps memory encrypted and isolated during processing, which is encryption in use. Disk encryption covers data at rest. TLS covers data in transit and ends at the gateway. Hashing is one-way, so a hashed prompt could not be processed by the model."
+    },
+    {
+      "id": "secai-plus.d2b.q005",
+      "lesson": "secai-plus.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about encryption in use, select Yes if true.",
+      "statements": [
+        { "s": "Homomorphic encryption allows computation on encrypted data without first decrypting it.", "a": true },
+        { "s": "Encryption at rest protects model weights while they are loaded in GPU memory for inference.", "a": false },
+        { "s": "Remote attestation lets a client verify that an enclave is genuine before it sends sensitive data.", "a": true }
+      ],
+      "explain": "Homomorphic encryption computes on ciphertext. Data at rest is decrypted when loaded into memory, so encryption at rest no longer protects it there; that is the job of a TEE. Attestation proves the TEE and its code before data or keys are released."
+    },
+    {
+      "id": "secai-plus.d2b.q006",
+      "lesson": "secai-plus.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company wants to stop documents marked as HR-Confidential from being indexed into the knowledge base of a chatbot that all employees use. Which control is the best fit?",
+      "options": [
+        "A response confidence threshold on the chatbot",
+        "Data classification labels enforced by the ingestion pipeline",
+        "Per-user rate limits on the chatbot API",
+        "Static masking of the chatbot's conversation logs"
+      ],
+      "answer": [1],
+      "explain": "Classification labels let the ingestion pipeline automatically exclude HR-Confidential documents from the general index. Confidence thresholds address answer quality. Rate limits address volume abuse. Masking logs does nothing to stop the documents from being indexed and retrieved."
+    },
+    {
+      "id": "secai-plus.d2b.q007",
+      "lesson": "secai-plus.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A developer's prompt for drafting delivery-delay apologies includes the customer's full profile: address, date of birth, payment history and support tickets. Only the first name, order number and new delivery date are needed. Which principle should the developer apply?",
+      "options": [
+        "Data minimization",
+        "Data anonymization",
+        "Data augmentation",
+        "Data balancing"
+      ],
+      "answer": [0],
+      "explain": "Data minimization means sending only the data the task needs, which is just the three fields. Anonymization would remove the first name the apology needs. Augmentation and balancing are training-data techniques for adding or evening out samples, not privacy controls for prompts."
+    },
+    {
+      "id": "secai-plus.d2b.q008",
+      "lesson": "secai-plus.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which technique transforms personal data so that individuals can no longer be identified and the change cannot be reversed?",
+      "options": [
+        "Pseudonymization",
+        "Tokenization",
+        "Anonymization",
+        "Dynamic data masking"
+      ],
+      "answer": [2],
+      "explain": "Anonymization is irreversible. Pseudonymization and tokenization keep a mapping that can re-identify people, so the data is still personal data. Dynamic masking hides values from some viewers but leaves the original stored."
+    },
+    {
+      "id": "secai-plus.d2b.q009",
+      "lesson": "secai-plus.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Support agents reviewing AI chat transcripts should see only the last four digits of customer account numbers, while an authorized fraud team must still see the full values in the same records. Which technique fits?",
+      "options": [
+        "Redaction of account numbers before storage",
+        "Anonymization of the transcript database",
+        "Data minimization in the chatbot prompt",
+        "Dynamic data masking based on the viewer's role"
+      ],
+      "answer": [3],
+      "explain": "Dynamic masking changes what each role sees at query time while the stored value stays intact for authorized users. Redaction and anonymization remove the values permanently, so the fraud team would lose them. Minimization would stop the data being collected at all."
+    },
+    {
+      "id": "secai-plus.d2b.q010",
+      "lesson": "secai-plus.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A health provider will fine-tune a model on clinical notes to suggest discharge summaries. Analysts do not need patient identities. The privacy officer worries the model could memorize and later repeat patient names and medical record numbers.",
+      "stem": "Which TWO actions best reduce this risk? Select TWO.",
+      "options": [
+        "Encrypt the training dataset at rest and train on it unchanged",
+        "Redact direct identifiers such as names and record numbers before training",
+        "Apply dynamic masking in the clinicians' user interface",
+        "Generalize quasi-identifiers such as exact dates and ages before training",
+        "Increase the number of training epochs"
+      ],
+      "answer": [1, 3],
+      "explain": "Removing identifiers and generalizing quasi-identifiers before training means the model never learns them. Encryption at rest does not change what the model learns. UI masking does not affect training. More epochs increase overfitting and memorization."
+    },
+    {
+      "id": "secai-plus.d2b.q011",
+      "lesson": "secai-plus.d2.5.01",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A team logs and inspects only the prompts users type into its AI assistant. Which issue are they most likely to miss?",
+      "options": [
+        "A user submitting an unusually long prompt",
+        "The model disclosing sensitive data in reply to a harmless-looking question",
+        "A user sending prompts from a new IP address",
+        "A spike in the number of prompts sent by one user"
+      ],
+      "answer": [1],
+      "explain": "Leaks show up in the response, so only response monitoring catches them when the query looks benign. Prompt length, source IP and prompt volume are all visible from the query side and gateway metadata."
+    },
+    {
+      "id": "secai-plus.d2b.q012",
+      "lesson": "secai-plus.d2.5.01",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO indicators are best detected by monitoring the query (input) side of an LLM application? Select TWO.",
+      "options": [
+        "Prompts asking the model to disregard its earlier instructions",
+        "A response that contains text from the hidden system prompt",
+        "An increase in average response latency",
+        "Prompts containing long encoded or obfuscated text blocks",
+        "Higher GPU utilization on the inference cluster"
+      ],
+      "answer": [0, 3],
+      "explain": "Override requests and obfuscated blocks are visible in the input. System prompt text in a reply is a response-side finding. Latency and GPU utilization are performance metrics, not prompt content."
+    },
+    {
+      "id": "secai-plus.d2b.q013",
+      "lesson": "secai-plus.d2.5.01",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about prompt monitoring, select Yes if true.",
+      "statements": [
+        { "s": "Response monitoring can detect system prompt leakage even when the triggering query looked harmless.", "a": true },
+        { "s": "Only the user's typed text needs inspection; retrieved RAG documents can be trusted.", "a": false },
+        { "s": "Prompt and response detections should be sent to a SIEM for correlation with other events.", "a": true }
+      ],
+      "explain": "Leaks appear in outputs regardless of how the query looked. Retrieved content is a key route for indirect prompt injection, so it must be inspected too. A SIEM lets AI events be correlated with identity and network logs."
+    },
+    {
+      "id": "secai-plus.d2b.q014",
+      "lesson": "secai-plus.d2.5.02",
+      "objective": "d2.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An investigator needs to know which tools an AI agent invoked, and with what parameters, during an incident. Which log source is most useful?",
+      "options": [
+        "Web server access logs for the chat front end",
+        "Training loss and validation curves",
+        "Agent orchestration (tool-call) logs",
+        "Firewall flow logs for the inference subnet"
+      ],
+      "answer": [2],
+      "explain": "Tool-call logs record each tool, its parameters and its results. Web server logs show page requests, not tool invocations. Training curves describe model learning. Flow logs show connections but not which tool ran or with what arguments."
+    },
+    {
+      "id": "secai-plus.d2b.q015",
+      "lesson": "secai-plus.d2.5.02",
+      "objective": "d2.5",
+      "difficulty": 3,
+      "type": "single",
+      "case": "AI gateway logs show that one partner's API key, normally used from a single data centre, made requests from IP addresses in 37 countries within an hour. Prompt content looks like ordinary product questions, and the partner says it changed nothing.",
+      "stem": "What is the most likely explanation, and what should the SOC do first?",
+      "options": [
+        "The API key was leaked or shared; revoke and rotate it, then investigate",
+        "The model is hallucinating; lower the temperature setting",
+        "The training data was poisoned; roll back to the previous model",
+        "The prompt template is misconfigured; restore the previous template"
+      ],
+      "answer": [0],
+      "explain": "A key used from many new locations points to credential compromise, so revoke and rotate it and investigate. Hallucination concerns answer accuracy, not caller location. Poisoning would show in model behaviour. A template fault would not change where requests come from."
+    },
+    {
+      "id": "secai-plus.d2b.q016",
+      "lesson": "secai-plus.d2.5.02",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are setting up log monitoring for a new LLM application. Put the steps in order.",
+      "options": [
+        "Identify log sources such as the gateway, app, agent tools and vector database",
+        "Normalize the logs and forward them to the central SIEM",
+        "Establish baselines and write detection rules",
+        "Alert, triage and respond to detections",
+        "Tune rules based on findings and false positives"
+      ],
+      "explain": "You must know the sources before you can collect them. Logs must be centralized before you can baseline them. Rules must exist before they can alert, and tuning uses what was learned from real alerts."
+    },
+    {
+      "id": "secai-plus.d2b.q017",
+      "lesson": "secai-plus.d2.5.03",
+      "objective": "d2.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Before writing chatbot prompts and responses to its log store, an application replaces email addresses, API keys and card numbers with placeholders. What is this practice called?",
+      "options": [
+        "Log rotation",
+        "Log aggregation",
+        "Log protection",
+        "Log sanitization"
+      ],
+      "answer": [3],
+      "explain": "Removing or replacing sensitive values before logging is sanitization. Protection secures logs after they are written (encryption, immutability, access control). Rotation manages file size and age. Aggregation collects logs centrally."
+    },
+    {
+      "id": "secai-plus.d2b.q018",
+      "lesson": "secai-plus.d2.5.03",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Python function so it replaces US Social Security numbers in a prompt with a placeholder before the prompt is logged.",
+      "code": "import re\n\ndef sanitize(text):\n    pattern = r\"\\b\\d{3}-\\d{2}-\\d{4}\\b\"\n    return re.____(pattern, \"[REDACTED-SSN]\", text)",
+      "options": ["sub", "match", "findall", "split"],
+      "answer": [0],
+      "explain": "re.sub replaces every match of the pattern with the replacement string and returns the new text. re.match only tests the start of the string, re.findall returns the matches themselves, and re.split breaks the text apart; none of them redacts."
+    },
+    {
+      "id": "secai-plus.d2b.q019",
+      "lesson": "secai-plus.d2.5.03",
+      "objective": "d2.5",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "Analysts notice fake entries in an AI application's text logs, such as an approval record that never happened. The fake lines came from a user prompt that contained embedded line-break characters. Which control addresses this?",
+      "options": [
+        "Increase the log retention period to one year",
+        "Encode or strip CR/LF control characters in prompt text before logging",
+        "Encrypt the log files at rest",
+        "Stop logging model responses"
+      ],
+      "answer": [1],
+      "explain": "This is log injection, and sanitizing control characters before writing stops forged lines. Retention and encryption do not change what is written. Dropping response logs does not help, because the fake lines came from the prompt, and it would remove useful evidence."
+    },
+    {
+      "id": "secai-plus.d2b.q020",
+      "lesson": "secai-plus.d2.5.04",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "An attacker who gains admin rights on an AI application should not be able to erase its audit trail. Which TWO controls best achieve this? Select TWO.",
+      "options": [
+        "Reduce log verbosity to limit what an attacker could change",
+        "Keep logs on the application server for fast access",
+        "Send logs to append-only (WORM) immutable storage",
+        "Sanitize personal data from logs before writing",
+        "Store logs in a separate security account that app admins cannot modify"
+      ],
+      "answer": [2, 4],
+      "explain": "Immutable storage and separation of duties stop app admins from deleting or changing logs. Lower verbosity loses evidence. Keeping logs on the app server puts them within the attacker's reach. Sanitization protects privacy, not log integrity."
+    },
+    {
+      "id": "secai-plus.d2b.q021",
+      "lesson": "secai-plus.d2.5.04",
+      "objective": "d2.5",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about protecting AI logs, select Yes if true.",
+      "statements": [
+        { "s": "Hashing or hash chaining of log records helps detect tampering.", "a": true },
+        { "s": "Once prompts are sanitized, AI logs no longer need access controls.", "a": false },
+        { "s": "Log retention should align with legal, regulatory and investigation requirements.", "a": true }
+      ],
+      "explain": "Hash chains reveal edits. Sanitized logs still reveal user behaviour, system details and evidence, so they still need access control. Retention should meet legal and investigation needs without keeping data longer than necessary."
+    },
+    {
+      "id": "secai-plus.d2b.q022",
+      "lesson": "secai-plus.d2.5.05",
+      "objective": "d2.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A fraud model returns a score of 0.52 for a transaction. The system automatically sends any prediction scored below 0.80 to a human analyst. What does this describe?",
+      "options": [
+        "Rate limiting on the inference API",
+        "A response confidence threshold with human review",
+        "Model pruning to remove low-value weights",
+        "Output encoding of model predictions"
+      ],
+      "answer": [1],
+      "explain": "Routing low-confidence predictions to people is a confidence threshold with human-in-the-loop review. Rate limiting controls request volume. Pruning shrinks the model. Output encoding makes output safe to insert into HTML, SQL or other contexts."
+    },
+    {
+      "id": "secai-plus.d2b.q023",
+      "lesson": "secai-plus.d2.5.05",
+      "objective": "d2.5",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A public image classification API returns the full probability for every class with six decimal places. The security team is worried about model extraction and model inversion. Which change reduces the risk while keeping the service useful?",
+      "options": [
+        "Compress the full probability vector before returning it",
+        "Publish the model architecture so callers can calibrate the scores",
+        "Return only the top label or a coarse, rounded confidence band",
+        "Raise per-user quotas so legitimate users are not throttled"
+      ],
+      "answer": [2],
+      "explain": "Precise probability vectors give attackers rich signals for extraction and inversion, so returning less detail reduces risk while still answering the caller. Compression returns the same information. Publishing the architecture helps attackers. Higher quotas allow more probing."
+    },
+    {
+      "id": "secai-plus.d2b.q024",
+      "lesson": "secai-plus.d2.5.06",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the SQL query so it returns only API keys that sent more than 500 requests in the last hour.",
+      "code": "SELECT api_key_id, COUNT(*) AS requests\nFROM llm_requests\nWHERE request_time > NOW() - INTERVAL '1 hour'\nGROUP BY api_key_id\n____ COUNT(*) > 500;",
+      "options": ["HAVING", "WHERE", "ORDER BY", "LIMIT"],
+      "answer": [0],
+      "explain": "HAVING filters groups after aggregation, so it can test COUNT(*). WHERE filters rows before grouping and is not allowed after GROUP BY. ORDER BY sorts rather than filters. LIMIT caps the number of rows and needs a number, not a condition."
+    },
+    {
+      "id": "secai-plus.d2b.q025",
+      "lesson": "secai-plus.d2.5.06",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Rate dashboards show one account sending a steady three requests per second around the clock. The inputs systematically vary across the feature range, and every response's scores are stored. What is the most likely activity?",
+      "options": [
+        "A hallucination problem in the model",
+        "Log injection through crafted prompts",
+        "Data poisoning of the training pipeline",
+        "A model extraction (theft) attempt"
+      ],
+      "answer": [3],
+      "explain": "Systematic, high-volume querying that collects outputs is the classic sign of model extraction. Hallucination is an accuracy problem. Log injection forges log entries. Poisoning requires changing training data, not querying the inference API."
+    },
+    {
+      "id": "secai-plus.d2b.q026",
+      "lesson": "secai-plus.d2.5.07",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An AI assistant's monthly bill tripled. The number of prompts stayed flat, but the average answer length rose from about 200 to 1,500 tokens after a prompt change. Which cost category grew?",
+      "options": [
+        "Response (output token) costs",
+        "Storage costs for the vector database",
+        "Processing costs for model fine-tuning",
+        "Prompt costs from more requests"
+      ],
+      "answer": [0],
+      "explain": "Longer answers mean more output tokens, which are billed per token and often at a higher rate than input. Storage and fine-tuning did not change. The request count stayed flat, so more prompts is not the cause."
+    },
+    {
+      "id": "secai-plus.d2b.q027",
+      "lesson": "secai-plus.d2.5.07",
+      "objective": "d2.5",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about AI cost monitoring, select Yes if true.",
+      "statements": [
+        { "s": "Vector database and log storage are part of AI cost monitoring, not just token charges.", "a": true },
+        { "s": "A denial-of-wallet attack aims to drive up an organization's AI usage costs.", "a": true },
+        { "s": "Setting a maximum output token limit has no effect on response costs.", "a": false }
+      ],
+      "explain": "Storage is one of the four cost areas. Denial of wallet abuses pay-per-use billing. Capping output tokens directly limits response cost per request."
+    },
+    {
+      "id": "secai-plus.d2b.q028",
+      "lesson": "secai-plus.d2.5.07",
+      "objective": "d2.5",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A budget alert fires after an AI agent spends 80% of its monthly budget in two days. Traces show the agent retrying a failing tool hundreds of times per task and sending the entire conversation history with each retry.",
+      "stem": "Which control best limits this cost exposure?",
+      "options": [
+        "Move the agent to a larger model with a bigger context window",
+        "Disable prompt logging to reduce storage costs",
+        "Cap agent iterations per task and enforce hard spending limits with alerts",
+        "Anonymize the conversation history before each retry"
+      ],
+      "answer": [2],
+      "explain": "Iteration caps stop runaway loops, and hard spending limits contain the damage while the tool is fixed. A larger model or context window raises cost. Logging is a small share of spend and is needed as evidence. Anonymizing does not reduce token volume."
+    },
+    {
+      "id": "secai-plus.d2b.q029",
+      "lesson": "secai-plus.d2.5.08",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A legal research assistant uses RAG to cite case law. Which audit method best measures its hallucination rate?",
+      "options": [
+        "Track average GPU utilization per response",
+        "Sample responses and verify each claim and citation against the source documents",
+        "Count the tokens in each response and flag long answers",
+        "Confirm that all API calls use TLS 1.2 or later"
+      ],
+      "answer": [1],
+      "explain": "Hallucination audits check whether outputs are supported by the sources, including whether citations exist and say what is claimed. GPU use, token counts and TLS versions are operational or security metrics that say nothing about factual accuracy."
+    },
+    {
+      "id": "secai-plus.d2b.q030",
+      "lesson": "secai-plus.d2.5.08",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps of a recurring accuracy and hallucination audit in order.",
+      "options": [
+        "Define accuracy metrics and acceptable thresholds",
+        "Build a ground-truth test set with verified answers",
+        "Evaluate test-set and sampled production responses against verified sources",
+        "Record findings and compare them with thresholds and previous audits",
+        "Remediate the causes and re-test"
+      ],
+      "explain": "You need metrics and thresholds before you can judge results, and a verified test set before you can evaluate. Findings are compared with thresholds, and only then can remediation be targeted and re-tested."
+    },
+    {
+      "id": "secai-plus.d2b.q031",
+      "lesson": "secai-plus.d2.5.09",
+      "objective": "d2.5",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A lender's pre-screening model does not use ethnicity as an input. A quarterly audit finds approval rates differ by 20 percentage points between postcode areas, and those areas correlate strongly with ethnicity.",
+      "stem": "Which TWO audit actions are most appropriate? Select TWO.",
+      "options": [
+        "Raise the confidence threshold for every applicant",
+        "Measure fairness metrics such as approval-rate differences across protected groups",
+        "Investigate postcode and similar features as proxies for protected attributes",
+        "Stop logging decisions to protect applicant privacy",
+        "Close the finding because ethnicity is not a model input"
+      ],
+      "answer": [1, 2],
+      "explain": "Fairness metrics quantify the disparity, and proxy analysis finds its cause. A blanket threshold change does not address bias. Removing logs destroys audit evidence. Leaving out the protected attribute does not prove fairness when proxies carry the same signal."
+    },
+    {
+      "id": "secai-plus.d2b.q032",
+      "lesson": "secai-plus.d2.5.09",
+      "objective": "d2.5",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about auditing AI systems, select Yes if true.",
+      "statements": [
+        { "s": "Access audits should review which users, service accounts and agents can use a model or its data, and remove access that is no longer needed.", "a": true },
+        { "s": "A bias audit performed once before deployment is sufficient for the life of the model.", "a": false },
+        { "s": "Compliance audits may require logs showing who accessed a model and when.", "a": true }
+      ],
+      "explain": "Access reviews enforce least privilege for people, services and agents. Bias can appear after retraining or drift, so audits recur. Access logs are standard compliance evidence."
+    }
+  ]
+}

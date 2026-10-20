@@ -1,0 +1,443 @@
+{
+  "exam": "sc-900",
+  "domain": "d3",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-900.d3b.q032",
+      "lesson": "sc-900.d3.4.05",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Defender for Endpoint capability records device behaviour and detects advanced attacks in near real time so analysts can investigate process trees and timelines?",
+      "options": [
+        "Endpoint detection and response (EDR)",
+        "Attack surface reduction (ASR) rules",
+        "Device control",
+        "Microsoft Intune compliance policies"
+      ],
+      "answer": [0],
+      "explain": "EDR captures detailed behavioural data, detects advanced attacks and supports investigation. ASR rules and device control are preventive controls that block behaviours or devices, and Intune compliance policies are device management, not threat detection."
+    },
+    {
+      "id": "sc-900.d3b.q033",
+      "lesson": "sc-900.d3.4.05",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are attack surface reduction capabilities in Microsoft Defender for Endpoint? Select TWO.",
+      "options": [
+        "Controlled folder access",
+        "Live response",
+        "Network protection",
+        "Advanced hunting",
+        "Threat analytics"
+      ],
+      "answer": [0, 2],
+      "explain": "Controlled folder access (ransomware protection) and network protection belong to attack surface reduction, along with ASR rules and exploit protection. Live response is a response action, advanced hunting is a query tool, and threat analytics provides threat reports."
+    },
+    {
+      "id": "sc-900.d3b.q034",
+      "lesson": "sc-900.d3.4.05",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailspin Toys licenses Microsoft Defender for Endpoint Plan 1. Antivirus and ASR rules are working, but the SOC says it can't see detailed behavioural timelines of compromised devices and wants alerts investigated and remediated automatically.",
+      "stem": "What should Tailspin Toys do?",
+      "options": [
+        "Enable Safe Attachments for SharePoint, OneDrive and Teams",
+        "Deploy Microsoft Defender for Identity sensors on all laptops",
+        "Turn on cloud-delivered protection in Microsoft Defender Antivirus",
+        "Upgrade to Microsoft Defender for Endpoint Plan 2"
+      ],
+      "answer": [3],
+      "explain": "EDR and automated investigation and remediation are Plan 2 capabilities. Cloud-delivered protection improves antivirus but adds no EDR. Defender for Identity sensors go on domain controllers and identity servers, and Safe Attachments protects files in collaboration services."
+    },
+    {
+      "id": "sc-900.d3b.q035",
+      "lesson": "sc-900.d3.4.05",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order to show how Microsoft Defender for Endpoint detects and contains ransomware on a laptop.",
+      "options": [
+        "Onboard the device to Microsoft Defender for Endpoint",
+        "EDR detects suspicious encryption behaviour and raises an alert",
+        "The analyst opens the alert and confirms ransomware from the process tree",
+        "Based on that confirmation, the analyst isolates the device from the network"
+      ],
+      "explain": "The sensor must be onboarded before it can report. EDR then raises an alert, the analyst confirms the threat from the evidence, and that confirmation drives isolation, which contains the device while keeping its connection to the Defender service."
+    },
+    {
+      "id": "sc-900.d3b.q036",
+      "lesson": "sc-900.d3.4.05",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An analyst needs to stop a compromised workstation from communicating with other devices while still being able to investigate it from the Microsoft Defender portal. Which response action should they use?",
+      "options": [
+        "Isolate device",
+        "Run antivirus scan",
+        "Collect investigation package",
+        "Add a file indicator to allow the file"
+      ],
+      "answer": [0],
+      "explain": "Isolate device cuts the machine off the network but keeps its connection to the Defender service, so investigation continues. A scan or an investigation package doesn't stop network traffic, and an allow indicator would permit, not block, a file."
+    },
+    {
+      "id": "sc-900.d3b.q037",
+      "lesson": "sc-900.d3.4.06",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft service acts as a cloud access security broker (CASB)?",
+      "options": [
+        "Microsoft Defender for Identity",
+        "Microsoft Defender for Cloud Apps",
+        "Microsoft Defender for Cloud",
+        "Azure Firewall"
+      ],
+      "answer": [1],
+      "explain": "Defender for Cloud Apps is Microsoft's CASB for SaaS apps. Defender for Identity protects on-premises Active Directory, Defender for Cloud covers posture and workload protection for cloud infrastructure, and Azure Firewall filters network traffic in Azure."
+    },
+    {
+      "id": "sc-900.d3b.q038",
+      "lesson": "sc-900.d3.4.06",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You want to find and control shadow IT with Microsoft Defender for Cloud Apps. Put the steps in order.",
+      "options": [
+        "Feed traffic logs or Defender for Endpoint signals into Cloud Discovery",
+        "Review the discovered apps and their risk scores from the cloud app catalog",
+        "Tag risky apps as unsanctioned",
+        "Block the unsanctioned apps on managed devices"
+      ],
+      "explain": "Cloud Discovery needs data first (logs or Defender for Endpoint integration). Then you assess discovered apps by risk score, mark risky ones unsanctioned, and enforce the decision by blocking them, for example on devices onboarded to Defender for Endpoint."
+    },
+    {
+      "id": "sc-900.d3b.q039",
+      "lesson": "sc-900.d3.4.06",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Defender for Cloud Apps, select Yes if true.",
+      "statements": [
+        { "s": "Cloud Discovery can use firewall and proxy traffic logs to identify cloud apps in use.", "a": true },
+        { "s": "Every discovered app gets a risk score based on information in the cloud app catalog.", "a": true },
+        { "s": "App connectors require installing an agent inside each SaaS application.", "a": false }
+      ],
+      "explain": "Cloud Discovery analyses traffic logs (and Defender for Endpoint data), and the cloud app catalog rates each app's risk. App connectors use the SaaS provider's APIs, so no agent is installed in the app."
+    },
+    {
+      "id": "sc-900.d3b.q040",
+      "lesson": "sc-900.d3.4.07",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Northwind lets contractors use personal, unmanaged laptops to work in Salesforce and SharePoint Online through a browser. Security wants contractors to keep viewing documents but block them downloading any file labelled Confidential, in real time, without blocking access to the apps.",
+      "stem": "What should Northwind use?",
+      "options": [
+        "A Defender for Cloud Apps session policy through Conditional Access App Control",
+        "Cloud Discovery with the app tagged as unsanctioned",
+        "A Microsoft Entra Conditional Access policy that blocks access from unmanaged devices",
+        "An Azure network security group that denies outbound HTTPS"
+      ],
+      "answer": [0],
+      "explain": "Conditional Access App Control routes the session through Defender for Cloud Apps, where a session policy can block downloads in real time while keeping access. Unsanctioning or blocking access stops all use, and an NSG works at the network layer of Azure resources."
+    },
+    {
+      "id": "sc-900.d3b.q041",
+      "lesson": "sc-900.d3.4.06",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE are pillars of the cloud access security broker (CASB) framework used by Microsoft Defender for Cloud Apps? Select THREE.",
+      "options": [
+        "Visibility",
+        "Threat protection",
+        "Compliance",
+        "Key management",
+        "Identity federation"
+      ],
+      "answer": [0, 1, 2],
+      "explain": "The CASB framework has four pillars: visibility, data security, threat protection and compliance. Key management is an Azure Key Vault function, and identity federation is an identity provider capability, not a CASB pillar."
+    },
+    {
+      "id": "sc-900.d3b.q042",
+      "lesson": "sc-900.d3.4.07",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An administrator finds that a third-party OAuth app has been granted broad permissions to read all users' mail through Microsoft Graph and is behaving unusually. Which Defender for Cloud Apps capability is designed to detect and control this?",
+      "options": [
+        "Cloud Discovery",
+        "Conditional Access App Control",
+        "SaaS Security Posture Management (SSPM)",
+        "App governance"
+      ],
+      "answer": [3],
+      "explain": "App governance monitors OAuth-enabled apps, their permissions and behaviour, and can disable risky ones. Cloud Discovery finds apps from traffic, Conditional Access App Control controls user sessions, and SSPM reports SaaS configuration weaknesses."
+    },
+    {
+      "id": "sc-900.d3b.q043",
+      "lesson": "sc-900.d3.4.08",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Where are Microsoft Defender for Identity sensors primarily installed?",
+      "options": [
+        "On domain controllers",
+        "On every user workstation",
+        "On Exchange Online mailboxes",
+        "On Azure virtual network gateways"
+      ],
+      "answer": [0],
+      "explain": "Defender for Identity sensors run on domain controllers, and also on AD FS, AD CS and Microsoft Entra Connect servers, where they read traffic and events. Workstations are covered by Defender for Endpoint, and Exchange Online and Azure gateways do not host the sensor."
+    },
+    {
+      "id": "sc-900.d3b.q044",
+      "lesson": "sc-900.d3.4.08",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Adatum runs a hybrid environment. Its security team suspects an attacker obtained the KRBTGT account hash and is forging Kerberos tickets to access servers across the on-premises domain.",
+      "stem": "Which solution is designed to detect this activity?",
+      "options": [
+        "Microsoft Entra ID Protection",
+        "Microsoft Defender for Identity",
+        "Microsoft Defender for Cloud Apps",
+        "Microsoft Purview Insider Risk Management"
+      ],
+      "answer": [1],
+      "explain": "Forged Kerberos tickets using the KRBTGT key is a Golden Ticket attack against on-premises Active Directory, which Defender for Identity detects. Entra ID Protection evaluates cloud sign-in and user risk, Cloud Apps monitors SaaS, and Insider Risk Management targets risky insider data activity."
+    },
+    {
+      "id": "sc-900.d3b.q045",
+      "lesson": "sc-900.d3.4.08",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Defender for Identity, select Yes if true.",
+      "statements": [
+        { "s": "Defender for Identity can show lateral movement paths an attacker could use to reach sensitive accounts.", "a": true },
+        { "s": "Defender for Identity is managed in the Microsoft Purview portal.", "a": false },
+        { "s": "Defender for Identity can detect reconnaissance such as LDAP enumeration of users and groups.", "a": true }
+      ],
+      "explain": "Lateral movement paths are a key Defender for Identity posture feature, and reconnaissance (user, group and LDAP enumeration) is a detection category. It is managed in the Microsoft Defender portal, not the Purview portal."
+    },
+    {
+      "id": "sc-900.d3b.q046",
+      "lesson": "sc-900.d3.4.08",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO attacks are typically detected by Microsoft Defender for Identity? Select TWO.",
+      "options": [
+        "A malicious macro in an email attachment",
+        "A pass-the-hash attempt against an on-premises server",
+        "A user downloading an unusually large number of files from Box",
+        "DCSync replication requests from a non-domain-controller computer"
+      ],
+      "answer": [1, 3],
+      "explain": "Pass-the-hash (lateral movement) and DCSync (domain dominance) are on-premises AD attacks that Defender for Identity detects. Malicious attachments are handled by Defender for Office 365, and mass download from a SaaS app is a Defender for Cloud Apps anomaly."
+    },
+    {
+      "id": "sc-900.d3b.q047",
+      "lesson": "sc-900.d3.4.09",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which solution continuously discovers devices and software, assesses vulnerabilities and misconfigurations, and prioritizes them by risk?",
+      "options": [
+        "Microsoft Defender Vulnerability Management",
+        "Microsoft Defender for Cloud Apps",
+        "Microsoft Purview Compliance Manager",
+        "Microsoft Entra ID Protection"
+      ],
+      "answer": [0],
+      "explain": "Defender Vulnerability Management provides continuous, sensor-based discovery, assessment and risk-based prioritisation. Cloud Apps covers SaaS usage, Compliance Manager tracks regulatory compliance, and Entra ID Protection assesses identity risk."
+    },
+    {
+      "id": "sc-900.d3b.q048",
+      "lesson": "sc-900.d3.4.09",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Litware has Microsoft Defender for Endpoint Plan 2 on its Windows laptops. It can see vulnerable software in the inventory but now also wants to block known-vulnerable app versions from running and assess browser extensions and digital certificates.",
+      "stem": "What does Litware need?",
+      "options": [
+        "Microsoft Defender for Endpoint Plan 1",
+        "Microsoft Defender for Office 365 Plan 2",
+        "The Microsoft Defender Vulnerability Management add-on",
+        "Microsoft Defender for Cloud Apps app governance"
+      ],
+      "answer": [2],
+      "explain": "Blocking vulnerable applications, browser extension assessment and digital certificate assessment are premium capabilities in the Defender Vulnerability Management add-on (or standalone). Plan 1 has fewer features than Plan 2, and the other products don't assess endpoints."
+    },
+    {
+      "id": "sc-900.d3b.q049",
+      "lesson": "sc-900.d3.4.09",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put the stages of Microsoft Defender Vulnerability Management in order.",
+      "options": [
+        "Discover devices and software",
+        "Assess vulnerabilities and misconfigurations",
+        "Prioritize by risk and threat context",
+        "Remediate and track progress"
+      ],
+      "explain": "You can only assess what you have discovered, then rank weaknesses by risk (for example, whether they are exploited in the wild), and finally remediate through remediation requests and track progress."
+    },
+    {
+      "id": "sc-900.d3b.q050",
+      "lesson": "sc-900.d3.4.09",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "In advanced hunting, you want to see how many devices are affected by each critical vulnerability. Complete the query.",
+      "code": "DeviceTvmSoftwareVulnerabilities\n| where VulnerabilitySeverityLevel == \"Critical\"\n| ____ AffectedDevices = dcount(DeviceName) by CveId\n| sort by AffectedDevices desc",
+      "options": [
+        "summarize",
+        "where",
+        "project",
+        "take"
+      ],
+      "answer": [0],
+      "explain": "summarize with dcount() counts distinct devices per CVE. where filters rows, project selects columns, and take returns a number of rows; none of them support an aggregation with by."
+    },
+    {
+      "id": "sc-900.d3b.q051",
+      "lesson": "sc-900.d3.4.10",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In the Microsoft Defender portal, which feature provides reports from Microsoft security researchers on active threat actors and campaigns, including your impacted assets and recommended mitigations?",
+      "options": [
+        "Activity explorer",
+        "Microsoft Secure Score",
+        "Action center",
+        "Threat analytics"
+      ],
+      "answer": [3],
+      "explain": "Threat analytics delivers researcher-written threat reports with related incidents, impacted assets and recommended actions. Activity explorer is a Purview data-activity tool, Secure Score measures posture, and the Action center tracks remediation actions."
+    },
+    {
+      "id": "sc-900.d3b.q052",
+      "lesson": "sc-900.d3.4.10",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A threat report names an actor \"Storm-1234\". In Microsoft's threat actor naming taxonomy, what does the Storm- prefix with a number indicate?",
+      "options": [
+        "An emerging or developing threat group",
+        "A Russia-based nation-state actor",
+        "A financially motivated ransomware group",
+        "A private-sector offensive actor"
+      ],
+      "answer": [0],
+      "explain": "Storm- followed by a number marks a newly identified or developing group that hasn't yet been given a full name. Russian state actors use Blizzard, financially motivated groups use Tempest, and private-sector offensive actors use Tsunami."
+    },
+    {
+      "id": "sc-900.d3b.q053",
+      "lesson": "sc-900.d3.4.10",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO types of information does a threat analytics report in the Microsoft Defender portal include? Select TWO.",
+      "options": [
+        "Your organization's compliance score for ISO 27001",
+        "Assets in your organization impacted by the threat",
+        "Recommended actions and mitigations",
+        "Retention labels applied to affected documents"
+      ],
+      "answer": [1, 2],
+      "explain": "Threat analytics reports combine Microsoft research with your own data: related incidents, impacted assets, exposure and recommended mitigations. Compliance scores come from Compliance Manager and retention labels from Microsoft Purview records management."
+    },
+    {
+      "id": "sc-900.d3b.q054",
+      "lesson": "sc-900.d3.4.10",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft threat intelligence, select Yes if true.",
+      "statements": [
+        { "s": "Threat intelligence indicators such as IPs, domains and file hashes can be matched against logs in Microsoft Sentinel.", "a": true },
+        { "s": "Threat analytics reports describe threats in general only and never show which of your own assets are affected.", "a": false },
+        { "s": "Threat intelligence capabilities are available to analysts inside the Microsoft Defender portal.", "a": true }
+      ],
+      "explain": "Sentinel can import TI indicators and match them with threat intelligence analytics rules. Threat analytics reports show impacted assets and related incidents in your environment. TI, including the converged Defender Threat Intelligence experience, is available in the Defender portal."
+    },
+    {
+      "id": "sc-900.d3b.q055",
+      "lesson": "sc-900.d3.4.11",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which portal does a SOC use as the single place to manage Microsoft Defender XDR incidents, advanced hunting and Microsoft Sentinel?",
+      "options": [
+        "Microsoft Purview portal",
+        "Microsoft Entra admin center",
+        "Microsoft Intune admin center",
+        "Microsoft Defender portal"
+      ],
+      "answer": [3],
+      "explain": "The Microsoft Defender portal (security.microsoft.com) unifies Defender XDR and Sentinel. The Purview portal handles compliance and data protection, the Entra admin center manages identities, and the Intune admin center manages devices and apps."
+    },
+    {
+      "id": "sc-900.d3b.q056",
+      "lesson": "sc-900.d3.4.11",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A CISO asks for one number in the Microsoft Defender portal that reflects the organization's security posture across identities, devices and apps, with a list of improvement actions. What should you show?",
+      "options": [
+        "Compliance score",
+        "Microsoft Secure Score",
+        "Exposure score",
+        "Incident severity"
+      ],
+      "answer": [1],
+      "explain": "Microsoft Secure Score measures security posture with recommended improvement actions across workloads. Compliance score is a Compliance Manager metric in Purview, exposure score is device-focused vulnerability exposure, and incident severity rates individual incidents."
+    },
+    {
+      "id": "sc-900.d3b.q057",
+      "lesson": "sc-900.d3.4.11",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO tasks would you perform in the Microsoft Defender portal rather than the Microsoft Purview portal? Select TWO.",
+      "options": [
+        "Run advanced hunting queries across endpoint and email data",
+        "Publish sensitivity labels to users",
+        "Review threat analytics reports",
+        "Create retention labels for records management"
+      ],
+      "answer": [0, 2],
+      "explain": "Advanced hunting and threat analytics are security operations features in the Defender portal. Sensitivity labels and retention labels are data protection and governance features managed in the Microsoft Purview portal."
+    }
+  ]
+}

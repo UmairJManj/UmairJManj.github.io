@@ -1,0 +1,1257 @@
+{
+ "exam": "thm-ai1",
+ "domain": "d3",
+ "lessons": [
+  {
+   "id": "thm-ai1.d3.1.01",
+   "objective": "d3.1",
+   "seq": 1,
+   "title": "Triage models with metadata and model cards",
+   "short": "Before anyone loads a third-party model, an assessor triages it from the outside: the model card, file list, file formats, licence, base model, commit history and publisher. Metadata decides the risk tier and how the model must be handled, not the download count.",
+   "deep": "**Triage** is the first pass over a candidate model, done without loading it. On a hub such as **Hugging Face**, each repository has a **model card** (the README, with a YAML metadata block for things like `license`, `base_model`, `datasets` and `pipeline_tag`) and a file list.\n\nWhat an assessor reads:\n- **File formats**: `.safetensors` is weights-only data; `.bin`, `.pt`, `.pth`, `.ckpt` and `.pkl` are usually **pickle-based** and can run code when loaded, so they move the model into a higher risk tier.\n- **Extra code**: custom Python modelling files, loading scripts or a config that asks for remote code all run inside your trust boundary.\n- **Lineage**: the declared base model, training data and fine-tuning method. Missing or vague lineage is a finding.\n- **History**: account age, number of commits, who pushed the latest weights and when.\n- **Hub signals**: the Hub's own scan results and the list of imports shown next to pickle files.\n\nThe output is a risk rating per model (for example low: SafeTensors from a verified organisation with a pinned revision; high: fresh account, pickle weights, custom code, copied card) and a handling decision: approve, analyse in a sandbox, or reject.",
+   "terms": [
+    {
+     "t": "Model card",
+     "d": "Documentation for a model (README plus YAML metadata) describing purpose, lineage, data, licence and limits."
+    },
+    {
+     "t": "Triage",
+     "d": "A quick, no-execution risk assessment that decides how deeply an artefact must be analysed."
+    },
+    {
+     "t": "Pickle-based format",
+     "d": "Model files such as .bin/.pt/.ckpt/.pkl that use Python pickle and can execute code on load."
+    }
+   ],
+   "trap": "Popularity is not a safety signal: a high download count or many likes does not prove the files are benign or that the publisher is who they claim.",
+   "example": "A team shortlists three summarisation models. One ships only `model.safetensors` from a long-standing organisation; another ships `pytorch_model.bin` plus a custom `modeling_*.py` from a two-week-old account, so it goes to sandbox analysis first.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Model card",
+     "File formats",
+     "Extra code",
+     "History",
+     "Risk tier"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.1.02",
+   "objective": "d3.1",
+   "seq": 2,
+   "title": "Hub red flags: look-alikes, inflation and rug pulls",
+   "short": "Attackers make bad models look trustworthy. Watch for near-identical repository or organisation names, copied model cards, fresh accounts, and trust signals that were built up on purpose. ATLAS calls these AI Supply Chain Reputation Inflation (AML.T0111) and AI Supply Chain Rug Pull (AML.T0109).",
+   "deep": "Typosquatting reaches model hubs too. A malicious repository can sit one letter away from a famous one, reuse its model card word for word and still work almost normally. Checks that catch it:\n- Compare the **namespace** character by character with the official publisher's page, and prefer organisations the hub marks as verified.\n- Look at **account age**, the commit history and whether the weights were replaced recently.\n- Treat a copied card that points at someone else's paper or benchmarks as a red flag, not as proof.\n\nMITRE ATLAS describes two techniques that defeat a one-time review:\n- **AI Supply Chain Reputation Inflation (AML.T0111)**: adversaries build or borrow credible-looking signals (established accounts, real downloads, stars, forks, inclusion in other projects) so that a malicious model, dataset, package or MCP server passes human and automated trust checks.\n- **AI Supply Chain Rug Pull (AML.T0109)**: publish something legitimate, wait for adoption, then push a malicious update. Scrutiny is highest at first adoption, so the later update slips through.\n\nThe defence for both is to pin exact versions or commits, re-review every update, and never let a trusted name auto-upgrade into production.",
+   "terms": [
+    {
+     "t": "Typosquatting",
+     "d": "Publishing under a name that is visually close to a trusted one so users pull the wrong artefact."
+    },
+    {
+     "t": "AML.T0111",
+     "d": "AI Supply Chain Reputation Inflation: manufacturing or leveraging credible trust signals to drive adoption."
+    },
+    {
+     "t": "AML.T0109",
+     "d": "AI Supply Chain Rug Pull: gaining adoption with a benign component, then shipping a malicious update."
+    }
+   ],
+   "trap": "A rug pull defeats 'we reviewed it when we adopted it'; the exam answer is pinning plus re-review of updates, not a one-time publisher check.",
+   "example": "A popular MCP server with a year of clean releases ships version 2.4 with an unexplained network call. Because the team pinned 2.3 and reviews every bump, the update is caught in review.",
+   "diagram": null
+  },
+  {
+   "id": "thm-ai1.d3.1.03",
+   "objective": "d3.1",
+   "seq": 3,
+   "title": "Provenance and publisher trust",
+   "short": "Provenance is verifiable evidence of where an artefact came from and how it was produced: a named publisher, an exact version or commit, file hashes and, ideally, a signature. A repository name on a hub is not provenance, and neither is a download count.",
+   "deep": "Pin weights the way you pin packages. A trustworthy record for a model answers: **who** published it (an identity you can verify), **which exact revision** you used (a commit hash, not a moving branch like `main`), **what bytes** you received (a SHA-256 per file) and **how** it was built (training data, base model, build pipeline).\n\nWhy a hub name is not enough: names can be squatted, organisations impersonated, and a branch can be rewritten after you reviewed it. A pinned commit plus recorded hashes means the same review applies to the same bytes every time.\n\nLineage matters too. **A fine-tune inherits its parent.** Whatever was planted in a base model (a backdoor, poisoned facts) survives fine-tuning and is harder to see afterwards, so provenance has to cover the base model and any adapters, not only your own training run.\n\nStronger evidence ranks roughly: verified signature from the expected identity > hashes published by the publisher out-of-band > hub commit history > model card claims > popularity.",
+   "terms": [
+    {
+     "t": "Provenance",
+     "d": "Verifiable record of an artefact's origin, version and production process."
+    },
+    {
+     "t": "Revision pinning",
+     "d": "Referencing an exact immutable commit instead of a branch or tag that can move."
+    },
+    {
+     "t": "Lineage",
+     "d": "The chain of base models, adapters and datasets a model was derived from."
+    }
+   ],
+   "trap": "If an option says 'the model is from a well-known repository name, so provenance is established', it is wrong: provenance needs verifiable identity, version and integrity evidence.",
+   "example": "An assessor finds production loading `org/model` at `main`. The report recommends pinning the reviewed commit hash and storing SHA-256 digests in the deployment manifest.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Signature from expected identity",
+     "Publisher-supplied hashes",
+     "Pinned commit history",
+     "Model card claims",
+     "Popularity"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.1.04",
+   "objective": "d3.1",
+   "seq": 4,
+   "title": "Where supply chain risk sits in OWASP and ATLAS",
+   "short": "OWASP LLM03:2025 Supply Chain covers third-party models, data, adapters and packages; LLM04:2025 Data and Model Poisoning covers tampered training data and weights. ASI04 extends this to what agents load at runtime. In MITRE ATLAS the entry point is AI Supply Chain Compromise (AML.T0010).",
+   "deep": "**OWASP Top 10 for LLM Applications (2025)**\n- **LLM03:2025 Supply Chain**: vulnerable or outdated packages, weak model provenance, vulnerable pre-trained models, malicious **LoRA adapters**, risky model merge or conversion services, on-device model tampering, licensing and unclear terms. Prevention themes: vet suppliers, verify signatures and hashes, keep a signed **AI BOM** (OWASP points to CycloneDX), red-team third-party models.\n- **LLM04:2025 Data and Model Poisoning**: manipulation during pre-training, fine-tuning or embedding, including **backdoors** that stay dormant until a trigger, and malicious pickled models.\n\n**OWASP Top 10 for Agentic Applications**: **ASI04 Agentic Supply Chain Vulnerabilities** is about components an agent pulls in while it runs: MCP servers, plugins, tools and external agents.\n\n**MITRE ATLAS**: **AML.T0010 AI Supply Chain Compromise** (Initial Access) with sub-techniques including **.001 AI Software** (frameworks and their dependency chains), **.003 Model** (downloaded models used as-is or as a fine-tuning base) and **.004 Container Registry** (a pushed image overwrites an existing name or tag that pipelines then pull).",
+   "terms": [
+    {
+     "t": "LLM03:2025",
+     "d": "OWASP Supply Chain risk for LLM apps: third-party models, data, adapters, packages and services."
+    },
+    {
+     "t": "LLM04:2025",
+     "d": "OWASP Data and Model Poisoning: tampered data or weights, including backdoors."
+    },
+    {
+     "t": "ASI04",
+     "d": "OWASP Agentic Supply Chain Vulnerabilities: compromised MCP servers, plugins, tools or agents loaded at runtime."
+    },
+    {
+     "t": "AML.T0010",
+     "d": "ATLAS AI Supply Chain Compromise, an Initial Access technique."
+    }
+   ],
+   "trap": "Do not file a backdoored model only under LLM03: tampered weights and triggers are the core of LLM04, while LLM03 covers the route by which it arrived.",
+   "example": "An overwritten `inference:latest` image in an internal registry carries a modified model. The assessor maps it to AML.T0010.004 Container Registry and LLM03.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Item",
+     "Covers"
+    ],
+    "rows": [
+     [
+      "LLM03:2025",
+      "Third-party components"
+     ],
+     [
+      "LLM04:2025",
+      "Poisoned data/weights"
+     ],
+     [
+      "ASI04",
+      "Runtime agent parts"
+     ],
+     [
+      "AML.T0010",
+      "Supply chain entry"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.1.05",
+   "objective": "d3.1",
+   "seq": 5,
+   "title": "ATLAS supply chain case studies",
+   "short": "MITRE ATLAS documents real supply chain cases: a hijacked PyTorch dependency (CS0015), a poisoned LLM on a look-alike repo (CS0019), hallucinated package names (CS0022), exposed Ray clusters (CS0023), fake Hugging Face organisations (CS0027) and malware-laden models that evaded scanning (CS0031).",
+   "deep": "Know each case at headline level and the lesson it teaches:\n- **AML.CS0015 Compromised PyTorch Dependency Chain** (Dec 2022): a malicious `torchtriton` package on PyPI shared a name with a PyTorch-nightly dependency, so pip installed it and it stole system data. Lesson: **dependency confusion**; use a single trusted index and pinned hashes.\n- **AML.CS0019 PoisonGPT**: researchers edited an open LLM's weights to state a false fact and uploaded it under a repository name one letter off the original. Lesson: provenance and look-alike names.\n- **AML.CS0022 ChatGPT Package Hallucination**: LLMs suggest packages that do not exist; an attacker can register those names. Lesson: verify every suggested dependency exists and is the real project.\n- **AML.CS0023 ShadowRay**: Ray clusters exposed without authentication had their Jobs API abused, leading to stolen credentials, models and compute. Lesson: MLOps infrastructure is supply chain too.\n- **AML.CS0027 Organization Confusion on Hugging Face**: fake organisation accounts impersonated real companies; employees joined and uploaded models that could be replaced with malicious ones.\n- **AML.CS0031 Malicious Models on Hugging Face**: pickle models that opened a reverse shell and were deliberately corrupted so the scanner missed them. Lesson: scanners are a layer, not a guarantee.",
+   "terms": [
+    {
+     "t": "Dependency confusion",
+     "d": "A public package with the same name as an internal or expected dependency gets installed instead."
+    },
+    {
+     "t": "Package hallucination",
+     "d": "An LLM recommends a package name that does not exist, which an attacker can then register."
+    },
+    {
+     "t": "ShadowRay",
+     "d": "Exploitation of internet-exposed, unauthenticated Ray clusters (AML.CS0023)."
+    }
+   ],
+   "trap": "PoisonGPT changed model weights (poisoning), not the file format; do not answer 'pickle code execution' for CS0019.",
+   "example": "A threat report asks which ATLAS case best shows why scan results alone are not enough. The answer is AML.CS0031, where corrupted pickle files evaded the hub's scanner.",
+   "diagram": null
+  },
+  {
+   "id": "thm-ai1.d3.2.01",
+   "objective": "d3.2",
+   "seq": 1,
+   "title": "Pickle-based model files can run code",
+   "short": "Many PyTorch-era model files (.bin, .pt, .pth, .ckpt, .pkl) are built on Python pickle, and loading a pickle can execute code chosen by whoever made the file. Treat any untrusted pickle model as untrusted software: scan it, and only ever open it in a sandbox.",
+   "deep": "**Serialisation** turns objects into bytes; **deserialisation** turns them back. Python's **pickle** format is general-purpose, and the Python documentation itself warns never to unpickle data from an untrusted source because loading can run arbitrary code. Many model checkpoints are pickles (often a zip archive containing a `data.pkl`), so **loading the model is the attack**: no inference call is needed.\n\nWhy it is dangerous for defenders:\n- The model may still work perfectly, so functional tests show nothing.\n- The code runs with the permissions of whoever loads it: a data scientist's laptop, a CI runner, a GPU node holding cloud credentials.\n\nATLAS names this: **Embed Malware (AML.T0018.002)** for putting code into a model file and **User Execution: Unsafe AI Artifacts (AML.T0011.000)** for the victim loading it.\n\nDefensive rules:\n- Prefer **SafeTensors** weights; convert trusted checkpoints once, in isolation.\n- Never load an untrusted pickle on a workstation or production host; use a **sandbox** (disposable VM or container, no network, no secrets mounted).\n- Scan statically first (picklescan, fickling) and read the hub's import listing.",
+   "terms": [
+    {
+     "t": "Deserialisation",
+     "d": "Reconstructing objects from stored bytes; for pickle this can execute code."
+    },
+    {
+     "t": "AML.T0018.002",
+     "d": "ATLAS Embed Malware: adding malicious code to an AI model file."
+    },
+    {
+     "t": "AML.T0011.000",
+     "d": "ATLAS User Execution: Unsafe AI Artifacts, where a victim loads a harmful artefact."
+    },
+    {
+     "t": "Sandbox",
+     "d": "An isolated, disposable environment with no network or secrets, used to handle untrusted files."
+    }
+   ],
+   "trap": "Running the model on test prompts is not a safe check for pickle malware: the code runs at load time, before any prompt.",
+   "example": "An analyst receives `pytorch_model.bin` from an unknown repository. They copy it into an offline VM with no credentials, scan it there, and record the hash before deciding anything.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Download",
+     "Hash",
+     "Static scan",
+     "Sandbox only",
+     "Convert/Reject"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.2.02",
+   "objective": "d3.2",
+   "seq": 2,
+   "title": "Scanning model files: picklescan, fickling, Hub imports",
+   "short": "Static scanners inspect a pickle without loading it. picklescan flags dangerous imports and returns exit code 0 (clean), 1 (malicious found) or 2 (scan failed). fickling's --check-safety rates a pickle's safety. The Hugging Face Hub lists each pickle's imports and highlights suspicious ones.",
+   "deep": "**picklescan** (`pip install picklescan`) scans local files and folders with `--path`, a direct file link with `--url`, or a whole Hub repo with `--huggingface <owner/repo>`. It prints the globals each pickle imports and a summary (scanned files, infected files, dangerous globals). Exit codes follow ClamAV: **0** no malware found, **1** malware found, **2** scan failed. In CI, a non-zero code should fail the job, and **2 must not be treated as clean**.\n\n**fickling** (Trail of Bits) analyses pickles statically. `fickling --check-safety -p model.pkl` gives a safety verdict, and the library can hook loading so that unsafe files raise an error.\n\n**Hugging Face Hub** scans pushed files with ClamAV and a **pickle import scan**, showing the list of imports next to each pickle file and highlighting suspicious ones. Hugging Face says this is best-effort, not a guarantee.\n\nLimits: allow-lists and deny-lists can be evaded, and ATLAS **AML.CS0031** shows deliberately corrupted files slipping past a scanner. ATLAS **M0016 Vulnerability Scanning** says scanners should handle files that cannot be fully deserialised. Scan in a sandbox and prefer formats that cannot carry code.",
+   "terms": [
+    {
+     "t": "picklescan",
+     "d": "Scanner for suspicious imports in pickle files; exit 0 clean, 1 malicious, 2 error."
+    },
+    {
+     "t": "fickling",
+     "d": "Trail of Bits pickle analyser; --check-safety gives a safety verdict."
+    },
+    {
+     "t": "Pickle import scan",
+     "d": "Hugging Face Hub check that lists and highlights imports referenced by pickle files."
+    }
+   ],
+   "trap": "Exit code 2 from picklescan means the scan failed, not that the file is clean; a pipeline that only blocks on 1 has a gap.",
+   "example": "A CI step runs `picklescan --path models/` and fails the build on any non-zero code, so a corrupted file that cannot be parsed is quarantined instead of promoted.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Exit code",
+     "Meaning",
+     "CI action"
+    ],
+    "rows": [
+     [
+      "0",
+      "No malware found",
+      "Continue"
+     ],
+     [
+      "1",
+      "Malware found",
+      "Block + quarantine"
+     ],
+     [
+      "2",
+      "Scan failed",
+      "Block + investigate"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.2.03",
+   "objective": "d3.2",
+   "seq": 3,
+   "title": "Tampered configs, adapters and remote code",
+   "short": "Model weights are not the only thing you download. Config files, tokenizers, LoRA adapters, custom modelling code, loading scripts and MCP servers all run inside your trust boundary. Review them like dependencies and diff them against the official source.",
+   "deep": "A model repository is a bundle. Static review covers more than the weights:\n- **config.json / generation_config.json**: an `auto_map` or similar entry pointing at custom code, an unexpected architecture, changed vocabulary or special tokens.\n- **Custom code**: `modeling_*.py`, `tokenization_*.py`, `handler.py` or notebooks. In Hugging Face Transformers, custom code only runs when the caller sets `trust_remote_code=True`; the default is off, and it should stay off unless that code has been reviewed and pinned to a commit.\n- **Tokenizer and chat templates**: they shape what the model sees, so an edited template can quietly alter behaviour (ATLAS lists templates and tokenizer metadata among unsafe artefacts).\n- **LoRA adapters and merges**: an adapter changes the base model's behaviour. OWASP LLM03 lists malicious adapters and risky merge services.\n- **Agent components**: MCP servers and plugins an agent loads at runtime (ASI04).\n\nMethod: compare every file against the official repository by hash, diff configs, read any code, and record anything that would execute at load time.",
+   "terms": [
+    {
+     "t": "trust_remote_code",
+     "d": "Transformers flag that allows custom Python from a repo to run; off by default."
+    },
+    {
+     "t": "LoRA adapter",
+     "d": "A small set of add-on weights that changes a base model's behaviour."
+    },
+    {
+     "t": "Trust boundary",
+     "d": "The line inside which components are trusted to run with your privileges."
+    }
+   ],
+   "trap": "Setting `trust_remote_code=True` to 'make the model load' is a finding, not a fix, unless the remote code was reviewed and pinned.",
+   "example": "A fork of a popular model has identical weights but a new `tokenization_custom.py` and an `auto_map` entry. The hashes match on weights, so the assessor focuses on the added code.",
+   "diagram": null
+  },
+  {
+   "id": "thm-ai1.d3.2.04",
+   "objective": "d3.2",
+   "seq": 4,
+   "title": "Typosquatting, dependency confusion and hallucinated packages",
+   "short": "Python dependencies are a major AI attack path. Typosquatting uses look-alike names, dependency confusion makes the installer choose a public package over the one you meant, and package hallucination exploits LLM-suggested names that do not exist. ATLAS maps these to AML.T0010.001 and AML.T0011.001.",
+   "deep": "AI projects pull in large dependency trees (frameworks, tokenizers, CUDA wheels, agent toolkits). Three name-based attacks:\n- **Typosquatting**: a package or repository named a keystroke away from a real one.\n- **Dependency confusion**: the installer can see more than one index (for example an internal index plus PyPI) and picks a public package that shares a name with the intended one. **AML.CS0015** (`torchtriton`) is the textbook AI case.\n- **Package hallucination**: an LLM or coding assistant recommends a package that does not exist; an attacker registers the name (**AML.CS0022**).\n\nATLAS: **AI Supply Chain Compromise: AI Software (AML.T0010.001)** covers the poisoned dependency route; **User Execution: Malicious Package (AML.T0011.001)** covers the victim importing it. Malicious packages often work as advertised.\n\nReview checklist for `requirements.txt` / lock files:\n- Every package is **pinned** (`==`) and ideally **hash-pinned**.\n- Names are checked against the real project; recently created packages get extra scrutiny.\n- Installs use one trusted index (or a proxy that resolves internal names first); avoid `--extra-index-url` for private names.\n- Any dependency suggested by an AI assistant is verified to exist and to be the intended project.",
+   "terms": [
+    {
+     "t": "Dependency confusion",
+     "d": "Installer resolves a public package that shares a name with an intended or internal one."
+    },
+    {
+     "t": "AML.T0010.001",
+     "d": "ATLAS AI Supply Chain Compromise: AI Software, such as frameworks and their dependency chains."
+    },
+    {
+     "t": "AML.T0011.001",
+     "d": "ATLAS User Execution: Malicious Package, where a victim imports a harmful package."
+    }
+   ],
+   "trap": "Pinning a version alone does not stop a different index from serving a same-named package; hash pinning and a single trusted index do.",
+   "example": "A coding assistant suggests `pip install fastllm-guard`. The reviewer finds the name was registered last week by an unknown account and blocks it.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Attack",
+     "Trick",
+     "Control"
+    ],
+    "rows": [
+     [
+      "Typosquatting",
+      "Look-alike name",
+      "Name review, allow-list"
+     ],
+     [
+      "Dep. confusion",
+      "Wrong index wins",
+      "Single index, hashes"
+     ],
+     [
+      "Hallucination",
+      "Non-existent name",
+      "Verify it exists"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.2.05",
+   "objective": "d3.2",
+   "seq": 5,
+   "title": "Hashes and pinned dependencies",
+   "short": "A cryptographic hash such as SHA-256 is a fingerprint of a file: change one byte and the digest changes. Verifying digests against a trusted record (ATLAS M0014 Verify AI Artifacts) proves you have the bytes you reviewed. pip's hash-checking mode does the same for packages.",
+   "deep": "**Integrity** means the artefact has not changed since it was approved. Hashes give integrity, not identity: a hash proves the file matches a reference, so the **reference** must come from a trusted channel (your own approval record, a signed manifest, or the publisher out-of-band). A hash shown next to the download by the same compromised site proves little.\n\nCommon defensive patterns:\n- `sha256sum -c model.sha256` checks files against a list of expected digests.\n- In Python, read the file in chunks into `hashlib.sha256()` and compare `hexdigest()` to the approved value, then refuse to load on mismatch.\n- Pin Hub downloads to an exact commit (`revision=\"<commit sha>\"` in `hf_hub_download`).\n- For packages, write `name==version --hash=sha256:<digest>` in `requirements.txt` and install with `pip install --require-hashes -r requirements.txt`; any package without a matching hash is rejected.\n\nATLAS **M0014 Verify AI Artifacts** is exactly this: check the cryptographic checksum of every AI artefact. Signatures (lesson on Sigstore) add **who** signed it on top of **what** the bytes are.",
+   "terms": [
+    {
+     "t": "SHA-256",
+     "d": "A cryptographic hash function producing a 256-bit digest used to detect any change to a file."
+    },
+    {
+     "t": "AML.M0014",
+     "d": "ATLAS Verify AI Artifacts: verify cryptographic checksums of all AI artefacts."
+    },
+    {
+     "t": "--require-hashes",
+     "d": "pip option that rejects any requirement not pinned with a matching hash."
+    }
+   ],
+   "trap": "A matching hash does not prove a file is safe or who made it, only that it equals the reference; a malicious file you approved by mistake will still match.",
+   "example": "The deployment job stores the approved SHA-256 of `model.safetensors`. A registry push replaces the file; the job's hash check fails and the rollout stops.",
+   "diagram": null
+  },
+  {
+   "id": "thm-ai1.d3.2.06",
+   "objective": "d3.2",
+   "seq": 6,
+   "title": "Pickle vs SafeTensors vs ONNX",
+   "short": "Pickle-based checkpoints can carry code that runs on load. SafeTensors stores only tensors plus a JSON header and was designed so loading cannot run code. ONNX stores a computation graph and weights in protobuf; it does not use pickle, but its graph is still logic that must be reviewed.",
+   "deep": "**Pickle (.pkl, .bin, .pt, .pth, .ckpt)**: Python's general object format. Flexible, widely used by older PyTorch checkpoints, and unsafe to load from untrusted sources because loading can execute code. Needs scanning and sandboxing.\n\n**SafeTensors (.safetensors)**: Hugging Face's weights-only format. A small JSON header describes each tensor, followed by raw bytes. Loading is parsing data, not running code, and it supports fast, lazy (memory-mapped) loading. It holds **weights only**, so model architecture code lives elsewhere and still needs review.\n\n**ONNX (.onnx)**: an open, framework-neutral format that stores the model **graph** (operators and connections) and weights in **protobuf**, run by engines such as ONNX Runtime. It avoids pickle, but the graph itself defines behaviour, so a tampered graph can change outputs, and custom operators or external data files widen what must be checked.\n\nRule of thumb for assessors: SafeTensors removes the load-time code risk, not the backdoor risk. A poisoned model is just as poisoned in any format.",
+   "terms": [
+    {
+     "t": "SafeTensors",
+     "d": "Weights-only format: JSON header plus raw tensor bytes, designed so loading cannot execute code."
+    },
+    {
+     "t": "ONNX",
+     "d": "Open Neural Network Exchange: protobuf format storing a model graph and weights."
+    },
+    {
+     "t": "Protobuf",
+     "d": "Protocol Buffers, a structured binary data format; ONNX models use it."
+    }
+   ],
+   "trap": "Converting a model to SafeTensors does not remove a backdoor in the weights; it only removes the load-time code execution risk.",
+   "example": "A vendor ships both `model.onnx` and `model.ckpt`. The team deploys the ONNX file, still checks its graph and hash, and keeps the checkpoint only inside the sandbox.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "",
+     "Pickle",
+     "SafeTensors",
+     "ONNX"
+    ],
+    "rows": [
+     [
+      "Encoding",
+      "Python pickle",
+      "JSON hdr + bytes",
+      "Protobuf"
+     ],
+     [
+      "Code on load",
+      "Possible",
+      "No",
+      "No Python pickle"
+     ],
+     [
+      "Holds graph",
+      "Objects",
+      "No (weights)",
+      "Yes"
+     ],
+     [
+      "Backdoor risk",
+      "Yes",
+      "Yes",
+      "Yes"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.2.07",
+   "objective": "d3.2",
+   "seq": 7,
+   "title": "Inside a SafeTensors file",
+   "short": "A .safetensors file is: 8 bytes giving the header size as an unsigned little-endian 64-bit integer, then a UTF-8 JSON header, then the raw tensor bytes. Each header entry lists dtype, shape and data_offsets; an optional __metadata__ map holds strings only.",
+   "deep": "Layout:\n- **First 8 bytes**: `N`, the header length, an **unsigned 64-bit little-endian** integer.\n- **Next N bytes**: a **JSON** header in UTF-8 (must start with `{`, may be padded with spaces). Each key is a tensor name mapping to `{\"dtype\": \"F16\", \"shape\": [1, 16, 256], \"data_offsets\": [BEGIN, END]}`. Offsets are relative to the start of the byte buffer, and `END - BEGIN` is the tensor's byte size.\n- **`__metadata__`**: an optional special key holding a free-form **string-to-string** map. Arbitrary nested JSON is not allowed.\n- **Rest of the file**: the byte buffer, which must be fully indexed with no holes (this blocks polyglot files).\n\nSafety design choices: the library caps the header at **100MB** to stop huge-JSON attacks, duplicate keys are disallowed, and there is no code path that executes anything.\n\nAPI: `save_file(tensors, \"model.safetensors\", metadata={...})` from `safetensors.torch` writes; `safe_open(path, framework=\"pt\", device=\"cpu\")` opens lazily so you can list `keys()`, read `metadata()` and call `get_tensor(name)`; `load_file(path)` loads everything into a dict.\n\nAssessor tip: you can read the header without loading tensors, which makes dtype, shape and metadata review cheap.",
+   "terms": [
+    {
+     "t": "Header length",
+     "d": "First 8 bytes of a SafeTensors file: unsigned little-endian 64-bit size of the JSON header."
+    },
+    {
+     "t": "data_offsets",
+     "d": "[BEGIN, END] byte positions of a tensor relative to the start of the byte buffer."
+    },
+    {
+     "t": "__metadata__",
+     "d": "Optional header key holding a string-to-string map; values must be strings."
+    },
+    {
+     "t": "safe_open",
+     "d": "safetensors API for lazy, per-tensor reading of a file."
+    }
+   ],
+   "trap": "data_offsets are relative to the byte buffer, not absolute file positions, and __metadata__ values cannot be nested JSON objects.",
+   "example": "Reviewing a model, an assessor opens it with `safe_open`, lists tensor names and shapes, and checks that `__metadata__` only carries expected strings like the format tag.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "8 bytes: header size N (u64 LE)",
+     "N bytes: JSON header",
+     "Tensor byte buffer"
+    ]
+   }
+  }
+ ],
+ "questions": [
+  {
+   "id": "thm-ai1.d3.q001",
+   "lesson": "thm-ai1.d3.1.01",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "During triage of a candidate model on Hugging Face, which file in the repository most directly raises the model's risk tier before anything is loaded?",
+   "options": [
+    "pytorch_model.bin",
+    "model.safetensors",
+    "tokenizer_config.json",
+    "README.md with a YAML metadata block"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "pytorch_model.bin is normally a pickle-based checkpoint, which can execute code when loaded, so it needs scanning and a sandbox. SafeTensors holds weights only. A tokenizer config and the model card are data to review, not formats that run code on load."
+  },
+  {
+   "id": "thm-ai1.d3.q002",
+   "lesson": "thm-ai1.d3.1.01",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An analyst must rank five candidate models without executing any of them. Which approach fits a triage pass?",
+   "options": [
+    "Load each model and compare benchmark scores on a shared prompt set",
+    "Review model cards, file formats, custom code, lineage and commit history to assign a risk tier",
+    "Rank them by download count and likes on the hub",
+    "Convert all five to SafeTensors on a workstation and keep the ones that convert"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Triage is a no-execution review of metadata, formats, extra code, lineage and history. Loading or converting untrusted pickles on a workstation executes them. Popularity is not a safety signal."
+  },
+  {
+   "id": "thm-ai1.d3.q003",
+   "lesson": "thm-ai1.d3.1.01",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if true.",
+   "statements": [
+    {
+     "s": "A model card's YAML metadata can declare fields such as license and base_model that help an assessor judge lineage.",
+     "a": true
+    },
+    {
+     "s": "A high download count on a hub is reliable evidence that a model's files are free of malicious code.",
+     "a": false
+    },
+    {
+     "s": "A repository that adds custom Python modelling files should be rated higher risk than one that ships only SafeTensors weights.",
+     "a": true
+    }
+   ],
+   "explain": "Model-card metadata records licence and base model, which supports lineage review. Downloads can be inflated and say nothing about file safety. Custom code runs inside your trust boundary, so it raises risk compared with weights-only data."
+  },
+  {
+   "id": "thm-ai1.d3.q004",
+   "lesson": "thm-ai1.d3.1.01",
+   "objective": "d3.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A product team asks for a risk ranking of four vision models before a proof of concept. The assessor has one sandbox VM available today and must decide which artefact to analyse first.",
+   "stem": "Which repository should the assessor send for sandboxed analysis first?",
+   "options": [
+    "Repo A: model.safetensors only, verified organisation, 40 commits over two years",
+    "Repo B: model.safetensors plus config.json, organisation account with a pinned release tag",
+    "Repo D: model.ckpt plus a custom loading script, account created 10 days ago, card copied from another repo",
+    "Repo C: ONNX export with published SHA-256 digests on the publisher's own site"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Repo D stacks the red flags: a pickle-based checkpoint, code that runs at load time, a brand-new account and a copied card. The other repos have weights-only or non-pickle formats with history or out-of-band integrity data."
+  },
+  {
+   "id": "thm-ai1.d3.q005",
+   "lesson": "thm-ai1.d3.1.02",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which observations about a model repository are red flags for typosquatting or impersonation? Select TWO.",
+   "options": [
+    "The namespace differs from the official publisher's by one character",
+    "The repository uses SafeTensors for its weights",
+    "The model card is copied word for word from a famous repository but the account is two weeks old",
+    "The model card lists a licence and base model",
+    "The repository has a long commit history from the same organisation"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "A one-character namespace difference and a copied card on a fresh account are classic look-alike signals (PoisonGPT used a name one letter off). SafeTensors, declared metadata and long consistent history are positive or neutral signals."
+  },
+  {
+   "id": "thm-ai1.d3.q006",
+   "lesson": "thm-ai1.d3.1.02",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which MITRE ATLAS technique describes publishing a legitimate AI component, waiting for adoption, then pushing a malicious update?",
+   "options": [
+    "AML.T0111 AI Supply Chain Reputation Inflation",
+    "AML.T0011.001 Malicious Package",
+    "AML.T0010.004 Container Registry",
+    "AML.T0109 AI Supply Chain Rug Pull"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "AML.T0109 is the rug pull: benign first, malicious later, exploiting the fact that scrutiny peaks at adoption. T0111 is about building credible trust signals; T0010.004 is overwriting a registry image; T0011.001 is a victim importing a malicious package."
+  },
+  {
+   "id": "thm-ai1.d3.q007",
+   "lesson": "thm-ai1.d3.1.02",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An attacker uses an established developer account with years of real contributions, accumulates genuine stars and downloads for an MCP server, and only later adds malicious behaviour. Which ATLAS technique describes the trust-building part of this?",
+   "options": [
+    "AML.T0111 AI Supply Chain Reputation Inflation",
+    "AML.T0043.004 Insert Backdoor Trigger",
+    "AML.T0058 Publish Poisoned Models",
+    "AML.T0018.002 Embed Malware"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Reputation Inflation (T0111) is building or leveraging authentic-looking trust signals to drive adoption. The later malicious update would be a rug pull. T0058 is publishing poisoned models, T0043.004 is adding a trigger to inputs, T0018.002 is putting code in a model file."
+  },
+  {
+   "id": "thm-ai1.d3.q008",
+   "lesson": "thm-ai1.d3.1.02",
+   "objective": "d3.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "An agent platform auto-updates its MCP servers to the newest release. An assessment notes that one widely used server, maintained by a reputable account for a year, could ship a malicious update that production would install the same day.",
+   "stem": "Which control most directly addresses the risk the review found?",
+   "options": [
+    "Re-check the publisher's identity once a year",
+    "Pin the exact reviewed version and require review of every update before promotion",
+    "Prefer packages with more GitHub stars",
+    "Allow automatic minor-version upgrades but block major versions"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "A rug pull ships the malicious change in an update, so pinning plus re-review of every bump closes the gap. Annual identity checks and star counts do not catch a malicious release from a genuine account, and minor versions can carry malicious code."
+  },
+  {
+   "id": "thm-ai1.d3.q009",
+   "lesson": "thm-ai1.d3.1.03",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which item is the strongest provenance evidence that a downloaded model came from its claimed publisher unmodified?",
+   "options": [
+    "A large number of downloads in the last month",
+    "The repository name matching the publisher's brand",
+    "A valid signature that verifies against the publisher's expected identity",
+    "A model card claiming the publisher trained it"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "A verifiable signature from the expected identity proves both origin and integrity. Names can be squatted, downloads can be inflated, and model-card claims are unverified text."
+  },
+  {
+   "id": "thm-ai1.d3.q010",
+   "lesson": "thm-ai1.d3.1.03",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Production code downloads a model with revision=\"main\". What is the main provenance weakness?",
+   "options": [
+    "The main branch always contains pickle files",
+    "The main branch cannot be signed",
+    "Hub downloads by branch are not cached",
+    "The branch can move, so the bytes loaded may differ from what was reviewed"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "A branch is mutable, so a later push changes what production loads without a new review. Pin an immutable commit hash and record file digests. Branches do not imply pickle, caching is irrelevant, and signing is independent of branch names."
+  },
+  {
+   "id": "thm-ai1.d3.q011",
+   "lesson": "thm-ai1.d3.1.03",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if true.",
+   "statements": [
+    {
+     "s": "A backdoor planted in a base model can survive fine-tuning by your own team.",
+     "a": true
+    },
+    {
+     "s": "If your own fine-tuning run is fully documented, the base model's provenance no longer matters.",
+     "a": false
+    },
+    {
+     "s": "Recording a SHA-256 digest for each model file supports repeatable verification that the same bytes are deployed.",
+     "a": true
+    }
+   ],
+   "explain": "A fine-tune inherits its parent, so hidden behaviour can persist. Provenance must therefore cover the base model and adapters, not only your run. Per-file digests let every deployment check it uses the reviewed bytes."
+  },
+  {
+   "id": "thm-ai1.d3.q012",
+   "lesson": "thm-ai1.d3.1.04",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "In the OWASP Top 10 for LLM Applications 2025, which entry covers risks from third-party pre-trained models, LoRA adapters and vulnerable packages?",
+   "options": [
+    "LLM03:2025 Supply Chain",
+    "LLM01:2025 Prompt Injection",
+    "LLM04:2025 Data and Model Poisoning",
+    "LLM05:2025 Improper Output Handling"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "LLM03:2025 Supply Chain covers third-party models, adapters, packages, merge services and licensing. LLM04 focuses on poisoned data and weights, LLM01 on prompt injection and LLM05 on unsafe handling of model output."
+  },
+  {
+   "id": "thm-ai1.d3.q013",
+   "lesson": "thm-ai1.d3.1.04",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A CI pipeline pulls inference:latest from an internal registry. An attacker with push access overwrites that tag with an image containing a modified model. Which ATLAS sub-technique fits best?",
+   "options": [
+    "AML.T0010.001 AI Software",
+    "AML.T0010.004 Container Registry",
+    "AML.T0010.003 Model",
+    "AML.T0011.001 Malicious Package"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "T0010.004 Container Registry is pushing a manipulated image that overwrites an existing name or tag that users and pipelines pull. T0010.003 is a compromised downloaded model, T0010.001 targets AI software and its dependency chain, T0011.001 is importing a malicious package."
+  },
+  {
+   "id": "thm-ai1.d3.q014",
+   "lesson": "thm-ai1.d3.1.04",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which OWASP entry is scoped to components that AI agents load at runtime, such as MCP servers, plugins and external tools?",
+   "options": [
+    "LLM06:2025 Excessive Agency",
+    "ASI02 Tool Misuse and Exploitation",
+    "ASI04 Agentic Supply Chain Vulnerabilities",
+    "ASI07 Insecure Inter-Agent Communication"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "ASI04 covers compromised MCP servers, plugins, tools or external agents pulled in at runtime. ASI02 is misuse of legitimate tools, LLM06 is giving an LLM too much autonomy or permission, ASI07 is about messages between agents."
+  },
+  {
+   "id": "thm-ai1.d3.q015",
+   "lesson": "thm-ai1.d3.1.05",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which MITRE ATLAS case study describes a malicious torchtriton package on PyPI being installed in place of a PyTorch-nightly dependency?",
+   "options": [
+    "AML.CS0019 PoisonGPT",
+    "AML.CS0031 Malicious Models on Hugging Face",
+    "AML.CS0022 ChatGPT Package Hallucination",
+    "AML.CS0015 Compromised PyTorch Dependency Chain"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "CS0015 is the December 2022 dependency confusion incident in which pip installed the malicious torchtriton from PyPI. CS0019 is a weight-edited LLM, CS0022 is hallucinated package names, CS0031 is malware-laden pickle models on the Hub."
+  },
+  {
+   "id": "thm-ai1.d3.q016",
+   "lesson": "thm-ai1.d3.1.05",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Match the headline lesson to the ATLAS case. Which pairings are correct? Select THREE.",
+   "options": [
+    "AML.CS0023 ShadowRay: unauthenticated, internet-exposed Ray clusters were abused through their Jobs API",
+    "AML.CS0019 PoisonGPT: a pickle checkpoint opened a reverse shell when loaded",
+    "AML.CS0027 Organization Confusion on Hugging Face: fake organisation accounts impersonated real companies",
+    "AML.CS0031 Malicious Models on Hugging Face: deliberately corrupted pickle files evaded the scanner",
+    "AML.CS0022 ChatGPT Package Hallucination: a container image tag was overwritten"
+   ],
+   "answer": [
+    0,
+    2,
+    3
+   ],
+   "explain": "ShadowRay, Organization Confusion and Malicious Models are correctly described. PoisonGPT edited weights to spread a false fact and used a look-alike name; it was not pickle malware. CS0022 is about LLMs inventing package names attackers can register, not registry tags."
+  },
+  {
+   "id": "thm-ai1.d3.q017",
+   "lesson": "thm-ai1.d3.2.01",
+   "objective": "d3.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Why is loading an untrusted pytorch_model.bin on an analyst's workstation dangerous even if the model is never used for inference?",
+   "options": [
+    "Pickle-based files can execute code at load time",
+    "The file may be too large for workstation memory",
+    "Loading uploads the analyst's data to the hub",
+    "The weights will overwrite the local Python install"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Pickle-based checkpoints can run code chosen by the file's author when deserialised, so the load itself is the risk. Size, uploads and overwriting the interpreter are not the issue."
+  },
+  {
+   "id": "thm-ai1.d3.q018",
+   "lesson": "thm-ai1.d3.2.01",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A user on a GPU node loads a pickle model that runs an embedded payload. Which pair of ATLAS techniques best describes the artefact and the victim's action?",
+   "options": [
+    "AML.T0043.004 Insert Backdoor Trigger and AML.T0018.000 Poison AI Model",
+    "AML.T0018.002 Embed Malware and AML.T0011.000 Unsafe AI Artifacts",
+    "AML.T0109 AI Supply Chain Rug Pull and AML.T0111 Reputation Inflation",
+    "AML.T0010.004 Container Registry and AML.T0011.001 Malicious Package"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Embed Malware covers placing code in a model file; User Execution: Unsafe AI Artifacts covers the victim loading it. Trigger insertion and model poisoning change outputs, not host code. Rug pull and reputation inflation are trust tactics; the last pair concerns images and packages."
+  },
+  {
+   "id": "thm-ai1.d3.q019",
+   "lesson": "thm-ai1.d3.2.01",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "An analyst receives an untrusted pickle-based model. Put the steps in order.",
+   "options": [
+    "Copy the file into an isolated sandbox with no network or credentials",
+    "Record the file's SHA-256 digest",
+    "Run static scanners such as picklescan and fickling on it",
+    "Decide to reject it, or convert a trusted version to SafeTensors inside the sandbox",
+    "Document the evidence and decision in the findings log"
+   ],
+   "explain": "Isolate first so nothing runs on a trusted host, fingerprint it so all later evidence refers to the same bytes, scan statically, decide, then document."
+  },
+  {
+   "id": "thm-ai1.d3.q020",
+   "lesson": "thm-ai1.d3.2.02",
+   "objective": "d3.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What does picklescan exit code 2 mean?",
+   "options": [
+    "No malware was found",
+    "Malware was found",
+    "The scan failed",
+    "The file is not a pickle and was skipped as clean"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "picklescan follows ClamAV-style codes: 0 means no malware found, 1 means malware found, 2 means the scan failed. A failed scan must not be treated as clean."
+  },
+  {
+   "id": "thm-ai1.d3.q021",
+   "lesson": "thm-ai1.d3.2.02",
+   "objective": "d3.2",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the command to scan a whole Hugging Face repository with picklescan.",
+   "code": "picklescan ____ example-org/sentiment-model",
+   "options": [
+    "--check-safety",
+    "--path",
+    "--hub-repo",
+    "--huggingface"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "--huggingface takes an owner/repo and scans its files. --path is for local files or folders. --hub-repo is not a picklescan option, and --check-safety belongs to fickling."
+  },
+  {
+   "id": "thm-ai1.d3.q022",
+   "lesson": "thm-ai1.d3.2.02",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the fickling command that gives a safety verdict on a pickle file.",
+   "code": "fickling ____ -p downloads/classifier.pkl",
+   "options": [
+    "--check-safety",
+    "--huggingface",
+    "--require-hashes",
+    "--trust-remote-code"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "fickling --check-safety -p <file> analyses the pickle statically and reports whether it looks safe. --huggingface is a picklescan option, --require-hashes is pip, and trust_remote_code is a Transformers parameter."
+  },
+  {
+   "id": "thm-ai1.d3.q023",
+   "lesson": "thm-ai1.d3.2.02",
+   "objective": "d3.2",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "A CI step must block promotion if picklescan finds malware OR fails to scan. Complete the shell logic.",
+   "code": "picklescan --path models/\nrc=$?\nif [ \"$rc\" ____ 0 ]; then\n  echo \"Model scan not clean (exit $rc)\"; exit 1\nfi",
+   "options": [
+    "-eq",
+    "-ne",
+    "-lt",
+    "-le"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Blocking on any code other than 0 catches both 1 (malware) and 2 (scan failed). -eq 0 would block only clean results, -lt 0 never triggers because exit codes are not negative, and -le 0 blocks only exit 0."
+  },
+  {
+   "id": "thm-ai1.d3.q024",
+   "lesson": "thm-ai1.d3.2.02",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "What does the Hugging Face Hub show next to pickle files in a repository to help users judge risk?",
+   "options": [
+    "The SLSA build level of the training pipeline",
+    "A Sigstore signature status for every file",
+    "A list of the imports the pickle references, with suspicious ones highlighted",
+    "The CycloneDX ML-BOM for the repository"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "The Hub's pickle import scan extracts and lists the imports each pickle references and highlights suspicious ones, alongside ClamAV scanning. It is best-effort. It does not display Sigstore status, SLSA levels or an ML-BOM."
+  },
+  {
+   "id": "thm-ai1.d3.q025",
+   "lesson": "thm-ai1.d3.2.02",
+   "objective": "d3.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A team argues that because the Hugging Face Hub already scans uploads, they can load any pickle model from it directly in production. The assessor wants to cite a documented case showing scanners can be evaded.",
+   "stem": "Which ATLAS case study is the best evidence for the assessor's point?",
+   "options": [
+    "AML.CS0015 Compromised PyTorch Dependency Chain",
+    "AML.CS0023 ShadowRay",
+    "AML.CS0019 PoisonGPT",
+    "AML.CS0031 Malicious Models on Hugging Face"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "In CS0031, pickle models were deliberately corrupted so the payload ran before deserialisation failed, and the scanner did not flag them. That directly shows a clean scan is not a guarantee. The others concern dependencies, exposed clusters and weight editing."
+  },
+  {
+   "id": "thm-ai1.d3.q026",
+   "lesson": "thm-ai1.d3.2.03",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A repository's config.json contains an auto_map entry pointing at a custom Python class. What should the reviewer conclude?",
+   "options": [
+    "Loading may run repository-supplied code, which must be reviewed and pinned before trust_remote_code is enabled",
+    "The model is guaranteed to be in SafeTensors format",
+    "The entry only affects tokenisation speed and can be ignored",
+    "The model has been signed with Sigstore"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "auto_map points Transformers at custom code in the repository, which runs only when trust_remote_code is set. That code is inside your trust boundary and needs review. It says nothing about format, speed or signatures."
+  },
+  {
+   "id": "thm-ai1.d3.q027",
+   "lesson": "thm-ai1.d3.2.03",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which repository components can change behaviour or run inside your trust boundary and should be reviewed like dependencies? Select THREE.",
+   "options": [
+    "A LoRA adapter applied to the base model",
+    "A custom modeling_*.py file",
+    "A tokenizer chat template",
+    "The repository's star count",
+    "The hub's page layout"
+   ],
+   "answer": [
+    0,
+    1,
+    2
+   ],
+   "explain": "Adapters change model behaviour, custom modelling code runs at load time, and chat templates shape what the model sees. Star counts and page layout are not loaded into your system."
+  },
+  {
+   "id": "thm-ai1.d3.q028",
+   "lesson": "thm-ai1.d3.2.03",
+   "objective": "d3.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A fork of a popular text model has weight files whose SHA-256 digests match the official release exactly. The fork adds tokenization_custom.py and an auto_map entry in tokenizer_config.json. A developer wants to use it because 'the weights are identical'.",
+   "stem": "What is the most important next step?",
+   "options": [
+    "Approve the fork, because the weight hashes match",
+    "Review the added tokenizer code and auto_map entry before allowing it to run",
+    "Convert the weights to ONNX to remove the risk",
+    "Enable trust_remote_code in production to test it under real load"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Matching weight hashes clear the weights, not the new code, which would run at load time once trust_remote_code is on. Converting weights does nothing to the code, and testing unreviewed code in production is the risk itself."
+  },
+  {
+   "id": "thm-ai1.d3.q029",
+   "lesson": "thm-ai1.d3.2.04",
+   "objective": "d3.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which term describes an installer choosing a public package that shares a name with the internal or expected dependency the project meant to use?",
+   "options": [
+    "Typosquatting",
+    "Package hallucination",
+    "Dependency confusion",
+    "Rug pull"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Dependency confusion exploits same-name packages across indexes. Typosquatting uses look-alike names, hallucination exploits names an LLM invents, and a rug pull is a malicious update to a once-benign component."
+  },
+  {
+   "id": "thm-ai1.d3.q030",
+   "lesson": "thm-ai1.d3.2.04",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which controls reduce dependency confusion and typosquatting risk in an ML project? Select THREE.",
+   "options": [
+    "Install from a single trusted index or a proxy that resolves internal names first",
+    "Pin each requirement with a version and a hash and install with --require-hashes",
+    "Add --extra-index-url for PyPI alongside the internal index",
+    "Verify that each new or AI-suggested package name is the intended project",
+    "Prefer the newest available version of every package"
+   ],
+   "answer": [
+    0,
+    1,
+    3
+   ],
+   "explain": "A single trusted index, hash pinning and name verification all narrow what can be installed. Adding PyPI as an extra index alongside internal names is the classic dependency confusion setup, and always taking the newest version invites malicious releases."
+  },
+  {
+   "id": "thm-ai1.d3.q031",
+   "lesson": "thm-ai1.d3.2.05",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the pinned requirement so pip rejects any file whose digest does not match.",
+   "code": "safetensors==0.4.5 ____=sha256:<approved-digest>",
+   "options": [
+    "--verify",
+    "--checksum",
+    "--require-hashes",
+    "--hash"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "In a requirements file, a hash is attached with --hash=sha256:<digest>. --require-hashes is the pip install option that enforces hashes for all requirements; --checksum and --verify are not requirement options."
+  },
+  {
+   "id": "thm-ai1.d3.q032",
+   "lesson": "thm-ai1.d3.2.05",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the defensive check before loading a model file.",
+   "code": "import hashlib\nh = hashlib.sha256()\nwith open(\"model.safetensors\", \"rb\") as f:\n    for chunk in iter(lambda: f.read(1 << 20), b\"\"):\n        h.update(chunk)\nif h.____() != APPROVED_SHA256:\n    raise SystemExit(\"Hash mismatch: refusing to load\")",
+   "options": [
+    "hexdigest",
+    "digest_size",
+    "name",
+    "copy"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "hexdigest() returns the hex string to compare with a stored SHA-256 value. digest_size and name are attributes describing the algorithm, and copy() returns another hash object, so none would match the approved string."
+  },
+  {
+   "id": "thm-ai1.d3.q033",
+   "lesson": "thm-ai1.d3.2.05",
+   "objective": "d3.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A team downloads model files from a mirror and checks them against the SHA-256 values listed on that same mirror's download page. They report the artefacts as 'integrity verified'.",
+   "stem": "What is the flaw in this control?",
+   "options": [
+    "SHA-256 is too weak for model files",
+    "The reference digest comes from the same site that could be compromised, so it proves little",
+    "Hashes must be computed on the GPU",
+    "Hash checks only work on pickle files"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "A hash proves the file equals the reference, so the reference must come from a trusted channel such as your approval record or a signed manifest. If one attacker can replace both file and digest, the check passes. SHA-256 is fine and works on any file."
+  },
+  {
+   "id": "thm-ai1.d3.q034",
+   "lesson": "thm-ai1.d3.2.06",
+   "objective": "d3.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which serialisation format was designed so that loading a model file cannot execute code?",
+   "options": [
+    "Pickle (.pkl)",
+    "PyTorch checkpoint (.ckpt)",
+    "SafeTensors (.safetensors)",
+    "Python joblib (.joblib)"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "SafeTensors stores only a JSON header and raw tensor bytes; loading parses data. Pickle, .ckpt checkpoints and joblib files are pickle-based and can execute code on load."
+  },
+  {
+   "id": "thm-ai1.d3.q035",
+   "lesson": "thm-ai1.d3.2.06",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which statements about ONNX are correct? Select TWO.",
+   "options": [
+    "ONNX stores the model's computation graph and weights using protobuf",
+    "ONNX files are a variant of Python pickle",
+    "A tampered ONNX graph can still change model behaviour and must be reviewed",
+    "ONNX files can only be run by PyTorch",
+    "ONNX removes the possibility of a backdoor in the weights"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "ONNX is a framework-neutral protobuf format holding a graph and weights, so the graph is logic worth reviewing. It is not pickle, it runs in engines such as ONNX Runtime, and no format removes a backdoor trained into weights."
+  },
+  {
+   "id": "thm-ai1.d3.q036",
+   "lesson": "thm-ai1.d3.2.06",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if true.",
+   "statements": [
+    {
+     "s": "Converting a backdoored model to SafeTensors removes the backdoor.",
+     "a": false
+    },
+    {
+     "s": "SafeTensors stores weights only, so any model architecture code still needs separate review.",
+     "a": true
+    },
+    {
+     "s": "Older PyTorch checkpoints saved as .pt or .pth are usually pickle-based.",
+     "a": true
+    }
+   ],
+   "explain": "Conversion changes the container, not what the weights learned, so a backdoor persists. SafeTensors holds tensors only; code lives elsewhere. Classic torch.save output (.pt/.pth) uses pickle inside."
+  },
+  {
+   "id": "thm-ai1.d3.q037",
+   "lesson": "thm-ai1.d3.2.07",
+   "objective": "d3.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What do the first 8 bytes of a .safetensors file contain?",
+   "options": [
+    "A magic string identifying the format version",
+    "The number of tensors as a big-endian integer",
+    "A SHA-256 checksum of the tensor data",
+    "The size of the JSON header as an unsigned little-endian 64-bit integer"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The file starts with N, the header length, as an unsigned 64-bit little-endian integer, followed by N bytes of JSON and then the byte buffer. There is no magic string, checksum or big-endian tensor count."
+  },
+  {
+   "id": "thm-ai1.d3.q038",
+   "lesson": "thm-ai1.d3.2.07",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "In a SafeTensors header entry, what does data_offsets [BEGIN, END] describe?",
+   "options": [
+    "Byte positions relative to the start of the byte buffer after the header",
+    "Absolute byte positions from the start of the file",
+    "The tensor's row and column count",
+    "The range of valid values in the tensor"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "data_offsets are relative to the start of the byte buffer that follows the header, and END - BEGIN is the tensor's size in bytes. Shape is a separate field, and values are not range-checked."
+  },
+  {
+   "id": "thm-ai1.d3.q039",
+   "lesson": "thm-ai1.d3.2.07",
+   "objective": "d3.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if true.",
+   "statements": [
+    {
+     "s": "The optional __metadata__ key in a SafeTensors header may contain nested JSON objects.",
+     "a": false
+    },
+    {
+     "s": "The safetensors library caps the header size at 100MB to prevent parsing extremely large JSON.",
+     "a": true
+    },
+    {
+     "s": "Each tensor's header entry includes its dtype and shape.",
+     "a": true
+    }
+   ],
+   "explain": "__metadata__ is a string-to-string map only. The 100MB header limit guards against huge-JSON attacks. Each tensor entry has dtype, shape and data_offsets."
+  },
+  {
+   "id": "thm-ai1.d3.q040",
+   "lesson": "thm-ai1.d3.2.07",
+   "objective": "d3.2",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the code to open a SafeTensors file lazily and read tensors one by one.",
+   "code": "from safetensors import safe_open, load_file\n\nwith ____(\"model.safetensors\", framework=\"pt\", device=\"cpu\") as f:\n    for name in f.keys():\n        t = f.get_tensor(name)",
+   "options": [
+    "load_file",
+    "safe_open",
+    "save_file",
+    "torch_load"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "safe_open returns a handle with keys(), metadata() and get_tensor() for lazy access. load_file loads everything into a dict and is not a context manager, save_file writes files, and torch_load is not a safetensors function."
+  }
+ ]
+}

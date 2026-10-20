@@ -1,0 +1,710 @@
+{
+ "exam": "sc-300",
+ "domain": "d2",
+ "lessons": [],
+ "questions": [
+  {
+   "id": "sc-300.d2.q029",
+   "lesson": "sc-300.d2.2.01",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about how multiple Conditional Access policies interact, select Yes if true.",
+   "explain": "All applicable policies apply together: every grant requirement must be met and Block always wins. Conditional Access has no policy priority order.",
+   "statements": [
+    {
+     "s": "If two policies apply and one requires MFA while the other requires a compliant device, the user must satisfy both.",
+     "a": true
+    },
+    {
+     "s": "Policies are processed in priority order and evaluation stops at the first matching policy.",
+     "a": false
+    },
+    {
+     "s": "If any applicable policy blocks access, access is blocked even if another policy grants it.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q030",
+   "lesson": "sc-300.d2.2.01",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You're designing your first Conditional Access policies. Which accounts does Microsoft recommend excluding from every policy?",
+   "explain": "Excluding break-glass accounts prevents a misconfigured policy from locking everyone out. Excluding all admins or guests would leave high-value or external accounts unprotected.",
+   "options": [
+    "Accounts with the Conditional Access Administrator role",
+    "Emergency access (break-glass) accounts",
+    "Guest users",
+    "All Global Administrators"
+   ],
+   "answer": [
+    1
+   ]
+  },
+  {
+   "id": "sc-300.d2.q031",
+   "lesson": "sc-300.d2.2.01",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which licences or prerequisites are needed for a Conditional Access policy that uses the sign-in risk condition? Select TWO.",
+   "explain": "Risk conditions come from ID Protection, which needs P2 or Entra Suite, and custom Conditional Access requires security defaults to be off. Workload Identities Premium is for service principal risk; Intune and Defender for Cloud Apps aren't required.",
+   "options": [
+    "Microsoft Entra ID P2 (or Microsoft Entra Suite)",
+    "Microsoft Intune Plan 1",
+    "Microsoft Defender for Cloud Apps",
+    "Workload Identities Premium",
+    "Security defaults disabled"
+   ],
+   "answer": [
+    0,
+    4
+   ]
+  },
+  {
+   "id": "sc-300.d2.q032",
+   "lesson": "sc-300.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You need a Conditional Access policy that blocks legacy authentication protocols such as IMAP and POP3. Which client apps should you select?",
+   "explain": "Legacy authentication is represented by Exchange ActiveSync clients and Other clients (SMTP, IMAP, POP3, MAPI and similar). Browser and Mobile apps and desktop clients are modern authentication.",
+   "options": [
+    "Browser only",
+    "Mobile apps and desktop clients only",
+    "Exchange ActiveSync clients and Other clients",
+    "Browser and Mobile apps and desktop clients"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q033",
+   "lesson": "sc-300.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You must require MFA for anyone managing Azure resources through the Azure portal, Azure PowerShell or Azure CLI. Which target resource should the policy use?",
+   "explain": "Windows Azure Service Management API covers ARM, the Azure portal, Azure PowerShell and Azure CLI. Microsoft Admin Portals covers admin portals but not CLI/PowerShell access to ARM, and Office 365 covers productivity workloads.",
+   "options": [
+    "Microsoft Admin Portals",
+    "Office 365",
+    "Microsoft Graph PowerShell",
+    "Windows Azure Service Management API"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q034",
+   "lesson": "sc-300.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about named locations, select Yes if true.",
+   "explain": "Only IP-based named locations can be trusted. Ranges must be public egress IPs, not private client addresses. All trusted networks and locations includes trusted IP locations and legacy MFA trusted IPs.",
+   "statements": [
+    {
+     "s": "Country/region named locations can be marked as trusted.",
+     "a": false
+    },
+    {
+     "s": "IP ranges in named locations should be the public egress addresses of the network.",
+     "a": true
+    },
+    {
+     "s": "Selecting All trusted networks and locations also includes MFA trusted IPs if configured.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q035",
+   "lesson": "sc-300.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Litware's admins use dedicated privileged access workstations (PAWs). Intune sets extensionAttribute1 to 'PAW' on these devices. Security wants admin access to Azure blocked from any other device.",
+   "stem": "You need a Conditional Access policy that blocks access to the Azure portal from every device except privileged access workstations, which have extensionAttribute1 set to 'PAW'. Which condition should you use?",
+   "explain": "Filter for devices lets you include or exclude devices by properties such as extensionAttribute1. Platforms can't distinguish PAWs from other Windows PCs, and named locations require public IPs, not device identity.",
+   "options": [
+    "Filter for devices with a rule on device.extensionAttribute1",
+    "Client apps set to Browser",
+    "A named location containing the workstations' private IP addresses",
+    "Device platforms with Windows excluded"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q036",
+   "lesson": "sc-300.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the Conditional Access policy JSON (Microsoft Graph) so that the policy applies to legacy authentication clients.",
+   "explain": "Legacy authentication maps to the client app types exchangeActiveSync and other. browser and mobileAppsAndDesktopClients are modern authentication; platforms and risk levels don't identify legacy protocols.",
+   "options": [
+    "\"signInRiskLevels\": [\"high\"]",
+    "\"clientAppTypes\": [\"exchangeActiveSync\", \"other\"]",
+    "\"platforms\": { \"includePlatforms\": [\"all\"] }",
+    "\"clientAppTypes\": [\"browser\", \"mobileAppsAndDesktopClients\"]"
+   ],
+   "answer": [
+    1
+   ],
+   "code": "\"conditions\": {\n  \"users\": { \"includeUsers\": [\"All\"] },\n  \"applications\": { \"includeApplications\": [\"All\"] },\n  ____\n}"
+  },
+  {
+   "id": "sc-300.d2.q037",
+   "lesson": "sc-300.d2.2.03",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Administrators must sign in with a FIDO2 security key, Windows Hello for Business or multifactor certificate-based authentication. Which grant control should the policy use?",
+   "explain": "The built-in Phishing-resistant MFA strength allows FIDO2, WHfB/platform credential and multifactor CBA. Require MFA also accepts SMS or push, and Passwordless MFA additionally allows Authenticator phone sign-in.",
+   "options": [
+    "Require multifactor authentication",
+    "Require authentication strength: Passwordless MFA",
+    "Require authentication strength: Phishing-resistant MFA",
+    "Require device to be marked as compliant"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q038",
+   "lesson": "sc-300.d2.2.03",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A policy must allow access from either Intune-compliant devices or domain-joined Windows devices synced to Entra ID. How should you configure the grant controls?",
+   "explain": "Require one of the selected controls is OR logic, so either device state satisfies it. Require all (AND) would need both at once. App protection policy relates to mobile apps, not domain-joined PCs.",
+   "options": [
+    "Select only Require Microsoft Entra hybrid joined device",
+    "Select compliant device and hybrid joined device with Require all the selected controls",
+    "Select Require app protection policy with Require one of the selected controls",
+    "Select compliant device and hybrid joined device with Require one of the selected controls"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q039",
+   "lesson": "sc-300.d2.2.03",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the Microsoft Graph grantControls block so users must satisfy MFA AND have a compliant device.",
+   "explain": "The operator property controls combination: AND means all listed controls are required, OR means one is enough. requireAll and mode aren't properties of grantControls.",
+   "options": [
+    "\"operator\": \"AND\"",
+    "\"requireAll\": true",
+    "\"operator\": \"OR\"",
+    "\"mode\": \"block\""
+   ],
+   "answer": [
+    0
+   ],
+   "code": "\"grantControls\": {\n  ____,\n  \"builtInControls\": [\"mfa\", \"compliantDevice\"]\n}"
+  },
+  {
+   "id": "sc-300.d2.q040",
+   "lesson": "sc-300.d2.2.03",
+   "objective": "d2.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Adatum allows staff to read email on personal phones. Staff refuse to enrol their phones in Intune, but compliance requires that corporate mail can't be copied into personal apps.",
+   "stem": "Employees use personal iOS and Android phones that aren't enrolled in Intune. Outlook mobile must protect corporate data in the app. Which grant control should you use for new policies?",
+   "explain": "App protection policy (Intune MAM) works without device enrolment. Compliant device requires enrolment; Require approved client app is retiring and new policies should use app protection policy; hybrid join applies to Windows.",
+   "options": [
+    "Require device to be marked as compliant",
+    "Require app protection policy",
+    "Require Microsoft Entra hybrid joined device",
+    "Require approved client app"
+   ],
+   "answer": [
+    1
+   ]
+  },
+  {
+   "id": "sc-300.d2.q041",
+   "lesson": "sc-300.d2.2.04",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "A Conditional Access policy is in report-only mode. A user signs in and would have been prompted for MFA. What result appears in the sign-in log's Report-only tab?",
+   "explain": "User action required means the conditions matched and an interactive control such as MFA would have been required. Failure is for non-interactive controls like block; Success means already satisfied; Not applied means conditions didn't match.",
+   "options": [
+    "Report-only: Success",
+    "Report-only: Not applied",
+    "Report-only: User action required",
+    "Report-only: Failure"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q042",
+   "lesson": "sc-300.d2.2.04",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You use the What If tool to test a new policy, but the policy doesn't appear in the results. The policy state is Off. What should you do?",
+   "explain": "What If evaluates only enabled and report-only policies. Switching to report-only lets you simulate it safely. Roles and replication delays don't explain an Off policy being ignored.",
+   "options": [
+    "Add the test user to the policy's exclusions",
+    "Assign the Security Reader role to the test user",
+    "Wait 24 hours for the policy to replicate",
+    "Set the policy to Report-only and run What If again"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q043",
+   "lesson": "sc-300.d2.2.04",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "You want to use the Conditional Access insights and reporting workbook. Which prerequisites are required? Select TWO.",
+   "explain": "The workbook needs Entra ID P1 and sign-in logs streamed to a Log Analytics workspace. Microsoft Sentinel, ID Governance and Key Vault aren't required.",
+   "options": [
+    "Microsoft Sentinel",
+    "A Log Analytics workspace receiving Entra sign-in logs",
+    "Microsoft Entra ID Governance",
+    "An Azure Key Vault",
+    "Microsoft Entra ID P1"
+   ],
+   "answer": [
+    1,
+    4
+   ]
+  },
+  {
+   "id": "sc-300.d2.q044",
+   "lesson": "sc-300.d2.2.04",
+   "objective": "d2.2",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the KQL query to list sign-ins that Conditional Access blocked or that failed a Conditional Access requirement in the last day.",
+   "explain": "ConditionalAccessStatus holds success, failure or notApplied for enforced policies. ResultType is an error code, report-only outcomes live inside ConditionalAccessPolicies, and RiskState relates to ID Protection.",
+   "options": [
+    "ConditionalAccessStatus == \"failure\"",
+    "ResultType == \"notApplied\"",
+    "ConditionalAccessStatus == \"reportOnlyFailure\"",
+    "RiskState == \"atRisk\""
+   ],
+   "answer": [
+    0
+   ],
+   "code": "SigninLogs\n| where TimeGenerated > ago(1d)\n| where ____\n| project UserPrincipalName, AppDisplayName, ConditionalAccessPolicies"
+  },
+  {
+   "id": "sc-300.d2.q045",
+   "lesson": "sc-300.d2.2.05",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Users of unmanaged devices must reauthenticate every 4 hours when using Microsoft 365. Which session control should you configure?",
+   "explain": "Sign-in frequency defines how often users must reauthenticate. Persistent browser session only controls whether the browser keeps the session after closing; CAE and app enforced restrictions don't set reauthentication intervals.",
+   "options": [
+    "Persistent browser session set to Never persistent",
+    "Sign-in frequency set to 4 hours",
+    "Customize continuous access evaluation",
+    "Use app enforced restrictions"
+   ],
+   "answer": [
+    1
+   ]
+  },
+  {
+   "id": "sc-300.d2.q046",
+   "lesson": "sc-300.d2.2.05",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Conditional Access session controls, select Yes if true.",
+   "explain": "The default is a rolling 90 days. Every time allows five minutes of clock skew. Persistent browser session requires the policy to target All resources.",
+   "statements": [
+    {
+     "s": "The default Microsoft Entra session behaviour is a rolling 90-day window.",
+     "a": true
+    },
+    {
+     "s": "Sign-in frequency set to Every time prompts users at most once every five minutes because of clock skew tolerance.",
+     "a": true
+    },
+    {
+     "s": "The persistent browser session control can be scoped to a single app rather than All resources.",
+     "a": false
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q047",
+   "lesson": "sc-300.d2.2.05",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the Microsoft Graph sessionControls block to require reauthentication every 8 hours.",
+   "explain": "signInFrequency uses value plus type (hours or days) and isEnabled. everyTime is expressed through frequencyInterval, not type; unit and interval aren't valid properties.",
+   "options": [
+    "\"type\": \"everyTime\"",
+    "\"unit\": \"minutes\"",
+    "\"type\": \"hours\"",
+    "\"interval\": \"daily\""
+   ],
+   "answer": [
+    2
+   ],
+   "code": "\"sessionControls\": {\n  \"signInFrequency\": {\n    \"value\": 8,\n    ____,\n    \"isEnabled\": true\n  }\n}"
+  },
+  {
+   "id": "sc-300.d2.q048",
+   "lesson": "sc-300.d2.2.05",
+   "objective": "d2.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "After a token-theft incident, Fabrikam's security team wants stolen tokens replayed from an attacker's machine to be rejected for Exchange Online, SharePoint Online and Teams on managed Windows devices.",
+   "stem": "A tenant wants sign-in session tokens to be accepted only from the device they were issued to, reducing token replay for Exchange Online, SharePoint Online and Teams desktop apps on Windows. Which session control should be used?",
+   "explain": "Token protection ensures only device-bound sign-in session tokens are accepted, stopping replay from another device. Resilience defaults affect outages; App Control proxies sessions through Defender for Cloud Apps; Every time doesn't bind tokens.",
+   "options": [
+    "Disable resilience defaults",
+    "Sign-in frequency: Every time",
+    "Use Conditional Access App Control",
+    "Require token protection for sign-in sessions"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q049",
+   "lesson": "sc-300.d2.2.06",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Contractors on unmanaged laptops must be able to view SharePoint Online in a browser but not download, print or sync files. What should you configure?",
+   "explain": "App enforced restrictions pass device state to SharePoint, which gives unmanaged devices browser-only limited access. Requiring a compliant device would block contractors entirely; app protection policy targets mobile apps.",
+   "options": [
+    "The Use app enforced restrictions session control with SharePoint limited access",
+    "Require device to be marked as compliant",
+    "Require app protection policy",
+    "Persistent browser session set to Never persistent"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q050",
+   "lesson": "sc-300.d2.2.06",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which statements about the Require device to be marked as compliant grant control are true? Select TWO.",
+   "explain": "Intune or a supported MDM sets compliance; InPrivate doesn't send device identity so it fails. Registration alone isn't compliance, and the control supports Windows, macOS, iOS, Android and Linux Ubuntu without requiring hybrid join.",
+   "options": [
+    "Microsoft Edge InPrivate sessions are treated as non-compliant",
+    "It requires the device to be hybrid joined",
+    "It applies only to Windows devices",
+    "It is satisfied by any device registered in Microsoft Entra ID",
+    "Compliance is evaluated by Microsoft Intune or a supported partner MDM"
+   ],
+   "answer": [
+    0,
+    4
+   ]
+  },
+  {
+   "id": "sc-300.d2.q051",
+   "lesson": "sc-300.d2.2.06",
+   "objective": "d2.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "You must block Microsoft 365 access from operating systems you don't support, such as ChromeOS, while allowing Windows, macOS, iOS and Android. How should you configure the device platforms condition?",
+   "explain": "Microsoft recommends including any device and excluding supported platforms, then blocking, because unsupported platforms like ChromeOS can't be selected directly. Including supported platforms with Block would block the wrong devices.",
+   "options": [
+    "Include Any device and require a compliant device",
+    "Include Any device, exclude Windows, macOS, iOS and Android, and grant Block access",
+    "Include Windows, macOS, iOS and Android and grant Block access",
+    "Include ChromeOS only and grant Block access"
+   ],
+   "answer": [
+    1
+   ]
+  },
+  {
+   "id": "sc-300.d2.q052",
+   "lesson": "sc-300.d2.2.07",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which events are critical events that CAE-capable services evaluate in near real time? Select THREE.",
+   "explain": "Critical events include account disabled or deleted, password change or reset, MFA enabled, admin token revocation and high user risk. Profile photo changes aren't events, and group membership changes can take much longer to apply.",
+   "options": [
+    "An administrator revokes the user's refresh tokens",
+    "High user risk is detected by ID Protection",
+    "The user changes their profile photo",
+    "The user joins a new Microsoft 365 group",
+    "The user account is disabled"
+   ],
+   "answer": [
+    0,
+    1,
+    4
+   ]
+  },
+  {
+   "id": "sc-300.d2.q053",
+   "lesson": "sc-300.d2.2.07",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A Conditional Access policy blocks Exchange Online access outside a country/region named location. With CAE enabled, a user moves to a blocked country mid-session. What happens?",
+   "explain": "CAE instant location enforcement supports IP-range named locations only; country/region locations fall back to normal token lifetime. Instant rejection would occur for an IP-based location.",
+   "options": [
+    "The session is terminated after 15 minutes",
+    "The user is prompted for MFA immediately",
+    "Access continues until the token expires because CAE enforces only IP-based named locations",
+    "Exchange Online rejects the token instantly"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q054",
+   "lesson": "sc-300.d2.2.07",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about continuous access evaluation, select Yes if true.",
+   "explain": "CAE clients get long-lived tokens up to 28 hours. Guest users aren't supported. The Disable option works only with All resources and no conditions.",
+   "statements": [
+    {
+     "s": "CAE-capable clients can receive tokens valid for up to 28 hours.",
+     "a": true
+    },
+    {
+     "s": "CAE is enforced instantly for B2B guest users.",
+     "a": false
+    },
+    {
+     "s": "CAE can be disabled with the Customize continuous access evaluation session control in a policy targeting All resources.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q055",
+   "lesson": "sc-300.d2.2.07",
+   "objective": "d2.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Woodgrove enabled a Conditional Access policy that allows SharePoint only from its trusted HQ named location. Remote staff connect through a split-tunnel VPN; only some traffic goes through the HQ egress IPs.",
+   "stem": "After enabling an IP-based location policy with CAE, remote users on a split-tunnel VPN are intermittently blocked from SharePoint with insufficient_claims errors. What is the most likely fix?",
+   "explain": "Split tunnelling makes Entra ID and SharePoint see different IPs, so CAE's instant IP enforcement fails. Microsoft advises listing all dedicated egress IPs, including IPv6. Converting to country/region would remove the IP control.",
+   "options": [
+    "Enable persistent browser sessions",
+    "Disable sign-in frequency in the policy",
+    "Convert the named location to a country/region location",
+    "Add all of the VPN's IPv4 and IPv6 egress addresses to the trusted named location"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q056",
+   "lesson": "sc-300.d2.2.08",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A SharePoint site containing merger documents must require a compliant device, but the rest of SharePoint must not. What should you create first?",
+   "explain": "Authentication context lets you apply a Conditional Access policy to a specific site through a sensitivity label or site setting. Targeting Office 365 would affect all of SharePoint; SharePoint sites aren't separate enterprise apps.",
+   "options": [
+    "An authentication context, then a Conditional Access policy targeting it",
+    "A named location for the site",
+    "A Conditional Access policy targeting the Office 365 app group",
+    "A separate enterprise application for the site"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q057",
+   "lesson": "sc-300.d2.2.08",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about authentication context, select Yes if true.",
+   "explain": "IDs range c1-c99. Publish to apps controls whether apps can use the context. Before deletion, remove it from policies and unpublish it.",
+   "statements": [
+    {
+     "s": "You can create up to 99 authentication contexts with IDs c1 to c99.",
+     "a": true
+    },
+    {
+     "s": "Clearing Publish to apps makes the context unavailable for assignment by downstream apps.",
+     "a": true
+    },
+    {
+     "s": "A context can be deleted while Conditional Access policies still reference it.",
+     "a": false
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q058",
+   "lesson": "sc-300.d2.2.08",
+   "objective": "d2.2",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the Microsoft Graph Conditional Access policy JSON so it applies to authentication context c1.",
+   "explain": "Authentication contexts are targeted with includeAuthenticationContextClassReferences under applications. includeApplications takes app IDs, includeUserActions takes user actions, and authenticationStrength belongs to grantControls.",
+   "options": [
+    "\"includeApplications\": [\"c1\"]",
+    "\"includeAuthenticationContextClassReferences\": [\"c1\"]",
+    "\"authenticationStrength\": { \"id\": \"c1\" }",
+    "\"includeUserActions\": [\"c1\"]"
+   ],
+   "answer": [
+    1
+   ],
+   "code": "\"conditions\": {\n  \"users\": { \"includeUsers\": [\"All\"] },\n  \"applications\": {\n    ____\n  }\n}"
+  },
+  {
+   "id": "sc-300.d2.q059",
+   "lesson": "sc-300.d2.2.09",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You want admins to perform a FIDO2 step-up immediately before they can delete Conditional Access policies, regardless of which role they hold. What should you configure?",
+   "explain": "Protected actions require a Conditional Access policy (via authentication context) when the permission is used, independent of role. PIM settings apply only at activation; Admin Portals applies at sign-in; removing the permission changes authorisation, not authentication.",
+   "options": [
+    "A PIM activation setting requiring MFA",
+    "A custom role without the delete permission",
+    "A protected action linked to an authentication context",
+    "A Conditional Access policy targeting Microsoft Admin Portals"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q060",
+   "lesson": "sc-300.d2.2.09",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Put the steps to configure a protected action in order.",
+   "explain": "Microsoft warns skipping order can cause repeated prompts: create the context, build the policy, map it to protected permissions, then test.",
+   "options": [
+    "Create an authentication context",
+    "Create a Conditional Access policy that targets the authentication context",
+    "Assign the authentication context to the selected permissions in Protected actions",
+    "Sign in as an admin and perform the action to test the step-up prompt"
+   ]
+  },
+  {
+   "id": "sc-300.d2.q061",
+   "lesson": "sc-300.d2.2.09",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which permissions can be configured as protected actions? Select TWO.",
+   "explain": "Protected actions cover Conditional Access policy management, cross-tenant access settings, hard deletes, named locations and authentication context updates. Reading logs, creating users and password resets aren't in the protectable set.",
+   "options": [
+    "Resetting a non-admin user's password",
+    "Hard deletion of directory objects",
+    "Updating Conditional Access policies",
+    "Creating a new user account",
+    "Reading the sign-in logs"
+   ],
+   "answer": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q062",
+   "lesson": "sc-300.d2.2.10",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "In which state is a Conditional Access policy created from a template?",
+   "explain": "Template policies are created in report-only so you can review the impact before turning them on.",
+   "options": [
+    "Disabled until approved by a Global Administrator",
+    "Off",
+    "On",
+    "Report-only"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q063",
+   "lesson": "sc-300.d2.2.10",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You create the Require multifactor authentication for all users policy from a template. Which accounts are excluded automatically?",
+   "explain": "Templates exclude only the creating user; you must edit the policy to exclude break-glass accounts. Admins and guests are not excluded.",
+   "options": [
+    "Only the administrator who created the policy",
+    "All emergency access accounts",
+    "All guest users",
+    "All accounts with directory roles"
+   ],
+   "answer": [
+    0
+   ]
+  }
+ ]
+}

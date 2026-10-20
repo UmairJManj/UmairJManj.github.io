@@ -1,0 +1,803 @@
+{
+ "exam": "sc-200",
+ "domain": "d1",
+ "lessons": [],
+ "questions": [
+  {
+   "id": "sc-200.d1a.q038",
+   "lesson": "sc-200.d1.1.11",
+   "objective": "d1.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Northwind's break-glass Global Administrator account is used only in emergencies from unusual locations. The CISO worries automatic attack disruption could disable it during a real outage. Microsoft Defender for Identity and Defender for Endpoint are deployed, and Unified RBAC is enabled.",
+   "stem": "What should you configure so the account is never automatically disabled, while disruption still protects all other accounts?",
+   "options": [
+    "Add a user exclusion on the Identities tab of Settings > Microsoft Defender XDR > Automated response",
+    "Exclude the account from all Conditional Access policies",
+    "Create an alert tuning rule that hides alerts involving the account",
+    "Open a support case titled 'Attack disruption opt-out'"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "A user exclusion in Automated response settings stops that account being automatically disabled. Conditional Access exclusions don't affect disruption, hiding alerts weakens detection, and the support-case opt-out turns off automated disruption actions for the whole tenant."
+  },
+  {
+   "id": "sc-200.d1a.q039",
+   "lesson": "sc-200.d1.1.11",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "After an attack disruption incident, you want to review on-premises accounts that were disabled. Complete the advanced hunting query.",
+   "code": "IdentityDirectoryEvents\n| where Timestamp > ago(1d)\n| where ActionType == ____\n| project Timestamp, TargetAccountUpn, ActionType",
+   "options": [
+    "\"Account disabled\"",
+    "\"LogonFailed\"",
+    "\"Account Password changed\"",
+    "\"Directory Services replication\""
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Microsoft's guidance is to query IdentityDirectoryEvents for ActionType == \"Account disabled\" to review disable events. LogonFailed belongs to logon tables, and the other two values describe password changes and replication, not disabling."
+  },
+  {
+   "id": "sc-200.d1a.q040",
+   "lesson": "sc-200.d1.1.11",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about automatic attack disruption prerequisites, select Yes if true.",
+   "statements": [
+    {
+     "s": "Device discovery must be set to Standard discovery for the automatic Contain device action.",
+     "a": true
+    },
+    {
+     "s": "Attack disruption works only when Microsoft Defender Antivirus is in active mode.",
+     "a": false
+    },
+    {
+     "s": "The Defender for Cloud Apps Microsoft 365 connector should be configured with all checkboxes selected.",
+     "a": true
+    }
+   ],
+   "explain": "Contain device needs Standard discovery, and the Microsoft 365 app connector must be fully configured. Disruption works whatever the antivirus state: active, passive or EDR block mode."
+  },
+  {
+   "id": "sc-200.d1a.q041",
+   "lesson": "sc-200.d1.1.12",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Device SRV-DE-01 matches the rules of 'All-Servers' (rank 3) and 'DE-Servers' (rank 1). Which device group is it in?",
+   "options": [
+    "DE-Servers only",
+    "All-Servers, because the broader rule wins",
+    "Ungrouped devices (default)",
+    "Both groups"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "A device is added only to the highest-ranked group it matches; rank 1 is highest, so it joins DE-Servers. Devices are never in two groups, and Ungrouped is only for devices that match no group."
+  },
+  {
+   "id": "sc-200.d1a.q042",
+   "lesson": "sc-200.d1.1.12",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which properties can a Defender for Endpoint device group matching rule use? Select THREE.",
+   "options": [
+    "Device name",
+    "Device risk level",
+    "Tag",
+    "Logged-on user",
+    "OS platform"
+   ],
+   "answer": [
+    0,
+    2,
+    4
+   ],
+   "explain": "Matching rules use device name, domain, tags and OS platform. Risk level and logged-on user aren't matching-rule properties."
+  },
+  {
+   "id": "sc-200.d1a.q043",
+   "lesson": "sc-200.d1.1.12",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "You want Windows servers to join a device group whose rule matches the tag 'Finance-Servers'. Complete the registry command that sets the device tag.",
+   "code": "reg add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Advanced Threat Protection\\DeviceTagging\" /v ____ /t REG_SZ /d \"Finance-Servers\" /f",
+   "options": [
+    "Tag",
+    "MachineGroup",
+    "Group",
+    "DeviceTag"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "The registry tag is a REG_SZ value named Group under the DeviceTagging key. Tag, MachineGroup and DeviceTag aren't the documented value name."
+  },
+  {
+   "id": "sc-200.d1a.q044",
+   "lesson": "sc-200.d1.1.12",
+   "objective": "d1.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Your tenant uses Microsoft Defender XDR Unified RBAC. Tier-1 analysts in Japan must view alerts and run basic live response, but only on devices in the 'JP-Workstations' device group. They must not upload or run scripts on devices.",
+   "stem": "What should you do?",
+   "options": [
+    "Assign the Microsoft Entra Security Operator role to the analysts",
+    "Create a custom Unified RBAC role with Security data basics (read) and Basic live response, scoped to the JP-Workstations device group",
+    "Create a custom role with Advanced live response, scoped to all devices",
+    "Assign Microsoft Sentinel Responder on the Sentinel resource group"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "A custom role with only the needed permissions, scoped to the device group, meets least privilege. Security Operator is tenant-wide, Advanced live response allows script upload/run, and Sentinel Responder governs Sentinel incidents, not device actions."
+  },
+  {
+   "id": "sc-200.d1a.q045",
+   "lesson": "sc-200.d1.1.12",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You create a new device group in Defender for Endpoint. Put the wizard steps in order.",
+   "options": [
+    "General: enter the name and automation level",
+    "Devices: define the matching rule",
+    "Preview devices: confirm matching devices",
+    "User access: assign Microsoft Entra user groups"
+   ],
+   "explain": "The device group wizard runs General, Devices (matching rule), Preview devices, then User access."
+  },
+  {
+   "id": "sc-200.d1a.q046",
+   "lesson": "sc-200.d1.1.13",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which automation level does Microsoft recommend for Defender for Endpoint device groups?",
+   "options": [
+    "Semi - require approval for all folders",
+    "Semi - require approval for core folders remediation",
+    "No automated response",
+    "Full - remediate threats automatically"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Microsoft recommends Full - remediate threats automatically, and it is the default for tenants created on or after 16 August 2020. The Semi levels need approvals, and No automated response isn't recommended."
+  },
+  {
+   "id": "sc-200.d1a.q047",
+   "lesson": "sc-200.d1.1.13",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A device group is set to 'Semi - require approval for non-temp folders remediation'. Malicious files are found in C:\\Users\\amy\\AppData\\Local\\Temp and C:\\Program Data\\App. What happens?",
+   "options": [
+    "Both files are remediated automatically",
+    "The Temp file is remediated automatically; the other waits for approval",
+    "Both files wait for approval",
+    "The Temp file waits for approval; the other is remediated automatically"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "At this level only files in temporary folders are remediated automatically; anything outside temp folders needs approval in the Action center."
+  },
+  {
+   "id": "sc-200.d1a.q048",
+   "lesson": "sc-200.d1.1.13",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about automation levels, select Yes if true.",
+   "statements": [
+    {
+     "s": "Pending remediation actions that aren't approved time out after seven days.",
+     "a": true
+    },
+    {
+     "s": "'Core folders' refers to operating system directories such as \\windows\\*.",
+     "a": true
+    },
+    {
+     "s": "You can't change the automation level of the Ungrouped devices (default) group.",
+     "a": false
+    }
+   ],
+   "explain": "Pending actions time out after seven days, and core folders are OS directories. Ungrouped devices can't be deleted or re-ranked, but its automation level can be changed."
+  },
+  {
+   "id": "sc-200.d1a.q049",
+   "lesson": "sc-200.d1.1.14",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which triggers can a Microsoft Sentinel automation rule use? Select THREE.",
+   "options": [
+    "When incident is created",
+    "When a watchlist is updated",
+    "When incident is updated",
+    "When alert is created",
+    "When a data connector disconnects"
+   ],
+   "answer": [
+    0,
+    2,
+    3
+   ],
+   "explain": "Automation rules trigger on incident created, incident updated and alert created. Watchlist changes and connector health aren't automation rule triggers; connector health is monitored with SentinelHealth."
+  },
+  {
+   "id": "sc-200.d1a.q050",
+   "lesson": "sc-200.d1.1.14",
+   "objective": "d1.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Rule 1 (order 1) lowers severity from Medium to Low for incidents from the 'Legacy VPN' analytics rule. Rule 2 (order 2) assigns incidents with severity Medium or higher to Tier-2. Both use the When incident is created trigger.",
+   "stem": "A new Medium incident is created by 'Legacy VPN'. What happens?",
+   "options": [
+    "Both rules run at the same time, so the incident is Low and assigned to Tier-2",
+    "Rule 2 runs first because assignment actions have priority",
+    "Severity becomes Low and Rule 2 doesn't run because its condition is no longer met",
+    "Rule 2 evaluates the original Medium severity and assigns the incident"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Rules run sequentially by order and evaluate the current state; after Rule 1 sets Low, Rule 2's Medium-or-higher condition is false. Rules never run in parallel, and no action type gets priority."
+  },
+  {
+   "id": "sc-200.d1a.q051",
+   "lesson": "sc-200.d1.1.14",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A red team exercise runs for one week and will generate many incidents from a known test account. You want those incidents closed automatically during the test only. What should you configure?",
+   "options": [
+    "An automation rule that closes matching incidents, with an expiration date at the end of the test",
+    "A watchlist of the test account referenced in every analytics rule",
+    "A playbook with an alert trigger that deletes the alerts",
+    "Turn off all analytics rules for the week"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Automation rules can close incidents with a reason and comment and expire automatically, which suits time-limited suppression. Editing every rule, deleting alerts or disabling detection would be heavy-handed or remove visibility."
+  },
+  {
+   "id": "sc-200.d1a.q052",
+   "lesson": "sc-200.d1.1.14",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Health monitoring is on in Microsoft Sentinel. Complete the query to list automation rule runs that didn't fully succeed in the last 24 hours.",
+   "code": "SentinelHealth\n| where TimeGenerated > ago(24h)\n| where OperationName == \"Automation rule run\"\n| where Status ____ \"Success\"\n| project TimeGenerated, SentinelResourceName, Status, Description",
+   "options": [
+    "==",
+    "!=",
+    "has",
+    "startswith"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Status != \"Success\" returns Partial success and Failure runs. == returns only successes, startswith returns only successes, and has \"Success\" matches Success and Partial success but misses Failure."
+  },
+  {
+   "id": "sc-200.d1a.q053",
+   "lesson": "sc-200.d1.1.15",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You build a playbook that comments on and closes Sentinel incidents, using the logic app's system-assigned managed identity. Which role should the managed identity have on the Sentinel workspace?",
+   "options": [
+    "Microsoft Sentinel Reader",
+    "Microsoft Sentinel Playbook Operator",
+    "Logic App Contributor",
+    "Microsoft Sentinel Responder"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Playbooks that update incidents need Microsoft Sentinel Responder (Reader is for playbooks that only receive incidents). Playbook Operator runs playbooks, and Logic App Contributor edits logic apps; neither grants incident updates."
+  },
+  {
+   "id": "sc-200.d1a.q054",
+   "lesson": "sc-200.d1.1.15",
+   "objective": "d1.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "An engineer created a playbook in resource group RG-Playbooks. When building an automation rule in the Sentinel workspace (in RG-Sentinel), the playbook is greyed out and can't be selected. The engineer is Owner on both resource groups.",
+   "stem": "What should the engineer do?",
+   "options": [
+    "Assign the engineer Microsoft Sentinel Playbook Operator",
+    "In Manage playbook permissions, grant Microsoft Sentinel permissions on RG-Playbooks",
+    "Recreate the playbook as a Logic Apps Standard workflow",
+    "Change the playbook trigger from incident to entity"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Automation rules run playbooks through the Sentinel service account, which needs explicit permissions (Automation Contributor) on the playbook's resource group. User roles don't fix it, Standard doesn't help, and an entity trigger can't be called by automation rules."
+  },
+  {
+   "id": "sc-200.d1a.q055",
+   "lesson": "sc-200.d1.1.15",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Microsoft Sentinel playbooks, select Yes if true.",
+   "statements": [
+    {
+     "s": "Logic Apps Standard playbooks can be created directly from Sentinel playbook templates.",
+     "a": false
+    },
+    {
+     "s": "A playbook that must reach resources through a private endpoint is a good fit for Logic Apps Standard.",
+     "a": true
+    },
+    {
+     "s": "An automation rule with an incident trigger can run only incident-trigger playbooks.",
+     "a": true
+    }
+   ],
+   "explain": "Templates support Consumption only; Standard workflows are built manually. Standard supports private endpoints and VNet integration. Incident-trigger automation rules run incident-trigger playbooks only."
+  },
+  {
+   "id": "sc-200.d1a.q056",
+   "lesson": "sc-200.d1.1.15",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You want a playbook to authenticate to Microsoft Sentinel with a managed identity. Put the steps in order.",
+   "options": [
+    "Enable the system-assigned managed identity on the logic app",
+    "On the workspace, use Access control (IAM) to grant the identity a Sentinel role",
+    "In the Sentinel connector, select Connect with managed identity",
+    "Save and test the playbook against an incident"
+   ],
+   "explain": "The identity must exist before it can get a role, and it needs the role before the connector connection using it will work; then test."
+  },
+  {
+   "id": "sc-200.d1a.q057",
+   "lesson": "sc-200.d1.1.15",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "During a hunt, an analyst wants to run a playbook against a single IP address that isn't in any incident. Which playbook trigger supports this?",
+   "options": [
+    "Incident trigger",
+    "Alert trigger",
+    "Entity trigger",
+    "Recurrence trigger"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Entity-trigger playbooks run manually on an entity such as an IP, account or host, including from hunting. Incident and alert triggers need those objects, and a recurrence trigger is a schedule, not a Sentinel trigger."
+  },
+  {
+   "id": "sc-200.d1a.q058",
+   "lesson": "sc-200.d1.2.01",
+   "objective": "d1.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which is the least-privileged built-in role that lets a SOC analyst assign incidents and change their status in Microsoft Sentinel?",
+   "options": [
+    "Microsoft Sentinel Responder",
+    "Microsoft Sentinel Reader",
+    "Microsoft Sentinel Contributor",
+    "Microsoft Sentinel Automation Contributor"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Responder adds incident management to Reader. Reader is view-only, Contributor adds rule and content management beyond what's needed, and Automation Contributor is for the Sentinel service account, not users."
+  },
+  {
+   "id": "sc-200.d1a.q059",
+   "lesson": "sc-200.d1.2.01",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A security engineer must install solutions from Content hub and create analytics rules. Which built-in role should you assign at the Sentinel resource group?",
+   "options": [
+    "Microsoft Sentinel Responder",
+    "Log Analytics Contributor",
+    "Workbook Contributor",
+    "Microsoft Sentinel Contributor"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Microsoft Sentinel Contributor can manage Content hub and create/edit analytics rules. Responder only manages incidents, Log Analytics Contributor isn't Sentinel-specific, and Workbook Contributor only covers workbooks."
+  },
+  {
+   "id": "sc-200.d1a.q060",
+   "lesson": "sc-200.d1.2.01",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "multi",
+   "case": "Tier-1 SOC analysts must triage and close incidents in Microsoft Sentinel and manually run existing playbooks from incidents. They must not create or edit playbooks or analytics rules.",
+   "stem": "Which roles should you assign? Select TWO.",
+   "options": [
+    "Microsoft Sentinel Responder on the Sentinel resource group",
+    "Logic App Contributor on the playbook resource group",
+    "Microsoft Sentinel Playbook Operator on the playbook resource group",
+    "Microsoft Sentinel Contributor on the Sentinel resource group",
+    "Microsoft Sentinel Automation Contributor on the playbook resource group"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "Microsoft's guidance for SOC analysts is Responder plus Playbook Operator. Logic App Contributor allows editing playbooks, Contributor allows editing rules, and Automation Contributor isn't for users."
+  },
+  {
+   "id": "sc-200.d1a.q061",
+   "lesson": "sc-200.d1.2.01",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Microsoft Sentinel permissions, select Yes if true.",
+   "statements": [
+    {
+     "s": "A user with Microsoft Sentinel Responder also needs Workbook Contributor to save a new workbook.",
+     "a": true
+    },
+    {
+     "s": "The Microsoft Entra Security Reader role can run KQL jobs that write to Sentinel data lake tables.",
+     "a": false
+    },
+    {
+     "s": "Role assignments are cumulative, so a user with Reader and Contributor has Contributor permissions.",
+     "a": true
+    }
+   ],
+   "explain": "Reader/Responder need Workbook Contributor to create workbooks. Security Reader can read the data lake but writing needs Security Operator, Security Administrator or Global Administrator. Azure role assignments add up."
+  },
+  {
+   "id": "sc-200.d1a.q062",
+   "lesson": "sc-200.d1.2.01",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A data engineer must schedule KQL jobs that read from the Sentinel data lake and write results into new tables. Your policy requires the least privileged Microsoft Entra role that meets the need.",
+   "stem": "Which Microsoft Entra role should you assign?",
+   "options": [
+    "Security Reader",
+    "Global Reader",
+    "Security Administrator",
+    "Security Operator"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Security Operator can write to data lake tables and manage scheduled jobs, with fewer rights than Security Administrator. Security Reader and Global Reader are read-only for the data lake."
+  },
+  {
+   "id": "sc-200.d1a.q063",
+   "lesson": "sc-200.d1.2.02",
+   "objective": "d1.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is the maximum total retention for a Microsoft Sentinel table using the data lake tier?",
+   "options": [
+    "2 years",
+    "7 years",
+    "12 years",
+    "90 days"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Total retention, extended through the data lake tier, can reach 12 years. Two years is the analytics tier maximum, and 90 days is the included free analytics retention for Sentinel."
+  },
+  {
+   "id": "sc-200.d1a.q064",
+   "lesson": "sc-200.d1.2.02",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Contoso ingests 400 GB per day of firewall traffic logs. They are rarely queried, aren't used by any analytics rule, but must be kept for one year for compliance and searched occasionally during investigations.",
+   "stem": "What is the most cost-effective configuration for the firewall table?",
+   "options": [
+    "Analytics tier with 1-year analytics retention",
+    "Data lake tier with 1-year total retention",
+    "Analytics tier with 30-day retention and a daily export to Azure Storage",
+    "Analytics tier with a 100 GB/day commitment tier"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The data lake tier gives cheap long-term storage queried with KQL jobs, ideal for high-volume compliance logs not needed for detection. One-year analytics retention is expensive, exports add complexity, and a commitment tier doesn't reduce retention cost."
+  },
+  {
+   "id": "sc-200.d1a.q065",
+   "lesson": "sc-200.d1.2.02",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "A table is moved from the Analytics tier to the Data lake tier. Which features can no longer use that table? Select THREE.",
+   "options": [
+    "Scheduled analytics rules",
+    "KQL jobs",
+    "Workbooks",
+    "Hunting queries",
+    "Notebooks"
+   ],
+   "answer": [
+    0,
+    2,
+    3
+   ],
+   "explain": "Data-lake-only tables can't feed analytics rules, workbooks, hunting queries or watchlists. They are queried with KQL jobs, summary rules and notebooks."
+  },
+  {
+   "id": "sc-200.d1a.q067",
+   "lesson": "sc-200.d1.2.02",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "You manage table retention with the Azure CLI. Complete the command so SigninLogs keeps 180 days in the Analytics tier and two years in total.",
+   "code": "az monitor log-analytics workspace table update --resource-group rg-sentinel --workspace-name ws-sentinel --name SigninLogs --retention-time 180 ____ 730",
+   "options": [
+    "--archive-days",
+    "--plan",
+    "--total-retention-time",
+    "--data-retention"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "--retention-time sets interactive (analytics) retention and --total-retention-time sets total retention including long-term storage. --plan changes the table plan, and the other two parameters don't exist on this command."
+  },
+  {
+   "id": "sc-200.d1a.q068",
+   "lesson": "sc-200.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "By default, how far back can you query Defender XDR advanced hunting tables such as DeviceProcessEvents?",
+   "options": [
+    "7 days",
+    "180 days",
+    "90 days",
+    "30 days"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Advanced hunting data is kept for 30 days in the XDR default tier. 180 days is Defender for Endpoint's portal data retention, and 90 days is Sentinel's included analytics retention."
+  },
+  {
+   "id": "sc-200.d1a.q069",
+   "lesson": "sc-200.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Investigations at Adatum often find attacker dwell times of five months. The SOC needs to hunt DeviceNetworkEvents back six months with KQL. Real-time detections on the older data aren't needed, and the budget is tight. Microsoft Sentinel is onboarded to the Defender portal.",
+   "stem": "What should you configure for DeviceNetworkEvents in Table management?",
+   "options": [
+    "Analytics tier with 180 days retention",
+    "Leave the XDR default 30 days and export data with the streaming API",
+    "Data lake tier with total retention of 180 days",
+    "Basic logs plan with 180 days retention"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Data lake tier keeps 30 days in advanced hunting at no extra cost and stores older data cheaply for KQL jobs, avoiding analytics ingestion charges. Analytics 180 days works but costs more; streaming adds infrastructure; Table management offers Analytics or Data lake tiers, not a Basic plan, for XDR tables."
+  },
+  {
+   "id": "sc-200.d1a.q070",
+   "lesson": "sc-200.d1.2.04",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "A workbook has a time range parameter named TimeRange. Complete the query so it honours the time picker.",
+   "code": "SigninLogs\n| where TimeGenerated ____\n| where ResultType != \"0\"\n| summarize Failures = count() by UserPrincipalName\n| top 10 by Failures",
+   "options": [
+    "{TimeRange}",
+    "> ago(TimeRange)",
+    "between (TimeRange)",
+    "== {TimeRange:grain}"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "{TimeRange} expands into a complete clause such as > ago(1d). TimeRange without braces isn't substituted, and grain is the bin size for time-series, not a filter."
+  },
+  {
+   "id": "sc-200.d1a.q071",
+   "lesson": "sc-200.d1.2.04",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You want a customised copy of the Microsoft Entra sign-in logs workbook. Put the steps in order.",
+   "options": [
+    "Install the Microsoft Entra solution from Content hub",
+    "Open Workbooks > Templates and select the workbook",
+    "Select Save to create a saved copy",
+    "Select View saved workbook, then Edit"
+   ],
+   "explain": "The template comes from the Content hub solution; you save it to create your own resource, then open and edit the saved copy."
+  },
+  {
+   "id": "sc-200.d1a.q072",
+   "lesson": "sc-200.d1.2.05",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A SOC optimization threat-based recommendation for AiTM attacks says the required data sources are ingested, but the related detections are missing. What is the recommended action?",
+   "options": [
+    "Connect additional data sources",
+    "Turn on the relevant analytics rule templates",
+    "Move the tables to the Basic logs plan",
+    "Dismiss the recommendation"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "When data exists but detections don't, SOC optimization recommends enabling analytics rule templates. Connecting data is for when rules exist but data is missing; changing plans is a data value action; dismissing ignores the gap."
+  },
+  {
+   "id": "sc-200.d1a.q073",
+   "lesson": "sc-200.d1.2.05",
+   "objective": "d1.2",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about SOC optimization, select Yes if true.",
+   "statements": [
+    {
+     "s": "SOC optimization recommendations are recalculated every 24 hours.",
+     "a": true
+    },
+    {
+     "s": "Similar organizations recommendations can suggest custom tables used by other companies.",
+     "a": false
+    },
+    {
+     "s": "Using SOC optimization requires the workspace to be onboarded to the Defender portal.",
+     "a": true
+    }
+   ],
+   "explain": "Recommendations refresh every 24 hours and need a Defender-portal-onboarded workspace. Similar organizations recommendations exclude custom tables and connectors."
+  },
+  {
+   "id": "sc-200.d1a.q074",
+   "lesson": "sc-200.d1.2.06",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the query that shows billable ingestion in GB per table over the last 30 days, so you can find the costliest tables.",
+   "code": "Usage\n| where TimeGenerated > ago(30d)\n| where IsBillable == true\n| summarize BillableGB = ____ / 1000. by DataType\n| sort by BillableGB desc",
+   "options": [
+    "count()",
+    "sum(Quantity)",
+    "sum(_BilledSize)",
+    "dcount(Quantity)"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Quantity is in MB, so sum(Quantity) / 1000. gives GB. count() returns row counts, _BilledSize is in bytes (dividing by 1000 wouldn't give GB), and dcount counts distinct values."
+  },
+  {
+   "id": "sc-200.d1a.q075",
+   "lesson": "sc-200.d1.2.06",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which data sources can you ingest into Microsoft Sentinel at no ingestion charge? Select THREE.",
+   "options": [
+    "AzureActivity",
+    "SigninLogs",
+    "OfficeActivity (Office 365 audit logs)",
+    "SecurityAlert from Defender products",
+    "CommonSecurityLog"
+   ],
+   "answer": [
+    0,
+    2,
+    3
+   ],
+   "explain": "Azure Activity, Office 365 audit (OfficeActivity) and Defender security alerts (SecurityAlert/SecurityIncident) are free. Entra ID sign-in logs and CEF firewall data are billed."
+  },
+  {
+   "id": "sc-200.d1a.q076",
+   "lesson": "sc-200.d1.2.06",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Tailspin ingests a steady 140 GB per day into the Sentinel analytics tier on pay-as-you-go. Finance asks for a lower predictable bill. Volume is expected to stay stable, but could drop if a planned migration to the data lake tier succeeds next quarter.",
+   "stem": "Which statement about moving to a commitment tier is correct?",
+   "options": [
+    "Commitment tiers start at 500 GB/day, so Tailspin isn't eligible",
+    "You can raise or lower the commitment tier at any time with no restriction",
+    "Data above the commitment is rejected until the next day",
+    "Tailspin can select the 100 GB/day tier, and can lower a tier only once every 31 days"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Commitment tiers begin at 100 GB/day; you can increase any time but decrease only once every 31 days. Usage above the tier is billed at the same effective rate, not rejected."
+  },
+  {
+   "id": "sc-200.d1a.q077",
+   "lesson": "sc-200.d1.2.06",
+   "objective": "d1.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which table should you query to find failed Microsoft Sentinel automation rule runs and playbook triggers?",
+   "options": [
+    "SentinelHealth",
+    "SentinelAudit",
+    "SecurityIncident",
+    "Usage"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "SentinelHealth records 'Automation rule run' and 'Playbook was triggered' events with a Status. SentinelAudit records configuration changes, SecurityIncident holds incidents, and Usage holds ingestion volume."
+  },
+  {
+   "id": "sc-200.d1a.q078",
+   "lesson": "sc-200.d1.2.05",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "SOC optimization reports that table ProxyLogs_CL (40 GB/day) wasn't used by any analytics rule, hunting query or workbook in the last 30 days. Legal says the logs must be retained for 3 years in case of disputes.",
+   "stem": "What is the best response to the recommendation?",
+   "options": [
+    "Stop ingestion and delete the table",
+    "Move the table to the data lake tier with 3-year total retention",
+    "Mark the recommendation as completed without changes",
+    "Increase analytics retention to 2 years"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The data is needed for compliance but not detection, so cheap long-term data lake storage fits. Deleting breaks the legal requirement, marking complete fixes nothing, and analytics retention max is 2 years and costly."
+  }
+ ]
+}

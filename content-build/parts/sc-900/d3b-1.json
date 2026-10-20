@@ -1,0 +1,762 @@
+{
+  "exam": "sc-900",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "sc-900.d3.3.01",
+      "objective": "d3.3",
+      "seq": 1,
+      "title": "SIEM and SOAR concepts",
+      "short": "A SIEM (security information and event management) collects, stores and correlates security data from many sources to detect threats. SOAR (security orchestration, automation and response) uses playbooks to automate and coordinate the response. Microsoft Sentinel is a cloud-native SIEM and SOAR.",
+      "deep": "A security operations centre (SOC) gets logs from firewalls, servers, identity systems, SaaS apps and endpoints. Looking at each console separately is slow, so organisations centralise.\n\n**SIEM** = security information and event management. It:\n- **collects** logs and events from many sources\n- **normalises** them so different formats can be compared\n- **correlates** events with detection rules to raise **alerts**\n- groups related alerts into **incidents** and gives dashboards and long-term search for investigations and compliance\n\n**SOAR** = security orchestration, automation and response. It takes the output of the SIEM and acts on it:\n- **orchestration**: connects many tools (ticketing, firewall, identity, email)\n- **automation**: runs repeatable steps without a human, using **playbooks**\n- **response**: contains threats fast, e.g. disable an account or block an IP\n\nTogether they shorten the time to detect and the time to respond. **Microsoft Sentinel** provides both in one cloud-native service, so there is no SIEM hardware to buy or scale. Compare with **XDR** (Microsoft Defender XDR), which focuses on protecting and correlating Microsoft's own security products; a SIEM can ingest data from almost anything.",
+      "terms": [
+        { "t": "SIEM", "d": "Security information and event management: collects and correlates log data to detect threats." },
+        { "t": "SOAR", "d": "Security orchestration, automation and response: automates response steps across tools with playbooks." },
+        { "t": "Playbook", "d": "A predefined, automated set of response actions run when an alert or incident occurs." },
+        { "t": "Incident", "d": "A group of related alerts that together tell the story of one attack." }
+      ],
+      "trap": "Exams swap the two: detection/correlation of logs is SIEM, automated response with playbooks is SOAR; Sentinel does both.",
+      "example": "Sentinel correlates failed sign-ins from Entra ID with a firewall alert (SIEM), then a playbook disables the account and opens a ServiceNow ticket (SOAR).",
+      "diagram": { "kind": "flow", "items": ["Log sources", "Collect", "Correlate (SIEM)", "Incident", "Playbook (SOAR)"] }
+    },
+    {
+      "id": "sc-900.d3.3.02",
+      "objective": "d3.3",
+      "seq": 2,
+      "title": "Microsoft Sentinel: collect and detect",
+      "short": "Microsoft Sentinel collects data with data connectors into a Log Analytics workspace, then detects threats with analytics rules, threat intelligence, watchlists and UEBA. Workbooks give interactive visual reports of the data.",
+      "deep": "Sentinel's work can be remembered as **collect, detect, investigate, respond**. This lesson covers the first two.\n\n**Collect**\n- **Data connectors** bring in data from Microsoft sources (Microsoft Entra ID, Microsoft 365, Defender XDR, Azure Activity), other clouds, and third-party products. Generic methods include **Syslog**, **Common Event Format (CEF)** and REST APIs, and you can build custom connectors.\n- Data lands in a **Log Analytics workspace** and is queried with **KQL** (Kusto Query Language).\n- **ASIM** (Advanced Security Information Model) normalises different sources into a common schema.\n\n**Detect**\n- **Analytics rules** search the data and raise alerts and incidents. Types include **scheduled** query rules (run a KQL query on an interval), **near-real-time (NRT)** rules (run about every minute), **anomaly** rules that use machine learning, and **threat intelligence** matching rules.\n- **Threat intelligence** indicators (IPs, domains, URLs, file hashes) are matched against your logs.\n- **Watchlists** let you correlate your own lists, such as VIP users or terminated employees.\n- **UEBA** (user and entity behaviour analytics) builds baselines and flags unusual behaviour.\n- **Workbooks** are interactive dashboards built on Azure Monitor workbooks, with many templates.\n- A **MITRE ATT&CK** view shows your detection coverage.",
+      "terms": [
+        { "t": "Data connector", "d": "Built-in or custom integration that ingests data from a source into Sentinel." },
+        { "t": "Analytics rule", "d": "Detection logic (often a KQL query) that raises alerts and creates incidents." },
+        { "t": "Workbook", "d": "Interactive dashboard/report for visualising and monitoring Sentinel data." },
+        { "t": "Watchlist", "d": "Your own list of data (e.g. VIP users) used to enrich and correlate detections." },
+        { "t": "KQL", "d": "Kusto Query Language, used to query Log Analytics, Sentinel and advanced hunting." }
+      ],
+      "trap": "Workbooks visualise data, analytics rules detect, data connectors ingest; the exam offers all three as options for each other's job.",
+      "example": "A company connects Entra ID sign-in logs and its Palo Alto firewall via CEF, enables a scheduled rule for impossible travel, and builds a workbook of failed sign-ins by country.",
+      "diagram": { "kind": "cycle", "items": ["Collect", "Detect", "Investigate", "Respond"] }
+    },
+    {
+      "id": "sc-900.d3.3.03",
+      "objective": "d3.3",
+      "seq": 3,
+      "title": "Microsoft Sentinel: investigate, hunt and respond",
+      "short": "Sentinel incidents show related alerts, entities and an investigation graph. Analysts hunt proactively with KQL queries and Jupyter notebooks. Automation rules and playbooks built on Azure Logic Apps automate the response. Sentinel is moving fully into the Microsoft Defender portal.",
+      "deep": "**Investigate**\n- **Incidents** group related alerts and their **entities** (users, hosts, IPs, files). An interactive investigation graph and timeline help find scope and root cause.\n- **Threat hunting** is proactive: analysts search for attackers before any alert fires, using built-in **hunting queries** mapped to MITRE ATT&CK, **livestream**, and **bookmarks** to save findings. A useful hunting query can be turned into an analytics rule.\n- **Notebooks** are **Jupyter notebooks** (running in Azure Machine Learning) for advanced analysis, machine learning and external data.\n\n**Respond (SOAR)**\n- **Automation rules** are lightweight rules that run when incidents or alerts are created or updated: assign an owner, change severity, add tags, close noise, or **run a playbook**.\n- **Playbooks** are workflows built on **Azure Logic Apps**, with hundreds of connectors (Microsoft Teams, ServiceNow, Jira, Entra ID) to, for example, block a user, isolate a device or notify the SOC.\n\n**Where Sentinel lives**: Sentinel is generally available in the **Microsoft Defender portal**, alongside Defender XDR, giving one incident queue and unified advanced hunting. Microsoft has announced that Sentinel in the Azure portal is supported only until **31 March 2027**, after which it is available only in the Defender portal.",
+      "terms": [
+        { "t": "Threat hunting", "d": "Proactively searching data for hidden threats before an alert is raised." },
+        { "t": "Automation rule", "d": "Rule that runs on incident/alert creation or update to triage or trigger playbooks." },
+        { "t": "Azure Logic Apps", "d": "Workflow service that Sentinel playbooks are built on." },
+        { "t": "Notebook", "d": "Jupyter notebook for advanced, code-based investigation and analysis." }
+      ],
+      "trap": "Playbooks are built on Azure Logic Apps (not Azure Functions or Automation runbooks), and hunting does not need an alert first.",
+      "example": "An automation rule sees a high-severity incident involving a VIP watchlist user, assigns it to tier-2 and runs a Logic Apps playbook that posts to Teams and revokes the user's sessions.",
+      "diagram": { "kind": "flow", "items": ["Incident", "Automation rule", "Playbook", "Logic Apps actions"] }
+    },
+    {
+      "id": "sc-900.d3.4.01",
+      "objective": "d3.4",
+      "seq": 1,
+      "title": "Microsoft Defender XDR and its services",
+      "short": "Microsoft Defender XDR is a unified pre- and post-breach enterprise defence suite. It natively coordinates detection, prevention, investigation and response across endpoints, identities, email and collaboration, and cloud apps, correlating signals into incidents in the Microsoft Defender portal.",
+      "deep": "**XDR** means extended detection and response: instead of each product alerting on its own, signals from several domains are combined.\n\n**Core services in Microsoft Defender XDR**\n- **Microsoft Defender for Endpoint**: devices (Windows, macOS, Linux, Android, iOS)\n- **Microsoft Defender for Office 365**: email and collaboration (Exchange Online, Teams, SharePoint, OneDrive)\n- **Microsoft Defender for Identity**: on-premises Active Directory and hybrid identity\n- **Microsoft Defender for Cloud Apps**: SaaS apps (CASB)\n- **Microsoft Defender Vulnerability Management**: vulnerabilities and misconfigurations\n\nIt also integrates **Microsoft Entra ID Protection** (risky users and sign-ins), **Microsoft Purview** DLP and insider risk alerts, Microsoft Defender for Cloud alerts, and **Microsoft Sentinel**.\n\n**Why it matters**: a real attack crosses domains, e.g. phishing email, then malware on a laptop, then stolen credentials used against a domain controller. Defender XDR stitches those alerts into **one incident**, shows the full attack story, and can respond across products (quarantine email, isolate device, disable user).\n\n**XDR vs SIEM**: XDR is deep, native protection for Microsoft workloads; a SIEM such as Sentinel ingests data from almost any source. Microsoft combines them in the Defender portal for unified security operations.",
+      "terms": [
+        { "t": "XDR", "d": "Extended detection and response: correlates signals across multiple security domains." },
+        { "t": "Microsoft Defender XDR", "d": "Microsoft's unified suite across endpoint, identity, email and cloud apps." },
+        { "t": "Pre-breach / post-breach", "d": "Preventing compromise vs. detecting and responding after it happens." }
+      ],
+      "trap": "Defender XDR covers Microsoft workloads natively; when the scenario needs logs from third-party firewalls or other clouds in one place, the answer is Microsoft Sentinel.",
+      "example": "A user opens a phishing attachment; Defender XDR links the Defender for Office 365 email alert, the Defender for Endpoint malware alert and a Defender for Identity reconnaissance alert into one incident.",
+      "diagram": { "kind": "compare", "cols": ["Service", "Protects"], "rows": [["Defender for Endpoint", "Devices"], ["Defender for Office 365", "Email, Teams, files"], ["Defender for Identity", "On-prem AD identities"], ["Defender for Cloud Apps", "SaaS apps"], ["Defender Vuln. Mgmt", "Weaknesses, exposures"]] }
+    },
+    {
+      "id": "sc-900.d3.4.02",
+      "objective": "d3.4",
+      "seq": 2,
+      "title": "Defender XDR incidents, automation and advanced hunting",
+      "short": "Defender XDR correlates alerts into incidents, runs automated investigation and response (AIR), and uses automatic attack disruption to contain in-progress attacks such as ransomware. Advanced hunting lets analysts query up to 30 days of raw data with KQL.",
+      "deep": "**Incidents and alerts**: an **alert** is one detection; an **incident** is the correlated collection of alerts, devices, users, mailboxes and evidence for one attack. Analysts manage one incident queue instead of many product queues.\n\n**Automated investigation and response (AIR)**: when an alert fires, Defender XDR can automatically investigate the entities, decide whether evidence is malicious, and remediate (for example quarantine a file or soft-delete an email). Actions are approved or reviewed in the **Action center**, which lists pending and completed remediation actions.\n\n**Automatic attack disruption**: for high-confidence, in-progress attacks such as human-operated ransomware, business email compromise or adversary-in-the-middle, Defender XDR automatically contains attacker-controlled assets, e.g. **contain device** (Defender for Endpoint) or **disable user** (Defender for Identity / Entra ID). It buys the SOC time; the team stays in control and **all automatic actions can be undone**. Critical assets can be excluded.\n\n**Advanced hunting**: a query-based tool using **KQL** over tables such as `DeviceProcessEvents`, `EmailEvents`, `IdentityLogonEvents` and `CloudAppEvents`. You can explore raw data (default 30 days in the Defender XDR tables), build **custom detection rules** from queries, and, with Sentinel connected, query Sentinel data in the same place.",
+      "terms": [
+        { "t": "Automatic attack disruption", "d": "Automated containment of compromised users/devices during a high-confidence attack." },
+        { "t": "AIR", "d": "Automated investigation and response: auto-investigates alerts and remediates threats." },
+        { "t": "Action center", "d": "Defender portal page listing pending and completed remediation actions." },
+        { "t": "Advanced hunting", "d": "KQL-based threat hunting over raw Defender XDR (and Sentinel) data." }
+      ],
+      "trap": "Attack disruption actions are reversible by the SOC; the exam may claim they are permanent or that they replace analysts.",
+      "example": "Ransomware starts encrypting a file server; attack disruption disables the compromised admin account and contains the source device within minutes, then the analyst investigates and releases the device.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d3.4.03",
+      "objective": "d3.4",
+      "seq": 3,
+      "title": "Defender for Office 365: EOP and Plan 1",
+      "short": "Exchange Online Protection (EOP) gives every cloud mailbox anti-malware, anti-spam and basic anti-spoofing. Defender for Office 365 Plan 1 adds Safe Attachments, Safe Links, and impersonation protection in anti-phishing policies, covering email, Teams, SharePoint and OneDrive.",
+      "deep": "**Exchange Online Protection (EOP)** is built into all Microsoft 365 cloud mailboxes:\n- anti-malware, anti-spam (including bulk mail), outbound spam protection\n- anti-phishing with **spoof intelligence**\n- connection filtering, quarantine, Tenant Allow/Block List\n- **zero-hour auto purge (ZAP)**: removes malicious mail already delivered\n- message trace and email reports\n\n**Microsoft Defender for Office 365 Plan 1** adds protection against zero-day and targeted threats:\n- **Safe Attachments**: opens unknown attachments in a virtual environment (detonation/sandbox) before delivery to see if they behave maliciously; also scans files in **SharePoint, OneDrive and Microsoft Teams**\n- **Safe Links**: rewrites URLs and checks them **at time of click** in email, Office apps and Teams, so a link that becomes malicious after delivery is still blocked\n- **Anti-phishing impersonation protection**: user impersonation (e.g. a fake CEO), domain impersonation (lookalike domains), and **mailbox intelligence** that learns each user's normal contacts\n- **Real-time detections** for investigation, and alerts in the Defender portal\n\nPlan 1 is included in Microsoft 365 Business Premium; Plan 2 (next lesson) is included in Microsoft 365 E5.",
+      "terms": [
+        { "t": "Exchange Online Protection (EOP)", "d": "Baseline email filtering included with every cloud mailbox." },
+        { "t": "Safe Attachments", "d": "Detonates attachments in a sandbox before delivery to catch unknown malware." },
+        { "t": "Safe Links", "d": "Time-of-click URL scanning and rewriting in email, Office apps and Teams." },
+        { "t": "Impersonation protection", "d": "Anti-phishing detection of messages pretending to be specific users or domains." }
+      ],
+      "trap": "Safe Links checks URLs at click time while Safe Attachments sandboxes files; both are Plan 1 features, not Plan 2-only.",
+      "example": "An attacker sends a clean link that is switched to a phishing page hours later; Safe Links blocks it when the user clicks.",
+      "diagram": { "kind": "compare", "cols": ["EOP", "Plan 1 adds", "Plan 2 adds"], "rows": [["Anti-malware, spam", "Safe Attachments", "Threat Explorer"], ["Spoof intelligence", "Safe Links", "AIR"], ["ZAP for email", "Impersonation protect", "Attack sim training"]] }
+    },
+    {
+      "id": "sc-900.d3.4.04",
+      "objective": "d3.4",
+      "seq": 4,
+      "title": "Defender for Office 365 Plan 2: investigate and respond",
+      "short": "Defender for Office 365 Plan 2 includes everything in Plan 1 plus Threat Explorer, Threat Trackers, Campaigns, automated investigation and response (AIR), and Attack simulation training for running realistic phishing simulations.",
+      "deep": "Plan 2 is aimed at security teams that investigate and respond, not only prevent.\n\n- **Threat Explorer** (replaces Real-time detections from Plan 1): search all email, filter by threat type, sender, URL or attachment, and take remediation actions such as soft delete or move to junk.\n- **Threat Trackers**: widgets and saved queries that track threats relevant to your organisation.\n- **Campaigns**: groups related malicious messages into a coordinated campaign view, showing who was targeted and who clicked.\n- **Automated investigation and response (AIR)**: playbooks that investigate an alert (e.g. a user-reported phish), find similar messages and recommend or perform remediation. AIR for compromised users is included.\n- **Attack simulation training**: run benign, realistic phishing and other social-engineering simulations, then assign training to users who fell for them.\n- **Priority account protection** and advanced hunting over email and Teams data in Defender XDR.\n\n**Licensing**: Plan 2 is included in **Microsoft 365 E5** and Office 365 E5 (and available as add-ons). EOP features such as **ZAP** remain available in every tier.",
+      "terms": [
+        { "t": "Threat Explorer", "d": "Plan 2 tool to hunt, analyse and remediate email threats." },
+        { "t": "Campaigns", "d": "View grouping related phishing/malware messages into one coordinated attack." },
+        { "t": "Attack simulation training", "d": "Plan 2 feature that runs simulated phishing attacks and assigns training." }
+      ],
+      "trap": "Plan 1 shows Real-time detections, Plan 2 shows Threat Explorer; attack simulation training and AIR are Plan 2 only.",
+      "example": "After a phishing wave, the SOC uses Campaigns to see 400 recipients, removes the messages with Threat Explorer and schedules an attack simulation for the departments that clicked.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d3.4.05",
+      "objective": "d3.4",
+      "seq": 5,
+      "title": "Microsoft Defender for Endpoint",
+      "short": "Microsoft Defender for Endpoint protects devices with attack surface reduction, next-generation protection (Microsoft Defender Antivirus), endpoint detection and response (EDR), automated investigation and remediation, and vulnerability management, across Windows, macOS, Linux, Android and iOS.",
+      "deep": "Defender for Endpoint is an enterprise endpoint security platform. It uses sensors built into Windows (and agents for other platforms) plus Microsoft's cloud analytics.\n\n**Main capabilities**\n- **Core Defender Vulnerability Management**: discover devices and software, find vulnerabilities and misconfigurations.\n- **Attack surface reduction (ASR)**: shrink the places attackers can get in, e.g. **ASR rules** (block Office apps creating child processes), controlled folder access (ransomware), network protection, exploit protection, device control.\n- **Next-generation protection**: **Microsoft Defender Antivirus** with cloud-delivered, behaviour-based protection.\n- **Endpoint detection and response (EDR)**: records detailed device behaviour, detects advanced attacks in near real time and lets analysts see process trees and timelines.\n- **Automated investigation and remediation**: investigates alerts automatically and fixes issues at scale.\n- **Response actions**: **isolate device** (cut it off the network while keeping its connection to the Defender service), run antivirus scan, restrict app execution, collect an investigation package, live response.\n\n**Plans**: **Plan 1** gives prevention (next-gen protection, ASR, device control, manual response). **Plan 2** adds **EDR**, automated investigation and remediation, advanced hunting, core vulnerability management and threat analytics. Microsoft 365 E5 includes Plan 2.",
+      "terms": [
+        { "t": "EDR", "d": "Endpoint detection and response: behavioural detection, investigation and response on devices." },
+        { "t": "Attack surface reduction (ASR)", "d": "Controls and rules that block risky behaviours attackers commonly abuse." },
+        { "t": "Next-generation protection", "d": "Microsoft Defender Antivirus with cloud and behaviour-based detection." },
+        { "t": "Isolate device", "d": "Response action cutting a device off the network except the Defender service." }
+      ],
+      "trap": "EDR and automated investigation are Plan 2 features; Plan 1 is mainly prevention (antivirus and ASR).",
+      "example": "A macro in a Word file tries to launch PowerShell; an ASR rule blocks it, EDR raises an alert, and the analyst isolates the laptop.",
+      "diagram": { "kind": "stack", "items": ["Vulnerability management", "Attack surface reduction", "Next-gen protection", "EDR", "Automated investigation"] }
+    },
+    {
+      "id": "sc-900.d3.4.06",
+      "objective": "d3.4",
+      "seq": 6,
+      "title": "Defender for Cloud Apps: CASB and Cloud Discovery",
+      "short": "Microsoft Defender for Cloud Apps is a cloud access security broker (CASB). It discovers shadow IT with Cloud Discovery, rates apps in its cloud app catalog, and uses app connectors to give visibility and control of sanctioned SaaS apps.",
+      "deep": "A **CASB** sits between users and cloud services to enforce security policy. Microsoft describes the CASB framework as four pillars: **visibility** (find apps and users), **data security** (DLP, sensitivity labels), **threat protection** (detect anomalous behaviour, compromised accounts, malware) and **compliance** (assess apps against regulations).\n\n**Cloud Discovery (shadow IT)**\n- Analyses traffic logs from firewalls and proxies (uploaded snapshots or continuous via a log collector), or uses the **Defender for Endpoint integration** to see cloud app use from managed devices, on or off the corporate network.\n- Each discovered app is matched against the **cloud app catalog**, which gives a risk score based on many risk factors (security, compliance, legal, general).\n- Process: **identify** apps in use, **assess** their risk, **manage** them by tagging **sanctioned** or **unsanctioned** and setting policies. Unsanctioned apps can be blocked on devices onboarded to Defender for Endpoint.\n\n**App connectors** use the SaaS provider's APIs (for example Microsoft 365, Salesforce, Google Workspace, Box) to scan files, activities and configuration in sanctioned apps, with no agent inside the SaaS app.",
+      "terms": [
+        { "t": "CASB", "d": "Cloud access security broker: enforces security between users and cloud apps." },
+        { "t": "Shadow IT", "d": "Cloud apps used without IT's knowledge or approval." },
+        { "t": "Cloud Discovery", "d": "Defender for Cloud Apps feature that finds cloud apps from traffic/endpoint data." },
+        { "t": "App connector", "d": "API integration with a SaaS app for visibility and control." }
+      ],
+      "trap": "Cloud Discovery works from traffic logs or Defender for Endpoint signals; it doesn't need an agent inside each SaaS app.",
+      "example": "Cloud Discovery reveals 60 users uploading files to an unapproved file-sharing app with a poor risk score; IT tags it unsanctioned and it is blocked on managed devices.",
+      "diagram": { "kind": "flow", "items": ["Traffic logs", "Cloud Discovery", "Risk score", "Sanction/unsanction"] }
+    },
+    {
+      "id": "sc-900.d3.4.07",
+      "objective": "d3.4",
+      "seq": 7,
+      "title": "Defender for Cloud Apps: session control, SSPM and app governance",
+      "short": "Conditional Access App Control lets Defender for Cloud Apps monitor and control user sessions in real time, such as blocking downloads on unmanaged devices. SaaS Security Posture Management (SSPM) finds misconfigurations, and app governance protects against risky OAuth apps.",
+      "deep": "**Conditional Access App Control** works with **Microsoft Entra Conditional Access**: Conditional Access routes a user's browser session through Defender for Cloud Apps, which acts as a **reverse proxy**. Then:\n- **access policies** allow or block access to the app\n- **session policies** monitor activity in real time and can block downloads, protect downloaded files with labels, or block uploads of sensitive content, e.g. only on unmanaged devices\n\n**Other policy types**: activity policies, anomaly detection policies (impossible travel, mass download, ransomware-like activity), file policies (scan files in connected apps for sensitive information) and Cloud Discovery policies.\n\n**SaaS Security Posture Management (SSPM)**: for connected apps, surfaces misconfigurations and recommended settings based on industry standards; these recommendations appear in **Microsoft Secure Score**.\n\n**App governance** (app-to-app protection): many apps use **OAuth** consent to access data on a user's behalf through Microsoft Graph. App governance monitors these apps' permissions, credentials and behaviour, detects overprivileged, unused or anomalous apps, and can disable them.\n\nDefender for Cloud Apps works for Microsoft and non-Microsoft SaaS apps and feeds alerts into Defender XDR incidents.",
+      "terms": [
+        { "t": "Conditional Access App Control", "d": "Reverse-proxy session control for cloud apps, driven by Entra Conditional Access." },
+        { "t": "Session policy", "d": "Real-time monitoring/control of actions (download, upload) inside an app session." },
+        { "t": "SSPM", "d": "SaaS Security Posture Management: finds misconfigurations in connected SaaS apps." },
+        { "t": "App governance", "d": "Monitoring and control of OAuth-enabled apps and their permissions." }
+      ],
+      "trap": "Real-time control of downloads within a session is Conditional Access App Control (session policy), not Cloud Discovery or app connectors.",
+      "example": "Contractors on personal laptops can view SharePoint documents in the browser, but a session policy blocks downloading files labelled Confidential.",
+      "diagram": { "kind": "flow", "items": ["User", "Entra Cond. Access", "Cloud Apps proxy", "SaaS app"] }
+    },
+    {
+      "id": "sc-900.d3.4.08",
+      "objective": "d3.4",
+      "seq": 8,
+      "title": "Microsoft Defender for Identity",
+      "short": "Microsoft Defender for Identity uses sensors on domain controllers and identity servers to detect attacks against on-premises Active Directory, such as reconnaissance, compromised credentials, lateral movement and domain dominance, and reports identity security posture.",
+      "deep": "Many attacks end with the attacker controlling Active Directory. **Microsoft Defender for Identity** (formerly Azure Advanced Threat Protection, Azure ATP) watches identity infrastructure to stop that.\n\n**How it works**\n- **Sensors** are installed on **domain controllers**, and also on AD FS, AD CS and Microsoft Entra Connect servers. They read network traffic and Windows events locally and send only the needed signals to the cloud service.\n- Behavioural analytics learn normal behaviour and flag anomalies. It is managed in the **Microsoft Defender portal**.\n\n**What it detects, by attack stage**\n- **Reconnaissance**: user, group, IP and LDAP enumeration\n- **Compromised credentials**: brute-force attacks, suspicious authentications\n- **Lateral movement**: pass-the-hash, pass-the-ticket\n- **Domain dominance**: Golden Ticket, DCSync, DCShadow, malicious replication, remote code execution on domain controllers\n\n**Posture**: **identity security posture assessments** (e.g. unsecure Kerberos delegation, legacy protocols) appear in **Microsoft Secure Score**, and **lateral movement paths** show how an attacker could hop from a normal account to a sensitive one.\n\nResponse actions, such as **disabling a user** in AD, can be performed manually or by automatic attack disruption.",
+      "terms": [
+        { "t": "Sensor", "d": "Defender for Identity component installed on domain controllers and identity servers." },
+        { "t": "Lateral movement path", "d": "Chain of accounts/devices an attacker could use to reach sensitive accounts." },
+        { "t": "Golden Ticket", "d": "Forged Kerberos ticket using the KRBTGT key, giving domain-wide access." },
+        { "t": "Pass-the-hash", "d": "Reusing a stolen password hash to authenticate without the password." }
+      ],
+      "trap": "On-premises AD attacks (Golden Ticket, pass-the-hash, LDAP reconnaissance) map to Defender for Identity, not Entra ID Protection, which covers cloud sign-in and user risk.",
+      "example": "An attacker on a compromised workstation enumerates Domain Admins via LDAP; Defender for Identity raises a reconnaissance alert linked to the device's EDR alerts.",
+      "diagram": { "kind": "flow", "items": ["Reconnaissance", "Credential theft", "Lateral movement", "Domain dominance"] }
+    },
+    {
+      "id": "sc-900.d3.4.09",
+      "objective": "d3.4",
+      "seq": 9,
+      "title": "Microsoft Defender Vulnerability Management",
+      "short": "Microsoft Defender Vulnerability Management continuously discovers devices and software, assesses vulnerabilities and misconfigurations, prioritises them by risk and threat context, and tracks remediation, using the Defender for Endpoint sensor instead of periodic scans.",
+      "deep": "Traditional vulnerability scanning runs on a schedule. **Defender Vulnerability Management** is **continuous** and agent-based: it uses the Defender for Endpoint sensors already on devices.\n\n**Core capabilities** (included in Defender for Endpoint Plan 2 and Defender for Servers)\n- **Device discovery and inventory**, **software inventory** and software usage insights\n- **Vulnerability assessment** (CVEs) and **security configuration assessment**\n- **Risk-based prioritisation**: uses threat intelligence (is it exploited in the wild?), breach likelihood and business value of the device, and exposure score\n- **Remediation and tracking**: create **remediation requests**, which can open a ticket in **Microsoft Intune**, or record **exceptions**; track progress\n\n**Premium capabilities** (Defender Vulnerability Management add-on for Plan 2, or the **standalone** offering)\n- security baselines assessment\n- **block vulnerable applications**\n- browser extensions assessment\n- digital certificate assessment\n- network share analysis\n- hardware and firmware assessment\n\nIn the Defender portal, vulnerability management sits under **Exposure management**. It supports Windows, macOS, Linux and mobile platforms, and contributes to **Microsoft Secure Score for Devices**.",
+      "terms": [
+        { "t": "Exposure score", "d": "Measure of how exposed your devices are to current threats." },
+        { "t": "Security recommendation", "d": "Prioritised remediation action, such as updating a vulnerable app." },
+        { "t": "Remediation request", "d": "Tracked task to fix a weakness; can create an Intune ticket." }
+      ],
+      "trap": "Blocking vulnerable apps and assessing browser extensions/certificates need the premium add-on or standalone, not core Defender for Endpoint Plan 2.",
+      "example": "A new Chrome CVE is exploited in the wild; the dashboard ranks it top, shows 300 affected laptops, and the admin raises a remediation request to the Intune team.",
+      "diagram": { "kind": "cycle", "items": ["Discover", "Assess", "Prioritize", "Remediate", "Track"] }
+    },
+    {
+      "id": "sc-900.d3.4.10",
+      "objective": "d3.4",
+      "seq": 10,
+      "title": "Microsoft Threat Intelligence",
+      "short": "Microsoft Threat Intelligence turns Microsoft's view of global attacks into context for defenders: threat analytics reports in the Defender portal, threat actor profiles, and indicators of compromise used by Defender XDR and Microsoft Sentinel to detect and enrich threats.",
+      "deep": "Microsoft sees huge volumes of security signals every day across Windows, email, identities and Azure. Its researchers and AI turn that into **threat intelligence (TI)**: knowledge about attackers, their tools and their indicators.\n\n**How you consume it**\n- **Threat analytics** in the Microsoft Defender portal: reports written by Microsoft security researchers on active threat actors, campaigns, vulnerabilities and attack techniques. Each report shows an analyst summary, **related incidents**, **impacted assets**, your exposure, and **recommended actions/mitigations**.\n- **Threat intelligence in the Defender portal**: Microsoft has consolidated its threat intelligence, including capabilities formerly offered as Microsoft Defender Threat Intelligence (MDTI), into a Threat intelligence experience in the Defender portal with an **Overview** page (the threats most relevant to you) and **Intel explorer** (search actors, campaigns, indicators and vulnerabilities), so analysts get TI inside their normal investigations. Entity pages (IPs, domains) show TI context.\n- **Microsoft Sentinel**: TI indicators (IPs, domains, URLs, file hashes) can be imported and matched against logs with threat intelligence analytics rules.\n\n**Threat actor naming**: Microsoft uses a weather-themed taxonomy. Families such as **Typhoon** (China), **Blizzard** (Russia), **Sandstorm** (Iran) and **Sleet** (North Korea) identify nation-state actors; **Tempest** marks financially motivated groups; **Storm-** plus a number marks an emerging or developing group.",
+      "terms": [
+        { "t": "Threat analytics", "d": "Defender portal reports on active threats with impact and recommended mitigations." },
+        { "t": "Indicator of compromise (IoC)", "d": "Artifact such as an IP, domain, URL or hash linked to malicious activity." },
+        { "t": "Threat actor", "d": "A person or group conducting attacks, tracked with a Microsoft-assigned name." }
+      ],
+      "trap": "Threat analytics (TI reports) is a different tool from Activity explorer (Purview data activity) and Secure Score (posture).",
+      "example": "A threat analytics report on a new ransomware group shows two of your servers are exposed to the exploited CVE and lists the mitigations to apply.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d3.4.11",
+      "objective": "d3.4",
+      "seq": 11,
+      "title": "The Microsoft Defender portal",
+      "short": "The Microsoft Defender portal (security.microsoft.com) is the single place to manage Defender XDR and Microsoft Sentinel: incidents and alerts, advanced hunting, threat analytics, Microsoft Secure Score, exposure management, the Action center and Security Copilot.",
+      "deep": "The **Microsoft Defender portal** at `https://security.microsoft.com` unifies security operations that used to need many consoles.\n\n**Key areas**\n- **Home**: customisable cards showing the security posture and active threats.\n- **Incidents & alerts**: one queue of correlated incidents from all Defender services, Entra ID Protection, Purview, Defender for Cloud and Sentinel.\n- **Hunting**: **advanced hunting** with KQL, custom detection rules.\n- **Actions & submissions**: the **Action center** (pending/completed remediations) and submissions of suspicious email, URLs and files to Microsoft.\n- **Threat intelligence**: **threat analytics** and intel profiles.\n- **Microsoft Secure Score**: a measurement of security posture with improvement actions for identity, devices, apps and data.\n- **Exposure management**: attack surface, critical assets, vulnerability management.\n- **Assets, Endpoints, Email & collaboration, Cloud apps, Identities**: product-specific pages and policies.\n- **Microsoft Sentinel**: SIEM features (connectors, analytics, workbooks, automation) in the same portal.\n- **Microsoft Security Copilot** embedded to summarise incidents, explain scripts and generate KQL.\n\n**Permissions**: Defender XDR **unified role-based access control (RBAC)** lets you manage permissions across workloads in one place, alongside Microsoft Entra roles such as Security Administrator and Security Reader.\n\nCompliance tools (sensitivity labels, eDiscovery) live in the separate **Microsoft Purview portal**.",
+      "terms": [
+        { "t": "Microsoft Defender portal", "d": "security.microsoft.com, unified console for Defender XDR and Sentinel." },
+        { "t": "Microsoft Secure Score", "d": "Posture measurement with recommended improvement actions." },
+        { "t": "Unified RBAC", "d": "Defender XDR permissions model managed centrally across workloads." }
+      ],
+      "trap": "Sensitivity labels and eDiscovery are managed in the Microsoft Purview portal, not the Defender portal.",
+      "example": "A SOC analyst starts in the Defender portal incident queue, pivots to advanced hunting, checks a threat analytics report and approves a pending action in the Action center without leaving the portal.",
+      "diagram": null
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-900.d3b.q001",
+      "lesson": "sc-900.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which description best matches a security information and event management (SIEM) system?",
+      "options": [
+        "It collects and correlates log data from many sources to detect threats and raise alerts",
+        "It runs automated playbooks that orchestrate response actions across security tools",
+        "It assesses cloud resources against a benchmark and produces a secure score",
+        "It stores cryptographic keys and secrets in hardware-backed vaults"
+      ],
+      "answer": [0],
+      "explain": "A SIEM centralises, normalises and correlates security data to detect threats. Automated playbooks are SOAR. Benchmark-based scoring is cloud security posture management (Defender for Cloud). Key and secret storage is Azure Key Vault."
+    },
+    {
+      "id": "sc-900.d3b.q002",
+      "lesson": "sc-900.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A SOC wants every high-severity incident to automatically block the attacker's IP on the firewall and open a ServiceNow ticket, without an analyst clicking anything. Which concept describes this?",
+      "options": [
+        "SIEM",
+        "SOAR",
+        "CSPM",
+        "CASB"
+      ],
+      "answer": [1],
+      "explain": "Security orchestration, automation and response (SOAR) automates and coordinates response actions across tools with playbooks. SIEM detects and correlates but does not itself orchestrate responses. CSPM is posture management. A CASB controls cloud app usage."
+    },
+    {
+      "id": "sc-900.d3b.q003",
+      "lesson": "sc-900.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        { "s": "Microsoft Sentinel provides both SIEM and SOAR capabilities.", "a": true },
+        { "s": "The main purpose of a SIEM is to automatically patch vulnerable endpoints.", "a": false },
+        { "s": "SOAR solutions use playbooks to orchestrate response actions across multiple tools.", "a": true }
+      ],
+      "explain": "Sentinel is Microsoft's cloud-native SIEM and SOAR. A SIEM collects and correlates data for detection; patching is vulnerability management. SOAR uses playbooks to automate and orchestrate response across tools."
+    },
+    {
+      "id": "sc-900.d3b.q004",
+      "lesson": "sc-900.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps of a typical SIEM and SOAR workflow in order.",
+      "options": [
+        "Collect log and event data from many sources",
+        "Normalize and correlate the data with detection rules",
+        "Raise alerts and group them into incidents",
+        "Trigger an automated response playbook"
+      ],
+      "explain": "Data must be collected before it can be normalised and correlated. Correlation produces alerts that are grouped into incidents (SIEM), and incidents then trigger automated playbooks (SOAR)."
+    },
+    {
+      "id": "sc-900.d3b.q005",
+      "lesson": "sc-900.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Sentinel feature is used to ingest data from sources such as Microsoft Entra ID, Microsoft 365 and third-party firewalls?",
+      "options": [
+        "Workbooks",
+        "Analytics rules",
+        "Data connectors",
+        "Watchlists"
+      ],
+      "answer": [2],
+      "explain": "Data connectors bring data into Sentinel, including Microsoft services and third-party sources via Syslog, CEF or APIs. Workbooks visualise data, analytics rules detect threats in data already ingested, and watchlists hold your own reference lists."
+    },
+    {
+      "id": "sc-900.d3b.q006",
+      "lesson": "sc-900.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are types of analytics rules in Microsoft Sentinel? Select TWO.",
+      "options": [
+        "Scheduled query rules",
+        "Access review rules",
+        "Near-real-time (NRT) rules",
+        "Retention label rules",
+        "Session policies"
+      ],
+      "answer": [0, 2],
+      "explain": "Sentinel analytics rule types include scheduled query rules and near-real-time (NRT) rules, plus anomaly and threat intelligence rules. Access reviews belong to Entra ID Governance, retention labels to Microsoft Purview, and session policies to Defender for Cloud Apps."
+    },
+    {
+      "id": "sc-900.d3b.q007",
+      "lesson": "sc-900.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You want a Sentinel query that counts failed Windows logons (event ID 4625) per account and shows accounts with more than 10 failures. Complete the query.",
+      "code": "SecurityEvent\n| where EventID == 4625\n| ____ FailedLogons = count() by Account\n| where FailedLogons > 10",
+      "options": [
+        "project",
+        "extend",
+        "summarize",
+        "join"
+      ],
+      "answer": [2],
+      "explain": "summarize aggregates rows, here with count() grouped by Account. project only selects columns, extend adds calculated columns without aggregating, and join combines two tables."
+    },
+    {
+      "id": "sc-900.d3b.q008",
+      "lesson": "sc-900.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A SOC manager wants an interactive dashboard in Microsoft Sentinel that shows sign-in failures by country and trends over the last 30 days. What should be used?",
+      "options": [
+        "Notebooks",
+        "Playbooks",
+        "Watchlists",
+        "Workbooks"
+      ],
+      "answer": [3],
+      "explain": "Workbooks are interactive visual reports for monitoring Sentinel data and come with many templates. Notebooks are Jupyter-based code investigations, playbooks are Logic Apps automation, and watchlists are reference lists for correlation."
+    },
+    {
+      "id": "sc-900.d3b.q009",
+      "lesson": "sc-900.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Microsoft Sentinel playbooks are built on which Azure service?",
+      "options": [
+        "Azure Functions",
+        "Azure Logic Apps",
+        "Azure Automation runbooks",
+        "Azure Monitor workbooks"
+      ],
+      "answer": [1],
+      "explain": "Sentinel playbooks are Azure Logic Apps workflows with a large connector gallery. Azure Functions and Automation runbooks are other automation services but not the basis of playbooks. Azure Monitor workbooks underpin Sentinel workbooks (visualisation)."
+    },
+    {
+      "id": "sc-900.d3b.q010",
+      "lesson": "sc-900.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Sentinel, select Yes if true.",
+      "statements": [
+        { "s": "Automation rules can run a playbook when an incident is created.", "a": true },
+        { "s": "Threat hunting in Sentinel can only begin after an analytics rule has raised an alert.", "a": false },
+        { "s": "Microsoft Sentinel can be used from the Microsoft Defender portal.", "a": true }
+      ],
+      "explain": "Automation rules triage incidents and can trigger playbooks. Hunting is proactive and does not need an alert. Sentinel is generally available in the Defender portal, and Microsoft plans to end Azure portal support after 31 March 2027."
+    },
+    {
+      "id": "sc-900.d3b.q011",
+      "lesson": "sc-900.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "While hunting, you want only failed Microsoft Entra sign-ins from the last day, counted per user and IP. Complete the query.",
+      "code": "SigninLogs\n| where TimeGenerated > ago(1d)\n| ____ ResultType != \"0\"\n| summarize Failures = count() by UserPrincipalName, IPAddress",
+      "options": [
+        "summarize",
+        "project",
+        "where",
+        "sort by"
+      ],
+      "answer": [2],
+      "explain": "where filters rows; ResultType \"0\" means success, so != \"0\" keeps failures. summarize aggregates, project selects columns and sort by orders results; none of them filter on a condition."
+    },
+    {
+      "id": "sc-900.d3b.q012",
+      "lesson": "sc-900.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "A team is deploying Microsoft Sentinel. Put the steps in order.",
+      "options": [
+        "Connect data sources with data connectors",
+        "Detect threats with analytics rules",
+        "Investigate the resulting incidents",
+        "Respond with automation rules and playbooks"
+      ],
+      "explain": "Sentinel follows collect, detect, investigate, respond: data is ingested by connectors, analytics rules raise incidents, analysts investigate them, and automation rules and playbooks carry out the response."
+    },
+    {
+      "id": "sc-900.d3b.q013",
+      "lesson": "sc-900.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement best describes Microsoft Defender XDR?",
+      "options": [
+        "A cloud-native SIEM that ingests logs from any source through data connectors",
+        "A posture management tool that scores Azure resources against the Microsoft cloud security benchmark",
+        "A unified suite that correlates detection and response across endpoints, identities, email and cloud apps",
+        "A data governance service that classifies and labels sensitive information"
+      ],
+      "answer": [2],
+      "explain": "Defender XDR is a unified pre- and post-breach suite coordinating protection across Microsoft workloads. The SIEM description is Microsoft Sentinel, benchmark scoring is Defender for Cloud, and classification and labelling is Microsoft Purview."
+    },
+    {
+      "id": "sc-900.d3b.q014",
+      "lesson": "sc-900.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE services are part of Microsoft Defender XDR? Select THREE.",
+      "options": [
+        "Azure Key Vault",
+        "Microsoft Defender for Endpoint",
+        "Microsoft Defender for Identity",
+        "Microsoft Purview Compliance Manager",
+        "Microsoft Defender for Office 365"
+      ],
+      "answer": [1, 2, 4],
+      "explain": "Defender XDR includes Defender for Endpoint, Defender for Office 365, Defender for Identity, Defender for Cloud Apps and Defender Vulnerability Management. Azure Key Vault is an Azure infrastructure service and Compliance Manager is part of Microsoft Purview."
+    },
+    {
+      "id": "sc-900.d3b.q015",
+      "lesson": "sc-900.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An organization already uses Microsoft Defender XDR. It now needs to analyse logs from a third-party firewall and AWS CloudTrail alongside its Microsoft signals, with custom detection rules and long-term retention. What should it add?",
+      "options": [
+        "Microsoft Defender for Office 365 Plan 2",
+        "Microsoft Sentinel",
+        "Microsoft Defender for Endpoint Plan 2",
+        "Microsoft Defender Vulnerability Management"
+      ],
+      "answer": [1],
+      "explain": "Microsoft Sentinel is a SIEM that ingests data from almost any source, including third-party firewalls and other clouds, and complements Defender XDR. The other options protect specific Microsoft workloads and don't act as a general log platform."
+    },
+    {
+      "id": "sc-900.d3b.q016",
+      "lesson": "sc-900.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Defender XDR, select Yes if true.",
+      "statements": [
+        { "s": "Defender XDR can correlate alerts from several Defender services into a single incident.", "a": true },
+        { "s": "Analysts must open a separate console for each Defender service to investigate one incident.", "a": false },
+        { "s": "Alerts from Microsoft Entra ID Protection can appear in Defender XDR incidents.", "a": true }
+      ],
+      "explain": "Defender XDR correlates cross-domain alerts into one incident in the Microsoft Defender portal, so no separate consoles are needed. Microsoft Entra ID Protection alerts are integrated into Defender XDR incidents."
+    },
+    {
+      "id": "sc-900.d3b.q017",
+      "lesson": "sc-900.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "At Fabrikam, a user receives a phishing email and opens the attachment. Malware runs on the user's laptop, and the attacker then uses the stolen credentials to query the on-premises domain controller for admin group members. Defender for Office 365, Defender for Endpoint and Defender for Identity each raise an alert.",
+      "stem": "What is the main benefit Microsoft Defender XDR provides in this scenario?",
+      "options": [
+        "It forwards each alert separately to the owner of each product for review",
+        "It converts the alerts into Compliance Manager improvement actions",
+        "It disables all three services until a Global Administrator approves",
+        "It correlates the email, endpoint and identity alerts into one incident that shows the full attack story"
+      ],
+      "answer": [3],
+      "explain": "Defender XDR's value is cross-domain correlation: the three alerts become one incident with the full attack chain, and response can happen across products. It doesn't silo alerts, Compliance Manager is a Purview compliance tool, and services aren't disabled."
+    },
+    {
+      "id": "sc-900.d3b.q018",
+      "lesson": "sc-900.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Defender XDR capability automatically contains compromised users and devices during a high-confidence, in-progress attack such as human-operated ransomware?",
+      "options": [
+        "Threat analytics",
+        "Microsoft Secure Score",
+        "Cloud Discovery",
+        "Automatic attack disruption"
+      ],
+      "answer": [3],
+      "explain": "Automatic attack disruption contains attacker-controlled assets, for example by containing a device or disabling a user. Threat analytics provides reports, Secure Score measures posture, and Cloud Discovery finds shadow IT."
+    },
+    {
+      "id": "sc-900.d3b.q019",
+      "lesson": "sc-900.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "In advanced hunting, you want PowerShell processes launched with an encoded command in the last 7 days. Complete the query.",
+      "code": "DeviceProcessEvents\n| where Timestamp > ago(7d)\n| where FileName =~ \"powershell.exe\" and ProcessCommandLine ____ \"-EncodedCommand\"\n| project Timestamp, DeviceName, AccountName, ProcessCommandLine",
+      "options": [
+        "has",
+        "summarize",
+        "project",
+        "extend"
+      ],
+      "answer": [0],
+      "explain": "has is a string operator that tests whether a column contains a term, so it fits inside the where condition. summarize, project and extend are tabular operators that must follow a pipe, not string comparison operators."
+    },
+    {
+      "id": "sc-900.d3b.q020",
+      "lesson": "sc-900.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        { "s": "Advanced hunting in Microsoft Defender XDR uses Kusto Query Language (KQL).", "a": true },
+        { "s": "Actions taken by automatic attack disruption cannot be reversed by the security team.", "a": false },
+        { "s": "A Defender XDR incident can include alerts from both Defender for Endpoint and Defender for Office 365.", "a": true }
+      ],
+      "explain": "Advanced hunting is KQL-based. All automatic attack disruption actions can be undone by the SOC, which stays in control. Incidents are cross-product, combining alerts from multiple Defender services."
+    },
+    {
+      "id": "sc-900.d3b.q021",
+      "lesson": "sc-900.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO actions can automatic attack disruption in Microsoft Defender XDR take? Select TWO.",
+      "options": [
+        "Automatically reimage the affected device",
+        "Contain a compromised device",
+        "Permanently delete the user's OneDrive content",
+        "Disable a compromised user account"
+      ],
+      "answer": [1, 3],
+      "explain": "Attack disruption uses containment actions such as contain device (Defender for Endpoint) and disable user (Defender for Identity/Entra ID). It is designed to be reversible, so it does not reimage devices or delete data."
+    },
+    {
+      "id": "sc-900.d3b.q022",
+      "lesson": "sc-900.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An analyst wants to approve remediation actions that automated investigation has recommended, and see actions already completed. Where in the Microsoft Defender portal should they go?",
+      "options": [
+        "Threat analytics",
+        "Microsoft Secure Score",
+        "Action center",
+        "Exposure management"
+      ],
+      "answer": [2],
+      "explain": "The Action center lists pending and completed remediation actions from automated and manual investigations. Threat analytics provides threat reports, Secure Score measures posture, and Exposure management covers attack surface and vulnerabilities."
+    },
+    {
+      "id": "sc-900.d3b.q023",
+      "lesson": "sc-900.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Defender for Office 365 feature checks whether a URL is malicious at the moment a user clicks it?",
+      "options": [
+        "Safe Attachments",
+        "Safe Links",
+        "Zero-hour auto purge (ZAP)",
+        "Attack simulation training"
+      ],
+      "answer": [1],
+      "explain": "Safe Links rewrites and verifies URLs at time of click. Safe Attachments sandboxes files, ZAP removes malicious messages after delivery, and attack simulation training runs phishing simulations for user education."
+    },
+    {
+      "id": "sc-900.d3b.q024",
+      "lesson": "sc-900.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You want unknown email attachments opened in a virtual environment to observe their behaviour before the message is delivered. Which feature should you configure?",
+      "options": [
+        "Safe Links",
+        "Anti-spam policy",
+        "Safe Attachments",
+        "Spoof intelligence"
+      ],
+      "answer": [2],
+      "explain": "Safe Attachments detonates attachments in a sandbox before delivery to catch zero-day malware. Safe Links handles URLs, anti-spam policies filter junk mail, and spoof intelligence detects spoofed senders."
+    },
+    {
+      "id": "sc-900.d3b.q025",
+      "lesson": "sc-900.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        { "s": "Exchange Online Protection (EOP) is included with all Microsoft 365 cloud mailboxes.", "a": true },
+        { "s": "Safe Links and Safe Attachments are not included in Defender for Office 365 Plan 1.", "a": false },
+        { "s": "Safe Attachments can protect files in SharePoint, OneDrive and Microsoft Teams.", "a": true }
+      ],
+      "explain": "EOP is the built-in baseline for every cloud mailbox. Safe Links and Safe Attachments are Plan 1 features (so also in Plan 2). Safe Attachments for SharePoint, OneDrive and Teams extends sandbox scanning to shared files."
+    },
+    {
+      "id": "sc-900.d3b.q026",
+      "lesson": "sc-900.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "In advanced hunting, you want the 10 senders of the most phishing emails in the last day. Complete the query.",
+      "code": "EmailEvents\n| where Timestamp > ago(1d)\n| where ThreatTypes has \"Phish\"\n| ____ count() by SenderFromAddress\n| top 10 by count_",
+      "options": [
+        "project",
+        "extend",
+        "order by",
+        "summarize"
+      ],
+      "answer": [3],
+      "explain": "summarize count() by SenderFromAddress aggregates messages per sender and creates the default count_ column used by top. project and extend don't aggregate, and order by sorts without grouping, so count_ would not exist."
+    },
+    {
+      "id": "sc-900.d3b.q027",
+      "lesson": "sc-900.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Finance staff at Contoso receive emails that appear to come from the CEO, sent from contoso-corp.com instead of contoso.com, asking for urgent wire transfers. The messages contain no links or attachments. Contoso has Microsoft Defender for Office 365 Plan 1.",
+      "stem": "Which capability should Contoso configure to best detect these messages?",
+      "options": [
+        "Anti-phishing policy with user and domain impersonation protection",
+        "Outbound spam filter policy",
+        "Connection filtering with an IP Allow List",
+        "Safe Attachments policy in Dynamic Delivery mode"
+      ],
+      "answer": [0],
+      "explain": "Impersonation protection in Defender for Office 365 anti-phishing policies detects messages pretending to be specific users (the CEO) or lookalike domains. Outbound spam covers mail leaving the tenant, an IP Allow List would weaken filtering, and Safe Attachments needs attachments."
+    },
+    {
+      "id": "sc-900.d3b.q028",
+      "lesson": "sc-900.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Defender for Office 365 feature lets you send realistic but harmless phishing emails to users and assign training to those who click?",
+      "options": [
+        "Threat Explorer",
+        "Real-time detections",
+        "Safe Links",
+        "Attack simulation training"
+      ],
+      "answer": [3],
+      "explain": "Attack simulation training, a Plan 2 feature, runs benign phishing and social-engineering simulations and assigns training. Threat Explorer and Real-time detections are investigation tools, and Safe Links protects real URLs at click time."
+    },
+    {
+      "id": "sc-900.d3b.q029",
+      "lesson": "sc-900.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE features are included in Defender for Office 365 Plan 2 but not in Plan 1? Select THREE.",
+      "options": [
+        "Safe Links",
+        "Threat Explorer",
+        "Automated investigation and response (AIR)",
+        "Safe Attachments",
+        "Attack simulation training"
+      ],
+      "answer": [1, 2, 4],
+      "explain": "Threat Explorer, AIR and attack simulation training are Plan 2 additions. Safe Links and Safe Attachments are already in Plan 1, so they are in both plans."
+    },
+    {
+      "id": "sc-900.d3b.q030",
+      "lesson": "sc-900.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "With Defender for Office 365 Plan 2, a security analyst wants to search all malicious emails delivered during the past week, filter by sender and URL, and soft delete them from mailboxes. Which tool should be used?",
+      "options": [
+        "Message trace",
+        "Content explorer",
+        "Threat Explorer",
+        "Real-time detections"
+      ],
+      "answer": [2],
+      "explain": "Threat Explorer is the Plan 2 tool for hunting and remediating email threats, including soft delete. Message trace only follows mail flow, Content explorer is a Purview data classification tool, and Real-time detections is the Plan 1 view without these remediation actions."
+    },
+    {
+      "id": "sc-900.d3b.q031",
+      "lesson": "sc-900.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        { "s": "Microsoft 365 E5 includes Microsoft Defender for Office 365 Plan 2.", "a": true },
+        { "s": "The Campaigns view groups related malicious messages into one coordinated attack view.", "a": true },
+        { "s": "Zero-hour auto purge (ZAP) for email is available only with Defender for Office 365 Plan 2.", "a": false }
+      ],
+      "explain": "Microsoft 365 E5 includes Plan 2. Campaigns, a Plan 2 feature, groups related messages into a coordinated campaign. ZAP for email is part of Exchange Online Protection, so every cloud mailbox gets it."
+    }
+  ]
+}

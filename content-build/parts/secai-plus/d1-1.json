@@ -1,0 +1,877 @@
+{
+  "exam": "secai-plus",
+  "domain": "d1",
+  "lessons": [
+    {
+      "id": "secai-plus.d1.1.01",
+      "objective": "d1.1",
+      "seq": 1,
+      "title": "AI, machine learning, statistical and deep learning",
+      "short": "Artificial intelligence (AI) is the broad goal of machines doing tasks that need human-like judgment. Machine learning (ML) is the subset that learns patterns from data instead of hand-written rules. Statistical learning is the math foundation of ML; deep learning is ML built on many-layered neural networks.",
+      "deep": "Think of the terms as nested circles.\n\n- **Artificial intelligence** is the umbrella: any technique that lets a system perceive, reason, decide or act in ways we'd call intelligent, including old rule-based expert systems.\n- **Machine learning** is AI that *learns from data*. Instead of a programmer writing `if failed_logins > 5`, the model infers the pattern from examples.\n- **Statistical learning** is the mathematical side of ML: regression, decision trees, naive Bayes, support vector machines, clustering. These models usually need less data and compute and are easier to **explain**, which matters when an auditor asks why a login was scored risky.\n- **Deep learning** is ML using **neural networks with many hidden layers**. It learns its own features from raw data (bytes, pixels, text), handles huge unstructured datasets and powers modern vision and language models, but needs lots of data and GPUs and is harder to interpret.\n\nSecurity examples: a statistical model scoring impossible-travel sign-ins; a deep learning model classifying malware from raw binaries; transformer-based language models (a deep learning architecture) summarizing incidents.",
+      "terms": [
+        { "t": "Machine learning (ML)", "d": "AI that learns patterns from data rather than following explicitly programmed rules." },
+        { "t": "Statistical learning", "d": "Math-based ML methods such as regression, decision trees and Bayesian models; often simpler and more explainable." },
+        { "t": "Deep learning", "d": "ML that uses neural networks with many hidden layers to learn features directly from raw data." },
+        { "t": "Neural network", "d": "Layers of connected nodes whose weighted connections are adjusted during training." }
+      ],
+      "trap": "Deep learning is a subset of machine learning, which is a subset of AI; distractors reverse the hierarchy or present them as unrelated branches.",
+      "example": "A bank's fraud team uses logistic regression (statistical learning) for card-risk scores auditors can explain, and a deep learning model to spot malicious attachments from raw file bytes.",
+      "diagram": { "kind": "stack", "items": ["Artificial intelligence", "Machine learning", "Deep learning", "Transformers/LLMs"] }
+    },
+    {
+      "id": "secai-plus.d1.1.02",
+      "objective": "d1.1",
+      "seq": 2,
+      "title": "NLP, transformers, LLMs and SLMs",
+      "short": "Natural language processing (NLP) lets machines understand and generate human language. Transformers are the neural architecture behind modern NLP, using self-attention. Large language models (LLMs) are huge transformer models for general tasks; small language models (SLMs) have far fewer parameters and can run cheaply on-premises or on devices.",
+      "deep": "**NLP** covers tasks such as tokenization, sentiment analysis, entity extraction (pulling IPs or usernames from a ticket), translation and summarization.\n\nThe **transformer** architecture (introduced in 2017) replaced older recurrent networks. Its key mechanism, **self-attention**, lets the model weigh how every token in the input relates to every other token, and process the sequence in parallel, which made training on massive text corpora practical.\n\nA **large language model (LLM)** is a transformer trained on enormous datasets with billions of **parameters** (learned weights). It predicts the next token and can reason, write code and summarize across many domains, but needs significant GPU capacity and is usually consumed through a cloud API.\n\nA **small language model (SLM)** has far fewer parameters. It is cheaper, faster (lower latency) and can be hosted locally, at the edge or on a laptop, which helps keep sensitive data inside the organization (data sovereignty). The trade-off is narrower general knowledge; SLMs are often fine-tuned for a specific task such as log classification.\n\nSecurity angle: the hosting choice decides where prompts and data travel, so model size is also a data-protection decision.",
+      "terms": [
+        { "t": "Token", "d": "A chunk of text (word or sub-word) that a language model reads and generates." },
+        { "t": "Self-attention", "d": "Transformer mechanism that scores how strongly each token relates to every other token in the sequence." },
+        { "t": "Parameters", "d": "The learned weights of a model; LLMs have billions, SLMs far fewer." },
+        { "t": "Small language model (SLM)", "d": "Compact language model suited to local, low-cost, low-latency or task-specific use." }
+      ],
+      "trap": "When a scenario stresses local hosting, low cost, low latency or keeping data on-premises, the expected answer is usually an SLM, not a large cloud LLM.",
+      "example": "A hospital runs an SLM on its own servers to extract hostnames and usernames from incident tickets, so patient-related text never leaves its network.",
+      "diagram": { "kind": "compare", "cols": ["", "LLM", "SLM"], "rows": [["Parameters", "Billions or more", "Far fewer"], ["Typical hosting", "Cloud GPU clusters", "On-prem, edge, device"], ["Scope", "General purpose", "Narrow, task-focused"], ["Cost and latency", "Higher", "Lower"]] }
+    },
+    {
+      "id": "secai-plus.d1.1.03",
+      "objective": "d1.1",
+      "seq": 3,
+      "title": "Generative AI and GANs",
+      "short": "Generative AI creates new content such as text, images, audio and code, instead of only classifying or predicting. A generative adversarial network (GAN) is one generative technique: a generator network creates fake samples while a discriminator network tries to tell them from real ones, and both improve through competition.",
+      "deep": "Most classic ML is **discriminative**: it assigns a label (malicious or benign) or a score. **Generative AI** learns the patterns of its training data well enough to produce *new* samples. Main families:\n\n- **Transformer-based LLMs** generating text and code.\n- **Diffusion models** generating images by removing noise step by step.\n- **Generative adversarial networks (GANs)**.\n\nA **GAN** has two neural networks trained together. The **generator** turns random noise into a synthetic sample. The **discriminator** sees a mix of real and generated samples and predicts which is which. The discriminator's mistakes become feedback for the generator, and over many rounds the generator's fakes become hard to distinguish from real data.\n\nSecurity relevance:\n- Attackers use generative AI for **deepfakes**, convincing phishing and malware variants.\n- Defenders use it to create **synthetic data** (for example, rare attack samples to train a detector) and to summarize incidents.\n- Generated output can be wrong (**hallucinations**) and must be verified.",
+      "terms": [
+        { "t": "Generative AI", "d": "AI that produces new content (text, images, audio, code) resembling its training data." },
+        { "t": "Generator", "d": "GAN network that creates synthetic samples from random input." },
+        { "t": "Discriminator", "d": "GAN network that classifies samples as real or generated, providing the training signal for the generator." },
+        { "t": "Synthetic data", "d": "Artificially generated data used to supplement or replace real data, e.g. for rare classes or privacy." }
+      ],
+      "trap": "'Adversarial' in GAN means the two internal networks compete during training; don't confuse GANs with adversarial attacks by an external attacker.",
+      "example": "A detection team uses a GAN to generate extra samples of a rare malware family so its classifier sees enough examples during training.",
+      "diagram": { "kind": "flow", "items": ["Random noise", "Generator", "Fake sample", "Discriminator", "Real or fake?"] }
+    },
+    {
+      "id": "secai-plus.d1.1.04",
+      "objective": "d1.1",
+      "seq": 4,
+      "title": "Supervised, unsupervised and reinforcement learning",
+      "short": "Supervised learning trains on labeled examples to predict known answers. Unsupervised learning finds structure in unlabeled data, such as clusters and anomalies. Reinforcement learning trains an agent through trial and error, using rewards and penalties to learn which actions work best.",
+      "deep": "The three core training paradigms differ in what feedback the model gets.\n\n- **Supervised learning**: every training record has a **label** (the correct answer). Used for **classification** (phishing vs legitimate email) and **regression** (predicting a risk score). Needs good, trusted labels, which are expensive and can be tampered with (label flipping).\n- **Unsupervised learning**: no labels. The algorithm discovers structure on its own: **clustering** similar hosts, **anomaly detection** for behaviour far from the baseline, dimensionality reduction. Ideal when you don't know what attacks look like yet, such as user and entity behaviour analytics. Outputs need human interpretation.\n- **Reinforcement learning (RL)**: an **agent** acts in an **environment**, receives a **reward** or penalty, and learns a **policy** that maximizes long-term reward. Used for automated penetration-testing agents, adaptive defences and game-like decision problems. A variant, reinforcement learning from human feedback (RLHF), is used to align LLMs with human preferences.\n\nSome projects mix approaches (semi-supervised learning uses a few labels plus many unlabeled records).",
+      "terms": [
+        { "t": "Labeled data", "d": "Training records paired with the correct output, required for supervised learning." },
+        { "t": "Clustering", "d": "Unsupervised grouping of records by similarity without predefined labels." },
+        { "t": "Reward", "d": "Feedback signal an RL agent receives after an action, used to learn a policy." },
+        { "t": "Policy", "d": "In RL, the learned strategy that maps situations to actions." }
+      ],
+      "trap": "No labels plus 'find unusual behaviour' points to unsupervised learning; 'reward', 'agent' or 'trial and error' points to reinforcement learning, not supervised.",
+      "example": "An email gateway trains a supervised model on 200,000 emails already labeled phishing or clean, while the SOC uses unsupervised clustering to spot servers that suddenly talk like no others.",
+      "diagram": { "kind": "compare", "cols": ["", "Supervised", "Unsupervised", "Reinforcement"], "rows": [["Training data", "Labeled", "Unlabeled", "Environment"], ["Feedback", "Correct answers", "None", "Rewards/penalties"], ["Security use", "Phishing classifier", "Anomaly detection", "Pen-test agent"]] }
+    },
+    {
+      "id": "secai-plus.d1.1.05",
+      "objective": "d1.1",
+      "seq": 5,
+      "title": "Model validation, epochs and fine-tuning",
+      "short": "Data is split into training, validation and test sets. Model validation checks performance on held-out data to tune the model and catch overfitting. An epoch is one complete pass over the whole training dataset. Fine-tuning continues training a pretrained model on a smaller, task-specific dataset.",
+      "deep": "**Data splits.** The **training set** teaches the model; the **validation set** is used during development to tune settings (hyperparameters) and choose between candidate models; the **test set** is held back for a final, unbiased score. Techniques like **k-fold cross-validation** rotate which part is held out.\n\n**Model validation** detects:\n- **Overfitting**: excellent on training data, poor on new data (the model memorized rather than generalized).\n- **Underfitting**: poor everywhere (too simple or undertrained).\n\n**Epoch**: one full pass of the *entire* training dataset through the model. Data is usually processed in **batches**, so one epoch contains many update steps. Training runs for many epochs; if validation loss starts rising while training loss keeps falling, the model is overfitting, and **early stopping** halts training at the best point.\n\n**Fine-tuning** takes a **pretrained (foundation) model** and continues training it on a smaller, domain-specific dataset, such as your SOC's ticket history. It is far cheaper than training from scratch. Security cautions: fine-tuning data must be trusted (poisoning risk), and fine-tuning can weaken a model's built-in safety behaviour, so re-test guardrails afterwards.",
+      "terms": [
+        { "t": "Epoch", "d": "One complete pass of the entire training dataset through the model." },
+        { "t": "Validation set", "d": "Held-out data used during development to tune and compare models." },
+        { "t": "Overfitting", "d": "Model memorizes training data and performs poorly on new data." },
+        { "t": "Fine-tuning", "d": "Further training a pretrained model on a smaller task-specific dataset." }
+      ],
+      "trap": "An epoch is a full pass over the whole training set, not one batch; and fine-tuning adapts an existing pretrained model rather than training one from scratch.",
+      "example": "A team fine-tunes an open-weight model on 5,000 labeled SOC tickets for 3 epochs, watching validation loss and stopping when it stops improving.",
+      "diagram": { "kind": "flow", "items": ["Training set", "Train N epochs", "Validation set", "Tune / stop", "Test set score"] }
+    },
+    {
+      "id": "secai-plus.d1.1.06",
+      "objective": "d1.1",
+      "seq": 6,
+      "title": "Pruning and quantization",
+      "short": "Pruning and quantization shrink trained models so they run faster and cheaper. Pruning removes weights, neurons or connections that contribute little. Quantization keeps the structure but stores weights at lower numeric precision, for example converting 32-bit floating point to 8-bit or 4-bit integers.",
+      "deep": "Large models are expensive to host. Two common **model optimization (compression)** techniques make them practical for edge devices, laptops and cost-sensitive services:\n\n- **Pruning** removes parts of the network that barely affect the output, typically weights close to zero (unstructured pruning) or whole neurons, channels or attention heads (structured pruning). The model becomes smaller and faster; it is often fine-tuned briefly afterwards to recover accuracy.\n- **Quantization** reduces the number of bits used to represent each weight (and sometimes activations): FP32 to FP16, INT8 or 4-bit. Memory use drops sharply and **inference** speeds up, at the cost of a small accuracy loss.\n\nBoth are routinely used to make **SLMs** and on-device models possible.\n\nSecurity relevance:\n- Compression changes model behaviour, so **re-validate** accuracy, safety refusals and guardrail behaviour before replacing a production model.\n- Many pre-quantized community models are published by third parties; treat them as **supply chain** components and verify their source and integrity.",
+      "terms": [
+        { "t": "Pruning", "d": "Removing low-importance weights, neurons or connections from a trained model." },
+        { "t": "Quantization", "d": "Representing weights/activations with fewer bits (e.g. FP32 to INT8) to save memory and speed up inference." },
+        { "t": "Inference", "d": "Using a trained model to produce outputs on new input." }
+      ],
+      "trap": "Pruning removes parts of the model; quantization lowers numeric precision without removing structure. Exams swap these two definitions.",
+      "example": "To run a model on field laptops with 16 GB RAM, engineers quantize it from FP16 to 4-bit and then re-run their jailbreak test suite before release.",
+      "diagram": { "kind": "compare", "cols": ["", "Pruning", "Quantization"], "rows": [["What changes", "Removes weights", "Lowers precision"], ["Example", "Drop near-zero weights", "FP32 to INT8"], ["Benefit", "Smaller, faster", "Smaller, faster"]] }
+    },
+    {
+      "id": "secai-plus.d1.1.07",
+      "objective": "d1.1",
+      "seq": 7,
+      "title": "System prompts, user prompts, roles and templates",
+      "short": "Chat-style models receive messages tagged with roles. The system prompt holds the developer's instructions: persona, scope, rules and format. The user prompt carries the end user's request. Prompt templates are reusable prompts with placeholders filled at runtime. System prompts steer behaviour but are not a security boundary.",
+      "deep": "Most model APIs take a list of **messages**, each with a **role**:\n\n- **system**: instructions from the application owner, such as \"You are a SOC triage assistant. Answer only about security alerts. Return JSON.\" This is where **system roles** (personas) and guardrail-style rules live. Models are trained to give it higher priority.\n- **user**: what the person typed, or data the app inserts on their behalf.\n- **assistant**: the model's previous replies, used to keep conversation context (many APIs also have a tool role for tool results).\n\nA **prompt template** is a fixed prompt structure with variables, e.g. `Summarize this alert: {{alert_text}}`. Templates give consistent outputs and let you clearly **delimit untrusted data** from trusted instructions, and the variables should be validated before insertion.\n\nSecurity rules:\n- A determined user can often override or extract system instructions through **prompt injection** or jailbreaks, and **system prompt leakage** is in the OWASP Top 10 for LLM Applications.\n- Never store secrets, credentials or access decisions in a prompt; enforce authorization in the application.",
+      "terms": [
+        { "t": "System prompt", "d": "Developer-supplied instructions that set the model's role, scope, rules and output format." },
+        { "t": "User prompt", "d": "The end user's input or request sent to the model." },
+        { "t": "System role", "d": "The persona or job assigned to the model in the system prompt, e.g. 'You are a SOC analyst assistant'." },
+        { "t": "Prompt template", "d": "Reusable prompt with placeholders filled with data at runtime." }
+      ],
+      "trap": "System prompts guide behaviour but are not access controls; answers that rely on prompt wording to protect secrets or enforce authorization are wrong.",
+      "example": "A help desk bot's template wraps each ticket in clear delimiters after a system prompt that limits it to password-policy questions; the API key it uses stays in the backend, never in the prompt.",
+      "diagram": { "kind": "flow", "items": ["System prompt", "Template + data", "User prompt", "Model", "Response"] }
+    },
+    {
+      "id": "secai-plus.d1.1.08",
+      "objective": "d1.1",
+      "seq": 8,
+      "title": "Zero-shot, one-shot and multi-shot prompting",
+      "short": "Zero-shot prompting gives the model only an instruction, with no examples. One-shot adds a single worked example; multi-shot (few-shot) adds several. Examples teach the expected pattern and format inside the prompt, without changing the model's weights.",
+      "deep": "Language models can pick up a task from the prompt itself, called **in-context learning**.\n\n- **Zero-shot**: \"Classify this alert as Low, Medium or High.\" Fast and cheap, relies entirely on the model's general knowledge.\n- **One-shot**: one example input with its correct output, then the new input. Useful to show an exact output format.\n- **Multi-shot (few-shot)**: several examples covering different cases (a Low, a Medium, a High), then the new input. Usually gives more consistent classification and formatting.\n\nTrade-offs:\n- Each example consumes **tokens**, increasing cost and filling the context window.\n- Examples are part of the prompt, so they must not contain real customer data or secrets.\n- Biased or wrong examples steer the model toward biased or wrong answers.\n\nContrast with **fine-tuning**: shot prompting changes nothing permanent; remove the examples and the behaviour is gone. Fine-tuning changes the model's weights through additional training.",
+      "terms": [
+        { "t": "Zero-shot prompting", "d": "Asking the model to perform a task with instructions only and no examples." },
+        { "t": "One-shot prompting", "d": "Including exactly one example input-output pair in the prompt." },
+        { "t": "Multi-shot (few-shot) prompting", "d": "Including several example pairs in the prompt to demonstrate the pattern." },
+        { "t": "In-context learning", "d": "A model adapting to a task from examples in its prompt without weight changes." }
+      ],
+      "trap": "Shot prompting adds examples inside the prompt and never changes weights; if the scenario retrains the model on examples, the answer is fine-tuning.",
+      "example": "An analyst pastes three sample alerts with their correct severities, then a fourth alert, and the model returns a severity in the same format: multi-shot prompting.",
+      "diagram": { "kind": "compare", "cols": ["", "Zero-shot", "One-shot", "Multi-shot"], "rows": [["Examples", "0", "1", "Several"], ["Token cost", "Lowest", "Low", "Higher"], ["Format consistency", "Variable", "Better", "Best"]] }
+    },
+    {
+      "id": "secai-plus.d1.2.01",
+      "objective": "d1.2",
+      "seq": 1,
+      "title": "Data cleansing, verification and integrity",
+      "short": "A model is only as good as its data. Data cleansing fixes or removes errors, duplicates and inconsistencies. Data verification confirms data is accurate, complete and from the expected source. Data integrity assures it has not been altered without authorization, typically proven with hashes, signatures and access controls.",
+      "deep": "Because a trained model bakes its data into its weights, bad data becomes bad behaviour that is hard to undo.\n\n- **Data cleansing** (cleaning): remove duplicates, fix malformed records, handle missing values and outliers, standardize formats (e.g. all timestamps in UTC), and strip irrelevant or sensitive fields.\n- **Data verification**: check that data is what it claims to be: correct schema and value ranges, record counts that match the source, spot-checks of labels, cross-checking against a trusted reference.\n- **Data integrity**: assurance that data is complete and unaltered from the approved version. Controls:\n  - **cryptographic hashes** of approved dataset versions, checked before each training run\n  - **digital signatures** from the data owner or supplier\n  - least-privilege write access to training data stores, plus logging\n  - versioned or immutable (write-once) storage\n\nWhy security cares: attackers who can insert or modify a small number of training records can cause **data poisoning** or plant backdoors. Cleansing improves quality, but only integrity controls show the data has not been tampered with.",
+      "terms": [
+        { "t": "Data cleansing", "d": "Correcting or removing inaccurate, duplicate, incomplete or inconsistent records." },
+        { "t": "Data verification", "d": "Checking that data is accurate, complete and matches expected source and format." },
+        { "t": "Data integrity", "d": "Assurance that data has not been altered or corrupted without authorization." },
+        { "t": "Cryptographic hash", "d": "Fixed-length fingerprint of data; any change to the data changes the hash." }
+      ],
+      "trap": "Integrity questions want hashing, signing and write-access control of datasets; cleansing improves quality but does not prove data wasn't tampered with.",
+      "example": "Before each weekly retrain, a pipeline recomputes the SHA-256 hash of the approved dataset and stops if it differs from the value recorded at sign-off.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d1.2.02",
+      "objective": "d1.2",
+      "seq": 2,
+      "title": "Lineage, provenance, augmentation and balancing",
+      "short": "Data provenance records where data originated and how it was obtained. Data lineage tracks every movement and transformation from source to model. Data augmentation creates extra training samples by modifying existing ones. Data balancing corrects unequal class sizes so rare classes, like attacks, aren't ignored.",
+      "deep": "- **Provenance** answers *where did this come from?* Origin system or supplier, collection method, date, owner, licence and consent basis. It supports trust and **authenticity** decisions and legal compliance.\n- **Lineage** answers *what happened to it along the way?* Which pipeline jobs filtered, joined, labeled or transformed the data, which dataset version trained which model version. When a model misbehaves, lineage lets you trace back to the exact data and roll back.\n- **Data augmentation** expands a dataset by transforming existing samples: adding noise, rotating images, paraphrasing text, or generating **synthetic data**. It improves robustness and generalization, and adversarial training adds deliberately perturbed samples to harden models.\n- **Data balancing** fixes **class imbalance**. Security data is extremely imbalanced (millions of benign events, a handful of attacks), so a model can score 99.9% accuracy by always predicting benign. Fixes: **oversampling** the minority class (including synthetic methods such as SMOTE), **undersampling** the majority, or **class weighting**. Balancing across demographic groups also supports fairness.",
+      "terms": [
+        { "t": "Data provenance", "d": "Documented origin of data: source, collection method, ownership and licensing." },
+        { "t": "Data lineage", "d": "End-to-end record of data flows and transformations from source to model." },
+        { "t": "Data augmentation", "d": "Creating new training samples by modifying existing data or generating synthetic data." },
+        { "t": "Data balancing", "d": "Adjusting class proportions (oversampling, undersampling, weighting) to reduce imbalance." }
+      ],
+      "trap": "Provenance is about origin, lineage is about the transformation trail; and imbalance problems are fixed by balancing, not by more epochs.",
+      "example": "A malware dataset has 400 malicious and 50,000 benign files; the team oversamples the malicious class and records in its lineage tool which job did so for dataset v7.",
+      "diagram": { "kind": "flow", "items": ["Source/provenance", "Ingest", "Transform", "Dataset v7", "Model v3"] }
+    },
+    {
+      "id": "secai-plus.d1.2.03",
+      "objective": "d1.2",
+      "seq": 3,
+      "title": "Structured, semi-structured and unstructured data",
+      "short": "Structured data fits a fixed schema of rows and columns, like a SQL table or CSV. Semi-structured data has tags or keys but a flexible schema, like JSON, XML or key-value logs. Unstructured data has no predefined model: free text, images, audio, video and PDFs.",
+      "deep": "- **Structured**: fixed columns and data types; easy to query with SQL, validate and protect at the column level. Examples: asset inventory tables, user account databases, CSV exports of firewall rules.\n- **Semi-structured**: self-describing with keys, tags or attributes, but records can vary in shape. Examples: **JSON** cloud audit logs, **XML** and **YAML** configuration files, email headers, key-value syslog.\n- **Unstructured**: no consistent internal schema. Examples: email bodies, chat transcripts, scanned documents, screenshots, call recordings, video. Most enterprise data is unstructured.\n\nWhy it matters for AI security:\n- LLMs and RAG systems mostly consume **unstructured** text, which is harder to classify and scan for sensitive content. PII can hide anywhere in a paragraph or image.\n- Data protection controls (classification labels, masking, DLP) are easy to apply to a column but need content inspection for unstructured data.\n- Parsing semi-structured input (e.g. JSON from a model) must be strict, because malformed or malicious fields can break downstream systems.",
+      "terms": [
+        { "t": "Structured data", "d": "Data organized in a fixed schema of rows and columns." },
+        { "t": "Semi-structured data", "d": "Data with tags or keys but a flexible schema, e.g. JSON, XML." },
+        { "t": "Unstructured data", "d": "Data without a predefined model, e.g. text documents, images, audio, video." }
+      ],
+      "trap": "JSON and XML are semi-structured, not structured; CSV and relational tables are structured; email bodies, images and recordings are unstructured.",
+      "example": "A data team finds customer card numbers in free-text support tickets (unstructured) that column-level masking on the CRM database (structured) never touched.",
+      "diagram": { "kind": "compare", "cols": ["", "Structured", "Semi-structured", "Unstructured"], "rows": [["Schema", "Fixed", "Flexible keys/tags", "None"], ["Examples", "SQL table, CSV", "JSON, XML, YAML", "Text, images, audio"], ["Sensitive data scan", "Easiest", "Moderate", "Hardest"]] }
+    },
+    {
+      "id": "secai-plus.d1.2.04",
+      "objective": "d1.2",
+      "seq": 4,
+      "title": "Watermarking",
+      "short": "Watermarking embeds a detectable mark in AI-generated content, in a model, or in a dataset so its origin can later be identified or ownership proven. Marks can be visible or invisible. Watermarks can be weakened by editing, cropping or paraphrasing, so they support attribution but do not prevent copying.",
+      "deep": "Three places watermarks are used:\n\n- **Output watermarking**: the generator embeds a signal in what it produces. Images, audio and video can carry imperceptible pixel- or frequency-level patterns. Text can be statistically watermarked by subtly biasing which tokens the model chooses, so a detector can later estimate whether a passage was machine-generated. Helps platforms label synthetic media and counter **deepfakes** and **disinformation**.\n- **Model watermarking**: the owner embeds a hidden signature or trigger behaviour in model weights, so a stolen or leaked copy can be proven to be theirs (a response to **model theft**).\n- **Dataset watermarking**: unique canary records or marks in a dataset reveal if someone trained on it without permission.\n\nLimitations:\n- **Robustness** varies; compression, cropping, re-encoding or paraphrasing can strip or weaken marks.\n- Detection is probabilistic, and watermarks are not encryption or access control.\n- Often paired with cryptographically signed **content provenance metadata** (for example the C2PA content credentials standard).\n\nRegulations such as the EU AI Act include transparency duties to mark AI-generated content in a machine-readable way.",
+      "terms": [
+        { "t": "Watermarking", "d": "Embedding an identifiable signal in content, a model or a dataset to show origin or ownership." },
+        { "t": "Invisible watermark", "d": "Mark imperceptible to humans but detectable by software." },
+        { "t": "Content provenance", "d": "Signed metadata describing how a piece of content was created and edited." }
+      ],
+      "trap": "Watermarks help identify or attribute AI content; they don't encrypt it or stop copying, and heavy editing can remove them.",
+      "example": "An image-generation service embeds invisible watermarks so social platforms can automatically label its images as AI-generated.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d1.2.05",
+      "objective": "d1.2",
+      "seq": 5,
+      "title": "Retrieval-augmented generation, embeddings and vector storage",
+      "short": "Retrieval-augmented generation (RAG) fetches relevant passages from a knowledge source at query time and adds them to the prompt, so the model answers from current, organization-specific data without retraining. Documents are converted into embeddings (numeric vectors capturing meaning) and kept in vector storage for similarity search.",
+      "deep": "An LLM only knows its training data. **RAG** grounds it in your documents.\n\n**Ingestion (offline):**\n1. Load documents (policies, runbooks, tickets).\n2. Split them into **chunks**.\n3. An **embedding model** converts each chunk into an **embedding**, a vector of hundreds or thousands of numbers; text with similar meaning lands close together in vector space.\n4. Store vectors plus metadata (source, owner, permissions) in **vector storage** (a vector database or index).\n\n**Query (runtime):**\n1. Embed the user's question with the same embedding model.\n2. Run a **similarity search** (often **cosine similarity**, nearest-neighbour) to find the top-k closest chunks.\n3. Insert those chunks into the prompt as context.\n4. The LLM generates an answer grounded in that context, ideally citing sources.\n\nBenefits: fresher answers, fewer **hallucinations**, citations, and no fine-tuning needed when documents change; just re-index. Limits: answers are only as good as retrieval, and anything retrieved goes straight into the prompt.",
+      "terms": [
+        { "t": "Retrieval-augmented generation (RAG)", "d": "Retrieving relevant external content at query time and adding it to the prompt before generation." },
+        { "t": "Embedding", "d": "Numeric vector representing the meaning of text or other data." },
+        { "t": "Vector storage", "d": "Database or index that stores embeddings and supports similarity search." },
+        { "t": "Cosine similarity", "d": "Measure of how closely two vectors point in the same direction; used to rank retrieved chunks." }
+      ],
+      "trap": "RAG adds knowledge at query time without changing weights; when data changes often and retraining isn't wanted, choose RAG over fine-tuning.",
+      "example": "A SOC assistant answers 'how do we isolate a host?' by retrieving the current runbook chunks from a vector store and quoting them.",
+      "diagram": { "kind": "flow", "items": ["User query", "Embed query", "Vector search", "Augment prompt", "LLM answer"] }
+    },
+    {
+      "id": "secai-plus.d1.2.06",
+      "objective": "d1.2",
+      "seq": 6,
+      "title": "Securing RAG and vector stores",
+      "short": "A vector store holds content derived from sensitive documents, so it needs the same protection as the source: access control, encryption and monitoring. Retrieval must respect each user's permissions, and ingested documents must be vetted, because hidden instructions in them can cause indirect prompt injection.",
+      "deep": "Key RAG risks (OWASP's Top 10 for LLM Applications lists vector and embedding weaknesses):\n\n- **Permission bypass**: if retrieval ignores document access rights, the model may quote files the user could never open. Fix with **permission-aware retrieval**: store access metadata with each chunk and filter results by the requesting user's entitlements before they reach the prompt. A system prompt saying \"don't reveal HR files\" is not a control.\n- **Embeddings are not anonymized**: research shows embedding inversion can recover much of the original text, so treat vectors as sensitive as their source. Encrypt at rest and in transit, restrict API access.\n- **Indirect prompt injection and knowledge-base poisoning**: a document containing text such as \"ignore previous instructions and...\" becomes part of the prompt when retrieved. Validate and sanitize content at ingestion, restrict who can add documents, track provenance.\n- **Multi-tenant leakage**: separate indexes or strict tenant filters for different customers.\n- **Monitoring**: log queries and retrieved sources to detect scraping and abuse.",
+      "terms": [
+        { "t": "Permission-aware retrieval", "d": "Filtering retrieved chunks by the requesting user's access rights to the source documents." },
+        { "t": "Indirect prompt injection", "d": "Malicious instructions planted in content the model later reads, such as a retrieved document." },
+        { "t": "Embedding inversion", "d": "Attack that reconstructs source text or attributes from stored embeddings." }
+      ],
+      "trap": "Fix users seeing documents they shouldn't with access-control filtering at retrieval, not prompt wording; and embeddings are not anonymized data.",
+      "example": "An HR assistant tags every chunk with the source folder's group permissions, and the retriever drops chunks the signed-in employee isn't allowed to read.",
+      "diagram": { "kind": "flow", "items": ["Vet documents", "Embed + ACL tags", "Encrypted store", "Filter by user", "Prompt"] }
+    },
+    {
+      "id": "secai-plus.d1.3.01",
+      "objective": "d1.3",
+      "seq": 1,
+      "title": "Business use case and alignment with corporate objectives",
+      "short": "The AI life cycle starts with a business use case: a clear problem, owner and success criteria aligned with corporate objectives. This is also where security, privacy, legal and risk requirements are set, so protection is designed in rather than bolted on after deployment.",
+      "deep": "Before any data is gathered, the organization should answer:\n\n- **What problem are we solving**, and is AI the right tool, or would a rule or process change do?\n- **How does it support corporate objectives** (reduce mean time to respond, cut fraud losses, improve customer service)?\n- **Who owns it** and who are the stakeholders (business, security, legal, privacy, compliance)?\n- **What does success look like**: measurable metrics and acceptance criteria later used in evaluation.\n- **What are the risks**: data sensitivity, regulatory obligations, impact on people, risk appetite, budget, and an initial **threat model**.\n- **What data and model type are needed**, and can they be obtained legally?\n\nOutputs typically include an approved use case, a risk assessment, acceptable-use boundaries and a decision on whether humans must stay in the loop.\n\nWhy security cares: undefined use cases lead to **shadow AI**, uncontrolled data sharing with public models, and systems whose purpose (and therefore acceptable behaviour) nobody can define.\n\nLife cycle phases covered in this objective: business use case, data collection, data preparation, model development/selection, model evaluation, deployment, validation, monitoring and maintenance, feedback and iteration.",
+      "terms": [
+        { "t": "AI life cycle", "d": "The phases an AI system passes through from use case definition to monitoring, feedback and retirement." },
+        { "t": "Business use case", "d": "Documented problem, objective, owner and success criteria for an AI initiative." },
+        { "t": "Security by design", "d": "Defining security requirements at the start instead of adding controls after deployment." }
+      ],
+      "trap": "The first phase is the business use case, not data collection or model selection; security and risk requirements belong here too.",
+      "example": "Before building an alert-triage model, a SOC documents the goal (cut triage time 30%), the owner, data sources, privacy constraints and the rule that containment actions need analyst approval.",
+      "diagram": { "kind": "cycle", "items": ["Use case", "Collect & prepare", "Develop & evaluate", "Deploy & validate", "Monitor & maintain", "Feedback"] }
+    },
+    {
+      "id": "secai-plus.d1.3.02",
+      "objective": "d1.3",
+      "seq": 2,
+      "title": "Data collection: trustworthiness and authenticity",
+      "short": "Data collection gathers the data the model will learn from or retrieve. Sources must be trustworthy (reliable, accurate, legally usable) and data must be authentic (genuinely from the claimed source and unaltered). Verify with signatures, hashes, supplier vetting and provenance records, and collect only what is needed.",
+      "deep": "**Trustworthiness** asks whether the source is reliable: reputable supplier, known collection method, accurate and representative content, clear licence and lawful basis (e.g. consent or another GDPR basis for personal data).\n\n**Authenticity** asks whether the data is genuinely what it claims to be and from whom it claims to come, not fabricated, spoofed or modified in transit.\n\nControls during collection:\n- Vet third-party data suppliers like any other supply-chain vendor.\n- Require **digital signatures** or published **hashes** and verify them on receipt.\n- Use secure, authenticated transfer channels.\n- Record **provenance** metadata (source, date, collector, licence) at the moment of collection.\n- Be wary of scraped public web data: attackers can deliberately publish poisoned content where they expect it to be scraped.\n- Apply **data minimization**: collect only the fields needed for the use case, which reduces privacy exposure.\n- Check representativeness to avoid building bias in from the start.\n\nA bigger dataset from an unverified source is usually a worse choice than a smaller, verified one.",
+      "terms": [
+        { "t": "Data trustworthiness", "d": "Confidence that a data source is reliable, accurate, representative and lawfully usable." },
+        { "t": "Data authenticity", "d": "Assurance that data truly comes from its claimed source and has not been forged or altered." },
+        { "t": "Data minimization", "d": "Collecting and keeping only the data necessary for the stated purpose." }
+      ],
+      "trap": "Authenticity is shown with signatures, hashes and source verification; picking the largest dataset from an unverified public source is the trap answer.",
+      "example": "A vendor supplies labeled phishing samples; the team verifies the vendor's signature on the archive and logs the source and licence before ingesting it.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d1.3.03",
+      "objective": "d1.3",
+      "seq": 3,
+      "title": "Data preparation",
+      "short": "Data preparation turns raw collected data into training-ready datasets: cleansing, labeling, transforming, de-identifying, balancing and splitting into training, validation and test sets. Security tasks include removing or masking sensitive data, protecting label quality and preventing leakage between training and test sets.",
+      "deep": "Typical steps:\n\n- **Cleansing**: remove duplicates and errors, normalize formats.\n- **Labeling**: assign correct outputs for supervised learning. Label quality is a security issue: a malicious or careless labeler can flip labels and poison the model, so restrict and review labeling access.\n- **Transformation and feature engineering**: convert raw fields into model inputs.\n- **De-identification**: **anonymize**, **pseudonymize**, **mask** or **redact** personal and secret data *before* training. Once a model has learned sensitive data it can leak it (memorization), and removing it later usually means retraining.\n- **Splitting**: create training, validation and test sets, and keep them separate. **Data leakage** (the same or near-duplicate records in both training and test sets, or future information in training) inflates evaluation scores and hides real performance.\n- **Balancing**: oversample or weight minority classes, normally on the training set only so the test set still reflects reality.\n- **Versioning**: snapshot and hash each prepared dataset and record lineage.\n\nPrepared datasets are high-value assets; apply least privilege and logging to the preparation environment.",
+      "terms": [
+        { "t": "Labeling", "d": "Assigning the correct output (class, value) to training records." },
+        { "t": "Data leakage", "d": "Information from test data or the future slipping into training, producing misleadingly good metrics." },
+        { "t": "Pseudonymization", "d": "Replacing identifiers with tokens that can only be re-linked using separately protected data." }
+      ],
+      "trap": "Remove or mask PII during preparation, before training; and keep test data separate, or evaluation results will look better than reality.",
+      "example": "Before fine-tuning on help desk tickets, the team redacts names, emails and passwords, removes duplicate tickets, then splits 80/10/10 by ticket ID.",
+      "diagram": { "kind": "flow", "items": ["Cleanse", "Label", "De-identify", "Split sets", "Balance train set"] }
+    },
+    {
+      "id": "secai-plus.d1.3.04",
+      "objective": "d1.3",
+      "seq": 4,
+      "title": "Model development and selection",
+      "short": "Teams either develop a model (train from scratch or fine-tune) or select an existing one (open-weight model or third-party API). Choose on task fit, cost, latency, hosting and data residency, licence and explainability. Treat any external model as a supply chain component: verify source and integrity before use.",
+      "deep": "Options, roughly from most to least effort:\n\n- **Train from scratch**: full control, very high cost and data needs.\n- **Fine-tune a foundation model** on your data.\n- **Use a pretrained model as-is**, often combined with **RAG** and prompt engineering.\n- **Consume a third-party model API** (public model) instead of hosting a private one.\n\nSelection criteria: accuracy on *your* task, size and cost, latency, where it can be hosted (private vs public, data sovereignty), licence terms, explainability needs, vendor security and compliance posture.\n\nSecurity in development and selection:\n- Download models only from trusted publishers; verify **hashes/signatures** and review the **model card** (intended use, limits, training data).\n- Some model file formats (e.g. Python pickle) can execute code when loaded; prefer weights-only formats such as **safetensors** and scan files.\n- Track models, datasets and libraries in an inventory or **AI bill of materials**.\n- Secure the development environment: secrets out of notebooks, least-privilege access to training data, reproducible versioned training runs.",
+      "terms": [
+        { "t": "Foundation model", "d": "Large pretrained model that can be adapted to many tasks." },
+        { "t": "Model card", "d": "Documentation of a model's purpose, training data, performance and limitations." },
+        { "t": "AI bill of materials (AI-BOM)", "d": "Inventory of models, datasets and dependencies that make up an AI system." }
+      ],
+      "trap": "Downloading a pretrained model is a supply chain decision: verify source and integrity and avoid formats that can run code on load; popularity is not verification.",
+      "example": "A team shortlists two open-weight models, checks licences and publisher signatures, loads only safetensors files in an isolated sandbox, then benchmarks both on its own tickets.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d1.3.05",
+      "objective": "d1.3",
+      "seq": 5,
+      "title": "Model evaluation",
+      "short": "Model evaluation measures a candidate model on held-out test data before release, against the success criteria from the use case. It covers accuracy metrics such as precision and recall, plus robustness, bias, hallucination and security testing like red teaming for prompt injection and jailbreaks.",
+      "deep": "**Performance metrics** (for a detector, 'positive' = flagged as attack):\n- **Precision** = TP / (TP + FP): of everything flagged, how much was really malicious? Low precision means alert fatigue.\n- **Recall** = TP / (TP + FN): of all real attacks, how many were caught? Low recall means missed attacks.\n- **F1 score** balances the two. **Accuracy** = (TP + TN) / all, which is misleading on imbalanced data: a model that always says 'benign' scores 99% if attacks are 1%.\n\nWhich metric matters depends on the business use case: missed intrusions are costly, so favour recall; auto-blocking customer payments, so favour precision.\n\n**Beyond accuracy:**\n- **Robustness**: adversarial examples, noisy or out-of-distribution input.\n- **Fairness/bias** across groups.\n- **Hallucination** rate and factual grounding for generative models.\n- **Security testing / red teaming**: prompt injection, jailbreaks, sensitive data disclosure, harmful outputs, guardrail bypass.\n- **Explainability** where decisions affect people.\n\nResults are documented and compared with acceptance criteria; failing models go back to data preparation or development.",
+      "terms": [
+        { "t": "Precision", "d": "TP / (TP + FP); share of flagged items that were truly positive." },
+        { "t": "Recall", "d": "TP / (TP + FN); share of true positives that the model caught." },
+        { "t": "Red teaming", "d": "Adversarial testing that tries to make an AI system fail, leak data or bypass guardrails." }
+      ],
+      "trap": "On rare-event security data, high accuracy can be meaningless; pick recall when missed attacks are the costliest outcome and precision when false alarms are.",
+      "example": "An IDS model reaches 99.2% accuracy but only 40% recall on attacks, so it fails the use case's 'catch 90% of known intrusions' criterion.",
+      "diagram": { "kind": "compare", "cols": ["", "Predicted attack", "Predicted benign"], "rows": [["Real attack", "True positive", "False negative"], ["Really benign", "False positive", "True negative"]] }
+    },
+    {
+      "id": "secai-plus.d1.3.06",
+      "objective": "d1.3",
+      "seq": 6,
+      "title": "Deployment",
+      "short": "Deployment puts an approved model into production. Secure it like any critical service: approved versions from a model registry, authenticated API access behind a gateway, least privilege for service accounts and agents, rate limits, input and output guardrails, secrets management, logging, and a staged rollout with a tested rollback plan.",
+      "deep": "Secure deployment checklist:\n\n- **Release integrity**: deploy only signed or hash-verified model versions from a **model registry**, through a CI/CD (MLOps) pipeline, not by hand.\n- **Access control**: put the model endpoint behind an **API gateway**; authenticate callers, authorize per application, enforce **rate limiting** and token or input quotas to resist abuse and model denial of service.\n- **Least privilege**: the model's service account, tools and any **AI agents** get only the permissions required. An agent that resets passwords should not run as a domain admin.\n- **Guardrails**: input filtering (prompt firewall) and output filtering or validation before results reach users or downstream systems.\n- **Secrets**: API keys in a secrets manager, never in prompts or source code.\n- **Network and data**: TLS, encryption at rest, network isolation of model hosts.\n- **Rollout**: canary or blue/green deployment, with automated rollback if error, safety or cost metrics breach thresholds.\n- **Logging**: prompts, outputs and actions logged (with sanitization) for monitoring and investigation.",
+      "terms": [
+        { "t": "Model registry", "d": "Controlled repository of approved, versioned models and their metadata." },
+        { "t": "Canary deployment", "d": "Releasing a new version to a small share of traffic first to limit impact." },
+        { "t": "Automated rollback", "d": "Pipeline action that reverts to the previous version when health or safety checks fail." }
+      ],
+      "trap": "Deployment answers favour a staged rollout with tested rollback and gateway-enforced authentication and rate limits, not exposing the model endpoint directly.",
+      "example": "A new triage model goes to 5% of alerts through the gateway; when its false-negative rate spikes, the pipeline automatically rolls back to the previous version.",
+      "diagram": { "kind": "flow", "items": ["Model registry", "CI/CD pipeline", "Canary release", "API gateway", "Users/agents"] }
+    },
+    {
+      "id": "secai-plus.d1.3.07",
+      "objective": "d1.3",
+      "seq": 7,
+      "title": "Validation",
+      "short": "Validation confirms that the deployed AI system works as intended in its real environment and still meets business, security and compliance requirements. It includes checking the deployed artifact matches the approved version, testing guardrails on the live endpoint, acceptance testing with real workflows, and re-validating after every significant change.",
+      "deep": "**Evaluation vs validation in the life cycle:**\n- **Model evaluation** measures the model in isolation, before release, on held-out test data.\n- **Validation** happens once the system is deployed and integrated. It asks: does the *whole system* (model plus prompts, guardrails, data connections, tools and users) do what the business case required, safely, in production conditions?\n\nValidation activities:\n- Confirm the running model's hash or version matches the approved registry entry.\n- Run **guardrail testing and validation** against the live endpoint: injection, jailbreak and data-leak test suites.\n- Integration testing with real data flows and downstream systems (does malformed output break the ticketing system?).\n- **User acceptance testing** and business owner sign-off against the original success criteria.\n- Verify outputs against ground truth samples and human review.\n- Confirm compliance evidence (documentation, logging, human-oversight controls) is in place.\n\n**Re-validate** whenever something changes: retraining, fine-tuning, quantization, prompt or guardrail updates, new data sources, or a new model version from a vendor.",
+      "terms": [
+        { "t": "Validation (life cycle)", "d": "Confirming the deployed system meets its requirements in its real operating context." },
+        { "t": "Guardrail testing", "d": "Testing whether input/output safety controls block the attacks and content they should." },
+        { "t": "User acceptance testing (UAT)", "d": "Business users confirming the system meets their needs in realistic workflows." }
+      ],
+      "trap": "Evaluation scores the model before release; validation confirms the deployed system meets requirements in context. Any significant change triggers re-validation.",
+      "example": "After go-live, the team confirms the production model hash, reruns its jailbreak suite against the live chatbot and has the help desk manager sign off on 200 real tickets.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d1.3.08",
+      "objective": "d1.3",
+      "seq": 8,
+      "title": "Monitoring and maintenance",
+      "short": "In production, AI systems degrade and are attacked, so they need continuous monitoring: performance, data drift and concept drift, prompts and outputs, guardrail triggers, abuse, latency and cost. Maintenance means patching dependencies, retraining, updating guardrails and eventually retiring models securely.",
+      "deep": "**What to monitor:**\n- **Performance**: accuracy, false-positive/negative rates against sampled ground truth.\n- **Data drift**: production input distribution moves away from the training data (new log formats, new user populations).\n- **Concept drift**: the relationship between input and correct output changes, e.g. attackers adopt new phishing lures, so yesterday's patterns no longer indicate maliciousness.\n- **Prompt monitoring and output monitoring**: injection attempts, jailbreaks, sensitive data in responses, policy violations.\n- **Abuse and availability**: request spikes, scraping, unusually long inputs (model denial of service), **token usage and AI cost**.\n- **Guardrail and agent activity**: blocked requests, tool calls and actions taken.\n\n**Logging hygiene**: prompts often contain secrets or personal data, so apply **log sanitization** (redact or mask sensitive values) and access control to logs.\n\n**Maintenance**: patch libraries and runtimes, retrain or refresh with recent data when drift is detected, update guardrails as new attack techniques appear, rotate keys, and **decommission** retired models securely (revoke credentials, delete or archive data and weights per retention policy).",
+      "terms": [
+        { "t": "Data drift", "d": "Change in the statistical distribution of production inputs compared with training data." },
+        { "t": "Concept drift", "d": "Change in the real-world relationship between inputs and the correct output." },
+        { "t": "Log sanitization", "d": "Removing or masking sensitive values from logs before they are stored or shared." }
+      ],
+      "trap": "Gradual performance loss with no code change points to drift, handled by monitoring and retraining, not a deployment bug or more epochs on old data.",
+      "example": "A dashboard shows the phishing model's recall falling from 92% to 71% over six months as lure styles change, triggering retraining on recent samples.",
+      "diagram": { "kind": "cycle", "items": ["Monitor metrics", "Detect drift/abuse", "Retrain or patch", "Re-validate", "Redeploy"] }
+    },
+    {
+      "id": "secai-plus.d1.3.09",
+      "objective": "d1.3",
+      "seq": 9,
+      "title": "Feedback and iteration",
+      "short": "Feedback and iteration close the life cycle loop: user ratings, analyst corrections, incidents and red-team findings feed improvements to data, prompts, guardrails and models. Feedback is untrusted input, so validate and review it before it changes training data, and re-evaluate every new iteration.",
+      "deep": "**Sources of feedback:**\n- End users: thumbs up/down, corrections, complaints.\n- Analysts: dispositions of AI-triaged alerts (true positive, false positive).\n- Monitoring: drift alerts, guardrail hits, cost anomalies.\n- Security: incidents, red-team and penetration-test findings, new threat intelligence.\n- Business: changing objectives or regulations.\n\n**Iteration** may loop back to any earlier phase: refine the use case, collect new data, relabel, fine-tune or replace the model, adjust prompts and guardrails.\n\n**Securing the loop:**\n- Treat feedback as **untrusted input**. An attacker (or compromised account) can submit mass false feedback to poison retraining, for example marking malicious samples as benign.\n- Apply authentication, rate limits per account, anomaly checks on feedback volume, and human review or sampling before feedback becomes training data.\n- Version each iteration and keep lineage so you can roll back.\n- Every new iteration goes through evaluation and validation again before release.",
+      "terms": [
+        { "t": "Feedback loop", "d": "Process of feeding production outcomes and user input back into system improvement." },
+        { "t": "Iteration", "d": "A new version of the system produced by revisiting earlier life cycle phases." },
+        { "t": "Feedback poisoning", "d": "Manipulating feedback channels to corrupt future training or tuning." }
+      ],
+      "trap": "User feedback must be validated before it reaches training data; answers that retrain directly on raw feedback invite poisoning.",
+      "example": "Analyst dispositions are pooled weekly, a reviewer samples them for accuracy and an anomaly check flags any account submitting unusual volumes before retraining.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d1.3.10",
+      "objective": "d1.3",
+      "seq": 10,
+      "title": "Human-centric design: in-the-loop, oversight and validation",
+      "short": "Human-centric AI keeps people accountable for important outcomes. Human-in-the-loop means a person must approve or act at a decision point before the action happens. Human oversight means people supervise the system and can intervene or stop it. Human validation means people review and verify AI outputs for accuracy.",
+      "deep": "- **Human-in-the-loop (HITL)**: the AI recommends, a human decides. Nothing executes until a person approves (e.g. AI proposes isolating a server; an analyst clicks Approve). Use for high-impact, irreversible or legally significant actions.\n- **Human oversight**: humans monitor an AI system that may act on its own (sometimes called human-on-the-loop), with the authority and tools to **intervene, override or halt** it, such as a kill switch or pausing automation. The EU AI Act requires effective human oversight for high-risk AI systems.\n- **Human validation**: people check outputs for correctness: reviewing an AI-written incident report before it goes to regulators, sampling automated decisions, verifying labels.\n\nDesign principles that make human involvement meaningful:\n- Show **confidence levels**, rationale and evidence so reviewers can judge, not rubber-stamp.\n- Counter **overreliance (automation bias)** with training, sampling and clear accountability.\n- Define escalation paths and when humans must be involved, set in the business use case.\n- Log human decisions alongside AI recommendations for audit.\n\nThe more autonomous the system (e.g. AI agents), the stronger the oversight controls needed.",
+      "terms": [
+        { "t": "Human-in-the-loop", "d": "A human must review and approve at a decision point before the AI's action executes." },
+        { "t": "Human oversight", "d": "Humans supervise an AI system and can intervene, override or stop it." },
+        { "t": "Human validation", "d": "Humans verify the accuracy and appropriateness of AI outputs." },
+        { "t": "Overreliance", "d": "Trusting AI output without adequate scrutiny (automation bias)." }
+      ],
+      "trap": "If nothing happens until a person approves, it's human-in-the-loop; oversight means supervising with power to intervene, not approving each action.",
+      "example": "An AI agent drafts firewall changes; an engineer approves each one (HITL), while a SOC lead watches a dashboard and can pause the agent at any time (oversight).",
+      "diagram": { "kind": "flow", "items": ["AI recommends", "Shows confidence", "Human approves", "Action executes", "Decision logged"] }
+    }
+  ],
+  "questions": [
+    {
+      "id": "secai-plus.d1.q001",
+      "lesson": "secai-plus.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement correctly describes the relationship between artificial intelligence, machine learning and deep learning?",
+      "options": [
+        "Machine learning is a subset of deep learning, which is a subset of artificial intelligence",
+        "Deep learning is a subset of machine learning, which is a subset of artificial intelligence",
+        "Artificial intelligence is a subset of machine learning that relies on neural networks",
+        "Deep learning and machine learning are separate branches of artificial intelligence with no overlap"
+      ],
+      "answer": [1],
+      "explain": "AI is the umbrella; machine learning is AI that learns from data; deep learning is machine learning using many-layered neural networks. The other options reverse the nesting or treat the fields as unrelated."
+    },
+    {
+      "id": "secai-plus.d1.q002",
+      "lesson": "secai-plus.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A fraud team has a modest labeled dataset of card transactions and must explain to auditors which factors drove each risk score. Which approach BEST fits these constraints?",
+      "options": [
+        "A deep neural network with dozens of hidden layers",
+        "A generative adversarial network trained on the transactions",
+        "A large language model fine-tuned on transaction records",
+        "A statistical learning model such as logistic regression"
+      ],
+      "answer": [3],
+      "explain": "Statistical learning models work well with modest data and their coefficients can be explained to auditors. Deep networks and fine-tuned LLMs need more data and are harder to interpret. A GAN generates synthetic data; it doesn't produce explainable risk scores."
+    },
+    {
+      "id": "secai-plus.d1.q003",
+      "lesson": "secai-plus.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A hospital wants to summarize incident tickets containing patient details. Processing must stay on its air-gapped servers, which have limited GPU capacity. Which option is MOST appropriate?",
+      "options": [
+        "A small language model hosted on the hospital's own servers",
+        "A frontier large language model accessed through a public cloud API",
+        "A generative adversarial network trained on the tickets",
+        "A reinforcement learning agent that rewards concise summaries"
+      ],
+      "answer": [0],
+      "explain": "An SLM has far fewer parameters, so it can run locally on modest hardware and keep data inside the air gap. A public-API LLM sends data outside. GANs and RL agents are not text summarization solutions."
+    },
+    {
+      "id": "secai-plus.d1.q004",
+      "lesson": "secai-plus.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which mechanism allows a transformer model to weigh how each token in an input relates to every other token while processing the sequence in parallel?",
+      "options": [
+        "Recurrent feedback loops",
+        "Convolutional filters",
+        "Self-attention",
+        "Quantization"
+      ],
+      "answer": [2],
+      "explain": "Self-attention is the core transformer mechanism, scoring relationships among all tokens at once. Recurrent loops process tokens sequentially (older RNNs). Convolutions scan local windows, typical of image models. Quantization is a compression technique, not an architecture feature."
+    },
+    {
+      "id": "secai-plus.d1.q005",
+      "lesson": "secai-plus.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In a generative adversarial network (GAN), what is the role of the discriminator?",
+      "options": [
+        "It creates synthetic samples from random noise",
+        "It classifies samples as real or generated, and its errors are used to improve the generator",
+        "It removes low-importance weights from the generator after training",
+        "It retrieves similar examples from a vector store to guide generation"
+      ],
+      "answer": [1],
+      "explain": "The discriminator judges real versus fake, and that feedback trains the generator. Creating samples from noise is the generator's job. Removing weights is pruning, and retrieving examples from a vector store describes RAG."
+    },
+    {
+      "id": "secai-plus.d1.q006",
+      "lesson": "secai-plus.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are examples of generative AI being used by a security team? Select TWO.",
+      "options": [
+        "Creating synthetic phishing emails to enlarge the training set for a phishing detector",
+        "Clustering endpoints by process behaviour to find outliers",
+        "Drafting an incident summary from a timeline of alerts",
+        "Scoring sign-ins with a logistic regression risk model"
+      ],
+      "answer": [0, 2],
+      "explain": "Generative AI produces new content: synthetic emails and written summaries. Clustering is unsupervised learning that groups existing data, and logistic regression scoring is a discriminative statistical model; neither creates new content."
+    },
+    {
+      "id": "secai-plus.d1.q007",
+      "lesson": "secai-plus.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A security team has six months of unlabeled network flow records and wants to discover hosts that behave unlike their peers. Which learning approach fits BEST?",
+      "options": [
+        "Supervised classification",
+        "Reinforcement learning",
+        "Unsupervised learning",
+        "One-shot prompting"
+      ],
+      "answer": [2],
+      "explain": "With no labels and a goal of finding outliers, unsupervised clustering or anomaly detection is the fit. Supervised classification needs labeled examples. Reinforcement learning needs an environment and rewards. One-shot prompting is a prompt technique for language models, not a training approach."
+    },
+    {
+      "id": "secai-plus.d1.q008",
+      "lesson": "secai-plus.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about model training techniques, select Yes if true.",
+      "statements": [
+        { "s": "Supervised learning requires training data labeled with the correct outputs.", "a": true },
+        { "s": "Reinforcement learning improves an agent's policy using rewards and penalties received after its actions.", "a": true },
+        { "s": "Unsupervised learning requires analysts to label every record as malicious or benign before training.", "a": false }
+      ],
+      "explain": "Supervised learning depends on labels; reinforcement learning learns from rewards. Unsupervised learning works precisely because it needs no labels."
+    },
+    {
+      "id": "secai-plus.d1.q009",
+      "lesson": "secai-plus.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In model training, what is an epoch?",
+      "options": [
+        "One batch of samples processed in a single weight update",
+        "One complete pass of the entire training dataset through the model",
+        "The interval between scheduled retraining runs in production",
+        "The number of weights removed during pruning"
+      ],
+      "answer": [1],
+      "explain": "An epoch is a full pass over all the training data; one epoch usually contains many batches and update steps. Retraining schedules and pruning amounts are unrelated concepts."
+    },
+    {
+      "id": "secai-plus.d1.q010",
+      "lesson": "secai-plus.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A team trains a malware classifier for 40 epochs. Training accuracy climbs steadily to 99.5%. Validation loss falls until epoch 12, then rises every epoch afterwards while training loss keeps falling. On new samples from production, the model performs noticeably worse than in training.",
+      "stem": "What is the MOST likely problem, and what should the team do?",
+      "options": [
+        "Underfitting; increase training to 100 epochs",
+        "Concept drift; deploy now and rely on production monitoring",
+        "Overfitting; use early stopping near the epoch with the lowest validation loss",
+        "Quantization error; convert the weights back to 32-bit floating point"
+      ],
+      "answer": [2],
+      "explain": "Rising validation loss while training loss keeps falling is the classic overfitting signature: the model is memorizing. Early stopping (or regularization, more data) fixes it. More epochs would worsen it. Drift happens after deployment, and nothing was quantized."
+    },
+    {
+      "id": "secai-plus.d1.q011",
+      "lesson": "secai-plus.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "An analyst splits a heavily imbalanced malware dataset (about 2% malicious) for model validation. Both the training and test sets must keep the same malicious-to-benign ratio. Complete the code.",
+      "code": "from sklearn.model_selection import train_test_split\n\n# y: 0 = benign, 1 = malicious\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, random_state=42, ____\n)",
+      "options": [
+        "shuffle=False",
+        "stratify=y",
+        "train_size=0.2",
+        "class_weight='balanced'"
+      ],
+      "answer": [1],
+      "explain": "stratify=y keeps class proportions identical in both splits, so the held-out set still contains malicious samples at the real rate. shuffle=False doesn't preserve ratios, train_size=0.2 would shrink the training set, and class_weight is a model parameter, not a train_test_split argument."
+    },
+    {
+      "id": "secai-plus.d1.q012",
+      "lesson": "secai-plus.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Engineers must run a 7-billion-parameter model on field laptops with limited memory. They convert its weights from 16-bit floating point to 4-bit integers. Which technique are they using?",
+      "options": [
+        "Quantization",
+        "Pruning",
+        "Fine-tuning",
+        "Data augmentation"
+      ],
+      "answer": [0],
+      "explain": "Lowering the numeric precision of weights is quantization. Pruning removes weights or neurons rather than changing their precision. Fine-tuning retrains on new data, and data augmentation expands training data; neither shrinks memory use."
+    },
+    {
+      "id": "secai-plus.d1.q013",
+      "lesson": "secai-plus.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "A developer builds a reusable prompt template. The first message must set the model's persona and rules for every request, separate from the end user's input. Complete the template.",
+      "code": "{\n  \"messages\": [\n    { \"role\": \"____\", \"content\": \"You are a SOC triage assistant. Only classify security alerts. Respond in JSON.\" },\n    { \"role\": \"user\", \"content\": \"{{alert_text}}\" }\n  ]\n}",
+      "options": [
+        "assistant",
+        "tool",
+        "admin",
+        "system"
+      ],
+      "answer": [3],
+      "explain": "Operator instructions, persona and rules go in the system role. The assistant role holds the model's prior replies, the tool role carries tool results, and 'admin' is not a standard chat role."
+    },
+    {
+      "id": "secai-plus.d1.q014",
+      "lesson": "secai-plus.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A developer put an internal API key in a chatbot's system prompt with the instruction 'never reveal this key'. During testing, a tester gets the chatbot to print the key. What is the BEST remediation?",
+      "options": [
+        "Repeat the 'never reveal' instruction at both the start and end of the system prompt",
+        "Add multi-shot examples showing the model refusing to reveal the key",
+        "Remove the key from the prompt and have the backend make the API call with least-privilege server-side credentials",
+        "Lower the model's temperature so it follows the system prompt more strictly"
+      ],
+      "answer": [2],
+      "explain": "System prompts are not a security boundary and can be extracted, so secrets must never be in them. The application should broker the call with its own credentials. Better wording, refusal examples or temperature changes still leave the key reachable through injection."
+    },
+    {
+      "id": "secai-plus.d1.q015",
+      "lesson": "secai-plus.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An analyst's prompt lists three example alerts, each followed by its correct severity, and then a new alert for the model to rate. Which technique is this?",
+      "options": [
+        "Zero-shot prompting",
+        "Multi-shot prompting",
+        "One-shot prompting",
+        "Fine-tuning"
+      ],
+      "answer": [1],
+      "explain": "Several worked examples inside the prompt is multi-shot (few-shot) prompting. Zero-shot has no examples, one-shot has exactly one, and fine-tuning changes model weights through training rather than adding examples to a prompt."
+    },
+    {
+      "id": "secai-plus.d1.q016",
+      "lesson": "secai-plus.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which control BEST provides evidence that an approved training dataset has not been altered before the next training run?",
+      "options": [
+        "Removing duplicate records before each run",
+        "Oversampling the minority class",
+        "Recording a cryptographic hash at approval and verifying it before each run",
+        "Converting the dataset from CSV to JSON"
+      ],
+      "answer": [2],
+      "explain": "A hash recorded at approval and re-checked before training reveals any modification, which is an integrity control. Removing duplicates is cleansing and oversampling is balancing; both change the data rather than prove it is unchanged. File format conversion does nothing for integrity."
+    },
+    {
+      "id": "secai-plus.d1.q017",
+      "lesson": "secai-plus.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "A data team is preparing firewall logs for model training. Which TWO activities are data cleansing? Select TWO.",
+      "options": [
+        "Removing duplicate log entries",
+        "Signing the dataset with the data owner's private key",
+        "Standardizing all timestamps to UTC",
+        "Recording which upstream system produced each file",
+        "Generating paraphrased variants of existing samples"
+      ],
+      "answer": [0, 2],
+      "explain": "Deduplication and format standardization fix quality problems, which is cleansing. Signing supports integrity and authenticity, recording the source system is provenance, and generating variants is data augmentation."
+    },
+    {
+      "id": "secai-plus.d1.q018",
+      "lesson": "secai-plus.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A production model starts misclassifying events. Investigators need to see which pipeline jobs filtered and transformed the data and which dataset version trained the current model. What should the organization have maintained?",
+      "options": [
+        "Data augmentation records",
+        "Data lineage",
+        "Data balancing",
+        "Output watermarking"
+      ],
+      "answer": [1],
+      "explain": "Lineage tracks data movements and transformations from source to model version, which lets investigators trace and roll back. Augmentation and balancing are data processing techniques, not audit trails. Watermarking marks content origin and doesn't record pipeline history."
+    },
+    {
+      "id": "secai-plus.d1.q019",
+      "lesson": "secai-plus.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A malware training set contains 50,000 benign files and 400 malicious files. The model reports 99% accuracy but misses most malware. Which data processing step addresses the root cause?",
+      "options": [
+        "Data lineage tracking",
+        "Watermarking the training files",
+        "Data balancing, such as oversampling the malicious class or applying class weights",
+        "Quantizing the model to 8-bit integers"
+      ],
+      "answer": [2],
+      "explain": "The model learned that predicting 'benign' is almost always right, a class imbalance problem fixed by balancing. Lineage documents history but changes nothing. Watermarking marks origin, and quantization compresses the model without fixing what it learned."
+    },
+    {
+      "id": "secai-plus.d1.q020",
+      "lesson": "secai-plus.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about data processing for AI, select Yes if true.",
+      "statements": [
+        { "s": "Data provenance documents where data originated and how it was obtained.", "a": true },
+        { "s": "Data augmentation creates additional training samples by transforming existing ones or generating synthetic data.", "a": true },
+        { "s": "Data balancing proves that a dataset came from an authentic source.", "a": false }
+      ],
+      "explain": "Provenance is about origin, and augmentation expands datasets. Balancing adjusts class proportions; authenticity comes from provenance checks, signatures and hashes."
+    },
+    {
+      "id": "secai-plus.d1.q021",
+      "lesson": "secai-plus.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which of the following is an example of semi-structured data?",
+      "options": [
+        "A relational table of user accounts with fixed columns",
+        "Recorded audio of help desk calls",
+        "Scanned PDF copies of signed contracts",
+        "JSON-formatted cloud audit logs"
+      ],
+      "answer": [3],
+      "explain": "JSON uses keys and nesting but allows flexible structure, making it semi-structured. A fixed-column relational table is structured, while audio recordings and scanned documents are unstructured."
+    },
+    {
+      "id": "secai-plus.d1.q022",
+      "lesson": "secai-plus.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A privacy team needs to scan AI training sources for personal data. Which TWO sources are unstructured data and will need content inspection rather than column-level rules? Select TWO.",
+      "options": [
+        "Free-text bodies of employee emails",
+        "A CSV export of firewall rules",
+        "Screenshots attached to support tickets",
+        "XML configuration files",
+        "A relational asset inventory table"
+      ],
+      "answer": [0, 2],
+      "explain": "Email bodies and images have no predefined schema, so they are unstructured and need content inspection. CSV and relational tables are structured, and XML is semi-structured."
+    },
+    {
+      "id": "secai-plus.d1.q023",
+      "lesson": "secai-plus.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company wants other platforms to be able to detect that images from its image-generation service are AI-generated, even when no visible label is shown. Which technique meets this goal?",
+      "options": [
+        "Encrypting generated images at rest",
+        "Data masking of image metadata",
+        "Quantizing the image-generation model",
+        "Embedding an invisible watermark in each generated image"
+      ],
+      "answer": [3],
+      "explain": "An invisible watermark carries a machine-detectable signal of AI origin without a visible label. Encryption protects confidentiality but doesn't show origin once decrypted. Masking hides data, and quantization compresses the model; neither marks output."
+    },
+    {
+      "id": "secai-plus.d1.q024",
+      "lesson": "secai-plus.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about watermarking, select Yes if true.",
+      "statements": [
+        { "s": "Heavily paraphrasing AI-generated text can weaken or remove a statistical text watermark.", "a": true },
+        { "s": "A watermark prevents unauthorized users from copying the watermarked content.", "a": false },
+        { "s": "Embedding a hidden signature in a model can help an owner prove that a leaked copy is theirs.", "a": true }
+      ],
+      "explain": "Text watermarks rely on token patterns that paraphrasing disrupts. Watermarks support attribution and detection but are not access controls, so copying is still possible. Model watermarking helps prove ownership after model theft."
+    },
+    {
+      "id": "secai-plus.d1.q025",
+      "lesson": "secai-plus.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A user asks a RAG-based security assistant a question. Put the steps the system performs in order.",
+      "options": [
+        "Convert the user's question into an embedding",
+        "Run a similarity search against the vector store",
+        "Insert the top-ranked chunks into the prompt as context",
+        "Generate an answer grounded in the retrieved context"
+      ],
+      "explain": "The query is embedded with the same model used for documents, compared against stored vectors, and the best matching chunks are added to the prompt before the LLM generates its grounded answer."
+    },
+    {
+      "id": "secai-plus.d1.q026",
+      "lesson": "secai-plus.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A RAG retriever ranks document chunks by how closely their embeddings match the query embedding. Complete the function that computes cosine similarity.",
+      "code": "import numpy as np\n\ndef cosine_similarity(a, b):\n    return np.dot(a, b) / ____",
+      "options": [
+        "(len(a) * len(b))",
+        "(np.linalg.norm(a) * np.linalg.norm(b))",
+        "np.sum(a - b)",
+        "(np.max(a) + np.max(b))"
+      ],
+      "answer": [1],
+      "explain": "Cosine similarity is the dot product divided by the product of the two vectors' magnitudes (L2 norms), giving a value from -1 to 1 based on direction. Dividing by lengths, differences or maxima does not normalize for magnitude."
+    },
+    {
+      "id": "secai-plus.d1.q027",
+      "lesson": "secai-plus.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An internal HR assistant uses RAG over the company document repository. All documents were embedded into one vector index using a service account that can read every folder. A junior employee asks about pay bands, and the assistant quotes figures from an executive compensation file that the employee cannot open in the repository.",
+      "stem": "What is the BEST way to fix this?",
+      "options": [
+        "Implement permission-aware retrieval that filters chunks by the requesting user's access rights to each source document",
+        "Add a system prompt instruction telling the model not to discuss compensation",
+        "Retrieve more chunks per query so the model has better context",
+        "Re-embed all documents with a larger, more accurate embedding model"
+      ],
+      "answer": [0],
+      "explain": "Retrieval ignored document permissions, so access control must be enforced at retrieval by filtering chunks against the user's entitlements. A prompt instruction can be bypassed and blocks legitimate questions. More chunks or better embeddings would leak more, not less."
+    },
+    {
+      "id": "secai-plus.d1.q028",
+      "lesson": "secai-plus.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are security risks specific to RAG knowledge bases and vector storage? Select TWO.",
+      "options": [
+        "Malicious instructions hidden in an ingested document that are later retrieved into prompts",
+        "Quantization reducing the numeric precision of model weights",
+        "An epoch count set too high during training",
+        "Embedding inversion that reconstructs source text from stored vectors"
+      ],
+      "answer": [0, 3],
+      "explain": "Retrieved documents become prompt content, enabling indirect prompt injection, and stored embeddings can leak source text through inversion. Quantization and epoch count are model optimization and training concerns, not RAG storage risks."
+    }
+  ]
+}

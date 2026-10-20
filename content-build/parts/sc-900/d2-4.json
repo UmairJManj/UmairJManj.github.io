@@ -1,0 +1,480 @@
+{
+  "exam": "sc-900",
+  "domain": "d2",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-900.d2.q065",
+      "lesson": "sc-900.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Entra solution helps ensure the right people have the right access to the right resources at the right time, and lets auditors verify the controls?",
+      "options": [
+        "Microsoft Entra Connect Sync",
+        "Microsoft Entra Verified ID",
+        "Microsoft Defender for Identity",
+        "Microsoft Entra ID Governance"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Microsoft Entra ID Governance covers identity and access lifecycle, access reviews, entitlement management and privileged access. Connect Sync is a hybrid sync tool, Verified ID issues verifiable credentials, and Defender for Identity detects attacks against on-premises AD DS."
+    },
+    {
+      "id": "sc-900.d2.q066",
+      "lesson": "sc-900.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "HR wants new hires to automatically receive a welcome email and have their manager emailed a Temporary Access Pass before day one, and leavers to be removed from all groups on their last day. Which feature should you use?",
+      "options": [
+        "Access reviews",
+        "Lifecycle workflows",
+        "Privileged Identity Management",
+        "Dynamic administrative units"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Lifecycle workflows automate joiner, mover and leaver tasks triggered by dates such as hire or leave date, including TAP generation, welcome emails and group removal. Access reviews recertify existing access, PIM handles privileged roles, and administrative units scope admins."
+    },
+    {
+      "id": "sc-900.d2.q067",
+      "lesson": "sc-900.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the stages of the identity lifecycle in order for a typical employee.",
+      "options": [
+        "Joiner: the account is created and initial access granted",
+        "Mover: access changes when the employee changes role or department",
+        "Leaver: access is removed and the account disabled",
+        "The disabled account is deleted after the retention period"
+      ],
+      "explain": "Identity governance follows the joiner, mover, leaver lifecycle. Accounts are created at hire, access adjusts as people move, access is removed when they leave, and the disabled account is eventually deleted."
+    },
+    {
+      "id": "sc-900.d2.q068",
+      "lesson": "sc-900.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Entra ID Governance, select Yes if true.",
+      "statements": [
+        {
+          "s": "Lifecycle workflows require a Microsoft Entra ID Governance (or Microsoft Entra Suite) licence; Microsoft Entra ID P2 alone isn't enough.",
+          "a": true
+        },
+        {
+          "s": "Inbound provisioning can create user accounts from an HR system such as Workday.",
+          "a": true
+        },
+        {
+          "s": "Identity governance applies only to employees and can't manage guest users.",
+          "a": false
+        }
+      ],
+      "explain": "Lifecycle workflows are an ID Governance feature not included in P2. HR-driven inbound provisioning creates accounts from systems such as Workday or SuccessFactors. Governance also covers guests, for example through access reviews and entitlement management."
+    },
+    {
+      "id": "sc-900.d2.q069",
+      "lesson": "sc-900.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In entitlement management, what is a bundle of groups, applications and SharePoint Online sites that users can request as a single unit?",
+      "options": [
+        "A catalog",
+        "An administrative unit",
+        "An access package",
+        "A connected organization"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "An access package bundles resource roles that users request together, with policies for approval and expiration. A catalog is the container holding resources and packages, administrative units scope admin roles, and a connected organization is a partner whose users can request access."
+    },
+    {
+      "id": "sc-900.d2.q070",
+      "lesson": "sc-900.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam is starting an eight-month project with Tailspin Toys. Tailspin engineers need a Teams team, a SharePoint site and a project app. Fabrikam wants Tailspin users to request access themselves, the project lead to approve each request, and guest accounts removed automatically when access expires.",
+      "stem": "Which solution meets the requirements with the least administrative effort?",
+      "options": [
+        "Invite each engineer as a B2B guest and add them to the resources manually",
+        "Configure B2B direct connect with Tailspin",
+        "Run a quarterly access review of the Teams team",
+        "Create an access package in entitlement management with Tailspin as a connected organization"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "An access package with a connected organization lets Tailspin users request access, routes approval to the lead, sets expiry, and removes guests automatically when access ends. Manual invites need ongoing effort, direct connect covers Teams shared channels only, and access reviews don't handle requests."
+    },
+    {
+      "id": "sc-900.d2.q071",
+      "lesson": "sc-900.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO settings can be defined in an access package policy in entitlement management? Select TWO.",
+      "options": [
+        "Who can request the access package",
+        "When assignments expire",
+        "The minimum password length for requestors",
+        "Which Conditional Access session controls apply to SharePoint",
+        "The users' authentication method registration"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Access package policies define who can request, approval requirements, expiration and reviews. Password length, Conditional Access session controls and method registration are configured elsewhere in Microsoft Entra ID."
+    },
+    {
+      "id": "sc-900.d2.q072",
+      "lesson": "sc-900.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Legal requires users to accept an acceptable-use document before accessing a payroll application. How is this enforced in Microsoft Entra?",
+      "options": [
+        "Configure terms of use and require them with a Conditional Access grant control",
+        "Add the document to an access package catalog",
+        "Use a lifecycle workflow to email the document",
+        "Create a custom banned password list"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Terms of use are uploaded in Microsoft Entra and enforced with the Conditional Access grant control Require terms of use. Catalogs hold resources, not acceptance documents, a lifecycle workflow email doesn't force acceptance, and banned password lists are unrelated."
+    },
+    {
+      "id": "sc-900.d2.q073",
+      "lesson": "sc-900.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which feature lets group owners periodically confirm whether members and guests still need access to a Microsoft 365 group?",
+      "options": [
+        "Privileged Identity Management alerts",
+        "Lifecycle workflows",
+        "Access reviews",
+        "Microsoft Entra ID Protection"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Access reviews let owners, managers or users recertify group memberships and app assignments on a schedule. PIM alerts flag privileged-role issues, lifecycle workflows automate joiner/mover/leaver tasks, and ID Protection detects risk."
+    },
+    {
+      "id": "sc-900.d2.q074",
+      "lesson": "sc-900.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE can be reviewed by using Microsoft Entra access reviews? Select THREE.",
+      "options": [
+        "Members of security groups and Microsoft 365 groups",
+        "Users assigned to an enterprise application",
+        "Microsoft Entra role assignments",
+        "Files stored in a user's OneDrive",
+        "Firewall rules on Azure virtual networks"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Access reviews cover group memberships, application assignments, access packages and Microsoft Entra and Azure resource roles (through PIM). OneDrive file contents and network firewall rules aren't identity access assignments, so they can't be reviewed with access reviews."
+    },
+    {
+      "id": "sc-900.d2.q075",
+      "lesson": "sc-900.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso has 400 guests in a partner extranet group. Many projects ended long ago. Compliance requires that every quarter someone confirms whether each guest still needs access, that guests who aren't approved lose access without IT manually removing them, and that reviewers see which guests haven't signed in recently.",
+      "stem": "What should Contoso configure?",
+      "options": [
+        "A Conditional Access policy that requires MFA for guests",
+        "A recurring quarterly access review with recommendations and auto apply results enabled",
+        "An entitlement management catalog for the extranet group",
+        "A PIM for Groups eligible assignment for each guest"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A recurring access review can show inactivity-based recommendations and, with auto apply, removes denied guests automatically. MFA doesn't remove stale access, a catalog alone doesn't recertify existing members, and PIM for Groups gives just-in-time membership rather than periodic recertification."
+    },
+    {
+      "id": "sc-900.d2.q076",
+      "lesson": "sc-900.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "An administrator runs an access review of an application's assigned users. Put the steps in order.",
+      "options": [
+        "Create the review and choose the application, reviewers and recurrence",
+        "Reviewers receive a notification and the review starts",
+        "Reviewers approve or deny each user's continued access",
+        "The review ends and results are applied, removing denied users"
+      ],
+      "explain": "An admin first defines the scope, reviewers and schedule. Reviewers are notified when the review starts and record decisions. When the review period ends, results are applied (automatically if auto apply is on), removing denied users."
+    },
+    {
+      "id": "sc-900.d2.q077",
+      "lesson": "sc-900.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Entra feature provides just-in-time, time-bound activation of administrator roles?",
+      "options": [
+        "Privileged Identity Management (PIM)",
+        "Conditional Access",
+        "Entitlement management",
+        "Microsoft Entra Connect"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "PIM makes users eligible for roles that they activate when needed for a limited time. Conditional Access controls sign-in conditions, entitlement management handles access package requests, and Entra Connect synchronizes on-premises identities."
+    },
+    {
+      "id": "sc-900.d2.q078",
+      "lesson": "sc-900.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Privileged Identity Management, select Yes if true.",
+      "statements": [
+        {
+          "s": "A user with an eligible assignment must activate the role before using its permissions.",
+          "a": true
+        },
+        {
+          "s": "PIM can manage Azure resource roles as well as Microsoft Entra roles.",
+          "a": true
+        },
+        {
+          "s": "PIM is included with Microsoft Entra ID Free.",
+          "a": false
+        }
+      ],
+      "explain": "Eligible assignments must be activated, while active assignments are always in effect. PIM manages Microsoft Entra roles, Azure resource roles and group membership or ownership. It requires Microsoft Entra ID P2 or Microsoft Entra ID Governance."
+    },
+    {
+      "id": "sc-900.d2.q079",
+      "lesson": "sc-900.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An audit found that eight engineers hold the Exchange Administrator role permanently, although each uses it a few hours a month. The CISO wants no standing access: engineers must activate the role only when needed, complete MFA, give a reason, get approval from the messaging lead, and lose the role automatically after four hours.",
+      "stem": "What should be implemented?",
+      "options": [
+        "A Conditional Access policy requiring MFA for Exchange Online",
+        "A quarterly access review of the Exchange Administrator role",
+        "Eligible assignments in Privileged Identity Management with approval and a four-hour maximum activation",
+        "An access package that contains the Exchange Online app"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "PIM eligible assignments with role settings for MFA, justification, approval and maximum activation duration remove standing access. Conditional Access only adds sign-in conditions. Access reviews recertify roles periodically but leave standing access between reviews. Access packages grant resource access, not just-in-time admin roles."
+    },
+    {
+      "id": "sc-900.d2.q080",
+      "lesson": "sc-900.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO capabilities does Privileged Identity Management provide? Select TWO.",
+      "options": [
+        "Notifications when privileged roles are activated",
+        "Downloadable audit history of role activations and assignments",
+        "Blocking weak passwords on domain controllers",
+        "Synchronizing administrator accounts from AD DS",
+        "Detecting leaked credentials on the dark web"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "PIM sends notifications on activation and keeps audit history that can be downloaded for auditors. Blocking weak passwords is Password Protection, synchronization is Entra Connect or Cloud Sync, and leaked credentials detection is ID Protection."
+    },
+    {
+      "id": "sc-900.d2.q081",
+      "lesson": "sc-900.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A user with an eligible PIM assignment needs to use the Security Administrator role. Put the steps in order.",
+      "options": [
+        "The user opens Privileged Identity Management and selects the eligible role",
+        "The user completes MFA and enters a justification",
+        "An approver approves the activation request",
+        "The role becomes active for the configured duration",
+        "The role assignment expires automatically at the end of the duration"
+      ],
+      "explain": "The user requests activation from PIM, satisfies MFA and justification requirements, waits for approval if required, and then holds the role for the limited activation time. When the time ends, the role returns to eligible automatically."
+    },
+    {
+      "id": "sc-900.d2.q082",
+      "lesson": "sc-900.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Microsoft finds a user's username and password pair in a public credential dump. Which risk does Microsoft Entra ID Protection raise?",
+      "options": [
+        "Sign-in risk for an anonymous IP address",
+        "User risk for leaked credentials",
+        "Sign-in risk for atypical travel",
+        "Device risk for a non-compliant device"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Leaked credentials is a user risk detection because the account itself is likely compromised. Anonymous IP address and atypical travel are sign-in risk detections, and device compliance comes from Intune, not ID Protection."
+    },
+    {
+      "id": "sc-900.d2.q083",
+      "lesson": "sc-900.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Entra ID Protection, select Yes if true.",
+      "statements": [
+        {
+          "s": "Sign-in risk represents the probability that a given authentication request isn't from the identity owner.",
+          "a": true
+        },
+        {
+          "s": "A sign-in from a Tor exit node can trigger an anonymous IP address detection.",
+          "a": true
+        },
+        {
+          "s": "All risk detections are calculated only offline, after the sign-in finishes.",
+          "a": false
+        }
+      ],
+      "explain": "Sign-in risk measures whether a specific authentication is unauthorized, and Tor or anonymizer IPs trigger the anonymous IP address detection. Some detections are real-time during sign-in, while others are calculated offline afterwards."
+    },
+    {
+      "id": "sc-900.d2.q084",
+      "lesson": "sc-900.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A user signs in from Auckland and, 20 minutes later, from Paris. Which ID Protection detection is most likely?",
+      "options": [
+        "Leaked credentials",
+        "Password spray",
+        "Atypical travel",
+        "Admin confirmed user compromised"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Atypical travel flags two sign-ins from locations too far apart to travel between in the elapsed time. Leaked credentials comes from credential dumps, password spray from many accounts tried with common passwords, and admin confirmed compromised is a manual action."
+    },
+    {
+      "id": "sc-900.d2.q085",
+      "lesson": "sc-900.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Using risk-based Conditional Access, which control is typically required for a user with high user risk so the user can self-remediate?",
+      "options": [
+        "Require a secure password change",
+        "Require device to be marked as compliant",
+        "Require terms of use",
+        "Require app protection policy"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "User risk means the account may be compromised, so Microsoft recommends a secure password change (or risk remediation), which clears the risk. Device compliance, terms of use and app protection policies don't address compromised credentials."
+    },
+    {
+      "id": "sc-900.d2.q086",
+      "lesson": "sc-900.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Adventure Works has Microsoft Entra ID P2. The security team wants users whose sign-in is rated medium or high risk to prove their identity with MFA rather than being blocked, so they can keep working. Some users haven't registered any MFA method yet.",
+      "stem": "Which configuration best meets the goal?",
+      "options": [
+        "A user risk policy requiring password change, plus smart lockout",
+        "Security defaults, plus a custom banned password list",
+        "A PIM activation policy, plus an access review of all users",
+        "A sign-in risk Conditional Access policy requiring MFA for medium and high risk, plus the MFA registration policy"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A sign-in risk policy requiring MFA lets genuine users self-remediate, and the MFA registration policy ensures users have a method registered so they aren't blocked. Password change targets user risk, security defaults can't use risk levels, and PIM and access reviews don't evaluate sign-in risk."
+    },
+    {
+      "id": "sc-900.d2.q087",
+      "lesson": "sc-900.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO reports can administrators use to investigate risk in Microsoft Entra ID Protection? Select TWO.",
+      "options": [
+        "Risky users",
+        "Risky sign-ins",
+        "Access package assignments",
+        "Lifecycle workflow history",
+        "Connect Health sync errors"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "ID Protection provides the risky users, risky sign-ins and risk detections reports. Access package assignments belong to entitlement management, workflow history to lifecycle workflows, and sync errors to Microsoft Entra Connect Health."
+    },
+    {
+      "id": "sc-900.d2.q088",
+      "lesson": "sc-900.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "You are creating a risk-based Conditional Access policy with Microsoft Graph. It must require MFA when sign-in risk is medium or high. Complete the condition.",
+      "code": "{\n  \"displayName\": \"Sign-in risk - require MFA\",\n  \"state\": \"enabled\",\n  \"conditions\": {\n    \"users\": { \"includeUsers\": [\"All\"] },\n    \"applications\": { \"includeApplications\": [\"All\"] },\n    \"clientAppTypes\": [\"all\"],\n    \"____\": [\"medium\", \"high\"]\n  },\n  \"grantControls\": { \"operator\": \"OR\", \"builtInControls\": [\"mfa\"] }\n}",
+      "options": [
+        "userRiskLevels",
+        "signInRiskLevels",
+        "servicePrincipalRiskLevels",
+        "insiderRiskLevels"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "signInRiskLevels is the condition for sign-in risk from ID Protection and pairs with an MFA requirement. userRiskLevels is for user risk (usually paired with password change), servicePrincipalRiskLevels targets workload identities, and insiderRiskLevels relates to Purview Insider Risk Management."
+    }
+  ]
+}

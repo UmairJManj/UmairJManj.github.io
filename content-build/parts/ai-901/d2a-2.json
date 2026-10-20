@@ -1,0 +1,623 @@
+{
+  "exam": "ai-901",
+  "domain": "d2",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "ai-901.d2a.q031",
+      "lesson": "ai-901.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Python package is the Foundry SDK client library that provides the AIProjectClient class?",
+      "options": [
+        "azure-ai-textanalytics",
+        "azure-cognitiveservices-speech",
+        "azure-ai-projects",
+        "azure-mgmt-resource"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "azure-ai-projects (the Azure AI Projects client library) provides AIProjectClient. azure-ai-textanalytics is for Azure Language, azure-cognitiveservices-speech is the Speech SDK, and azure-mgmt-resource manages Azure resources."
+    },
+    {
+      "id": "ai-901.d2a.q032",
+      "lesson": "ai-901.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code to create a Foundry project client that authenticates with Microsoft Entra ID.",
+      "code": "from azure.ai.projects import AIProjectClient\nfrom azure.identity import DefaultAzureCredential\n\nproject = AIProjectClient(\n    endpoint=project_endpoint,\n    credential=____,\n)",
+      "options": [
+        "AzureKeyCredential(key)",
+        "DefaultAzureCredential()",
+        "os.getenv(\"API_KEY\")",
+        "SpeechConfig(subscription=key)"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "DefaultAzureCredential() obtains an Entra ID token (az login locally, managed identity in Azure). AzureKeyCredential is key-based, a raw environment string isn't a credential object, and SpeechConfig belongs to the Speech SDK."
+    },
+    {
+      "id": "ai-901.d2a.q033",
+      "lesson": "ai-901.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code so the app gets an OpenAI-compatible client from the Foundry project and calls the model deployment.",
+      "code": "project = AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential())\nopenai = project.____()\nresponse = openai.responses.create(model=\"support-gpt\", input=user_text)\nprint(response.output_text)",
+      "options": [
+        "get_openai_client",
+        "get_deployment",
+        "create_agent",
+        "get_connection_string"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "get_openai_client() returns an OpenAI-compatible client bound to the project endpoint for the Responses API. The other method names don't return a client that exposes responses.create."
+    },
+    {
+      "id": "ai-901.d2a.q034",
+      "lesson": "ai-901.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You deployed gpt-4.1-mini with the deployment name 'faq-bot'. What value should you pass as the model argument to responses.create?",
+      "options": [
+        "gpt-4.1-mini",
+        "The Foundry project name",
+        "The resource group name",
+        "faq-bot"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Calls target a deployment, so model takes the deployment name, which can differ from the underlying model name. The project and resource group names identify containers, not the deployment."
+    },
+    {
+      "id": "ai-901.d2a.q035",
+      "lesson": "ai-901.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which URL format is a Foundry project endpoint used with AIProjectClient?",
+      "options": [
+        "https://<resource>.services.ai.azure.com/api/projects/<project>",
+        "https://portal.azure.com/<subscription>/<project>",
+        "https://<region>.tts.speech.microsoft.com",
+        "https://ai.azure.com/catalog/<model>"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The project endpoint is the Foundry resource host plus /api/projects/<project-name>. portal.azure.com and ai.azure.com are web portals, and the tts host is a Speech endpoint."
+    },
+    {
+      "id": "ai-901.d2a.q036",
+      "lesson": "ai-901.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A developer's Python chat client uses AIProjectClient with DefaultAzureCredential. It works on her laptop after she runs az login. When deployed to Azure App Service with a system-assigned managed identity, every call fails with an authorisation (403) error. The endpoint is correct.",
+      "stem": "What is the most likely fix?",
+      "options": [
+        "Replace DefaultAzureCredential with the API key string",
+        "Assign the App Service managed identity the Foundry User role on the Foundry project",
+        "Change the deployment type to Global Standard",
+        "Install azure-ai-textanalytics"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The managed identity authenticates but lacks permission; granting Foundry User (formerly Azure AI User) or higher fixes it. AIProjectClient expects a token credential, deployment type doesn't affect authorisation, and textanalytics is unrelated."
+    },
+    {
+      "id": "ai-901.d2a.q037",
+      "lesson": "ai-901.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order to build a minimal Foundry SDK chat client in Python.",
+      "options": [
+        "Install azure-ai-projects and azure-identity",
+        "Create an AIProjectClient with the project endpoint and DefaultAzureCredential",
+        "Call get_openai_client() on the project client",
+        "Call responses.create with the deployment name and the user's input",
+        "Print response.output_text"
+      ],
+      "explain": "Packages first, then the project client, then the OpenAI-compatible client, then the call, and finally display the generated text from output_text."
+    },
+    {
+      "id": "ai-901.d2a.q038",
+      "lesson": "ai-901.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Responses API call so the second turn keeps the context of the first.",
+      "code": "first = client.responses.create(model=\"chat-dep\", input=\"Who was Ada Lovelace?\")\nsecond = client.responses.create(\n    model=\"chat-dep\",\n    ____=first.id,\n    input=\"Tell me more about her work with Charles Babbage.\",\n)",
+      "options": [
+        "thread_id",
+        "conversation_history",
+        "previous_response_id",
+        "session_token"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "previous_response_id chains a response to the prior one so only the new input is sent. thread_id is the classic Agents API concept, and the other names aren't Responses API parameters."
+    },
+    {
+      "id": "ai-901.d2a.q039",
+      "lesson": "ai-901.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which authentication method does Microsoft recommend for an app running in Azure that calls a Foundry model, because it avoids storing secrets?",
+      "options": [
+        "Microsoft Entra ID with a managed identity",
+        "An API key hard-coded in the source",
+        "An API key in a public configuration file",
+        "Anonymous access"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Entra ID with a managed identity uses tokens with no long-lived secret. Hard-coded or public keys are insecure, and Foundry endpoints don't allow anonymous calls."
+    },
+    {
+      "id": "ai-901.d2a.q040",
+      "lesson": "ai-901.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about multi-turn chat, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "With Chat Completions, a model automatically remembers earlier requests even if you don't resend them.",
+          "a": false
+        },
+        {
+          "s": "Resending the full message history on every turn increases the number of tokens per request.",
+          "a": true
+        },
+        {
+          "s": "If the prompt, history and output exceed the model's context window, the request can fail or history must be trimmed.",
+          "a": true
+        }
+      ],
+      "explain": "Models are stateless, so history must be resent or chained. Growing history adds tokens each turn, and everything must fit in the context window."
+    },
+    {
+      "id": "ai-901.d2a.q041",
+      "lesson": "ai-901.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code that creates an OpenAI client for key-based access to a Foundry (Azure OpenAI) v1 endpoint.",
+      "code": "from openai import OpenAI\n\nclient = OpenAI(\n    base_url=\"https://contoso-ai.openai.azure.com/openai/v1/\",\n    ____=os.getenv(\"API_KEY\"),\n)",
+      "options": [
+        "credential",
+        "subscription",
+        "api_key",
+        "endpoint"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The OpenAI client takes base_url and api_key. credential is used by Azure SDK clients, subscription by the Speech SDK, and the OpenAI client uses base_url rather than endpoint."
+    },
+    {
+      "id": "ai-901.d2a.q042",
+      "lesson": "ai-901.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What are tokens in the context of large language models?",
+      "options": [
+        "API keys used to authenticate requests",
+        "Small units of text, such as words or word pieces, that a model reads and generates",
+        "Credits purchased in advance to pay for Azure",
+        "Images used to verify a user is human"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Tokens are the text units a model processes; they drive cost, TPM limits and context size. Despite the name, they aren't keys, prepaid credits or CAPTCHA images."
+    },
+    {
+      "id": "ai-901.d2a.q043",
+      "lesson": "ai-901.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A Python chat client uses an endpoint and API key. Which TWO practices keep the key secure? Select TWO.",
+      "options": [
+        "Store the key in a .env file excluded from source control and load it with load_dotenv()",
+        "Commit the key to the Git repository for teammates",
+        "Store the key in Azure Key Vault and read it at runtime",
+        "Paste the key into the system prompt",
+        "Print the key in application logs for troubleshooting"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Keep keys out of code: environment/.env files (not committed) or Key Vault. Committing, logging or sending the key to the model exposes it."
+    },
+    {
+      "id": "ai-901.d2a.q044",
+      "lesson": "ai-901.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A chat app sends each user message to responses.create with only input=user_text. Users complain that when they ask 'What about the second one?', the model has no idea what they were talking about. The team wants the service to manage the history rather than resending it themselves.",
+      "stem": "What should they change?",
+      "options": [
+        "Increase max output tokens",
+        "Raise the temperature so the model guesses context",
+        "Switch the deployment to Provisioned throughput",
+        "Pass previous_response_id (or a conversation) on each call"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Each call is independent; chaining with previous_response_id or a stored conversation lets the service supply prior context. Token limits, temperature and deployment type don't add memory."
+    },
+    {
+      "id": "ai-901.d2a.q045",
+      "lesson": "ai-901.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE components define a prompt agent in Foundry Agent Service? Select THREE.",
+      "options": [
+        "A model",
+        "Instructions",
+        "Tools",
+        "A virtual machine scale set",
+        "A container image you build"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "A prompt agent is configuration only: model, instructions and tools. Foundry runs it, so there are no VMs to manage; a container image you build is what a hosted agent uses."
+    },
+    {
+      "id": "ai-901.d2a.q046",
+      "lesson": "ai-901.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In Foundry Agent Service, what are an agent's instructions?",
+      "options": [
+        "The list of tools the agent can call",
+        "The log of past conversations",
+        "The deployment type of its model",
+        "The agent's system prompt defining role, behaviour, style and constraints"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Instructions play the role of the system prompt for the agent. Tools are configured separately, the deployment type belongs to the model deployment, and conversation logs are stored state."
+    },
+    {
+      "id": "ai-901.d2a.q047",
+      "lesson": "ai-901.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You configured instructions and tools in the model playground and want to keep this setup as a reusable agent. What should you do?",
+      "options": [
+        "Select Save as agent",
+        "Select New chat",
+        "Change the deployment type to Provisioned",
+        "Export the chat transcript"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Save as agent stores the model, instructions and tools as an agent you can test and call. New chat only clears history, deployment type affects capacity, and a transcript isn't an agent definition."
+    },
+    {
+      "id": "ai-901.d2a.q048",
+      "lesson": "ai-901.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order to create and test a single agent in the Foundry portal.",
+      "options": [
+        "Select a deployed model for the agent",
+        "Write the agent's instructions",
+        "Add tools and knowledge",
+        "Save the agent",
+        "Chat with it in the agent playground"
+      ],
+      "explain": "Choose the model, define behaviour with instructions, add tools, save (creating a version), then test and refine in the playground."
+    },
+    {
+      "id": "ai-901.d2a.q049",
+      "lesson": "ai-901.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Foundry agents, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "A prompt agent requires you to write and host your own container code.",
+          "a": false
+        },
+        {
+          "s": "Saving changes to an agent creates a new version that you can compare or roll back.",
+          "a": true
+        },
+        {
+          "s": "Selecting New chat in the agent playground starts a conversation without the previous turns' context.",
+          "a": true
+        }
+      ],
+      "explain": "Prompt agents are configuration only; hosted agents use your container code. Saves create versions. New chat resets context, which is useful when retesting changed instructions."
+    },
+    {
+      "id": "ai-901.d2a.q050",
+      "lesson": "ai-901.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A team built a 'computing-historian' agent whose instructions say to answer only computing-history questions. During testing it still answers 'What's the capital of Spain?'. The model and tools are appropriate and no errors occur.",
+      "stem": "What should the team do first?",
+      "options": [
+        "Add the code interpreter tool",
+        "Switch to a hosted agent",
+        "Strengthen the instructions to explicitly decline unrelated topics, save, and retest in a new chat",
+        "Increase the deployment's TPM quota"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Behaviour is controlled by the instructions, so make the scope rule explicit, save, and retest with fresh context. A new tool, hosted agent or more quota doesn't change topic handling."
+    },
+    {
+      "id": "ai-901.d2a.q051",
+      "lesson": "ai-901.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An agent must answer questions using 30 internal product manuals that you upload. Which tool should you add?",
+      "options": [
+        "Web search",
+        "Code interpreter",
+        "Image generation",
+        "File search"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "File search indexes uploaded documents in a vector store and retrieves relevant passages with citations. Web search uses the public internet, code interpreter runs Python, and image generation creates images."
+    },
+    {
+      "id": "ai-901.d2a.q052",
+      "lesson": "ai-901.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Users upload CSV sales files and ask the agent to calculate totals and draw a chart. Which tool enables this?",
+      "options": [
+        "Code interpreter",
+        "File search",
+        "Web search",
+        "Azure AI Search"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Code interpreter writes and runs Python in a sandbox, so it can compute and plot data. File search retrieves text, web search finds public pages, and Azure AI Search queries an existing index."
+    },
+    {
+      "id": "ai-901.d2a.q053",
+      "lesson": "ai-901.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You describe a get_order_status function to an agent. When the agent decides to use it, what happens?",
+      "options": [
+        "Foundry automatically writes the function code",
+        "The web search tool looks up the order status",
+        "The model executes the function inside its own weights",
+        "Your application runs the function and returns the result to the agent"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "With function calling the agent returns which function to call and with what arguments; your app executes it and passes the output back. Foundry doesn't write the code, and web search can't see private orders."
+    },
+    {
+      "id": "ai-901.d2a.q054",
+      "lesson": "ai-901.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A travel agency builds a single agent. It must (1) answer questions from its own brochure PDFs and (2) report today's flight disruption news from public websites, with citations. No custom code should be written.",
+      "stem": "Which TWO tools should be added? Select TWO.",
+      "options": [
+        "File search",
+        "Function calling",
+        "Web search",
+        "Code interpreter",
+        "Computer use"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "File search grounds on the uploaded brochures and web search retrieves current public news with citations. Function calling needs your own code, code interpreter is for computation, and computer use drives UIs."
+    },
+    {
+      "id": "ai-901.d2a.q055",
+      "lesson": "ai-901.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about agent tools, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Model Context Protocol (MCP) is an open standard for connecting agents to tools and data sources.",
+          "a": true
+        },
+        {
+          "s": "The web search tool can search documents you uploaded to the agent's vector store.",
+          "a": false
+        },
+        {
+          "s": "An OpenAPI tool lets an agent call a REST API described by an OpenAPI specification.",
+          "a": true
+        }
+      ],
+      "explain": "MCP standardises tool connections. Uploaded documents are searched by file search, not web search. OpenAPI tools call REST APIs from their specification."
+    },
+    {
+      "id": "ai-901.d2a.q056",
+      "lesson": "ai-901.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your company already maintains an Azure AI Search index of policy documents. Which tool lets an agent ground answers on that existing index?",
+      "options": [
+        "File search",
+        "Azure AI Search",
+        "Code interpreter",
+        "Browser automation"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Azure AI Search tool connects an agent to an existing index. File search builds its own vector store from uploaded files, code interpreter runs code, and browser automation performs web tasks."
+    },
+    {
+      "id": "ai-901.d2a.q057",
+      "lesson": "ai-901.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Foundry SDK code that creates a prompt agent.",
+      "code": "agent = project.agents.create_version(\n    agent_name=\"hr-helper\",\n    definition=____(\n        model=\"gpt-4.1-mini\",\n        instructions=\"Answer HR policy questions concisely.\",\n    ),\n)",
+      "options": [
+        "SpeechConfig",
+        "TextAnalyticsClient",
+        "AzureKeyCredential",
+        "PromptAgentDefinition"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "PromptAgentDefinition holds the model, instructions and tools for a prompt agent passed to create_version. The other classes belong to the Speech SDK, Azure Language SDK and key authentication."
+    },
+    {
+      "id": "ai-901.d2a.q058",
+      "lesson": "ai-901.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code so both questions are sent to the agent in the same multi-turn conversation.",
+      "code": "openai = project.get_openai_client(agent_name=\"hr-helper\")\nconv = openai.conversations.create()\nr1 = openai.responses.create(conversation=conv.id, input=\"How many leave days do I get?\")\nr2 = openai.responses.create(____, input=\"Can I carry them over?\")",
+      "options": [
+        "conversation=conv.id",
+        "model=\"hr-helper\"",
+        "thread=conv",
+        "stream=True"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Reusing conversation=conv.id keeps both turns in the same stored conversation. A model name alone starts fresh, thread is a classic concept not used here, and streaming doesn't add context."
+    },
+    {
+      "id": "ai-901.d2a.q059",
+      "lesson": "ai-901.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In the current Foundry Agent Service API, which object replaces the classic 'thread' for storing a multi-turn exchange?",
+      "options": [
+        "Run",
+        "Agent version",
+        "Conversation",
+        "Deployment"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Threads became conversations, which store items such as messages and tool calls. Runs became responses, assistants became agent versions, and a deployment hosts a model."
+    },
+    {
+      "id": "ai-901.d2a.q060",
+      "lesson": "ai-901.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order for a Python client to chat with an existing Foundry agent.",
+      "options": [
+        "Create an AIProjectClient with the project endpoint and credential",
+        "Get an OpenAI client for the agent from the project client",
+        "Create a conversation",
+        "Call responses.create with the conversation and user input",
+        "Read output_text from the response"
+      ],
+      "explain": "Connect to the project, get the OpenAI-compatible client bound to the agent, create a conversation for state, send input, then read the generated text."
+    },
+    {
+      "id": "ai-901.d2a.q061",
+      "lesson": "ai-901.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": "A developer is migrating an app written for the classic Agents API (threads, messages, runs polled until complete) to azure-ai-projects 2.x and the Responses API.",
+      "stem": "For each statement, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "In the new API, a response is returned without having to poll a run until it completes.",
+          "a": true
+        },
+        {
+          "s": "Agents are created with the project client, while conversations and responses use the OpenAI client from get_openai_client().",
+          "a": true
+        },
+        {
+          "s": "Existing classic threads are automatically converted into new conversations by the SDK upgrade.",
+          "a": false
+        }
+      ],
+      "explain": "Responses replace polled runs. Agent creation uses AIProjectClient; conversations and responses use the OpenAI client. Migration moves code, not stored thread state; new conversations start fresh."
+    }
+  ]
+}

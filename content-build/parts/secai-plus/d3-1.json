@@ -1,0 +1,670 @@
+{
+  "exam": "secai-plus",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "secai-plus.d3.1.01",
+      "objective": "d3.1",
+      "seq": 1,
+      "title": "AI plug-ins: IDE, browser and CLI",
+      "short": "AI plug-ins embed a model where security staff already work: IDE plug-ins suggest and review code, browser plug-ins analyze pages and summarize alerts, and CLI plug-ins turn natural language into commands. Each one inherits the access of its host, so scope it tightly.",
+      "deep": "A **plug-in** (extension) adds AI features to an existing tool instead of making you open a separate app.\n- **IDE plug-ins** (integrated development environment) run inside the code editor. They complete code, explain functions, flag insecure patterns such as hard-coded secrets or unsanitized input, and propose fixes as you type. This shifts security left, to the moment the code is written.\n- **Browser plug-ins** read the page you are viewing. Analysts use them to summarize a threat report, check a suspicious URL or explain a console screen.\n- **CLI plug-ins** sit in the terminal. You describe a task (\"list listening ports and the process that owns each\"), and the plug-in suggests a command, explains it or explains an error.\n\n**Security considerations:** the plug-in sends context (source code, page content, shell history) to a model, which may be hosted by a third party. Check data handling, use only approved (sanctioned) plug-ins, give them least privilege, and review every suggested command or code change before running it. A human stays accountable for what gets executed.",
+      "terms": [
+        {
+          "t": "IDE plug-in",
+          "d": "Editor extension that gives AI code completion, explanation and security review inside the development environment."
+        },
+        {
+          "t": "Browser plug-in",
+          "d": "Browser extension that applies AI to page content, for example summarizing or classifying what the user is viewing."
+        },
+        {
+          "t": "CLI plug-in",
+          "d": "Terminal add-on that translates natural language into shell commands or explains command output."
+        }
+      ],
+      "trap": "Questions expect you to match the plug-in type to where the work happens (code means IDE, web content means browser, shell means CLI) and to remember that suggestions still need human review.",
+      "example": "A developer's IDE plug-in flags a SQL query built by string concatenation and proposes a parameterized query before the code is committed.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Plug-in",
+          "Lives in",
+          "Typical security use"
+        ],
+        "rows": [
+          [
+            "IDE",
+            "Code editor",
+            "Insecure code hints"
+          ],
+          [
+            "Browser",
+            "Web browser",
+            "Summarize/check pages"
+          ],
+          [
+            "CLI",
+            "Terminal",
+            "Build/explain commands"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.1.02",
+      "objective": "d3.1",
+      "seq": 2,
+      "title": "Chatbots, personal assistants and MCP servers",
+      "short": "Chatbots answer questions in conversation, personal assistants act on a user's behalf across email, calendar and files, and Model Context Protocol (MCP) servers give AI applications a standard way to reach tools and data. More reach means more need for least privilege.",
+      "deep": "**Chatbots** are conversational interfaces to a model. A security chatbot can answer \"what does this event ID mean?\" or explain a policy, often grounded in internal documents through retrieval-augmented generation (RAG).\n\n**Personal assistants** go further. They are connected to a user's mailbox, calendar, documents and tickets, and can draft replies, schedule meetings or pull a report. They act with the user's identity, so their permissions are the user's permissions.\n\nThe **Model Context Protocol (MCP)** is an open standard that connects AI applications to external systems. Its parts:\n- **Host and client:** the AI application, and the connector it uses to talk to each server.\n- **MCP server:** a program that exposes **tools** (actions the model can call), **resources** (data it can read) and **prompts** (reusable templates).\n- Messages use **JSON-RPC 2.0**. Local servers usually use the **stdio** transport, and remote servers use **HTTP**, with OAuth-based authorization.\n\nOne MCP server, for example a SIEM-query server, can then be used by any MCP-compatible assistant. **Risks:** an over-permissioned server, untrusted third-party servers, and tool descriptions or returned data that contain injected instructions. Defend with vetted servers, scoped credentials, user approval for sensitive tool calls, and logging.",
+      "terms": [
+        {
+          "t": "Model Context Protocol (MCP)",
+          "d": "Open protocol that standardizes how AI applications connect to external tools, data and prompts."
+        },
+        {
+          "t": "MCP server",
+          "d": "Program that exposes tools, resources and prompts to MCP clients."
+        },
+        {
+          "t": "Personal assistant",
+          "d": "AI that acts for a user across their apps (mail, calendar, files) using that user's permissions."
+        },
+        {
+          "t": "Chatbot",
+          "d": "Conversational AI interface that answers questions, often grounded on documents via RAG."
+        }
+      ],
+      "trap": "The exam may describe a standard connector that exposes tools and data to many AI apps. That is an MCP server, not a browser plug-in or an API gateway.",
+      "example": "A SOC builds an internal MCP server that has read-only tools for querying the SIEM, so analysts can ask their AI assistant for the last 24 hours of failed logins.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "AI host app",
+          "MCP client",
+          "MCP server",
+          "SIEM / ticket API"
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.1.03",
+      "objective": "d3.1",
+      "seq": 3,
+      "title": "Signature matching, anomaly detection and pattern recognition",
+      "short": "Signature matching finds known-bad indicators exactly. Anomaly detection learns a baseline of normal behavior and flags deviations, which can reveal unknown threats. Pattern recognition finds recurring structures, such as campaigns or attack chains, across large volumes of data.",
+      "deep": "These three detection approaches complement each other.\n- **Signature matching** compares data against known indicators: file hashes, byte patterns, YARA-style rules, IDS signatures. It is fast, precise and has few false positives, but it misses new or modified threats. AI helps by drafting and tuning rules, clustering near-duplicate samples and explaining why a rule fired.\n- **Anomaly detection** builds a **baseline** of normal activity (logon times, data volumes, process trees) and alerts on statistically unusual behavior. It is often **unsupervised**, so it needs no labeled attack data. That lets it surface **zero-day** activity and insider misuse, at the cost of more false positives and tuning.\n- **Pattern recognition** uses ML to find recurring structures: the same phishing template across many emails, beaconing at regular intervals, or a sequence of techniques that together form an attack chain. **User and entity behavior analytics (UEBA)** combines baselining with pattern recognition.\n\nGood programs layer all three, and analysts provide feedback to cut noise.",
+      "terms": [
+        {
+          "t": "Signature matching",
+          "d": "Detection by comparing data with known-bad indicators such as hashes or byte patterns."
+        },
+        {
+          "t": "Anomaly detection",
+          "d": "Flagging deviations from a learned baseline of normal behavior."
+        },
+        {
+          "t": "Baseline",
+          "d": "Model of normal activity that later activity is compared against."
+        },
+        {
+          "t": "UEBA",
+          "d": "User and entity behavior analytics: baselining users and devices to spot risky deviations."
+        }
+      ],
+      "trap": "If the threat is new or unknown, signature matching is the wrong answer. Choose anomaly or behavior-based detection. If the goal is fewest false positives for a known threat, choose signatures.",
+      "example": "A service account that normally reads 50 MB a day suddenly downloads 40 GB at 03:00. No signature matches, but anomaly detection raises an alert.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Method",
+          "Finds",
+          "Weakness"
+        ],
+        "rows": [
+          [
+            "Signature",
+            "Known threats",
+            "Misses new variants"
+          ],
+          [
+            "Anomaly",
+            "Unknown deviations",
+            "False positives"
+          ],
+          [
+            "Pattern",
+            "Campaigns, chains",
+            "Needs lots of data"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.1.04",
+      "objective": "d3.1",
+      "seq": 4,
+      "title": "Code quality, vulnerability analysis and automated penetration testing",
+      "short": "AI improves code quality and linting by flagging insecure or sloppy code. It speeds vulnerability analysis by explaining, prioritizing and correlating findings. It assists authorized automated penetration testing within an agreed scope. Every finding needs human validation.",
+      "deep": "**Code quality and linting:** a linter checks code against style and correctness rules. AI-assisted linters go beyond fixed rules: they explain why a construct is risky (injection, weak crypto, missing input validation), suggest a fix and summarize a pull request for reviewers.\n\n**Vulnerability analysis:** scanners produce thousands of findings. AI helps by deduplicating them, mapping them to CVEs and CWEs, explaining impact in plain language, and **prioritizing** by exploitability and asset criticality (for example, internet-facing, with a known exploit), not by CVSS score alone. It can also draft remediation steps.\n\n**Automated penetration testing:** AI-driven tools can enumerate assets, choose test cases, chain findings and write the report faster than manual testing alone. Because this is offensive activity, it must be **authorized** (written rules of engagement), **scoped** to approved targets and time windows, and supervised by a human who can stop it. Treat AI results as leads: models can hallucinate a vulnerability or miss one, so testers confirm before reporting.",
+      "terms": [
+        {
+          "t": "Linting",
+          "d": "Automated static checking of code for errors, style issues and risky constructs."
+        },
+        {
+          "t": "Vulnerability prioritization",
+          "d": "Ranking findings by exploitability, exposure and asset value, not by severity score alone."
+        },
+        {
+          "t": "Rules of engagement",
+          "d": "Written authorization defining scope, timing and limits of a penetration test."
+        }
+      ],
+      "trap": "Look for the control that makes AI-driven pentesting acceptable: written authorization, defined scope and human oversight. Speed or tool choice is the distractor.",
+      "example": "An AI assistant groups 2,300 scanner findings into 40 root causes and ranks the internet-facing ones with known exploits first for patching.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d3.1.05",
+      "objective": "d3.1",
+      "seq": 5,
+      "title": "Incident management, threat modeling and fraud detection",
+      "short": "AI supports incident management by triaging, enriching and correlating alerts. It supports threat modeling by drafting threats against a system design using frameworks such as STRIDE. It supports fraud detection by scoring transactions in real time against learned behavior.",
+      "deep": "**Incident management:** AI copilots summarize an incident, enrich indicators (reputation, geolocation, asset owner), group related alerts into one incident, suggest next steps from playbooks, and draft status updates. Analysts make the containment decisions.\n\n**Threat modeling:** you describe the architecture (data flows, trust boundaries, components), and AI proposes threats and mitigations, for example per **STRIDE** category: Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. For AI systems it can also map threats to **MITRE ATLAS** techniques or OWASP LLM risks. It is a fast first draft, and the architects validate it.\n\n**Fraud detection:** supervised models learn from labeled fraud cases, and anomaly models learn each customer's normal behavior (amounts, locations, devices, velocity). Each transaction gets a **risk score** in real time: low scores pass, medium scores trigger step-up authentication, and high scores are blocked or sent to review. Models must be retrained as fraud patterns drift, and false positives that block legitimate customers are a business cost.",
+      "terms": [
+        {
+          "t": "STRIDE",
+          "d": "Threat categories: Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege."
+        },
+        {
+          "t": "Alert correlation",
+          "d": "Grouping related alerts from different sources into a single incident."
+        },
+        {
+          "t": "Risk score",
+          "d": "Model output estimating how likely an event, such as a transaction, is malicious or fraudulent."
+        }
+      ],
+      "trap": "In fraud scenarios, the best answer usually combines a real-time risk score with a graduated response (step-up authentication or review). A hard block on every flag is wrong.",
+      "example": "A card payment from a new device in another country, ten minutes after a local purchase, gets a high risk score and triggers step-up verification.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Transaction",
+          "Feature extraction",
+          "Model risk score",
+          "Allow/step-up/block"
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.1.06",
+      "objective": "d3.1",
+      "seq": 6,
+      "title": "Translation and summarization",
+      "short": "AI translation lets analysts read threat intelligence, phishing lures and logs in foreign languages. AI summarization condenses long reports, incident timelines and log bursts into key points. Both save time, but both can drop or invent details, so verify anything critical against the source.",
+      "deep": "**Translation:** threat intelligence, underground forum posts, ransom notes and phishing emails often arrive in languages the team doesn't speak. LLM-based translation handles technical jargon and slang better than older phrase-based tools, and it can also translate code comments or explain an obfuscated script in plain language.\n\n**Summarization:** comes in two forms.\n- **Extractive** summarization pulls the most important sentences straight from the source.\n- **Abstractive** summarization writes new sentences that capture the meaning. It reads better but can **hallucinate**.\n\nSOC uses include summarizing a 60-page vendor report, turning a noisy incident timeline into an executive brief, and condensing thousands of log lines into the few that matter.\n\n**Controls:**\n- Keep a link to the source so readers can check it.\n- Have a human verify indicators, numbers and names before acting on or publishing them.\n- Don't paste sensitive data into unsanctioned public tools.\n- Watch for **prompt injection** hidden inside the documents being summarized.",
+      "terms": [
+        {
+          "t": "Extractive summarization",
+          "d": "Summary made by selecting existing sentences from the source."
+        },
+        {
+          "t": "Abstractive summarization",
+          "d": "Summary written in new words; more fluent but can hallucinate."
+        },
+        {
+          "t": "Hallucination",
+          "d": "Fluent but false or unsupported model output."
+        }
+      ],
+      "trap": "Exam stems often ask what risk to manage in an AI summary that goes to executives or regulators. The answer is hallucinated or omitted facts, which need human verification against the source.",
+      "example": "A threat intelligence analyst translates a foreign-language forum post that advertises stolen VPN credentials and gets a three-bullet summary for the CISO, then checks the domain names against the original.",
+      "diagram": null
+    }
+  ],
+  "questions": [
+    {
+      "id": "secai-plus.d3.q001",
+      "lesson": "secai-plus.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A development team wants AI to flag hard-coded secrets and injection-prone code while developers are typing, before the code is committed. Which tool type BEST fits?",
+      "options": [
+        "Browser plug-in",
+        "IDE plug-in",
+        "CLI plug-in",
+        "Personal assistant"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "An IDE plug-in runs inside the code editor and reviews code as it is written. A browser plug-in works on web pages, a CLI plug-in works in the terminal, and a personal assistant acts across mail, calendar and files."
+    },
+    {
+      "id": "secai-plus.d3.q002",
+      "lesson": "secai-plus.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A junior administrator uses an AI CLI plug-in that suggests a command to clean up disk space on a production server. What should the administrator do FIRST?",
+      "options": [
+        "Run the command immediately because the plug-in is approved",
+        "Run the command with elevated privileges to make sure it completes",
+        "Review and understand the suggested command before executing it",
+        "Paste the command into a public chatbot to confirm it"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "AI suggestions can be wrong or destructive, so a human must review and understand them before running them. Approval of the tool doesn't make each suggestion safe, elevating privileges increases the blast radius, and public chatbots can leak data and are no more reliable."
+    },
+    {
+      "id": "secai-plus.d3.q003",
+      "lesson": "secai-plus.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about AI plug-ins, select Yes if true.",
+      "statements": [
+        {
+          "s": "An IDE plug-in may send source code to an external model, so data handling must be reviewed before approval.",
+          "a": true
+        },
+        {
+          "s": "A browser plug-in inherits no access to the content the user is viewing.",
+          "a": false
+        },
+        {
+          "s": "Using only sanctioned plug-ins helps reduce shadow AI risk.",
+          "a": true
+        }
+      ],
+      "explain": "Plug-ins send their host's context (code, page content) to a model, so data handling matters. Browser plug-ins can read the pages being viewed. Allowing only sanctioned plug-ins limits unmanaged shadow AI."
+    },
+    {
+      "id": "secai-plus.d3.q004",
+      "lesson": "secai-plus.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which open standard lets an AI application connect to external tools, data resources and prompt templates through a common client-server protocol?",
+      "options": [
+        "Model Context Protocol (MCP)",
+        "Retrieval-augmented generation (RAG)",
+        "OpenAPI Specification",
+        "Security Assertion Markup Language (SAML)"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "MCP standardizes how AI hosts connect, through clients, to servers that expose tools, resources and prompts. RAG is a grounding technique, not a protocol. OpenAPI describes REST APIs, and SAML is a federation standard for authentication."
+    },
+    {
+      "id": "secai-plus.d3.q005",
+      "lesson": "secai-plus.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which of the following can an MCP server expose to an AI application? Select THREE.",
+      "options": [
+        "Tools the model can invoke",
+        "Resources the model can read",
+        "Reusable prompts",
+        "Model weights for fine-tuning",
+        "GPU scheduling policies"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "MCP servers expose tools (callable actions), resources (readable data) and prompts (templates). They don't distribute model weights or manage GPU scheduling."
+    },
+    {
+      "id": "secai-plus.d3.q006",
+      "lesson": "secai-plus.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A SOC lead wants analysts to query the SIEM and open tickets from an AI assistant. An engineer finds a community MCP server that does both. Its setup guide recommends a SIEM administrator API key and automatic approval of all tool calls.",
+      "stem": "Which change BEST reduces the risk before deployment?",
+      "options": [
+        "Keep the admin key but rotate it monthly",
+        "Use a scoped, least-privilege credential and require user approval for write actions such as ticket creation",
+        "Expose the MCP server publicly so the vendor can patch it faster",
+        "Replace the MCP server with a browser plug-in that has the same key"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Least-privilege credentials and human approval of sensitive tool calls limit the damage from a malicious server, a manipulated server or prompt injection. Rotating an admin key keeps excessive privilege in place, public exposure widens the attack surface, and a plug-in holding the same key has the same problem."
+    },
+    {
+      "id": "secai-plus.d3.q007",
+      "lesson": "secai-plus.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An executive's AI personal assistant can read and send email, edit calendar entries and open shared files. Whose permissions does the assistant effectively operate with?",
+      "options": [
+        "The model provider's service account",
+        "Read-only guest permissions",
+        "A separate SOC analyst account",
+        "The executive user's own permissions"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Personal assistants act on the user's behalf with that user's delegated access. That makes their reach, and the risk of excessive agency, as broad as the user's access. They don't run as the provider, as a guest or as another analyst."
+    },
+    {
+      "id": "secai-plus.d3.q008",
+      "lesson": "secai-plus.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which detection approach is MOST likely to identify a previously unseen threat that has no known indicators?",
+      "options": [
+        "Hash-based signature matching",
+        "Static blocklist of IP addresses",
+        "Anomaly detection against a behavioral baseline",
+        "Antivirus definition updates"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Anomaly detection flags deviations from normal behavior, so it can catch threats that have no signature. Hashes, blocklists and definition updates all depend on threats that are already known."
+    },
+    {
+      "id": "secai-plus.d3.q009",
+      "lesson": "secai-plus.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A security team must block a specific known malware family with the FEWEST false positives. Which approach is BEST?",
+      "options": [
+        "Signature matching",
+        "Unsupervised clustering",
+        "UEBA baselining",
+        "Generative summarization"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "For a known threat, signature matching is precise and low-noise. Clustering and UEBA are better at unknowns but generate more false positives, and summarization is not a detection method."
+    },
+    {
+      "id": "secai-plus.d3.q010",
+      "lesson": "secai-plus.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An ML model notices that 300 phishing emails sent to different departments share the same HTML structure and sending cadence, even though their subjects differ. Which AI capability does this describe?",
+      "options": [
+        "Signature matching",
+        "Pattern recognition",
+        "Translation",
+        "Data minimization"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Spotting a recurring structure across many varied items, here one campaign, is pattern recognition. Signature matching needs a fixed known indicator, and translation and data minimization are unrelated."
+    },
+    {
+      "id": "secai-plus.d3.q011",
+      "lesson": "secai-plus.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about AI-based detection, select Yes if true.",
+      "statements": [
+        {
+          "s": "Anomaly detection often uses unsupervised learning because labeled attack data is scarce.",
+          "a": true
+        },
+        {
+          "s": "Signature matching reliably detects modified variants of malware it has never seen.",
+          "a": false
+        },
+        {
+          "s": "Anomaly detection typically produces more false positives than signature matching and needs tuning.",
+          "a": true
+        }
+      ],
+      "explain": "Unsupervised anomaly detection doesn't need labels, but it raises more false positives and needs tuning. Signatures miss variants that change the matched indicators."
+    },
+    {
+      "id": "secai-plus.d3.q012",
+      "lesson": "secai-plus.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A vulnerability scanner returned 4,000 findings. Which AI-assisted approach BEST helps the team decide what to fix first?",
+      "options": [
+        "Sort findings strictly by CVSS base score",
+        "Fix findings in the order the scanner reported them",
+        "Prioritize by exploitability, exposure and asset criticality, with duplicates grouped",
+        "Suppress all findings older than 30 days"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Risk-based prioritization combines exploitability, internet exposure and asset value, and grouping duplicates reduces the volume. CVSS alone ignores context, scanner order is arbitrary, and suppressing findings by age hides real risk."
+    },
+    {
+      "id": "secai-plus.d3.q013",
+      "lesson": "secai-plus.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A company plans to use an AI-driven automated penetration testing platform. Which controls are required before testing begins? Select THREE.",
+      "options": [
+        "Written authorization and rules of engagement",
+        "A defined scope of approved targets and time windows",
+        "Human oversight with the ability to stop testing",
+        "Disabling logging on target systems to avoid noise",
+        "Granting the tool domain administrator rights by default"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Automated pentesting needs authorization, a defined scope and human supervision. Disabling logging destroys evidence and visibility, and default domain admin rights break least privilege."
+    },
+    {
+      "id": "secai-plus.d3.q014",
+      "lesson": "secai-plus.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What does a linter primarily do?",
+      "options": [
+        "Encrypts source code at rest",
+        "Checks code against rules for errors, style issues and risky constructs",
+        "Deploys code to production",
+        "Generates software bills of materials from container registries"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Linting is static rule-based checking of code, and AI linters add explanations and suggested fixes. Encryption, deployment and SBOM generation are separate functions."
+    },
+    {
+      "id": "secai-plus.d3.q015",
+      "lesson": "secai-plus.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "An AI pentest assistant reports a critical remote code execution flaw in an internal web app, but the report cites a library version that the app doesn't use. What is the BEST next step?",
+      "options": [
+        "Publish the finding to leadership immediately",
+        "Ignore all AI findings from now on",
+        "Manually validate the finding before reporting it, treating it as a possible hallucination",
+        "Shut down the web application"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "AI findings are leads that a human tester must confirm, and a wrong version suggests a hallucination. Publishing unverified results misleads leadership, discarding every AI finding wastes the tool, and an outage is premature."
+    },
+    {
+      "id": "secai-plus.d3.q016",
+      "lesson": "secai-plus.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An architect asks an AI assistant to list threats for a new API by category: Spoofing, Tampering, Repudiation, Information disclosure, Denial of service and Elevation of privilege. Which framework is being applied?",
+      "options": [
+        "DREAD",
+        "MITRE ATLAS",
+        "OWASP Top 10 for LLM Applications",
+        "STRIDE"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Those six categories form STRIDE. DREAD scores risk, MITRE ATLAS catalogs adversary techniques against AI systems, and the OWASP LLM Top 10 lists LLM application risks."
+    },
+    {
+      "id": "secai-plus.d3.q017",
+      "lesson": "secai-plus.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A bank's AI fraud model gives a transaction a medium risk score. The bank wants to stop fraud without frustrating legitimate customers. Which response is BEST?",
+      "options": [
+        "Trigger step-up authentication for the customer",
+        "Permanently close the account",
+        "Approve it and delete the score",
+        "Block all transactions from that country"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A graduated response fits a medium score: step-up verification stops fraud while letting real customers continue. Closing the account or blocking a whole country is excessive, and ignoring the score defeats the model."
+    },
+    {
+      "id": "secai-plus.d3.q018",
+      "lesson": "secai-plus.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which tasks can an AI copilot appropriately perform during incident management? Select TWO.",
+      "options": [
+        "Correlate related alerts into a single incident",
+        "Enrich indicators with reputation and asset-owner context",
+        "Make final legal breach-notification decisions without review",
+        "Permanently delete evidence to save storage"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Correlation and enrichment are typical AI assists. Legal notification decisions need accountable humans, and deleting evidence breaks forensics and chain of custody."
+    },
+    {
+      "id": "secai-plus.d3.q019",
+      "lesson": "secai-plus.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Six months after deployment, an online retailer's fraud model approves more fraudulent orders while its false-positive rate stays flat. The fraud team reports that criminals have shifted to small, gift-card-heavy baskets that are rare in the training data.",
+      "stem": "What is the MOST appropriate action?",
+      "options": [
+        "Raise the block threshold to approve more orders",
+        "Retrain the model with recent labeled fraud data and monitor for drift",
+        "Replace the model with static signature rules only",
+        "Disable the model until the next annual review"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Fraud patterns drift, and retraining on recent labeled cases with ongoing drift monitoring restores detection. Raising the threshold makes the miss rate worse, static rules can't adapt, and disabling the model removes protection entirely."
+    },
+    {
+      "id": "secai-plus.d3.q020",
+      "lesson": "secai-plus.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which type of summarization writes new sentences rather than copying them from the source, and is therefore more prone to hallucination?",
+      "options": [
+        "Extractive summarization",
+        "Keyword indexing",
+        "Abstractive summarization",
+        "Tokenization"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Abstractive summaries paraphrase in new words, which reads well but can add unsupported facts. Extractive summaries copy source sentences, while indexing and tokenization aren't summarization methods."
+    },
+    {
+      "id": "secai-plus.d3.q021",
+      "lesson": "secai-plus.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "An analyst uses AI to summarize a 70-page threat report for the CISO, including IP addresses and actor names. What is the MOST important step before sending it?",
+      "options": [
+        "Increase the model temperature for richer wording",
+        "Remove all links to the source report",
+        "Translate it into a second language",
+        "Verify indicators and key facts against the original report"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Summaries can drop or invent details, so a human must check critical facts against the source. A higher temperature increases variability, removing source links prevents verification, and translation adds nothing here."
+    },
+    {
+      "id": "secai-plus.d3.q022",
+      "lesson": "secai-plus.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about AI translation and summarization in security operations, select Yes if true.",
+      "statements": [
+        {
+          "s": "LLM translation can help analysts read foreign-language threat intelligence and phishing lures.",
+          "a": true
+        },
+        {
+          "s": "A document being summarized can contain hidden instructions that attempt prompt injection.",
+          "a": true
+        },
+        {
+          "s": "Pasting confidential incident data into any public chatbot is acceptable if the output is only a summary.",
+          "a": false
+        }
+      ],
+      "explain": "Translation widens intelligence coverage, and documents are an indirect prompt-injection channel. Sending confidential data to unsanctioned public tools risks leakage whatever the output is."
+    }
+  ]
+}

@@ -1,0 +1,605 @@
+{
+  "exam": "sc-500",
+  "domain": "d1",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-500.d1.q049",
+      "lesson": "sc-500.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You need Azure Policy to automatically deploy a diagnostic setting to any key vault that lacks one. Which effect should the policy definition use?",
+      "options": [
+        "auditIfNotExists",
+        "deployIfNotExists",
+        "append",
+        "deny"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "deployIfNotExists deploys a missing related resource through an ARM template using a managed identity. auditIfNotExists only reports the gap, append adds fields to the request itself, and deny blocks non-compliant requests."
+    },
+    {
+      "id": "sc-500.d1.q050",
+      "lesson": "sc-500.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Azure Policy effect can block the DELETE operation on resources that match a condition, while still allowing them to be created and updated?",
+      "options": [
+        "deny",
+        "modify",
+        "denyAction",
+        "disabled"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "denyAction blocks specified actions such as delete on matching resources. deny blocks create and update requests, modify alters properties or tags, and disabled turns the rule off."
+    },
+    {
+      "id": "sc-500.d1.q051",
+      "lesson": "sc-500.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A custom policy must prevent creation of storage accounts that allow public blob access. Complete the policy rule.",
+      "code": "\"policyRule\": {\n  \"if\": {\n    \"allOf\": [\n      { \"field\": \"type\", \"equals\": \"Microsoft.Storage/storageAccounts\" },\n      { \"field\": \"Microsoft.Storage/storageAccounts/allowBlobPublicAccess\", \"equals\": true }\n    ]\n  },\n  \"then\": { \"effect\": ____ }\n}",
+      "options": [
+        "\"audit\"",
+        "\"deny\"",
+        "\"auditIfNotExists\"",
+        "\"manual\""
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "deny rejects the create or update request when the condition matches. audit only logs non-compliance, auditIfNotExists checks for a related resource, and manual relies on human attestation."
+    },
+    {
+      "id": "sc-500.d1.q052",
+      "lesson": "sc-500.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Policy, select Yes if true.",
+      "statements": [
+        {
+          "s": "An initiative groups multiple policy definitions so they can be assigned together.",
+          "a": true
+        },
+        {
+          "s": "The modify effect requires a managed identity on the assignment to change resources.",
+          "a": true
+        },
+        {
+          "s": "The audit effect blocks non-compliant resources from being created.",
+          "a": false
+        }
+      ],
+      "explain": "An initiative (policy set definition) bundles definitions. modify and deployIfNotExists use the assignment's managed identity to make changes. audit only records non-compliance; deny is the effect that blocks."
+    },
+    {
+      "id": "sc-500.d1.q053",
+      "lesson": "sc-500.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You assigned a deployIfNotExists policy that installs a monitoring extension. New VMs get the extension, but 200 existing VMs remain non-compliant. What should you do?",
+      "options": [
+        "Change the assignment's enforcement mode to DoNotEnforce",
+        "Create a policy exemption for the existing VMs",
+        "Create a remediation task for the assignment",
+        "Change the effect to auditIfNotExists"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "deployIfNotExists acts automatically only on new or updated resources; a remediation task applies it to existing non-compliant resources. DoNotEnforce stops enforcement, exemptions hide rather than fix, and auditIfNotExists only reports."
+    },
+    {
+      "id": "sc-500.d1.q054",
+      "lesson": "sc-500.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A VM is protected by a third-party disk encryption product, so it fails a built-in encryption policy even though the policy's intent is met. You want it shown as exempt with the reason recorded. Which exemption category should you use?",
+      "options": [
+        "Waiver",
+        "Exclusion",
+        "DoNotEnforce",
+        "Mitigated"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Mitigated means the policy intent is met through another method. Waiver means non-compliance is temporarily accepted. Exclusions (notScopes) silently remove scope rather than recording an exemption, and DoNotEnforce is an assignment enforcement mode."
+    },
+    {
+      "id": "sc-500.d1.q055",
+      "lesson": "sc-500.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "You will roll out a custom 'deny public IP on NICs' policy across all subscriptions under a management group with minimal disruption. Put the steps in order.",
+      "options": [
+        "Save the custom definition at the management group",
+        "Assign it at the management group with enforcement mode DoNotEnforce",
+        "Review compliance results and create exemptions for justified resources",
+        "Change the assignment's enforcement mode to Default"
+      ],
+      "explain": "The definition must be saved at or above the assignment scope first. DoNotEnforce shows impact without blocking, which lets you exempt legitimate resources before switching to Default to enforce deny."
+    },
+    {
+      "id": "sc-500.d1.q056",
+      "lesson": "sc-500.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which standard is assigned by default to Azure subscriptions when you enable Microsoft Defender for Cloud?",
+      "options": [
+        "Microsoft cloud security benchmark",
+        "ISO 27001:2013",
+        "NIST SP 800-53 Rev. 5",
+        "CIS Microsoft Azure Foundations Benchmark"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The Microsoft cloud security benchmark (MCSB) is the default standard. ISO 27001, NIST SP 800-53 and CIS are available regulatory standards that you add explicitly."
+    },
+    {
+      "id": "sc-500.d1.q057",
+      "lesson": "sc-500.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Litware has Defender for Cloud with only free foundational CSPM on its subscriptions. An auditor asks for a PCI DSS v4 compliance report from the regulatory compliance dashboard. When the admin opens Manage compliance policies, PCI DSS cannot be added.",
+      "stem": "What must Litware do first?",
+      "options": [
+        "Assign the admin the Security Reader role",
+        "Enable a paid Defender plan such as Defender CSPM on the subscriptions",
+        "Enable Defender for Servers Plan 1",
+        "Create a custom initiative with the ASC metadata tag"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Adding regulatory standards requires a paid Defender plan other than Defender for Servers Plan 1 or Defender for APIs Plan 1. Security Reader can't add standards, Servers Plan 1 is explicitly not enough, and a custom initiative isn't the PCI DSS standard."
+    },
+    {
+      "id": "sc-500.d1.q058",
+      "lesson": "sc-500.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the regulatory compliance dashboard in Defender for Cloud, select Yes if true.",
+      "statements": [
+        {
+          "s": "A greyed-out control is one that cannot be assessed automatically.",
+          "a": true
+        },
+        {
+          "s": "You can download audit reports for an assigned standard.",
+          "a": true
+        },
+        {
+          "s": "A fully green dashboard for a standard means the organization is certified against that standard.",
+          "a": false
+        }
+      ],
+      "explain": "Greyed-out controls can't be automatically assessed. Audit reports can be downloaded. The dashboard shows automated technical evidence only; certification also requires an auditor's assessment of processes."
+    },
+    {
+      "id": "sc-500.d1.q059",
+      "lesson": "sc-500.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need a custom recommendation in Defender for Cloud that flags VMs without an Owner tag across Azure, AWS and GCP. What should you use?",
+      "options": [
+        "An Azure Policy custom definition added to a custom initiative",
+        "A workflow automation that runs a Logic App",
+        "A KQL-based custom recommendation with Defender CSPM enabled",
+        "A governance rule with a due date"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "KQL custom recommendations query the cloud security graph across Azure, AWS and GCP and require Defender CSPM. Policy-based custom recommendations work for Azure only; workflow automation and governance rules don't create assessments."
+    },
+    {
+      "id": "sc-500.d1.q060",
+      "lesson": "sc-500.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about secure score in Defender for Cloud are true? Select TWO.",
+      "options": [
+        "Recommendations flagged as preview are not included in the score",
+        "Remediating higher-risk recommendations improves the score most",
+        "Every regulatory standard you add contributes equally to the score",
+        "Exempting a resource lowers the score",
+        "Secure score is calculated only for AWS accounts"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Preview recommendations don't count, and higher-risk open recommendations weigh most. Regulatory standards don't each add to the score, exemptions don't penalise it, and secure score covers Azure, AWS and GCP."
+    },
+    {
+      "id": "sc-500.d1.q061",
+      "lesson": "sc-500.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Recommendations keep being remediated late because nobody owns them. You want each recommendation automatically assigned to a resource owner with a due date and email reminders. What should you configure in Defender for Cloud?",
+      "options": [
+        "Continuous export",
+        "Alert suppression rules",
+        "A security standard",
+        "Governance rules"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Governance rules assign owners and due dates to recommendations and send notifications. Continuous export streams data elsewhere, suppression rules hide alerts, and a security standard defines what is assessed."
+    },
+    {
+      "id": "sc-500.d1.q062",
+      "lesson": "sc-500.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Administrators must still be able to change settings on a production resource group's resources but nobody, including Owners, should be able to delete them without first removing protection. What should you apply?",
+      "options": [
+        "A CanNotDelete lock on the resource group",
+        "A ReadOnly lock on the resource group",
+        "An Azure Policy with the deny effect",
+        "A Reader role assignment for all administrators"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "CanNotDelete allows read and modify but blocks deletion for everyone. ReadOnly also blocks changes, a deny policy blocks non-compliant creates and updates rather than deletes, and Reader would remove the ability to change settings."
+    },
+    {
+      "id": "sc-500.d1.q063",
+      "lesson": "sc-500.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "An engineer applied a ReadOnly lock to resource group RG-Prod, which contains a storage account, an App Service plan and several VMs. Users report problems the next morning.",
+      "stem": "Which TWO issues are caused by the lock? Select TWO.",
+      "options": [
+        "Applications using storage account access keys fail because keys can't be listed",
+        "VMs in RG-Prod can't be started or restarted",
+        "Users can no longer upload blobs with Microsoft Entra credentials",
+        "Web apps on the App Service plan stop serving HTTP requests",
+        "Users can no longer view the resources in the portal"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Listing storage keys and starting VMs are POST control-plane operations blocked by ReadOnly. Blob upload with Entra credentials and serving web traffic are data-plane activity that locks don't affect, and reading resources is still allowed."
+    },
+    {
+      "id": "sc-500.d1.q064",
+      "lesson": "sc-500.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "You need to prevent accidental deletion of resource group rg-hub while allowing changes to its resources. Complete the Azure CLI command.",
+      "code": "az lock create --name protect-hub --resource-group rg-hub --lock-type ____",
+      "options": [
+        "ReadOnly",
+        "DenyDelete",
+        "CanNotDelete",
+        "Delete"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The CLI lock types are CanNotDelete and ReadOnly. 'Delete' is the portal display name for CanNotDelete, not the CLI value, DenyDelete is a deployment stack deny setting, and ReadOnly would block changes."
+    },
+    {
+      "id": "sc-500.d1.q065",
+      "lesson": "sc-500.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A team lead needs to create, update and delete all resources in a resource group, but must not be able to grant access to others. Which built-in role should you assign at the resource group scope?",
+      "options": [
+        "Owner",
+        "User Access Administrator",
+        "Contributor",
+        "Role Based Access Control Administrator"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Contributor manages all resources but can't assign roles. Owner and User Access Administrator can grant access, and Role Based Access Control Administrator manages role assignments without managing resources."
+    },
+    {
+      "id": "sc-500.d1.q066",
+      "lesson": "sc-500.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso wants its platform team lead to assign the Virtual Machine Contributor and Storage Blob Data Reader roles to groups in the Apps subscription. The lead must not be able to assign Owner or any other role, or manage resources.",
+      "stem": "What should you assign to the lead?",
+      "options": [
+        "Owner on the subscription",
+        "User Access Administrator on the subscription",
+        "Contributor on the subscription with a NotActions entry",
+        "Role Based Access Control Administrator on the subscription with a condition limiting assignable roles"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Role Based Access Control Administrator manages only role assignments, and a condition can restrict which roles and principal types the delegate can assign. Owner and User Access Administrator can assign any role; Contributor can't assign roles at all."
+    },
+    {
+      "id": "sc-500.d1.q067",
+      "lesson": "sc-500.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You must grant the managed identity of a function app read access to blobs in one storage account only. Complete the command.",
+      "code": "az role assignment create \\\n  --assignee <principal-id> \\\n  --role \"Storage Blob Data Reader\" \\\n  ____ /subscriptions/<sub>/resourceGroups/rg-data/providers/Microsoft.Storage/storageAccounts/stdata01",
+      "options": [
+        "--resource-group",
+        "--scope",
+        "--assignee-object-id",
+        "--description"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "--scope sets the assignment scope by resource ID, here a single storage account. --resource-group would widen the scope to the whole group and takes only a name, --assignee-object-id identifies the principal, and --description is metadata."
+    },
+    {
+      "id": "sc-500.d1.q068",
+      "lesson": "sc-500.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "You are writing an Azure custom role definition. For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "An action listed in NotActions is denied even if another role assignment grants it.",
+          "a": false
+        },
+        {
+          "s": "A custom role that contains DataActions can be assigned at management group scope.",
+          "a": false
+        },
+        {
+          "s": "AssignableScopes can include at most one management group.",
+          "a": true
+        }
+      ],
+      "explain": "NotActions only subtracts from that role's Actions; another assignment can still grant the action. Roles with DataActions can't be assigned at management group scope. A custom role can list only one management group in AssignableScopes."
+    },
+    {
+      "id": "sc-500.d1.q069",
+      "lesson": "sc-500.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A DevOps engineer must be able to add and remove client secrets on one specific app registration only, with no other directory permissions. What should you do?",
+      "options": [
+        "Create an Azure custom role with Microsoft.Authorization/* actions and assign it at subscription scope",
+        "Create a Microsoft Entra custom role with application credential permissions and assign it scoped to that app registration",
+        "Assign the Cloud Application Administrator role at tenant scope",
+        "Assign the Application Developer role"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Entra custom roles can be scoped to a single app registration and include credential-update permissions. Azure RBAC roles don't manage Entra objects, Cloud Application Administrator covers all apps, and Application Developer only lets users register new apps."
+    },
+    {
+      "id": "sc-500.d1.q070",
+      "lesson": "sc-500.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which licence is required for users who are assigned a Microsoft Entra custom role?",
+      "options": [
+        "Microsoft Entra ID Free",
+        "Microsoft Entra ID P1",
+        "Microsoft Entra ID P2",
+        "Microsoft Entra Workload ID Premium"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Microsoft Entra custom roles require Entra ID P1 for each user with a custom role assignment. Built-in roles are free, P2 is required for PIM rather than custom roles, and Workload ID Premium targets workload identities."
+    },
+    {
+      "id": "sc-500.d1.q071",
+      "lesson": "sc-500.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "An audit of the Finance subscription finds 12 users with permanent Owner, two guest accounts with Contributor that haven't signed in for 120 days, and a service principal with Owner that only ever deploys web apps. Contoso has Entra ID P2 and Defender CSPM.",
+      "stem": "Which THREE actions best reduce overprivileged access? Select THREE.",
+      "options": [
+        "Convert the users' permanent Owner assignments to PIM eligible assignments",
+        "Remove the inactive guest accounts' role assignments",
+        "Replace the service principal's Owner role with Website Contributor at the needed scope",
+        "Apply a CanNotDelete lock to the subscription",
+        "Assign the 12 users Reader in addition to Owner"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Making Owner eligible via PIM, removing unused guest access and right-sizing the service principal all reduce privilege. A lock prevents deletion but doesn't remove permissions, and adding Reader doesn't reduce anything because Azure RBAC is additive."
+    },
+    {
+      "id": "sc-500.d1.q072",
+      "lesson": "sc-500.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need Defender for Cloud to identify Azure, AWS and GCP identities whose granted permissions far exceed what they actually use. Which capability provides these recommendations?",
+      "options": [
+        "Cloud infrastructure entitlement management (CIEM) in Defender CSPM",
+        "Defender for Key Vault",
+        "Just-in-time VM access",
+        "File integrity monitoring"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "CIEM, part of Defender CSPM, recommends removing inactive identities and right-sizing overprovisioned ones across Azure, AWS and GCP. Defender for Key Vault detects vault threats, JIT controls VM ports, and file integrity monitoring watches files."
+    },
+    {
+      "id": "sc-500.d1.q073",
+      "lesson": "sc-500.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "You are setting up a recurring review of who holds Owner on a subscription. Put the steps in order.",
+      "options": [
+        "Open PIM and select the subscription under Azure resources",
+        "Create an access review for the Owner role",
+        "Choose reviewers, recurrence and auto-apply results settings",
+        "Reviewers approve or deny each user's continued access",
+        "Denied assignments are removed when results are applied"
+      ],
+      "explain": "Access reviews of Azure resource roles are created from PIM for the selected resource; you configure reviewers and settings, reviewers record decisions, and applying the results removes denied access."
+    },
+    {
+      "id": "sc-500.d1.q074",
+      "lesson": "sc-500.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A compromised backup administrator account must not be able to disable soft delete or reduce protection on a Recovery Services vault without approval from the security team. Which feature should you implement?",
+      "options": [
+        "Immutable vault in the Enabled state",
+        "Cross Region Restore",
+        "Multi-user authorization with a Resource Guard",
+        "Customer-managed key encryption"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Multi-user authorization requires a permission on a separately owned Resource Guard for critical operations such as disabling soft delete. Unlocked immutability can be turned off by the admin, Cross Region Restore is for availability, and CMK covers encryption."
+    },
+    {
+      "id": "sc-500.d1.q075",
+      "lesson": "sc-500.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Backup security features, select Yes if true.",
+      "statements": [
+        {
+          "s": "Locking an immutable vault is irreversible.",
+          "a": true
+        },
+        {
+          "s": "The default soft-delete retention for backup data is 90 days.",
+          "a": false
+        },
+        {
+          "s": "For multi-user authorization, the backup admin should hold only the Reader role on the Resource Guard.",
+          "a": true
+        }
+      ],
+      "explain": "Locked immutability can't be undone. Azure Backup soft delete defaults to 14 days (configurable to 180); 90 days is Key Vault's default. The backup admin needs only Reader on the Resource Guard, with Backup MUA Operator granted temporarily."
+    },
+    {
+      "id": "sc-500.d1.q076",
+      "lesson": "sc-500.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A platform team deploys a landing zone's network resources with Bicep from a pipeline that uses a managed identity. Subscription Owners have been editing and deleting the hub resources by hand, causing drift. The team wants Azure to block manual changes and deletions to those resources while the pipeline can still update them.",
+      "stem": "What should the team use?",
+      "options": [
+        "A deployment stack with deny settings mode denyWriteAndDelete and the pipeline identity as an excluded principal",
+        "A CanNotDelete resource lock on the resource group",
+        "An Azure Policy assignment with the audit effect",
+        "A deployment stack with actionOnUnmanage set to deleteAll"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Deployment stack deny settings block writes and deletes for everyone except excluded principals such as the pipeline identity. A CanNotDelete lock still allows edits and also blocks the pipeline from deleting, audit only reports, and actionOnUnmanage controls cleanup, not protection."
+    },
+    {
+      "id": "sc-500.d1.q077",
+      "lesson": "sc-500.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "An ARM parameter file must take a VM admin password from Key Vault instead of plain text. Complete the parameter.",
+      "code": "\"adminPassword\": {\n  \"reference\": {\n    \"keyVault\": { \"id\": \"/subscriptions/<sub>/resourceGroups/rg-sec/providers/Microsoft.KeyVault/vaults/kv-deploy\" },\n    ____: \"vmAdminPassword\"\n  }\n}",
+      "options": [
+        "\"secretUri\"",
+        "\"secretName\"",
+        "\"keyName\"",
+        "\"value\""
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A Key Vault reference in a parameter file uses keyVault.id plus secretName (and optionally secretVersion). secretUri is used by App Service Key Vault references, keyName refers to keys, and value would hold a plain-text literal."
+    },
+    {
+      "id": "sc-500.d1.q078",
+      "lesson": "sc-500.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Your Azure DevOps pipeline runs the Microsoft Security DevOps extension with the IaC category. Which TWO scanners can analyze your Terraform files? Select TWO.",
+      "options": [
+        "Checkov",
+        "Terrascan",
+        "Template Analyzer",
+        "Bandit",
+        "ESLint"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Checkov and Terrascan support Terraform. Template Analyzer scans ARM and Bicep templates only, Bandit scans Python code, and ESLint scans JavaScript, so none of them analyze Terraform."
+    }
+  ]
+}

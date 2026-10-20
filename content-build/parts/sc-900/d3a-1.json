@@ -1,0 +1,811 @@
+{
+  "exam": "sc-900",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "sc-900.d3.1.01",
+      "objective": "d3.1",
+      "seq": 1,
+      "title": "Azure DDoS Protection",
+      "short": "Azure DDoS Protection defends public-facing Azure resources against distributed denial-of-service floods. Every Azure public IP gets free infrastructure-level protection; the paid tiers, DDoS Network Protection and DDoS IP Protection, add tuned mitigation, telemetry and alerts.",
+      "deep": "A **denial-of-service (DoS)** attack tries to make a service unavailable by exhausting its bandwidth, connections or compute. In a **distributed** (DDoS) attack the traffic comes from thousands of compromised machines (a botnet), so blocking one source IP does not help.\n\nMicrosoft groups attacks into three categories:\n- **Volumetric**: floods such as UDP or ICMP floods and reflection/amplification.\n- **Protocol**: abuse of L3/L4 protocols, such as SYN floods or Ping of Death.\n- **Resource (application) layer**: HTTP floods, Slowloris, SQL injection, XSS.\n\nAzure DDoS Protection mitigates the **L3/L4** volumetric and protocol attacks automatically, using always-on traffic monitoring and the scale of Microsoft's global network. For **layer 7** attacks Microsoft says to add a **web application firewall (WAF)**.\n\nTiers:\n- **Infrastructure protection**: free, automatic for all Azure services with public IPs, no configuration, but no tuning, metrics or alerts for you.\n- **DDoS IP Protection**: billed per protected public IP; tuned mitigation, metrics, alerts, mitigation reports, Sentinel integration.\n- **DDoS Network Protection**: enabled by associating a **DDoS protection plan** with virtual networks; adds **DDoS Rapid Response** (DRR) team support, **cost protection** (credits for scale-out costs caused by an attack) and a **WAF discount**.",
+      "terms": [
+        { "t": "DDoS", "d": "Distributed denial of service: many sources flood a target to make it unavailable." },
+        { "t": "DDoS Network Protection", "d": "Paid tier applied via a DDoS protection plan on VNets; includes rapid response, cost protection and WAF discount." },
+        { "t": "DDoS IP Protection", "d": "Paid tier billed per public IP; core mitigation and telemetry without rapid response or cost protection." },
+        { "t": "Volumetric attack", "d": "Flood of traffic that saturates bandwidth, e.g. UDP flood." }
+      ],
+      "trap": "Exams offer DDoS IP Protection when the scenario needs Rapid Response or cost protection; only DDoS Network Protection includes those.",
+      "example": "An online retailer links a DDoS protection plan to its production VNet before Black Friday so it gets Rapid Response support and cost protection if attacked.",
+      "diagram": {
+        "kind": "compare",
+        "cols": ["Feature", "IP Protection", "Network Protection"],
+        "rows": [
+          ["L3/L4 mitigation", "Yes", "Yes"],
+          ["Metrics and alerts", "Yes", "Yes"],
+          ["Rapid Response team", "No", "Yes"],
+          ["Cost protection", "No", "Yes"],
+          ["Billing", "Per public IP", "Plan per 100 IPs"]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d3.1.02",
+      "objective": "d3.1",
+      "seq": 2,
+      "title": "Azure Firewall",
+      "short": "Azure Firewall is a managed, cloud-native, stateful firewall service with built-in high availability and autoscaling. It centrally filters inbound, outbound and east-west traffic using NAT, network and application (FQDN) rules, plus threat intelligence filtering.",
+      "deep": "**Azure Firewall** is a firewall-as-a-service: Microsoft runs, patches and scales it, you write the rules. It is usually placed in a **hub virtual network** in a **hub-and-spoke** design, with **user-defined routes** sending spoke traffic through it, so one policy governs traffic between spokes, to the internet and from on-premises.\n\nRule types:\n- **DNAT rules**: translate inbound traffic on the firewall's public IP to a private IP and port.\n- **Network rules**: allow/deny by source, destination, port and protocol (L3/L4).\n- **Application rules**: allow/deny outbound HTTP/HTTPS/SQL by **FQDN**, including wildcards and FQDN tags.\n\n**Threat intelligence-based filtering** uses Microsoft Threat Intelligence to alert on or deny traffic to known malicious IPs and domains. Logs go to Azure Monitor and Microsoft Sentinel. **Azure Firewall Manager** and **firewall policies** let you manage many firewalls centrally.\n\nSKUs:\n- **Basic**: small businesses, up to 250 Mbps, threat intel alert-only.\n- **Standard**: up to 30 Gbps, threat intel deny, web categories, DNS proxy.\n- **Premium**: adds **TLS inspection**, signature-based **IDPS** and full-path **URL filtering** for sensitive workloads such as payments.\n\nCompare with NSGs: an NSG is a free, distributed L3/L4 filter on a subnet or NIC; Azure Firewall is a central, paid service that understands FQDNs and applications.",
+      "terms": [
+        { "t": "Stateful firewall", "d": "Tracks connections so return traffic for an allowed flow is allowed automatically." },
+        { "t": "Application rule", "d": "Azure Firewall rule filtering outbound web traffic by fully qualified domain name." },
+        { "t": "IDPS", "d": "Intrusion detection and prevention system; signature-based, in Azure Firewall Premium." },
+        { "t": "Hub-and-spoke", "d": "Topology where shared services like the firewall sit in a hub VNet peered to workload spokes." }
+      ],
+      "trap": "Questions that need FQDN filtering or central logging across VNets want Azure Firewall, not an NSG; TLS inspection and IDPS mean Premium specifically.",
+      "example": "A bank routes all spoke VNet traffic through Azure Firewall Premium in its hub so it can inspect TLS traffic and allow outbound access only to approved partner domains.",
+      "diagram": {
+        "kind": "compare",
+        "cols": ["", "NSG", "Azure Firewall"],
+        "rows": [
+          ["Layer", "L3/L4", "L3-L7"],
+          ["Scope", "Subnet or NIC", "Central, hub VNet"],
+          ["FQDN filtering", "No", "Yes"],
+          ["Threat intel", "No", "Yes"],
+          ["Cost", "Free", "Paid, per SKU"]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d3.1.03",
+      "objective": "d3.1",
+      "seq": 3,
+      "title": "Azure Web Application Firewall (WAF)",
+      "short": "Azure Web Application Firewall (WAF) centrally protects web applications from common exploits such as SQL injection and cross-site scripting. You deploy it on Azure Application Gateway, Azure Front Door, Application Gateway for Containers or Azure CDN, using managed rule sets and custom rules.",
+      "deep": "Web apps are attacked at **layer 7** (HTTP/HTTPS) with techniques from the **OWASP Top 10**: SQL injection, cross-site scripting (XSS), protocol violations and more. Fixing every app individually is slow, so **Azure WAF** puts a shared, centrally managed shield in front of them.\n\nWhere it runs:\n- **Azure Application Gateway**: regional layer-7 load balancer; WAF protects apps in that region.\n- **Azure Front Door**: global edge service; WAF blocks attacks at Microsoft's edge before they reach your origin.\n- **Application Gateway for Containers** and **Azure CDN** (CDN integration is in preview).\n\nHow it works:\n- **Managed rule sets**: Microsoft's **Default Rule Set (DRS)** or the **OWASP Core Rule Set (CRS)**, updated by Microsoft.\n- **Bot protection**: Bot Manager rule set separates good, bad and unknown bots.\n- **Custom rules**: evaluated before managed rules; match on IP, geo-location (**geo-match**), headers, rate limits, then ALLOW, BLOCK or LOG.\n- **Modes**: **Detection** logs matches without blocking; **Prevention** blocks matches (Application Gateway returns 403). Microsoft suggests starting in Detection to tune false positives.\n\nWAF complements, not replaces, DDoS Protection (L3/L4) and Azure Firewall (network traffic).",
+      "terms": [
+        { "t": "WAF policy", "d": "Container for WAF settings: mode, managed rule sets, exclusions and custom rules." },
+        { "t": "OWASP", "d": "Open Worldwide Application Security Project; its Top 10 lists the most critical web risks." },
+        { "t": "Prevention mode", "d": "WAF mode that blocks requests matching rules." },
+        { "t": "Detection mode", "d": "WAF mode that only logs matching requests." }
+      ],
+      "trap": "WAF is the answer for SQL injection/XSS; the exam uses Azure Firewall or NSGs as distractors, which do not inspect web request content this way.",
+      "example": "A travel site puts WAF on Azure Front Door so SQL injection attempts and traffic from blocked countries are dropped at the edge before reaching its App Service origin.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d3.1.04",
+      "objective": "d3.1",
+      "seq": 4,
+      "title": "Network segmentation with Azure virtual networks",
+      "short": "An Azure virtual network (VNet) is a private, isolated network in one region, divided into subnets. Segmenting workloads into separate VNets and subnets, then allowing only required flows, limits lateral movement and supports Zero Trust's assume-breach principle.",
+      "deep": "**Segmentation** means splitting a network into smaller zones so a compromise in one zone cannot spread freely. Azure gives you the building blocks:\n\n- **Virtual network (VNet)**: a logically isolated private address space (e.g. 10.0.0.0/16) scoped to **one region** and subscription. Resources in different VNets **cannot talk to each other by default**.\n- **Subnets**: ranges inside a VNet. By default, subnets in the same VNet can reach each other; you restrict that with **NSGs**.\n- **VNet peering**: connects VNets privately over Microsoft's backbone. Peering is **not transitive**: if A peers with B and B with C, A cannot reach C unless you peer them or route through a hub.\n- **User-defined routes (UDRs)/route tables**: override default routing, e.g. force spoke traffic through Azure Firewall in the hub.\n- **Private endpoints**: give a PaaS service (Storage, SQL) a private IP in your VNet so traffic never needs its public endpoint.\n- **VPN Gateway / ExpressRoute**: extend the network to on-premises.\n\nA typical design is **hub-and-spoke**: shared security services (Azure Firewall, Bastion) in the hub, workloads in isolated spokes. Within an app, separate **web, app and data tiers** into subnets so the database accepts traffic only from the app tier.",
+      "terms": [
+        { "t": "Virtual network (VNet)", "d": "Isolated private network in Azure, scoped to one region." },
+        { "t": "VNet peering", "d": "Private, non-transitive connection between two VNets." },
+        { "t": "User-defined route", "d": "Custom route in a route table that overrides Azure's default routing." },
+        { "t": "Private endpoint", "d": "Network interface with a private IP that connects a VNet to a PaaS resource." }
+      ],
+      "trap": "Exams test that VNets are isolated by default and peering is non-transitive; 'NSG' is a wrong answer when the question is how to connect two VNets.",
+      "example": "A hospital puts its patient-records database in a dedicated subnet whose NSG allows SQL traffic only from the application subnet, so a compromised web server cannot reach it directly.",
+      "diagram": {
+        "kind": "flow",
+        "items": ["Spoke VNet", "UDR", "Hub firewall", "Other spoke/Web"]
+      }
+    },
+    {
+      "id": "sc-900.d3.1.05",
+      "objective": "d3.1",
+      "seq": 5,
+      "title": "Network security groups (NSGs)",
+      "short": "A network security group (NSG) is a free, stateful filter of allow and deny rules for inbound and outbound traffic, associated with a subnet or a network interface. Rules are processed by priority (100-4096, lowest number first) and stop at the first match.",
+      "deep": "An **NSG** holds **security rules** evaluated on the five-tuple: source, source port, destination, destination port, protocol. Each rule has a **name**, **priority**, **source/destination** (IP, CIDR, **service tag** or **application security group**), **protocol** (TCP, UDP, ICMP, Any…), **direction**, **port range** and **action** (Allow/Deny).\n\n**Priority**: 100 to 4096; lower numbers are processed first, and processing **stops at the first matching rule**.\n\n**Default rules** (priority 65000+, cannot be deleted, can be overridden by your rules):\n- Inbound: AllowVNetInBound (65000), AllowAzureLoadBalancerInBound (65001), **DenyAllInbound** (65500).\n- Outbound: AllowVnetOutBound (65000), **AllowInternetOutBound** (65001), DenyAllOutBound (65500).\n\nNSGs are **stateful**: if outbound traffic is allowed, the response is allowed back automatically.\n\n**Association**: to a **subnet** and/or a **NIC**. For inbound traffic the subnet NSG is evaluated first, then the NIC NSG; outbound is the reverse. Traffic must be allowed by both.\n\n**Service tags** (e.g. `Internet`, `VirtualNetwork`, `AzureLoadBalancer`, `Storage`) are Microsoft-maintained IP groups. **Application security groups (ASGs)** group VMs by role (e.g. web servers) so rules don't depend on IPs.",
+      "terms": [
+        { "t": "Priority", "d": "Number 100-4096; lower is evaluated first, first match wins." },
+        { "t": "Service tag", "d": "Named, Microsoft-maintained group of IP prefixes for an Azure service." },
+        { "t": "Application security group", "d": "Logical group of VM NICs used as an NSG rule source or destination." },
+        { "t": "DenyAllInbound", "d": "Default rule (65500) that blocks inbound traffic not allowed by a higher-priority rule." }
+      ],
+      "trap": "Candidates think Allow beats Deny; in an NSG the rule with the lowest priority number that matches wins, whatever its action.",
+      "example": "An admin adds an inbound rule at priority 110 allowing TCP 443 from the Internet service tag to an ASG called web-servers; everything else still hits DenyAllInbound.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d3.1.06",
+      "objective": "d3.1",
+      "seq": 6,
+      "title": "Azure Bastion",
+      "short": "Azure Bastion is a fully managed PaaS service that gives secure RDP and SSH access to VMs over TLS from the Azure portal, so VMs need no public IP and RDP/SSH ports are never exposed to the internet.",
+      "deep": "Opening RDP (3389) or SSH (22) to the internet invites port scanning and brute-force attacks. **Azure Bastion** removes that exposure:\n\n1. You deploy Bastion into a dedicated subnet named **AzureBastionSubnet** (size **/26 or larger**) in the VNet.\n2. An admin signs in to the Azure portal and chooses **Connect > Bastion** on a VM.\n3. The browser session runs over **TLS on port 443** to Bastion.\n4. Bastion opens RDP/SSH to the VM's **private IP** inside the VNet.\n\nBenefits: no **public IP** on VMs, no client or agent required for browser sessions, Microsoft hardens and patches the Bastion host, and NSGs can block RDP/SSH from everywhere except Bastion. Bastion can reach VMs in **peered VNets** (except the Developer SKU).\n\nSKUs:\n- **Developer**: free, shared, one connection at a time, same VNet only, no AzureBastionSubnet needed; not for production.\n- **Basic**: dedicated hosts, browser RDP/SSH.\n- **Standard**: adds **native client** support (Azure CLI), **shareable links**, **IP-based connection**, custom ports, file transfer.\n- **Premium**: adds **session recording** and **private-only** deployment (no public IP on Bastion).",
+      "terms": [
+        { "t": "AzureBastionSubnet", "d": "Required subnet name for Bastion Basic/Standard/Premium; /26 or larger." },
+        { "t": "Jump box", "d": "Hardened host used to reach other servers; Bastion is a managed one." },
+        { "t": "Session recording", "d": "Bastion Premium feature that records RDP/SSH sessions for audit." }
+      ],
+      "trap": "Just-in-time VM access is the classic distractor: JIT only opens ports temporarily, whereas Bastion means the VM needs no public IP at all.",
+      "example": "An MSP removes public IPs from 40 VMs and gives engineers Azure Bastion Standard so they can connect with their native SSH client through the Azure CLI.",
+      "diagram": {
+        "kind": "flow",
+        "items": ["Admin browser", "TLS 443", "Azure Bastion", "RDP/SSH", "VM private IP"]
+      }
+    },
+    {
+      "id": "sc-900.d3.1.07",
+      "objective": "d3.1",
+      "seq": 7,
+      "title": "Azure Key Vault",
+      "short": "Azure Key Vault is a cloud service for securely storing and controlling access to secrets, cryptographic keys and TLS/SSL certificates. Access is authenticated by Microsoft Entra ID and authorized with Azure RBAC or access policies, and every access can be logged.",
+      "deep": "Hard-coding passwords or connection strings in code or config files leaks them through source control. **Azure Key Vault** centralizes three object types:\n- **Secrets**: passwords, API keys, connection strings.\n- **Keys**: cryptographic keys for encryption and signing (e.g. customer-managed keys for Storage).\n- **Certificates**: TLS/SSL certificates, including lifecycle and renewal.\n\n**Access**: authentication always uses **Microsoft Entra ID**. Authorization uses **Azure RBAC** (Microsoft's recommended model; covers management and data) or legacy **access policies** (data plane only). Built-in roles include **Key Vault Administrator**, **Key Vault Secrets Officer**, **Key Vault Secrets User** (read secret values) and **Key Vault Reader** (metadata only, not secret values). Apps use a **managed identity** so there's no credential to store at all.\n\n**Tiers**: **Standard** uses software-protected keys (FIPS 140 Level 1); **Premium** adds **HSM-protected keys** (FIPS 140-3 Level 3). **Managed HSM** is a separate single-tenant offering.\n\n**Recovery**: **soft-delete** is on by default and cannot be turned off; deleted items are retained 7-90 days (default **90**, set at creation). **Purge protection** is optional; when on, nobody can permanently purge a deleted item until retention ends.\n\n**Monitoring**: diagnostic logs to Azure Monitor, storage or Event Hubs.",
+      "terms": [
+        { "t": "Secret", "d": "Small sensitive value such as a password or connection string." },
+        { "t": "HSM", "d": "Hardware security module: tamper-resistant device that generates and holds keys." },
+        { "t": "Soft-delete", "d": "Keeps deleted vaults and objects recoverable for 7-90 days." },
+        { "t": "Purge protection", "d": "Prevents permanent deletion until the retention period ends." }
+      ],
+      "trap": "Key Vault Reader sounds right for reading secrets but only reads metadata; reading a secret's value needs Key Vault Secrets User.",
+      "example": "A web app's managed identity is granted Key Vault Secrets User, so the app fetches its database password at startup and no password appears in its configuration.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d3.2.01",
+      "objective": "d3.2",
+      "seq": 1,
+      "title": "Microsoft Defender for Cloud overview",
+      "short": "Microsoft Defender for Cloud is a cloud-native application protection platform (CNAPP) that secures Azure, hybrid and multicloud resources. It combines DevSecOps, cloud security posture management (CSPM) and cloud workload protection (CWPP) in one service.",
+      "deep": "Securing cloud resources involves two different questions: **is it configured safely?** and **is it being attacked right now?** Microsoft Defender for Cloud answers both, plus a third: **is the code that deploys it safe?** That combination is called a **CNAPP**.\n\nThe three pillars:\n- **DevSecOps**: connects code repositories (Azure DevOps, GitHub, GitLab) and surfaces issues like infrastructure-as-code misconfigurations and exposed secrets, from code to cloud.\n- **CSPM**: continuously assesses resource configurations against security standards, produces **recommendations** and a **secure score**. **Foundational CSPM** is free; **Defender CSPM** is a paid plan with advanced features.\n- **CWPP**: paid **Defender plans** (Servers, Storage, Databases, Containers, App Service, Key Vault, Resource Manager, APIs, AI services) detect threats and raise **security alerts**.\n\nAlerts and incidents can be exported to a **SIEM/SOAR** such as **Microsoft Sentinel**, or ITSM tools. Many Defender for Cloud experiences also appear in the **Microsoft Defender portal**, alongside Defender XDR.\n\nA simple way to remember it: **assess** (posture), **secure** (harden using recommendations), **defend** (detect and respond with workload protection).",
+      "terms": [
+        { "t": "CNAPP", "d": "Cloud-native application protection platform: posture, workload protection and DevSecOps together." },
+        { "t": "CSPM", "d": "Cloud security posture management: finding and fixing misconfigurations." },
+        { "t": "CWPP", "d": "Cloud workload protection platform: threat detection for running workloads." }
+      ],
+      "trap": "Defender for Cloud is a CNAPP, not a SIEM; when the question is about collecting logs from everything and hunting, the answer is Microsoft Sentinel.",
+      "example": "A SaaS start-up uses free Foundational CSPM to harden its Azure subscriptions, then enables Defender for Servers and Defender for Storage on production workloads.",
+      "diagram": {
+        "kind": "stack",
+        "items": ["DevSecOps (code)", "CSPM (posture)", "CWPP (workloads)"]
+      }
+    },
+    {
+      "id": "sc-900.d3.2.02",
+      "objective": "d3.2",
+      "seq": 2,
+      "title": "Multicloud, hybrid and DevOps coverage",
+      "short": "Defender for Cloud is not Azure-only. Connectors bring AWS accounts and GCP projects under the same posture and protection, Azure Arc onboards on-premises and other-cloud servers, and DevOps security connects Azure DevOps, GitHub and GitLab repositories.",
+      "deep": "Most organizations run more than one environment, so one console for posture matters.\n\n- **AWS and GCP**: you add a **connector** for an AWS account or GCP project. Defender for Cloud uses **agentless** methods to read configuration, assesses it against standards (including MCSB and cloud-provider benchmarks), and shows recommendations and secure score alongside Azure. Paid plans such as Defender for Servers and Defender for Containers can protect workloads there too.\n- **On-premises and hybrid**: Microsoft recommends onboarding non-Azure machines as **Azure Arc-enabled servers** so they get the full set of Defender for Servers features. Arc gives the machine an Azure resource identity so policies and recommendations apply.\n- **DevOps security**: connect **Azure DevOps**, **GitHub** or **GitLab** to see code and pipeline findings: IaC template misconfigurations, secrets in code, and open-source dependency vulnerabilities. Defender CSPM can then map a cloud resource back to the code that deployed it (**code-to-cloud**).\n\nResult: security teams see Azure, AWS, GCP, on-premises and code risks in one prioritized list instead of three separate consoles.",
+      "terms": [
+        { "t": "Connector", "d": "Defender for Cloud link to an AWS account or GCP project." },
+        { "t": "Azure Arc", "d": "Projects non-Azure servers and clusters into Azure Resource Manager for management." },
+        { "t": "Infrastructure as code (IaC)", "d": "Templates such as Bicep or Terraform that define cloud resources." }
+      ],
+      "trap": "A common wrong answer says Defender for Cloud protects only Azure; it covers AWS, GCP and on-premises (via Azure Arc) too.",
+      "example": "A retailer connects three AWS accounts and its GitHub organization to Defender for Cloud and finds an S3 bucket and a Terraform template both allowing public access.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d3.2.03",
+      "objective": "d3.2",
+      "seq": 3,
+      "title": "Cloud Security Posture Management (CSPM)",
+      "short": "CSPM continuously finds misconfigurations and weaknesses in cloud resources and tells you how to fix them. Defender for Cloud offers free Foundational CSPM (secure score, MCSB recommendations) and the paid Defender CSPM plan with attack path analysis, cloud security explorer and more.",
+      "deep": "**Posture** is how well your environment is configured: open management ports, missing MFA, unencrypted storage, unpatched VMs. Most cloud breaches start from such misconfigurations, not exotic exploits. **CSPM** is the discipline of continuously spotting and fixing them.\n\n**Foundational CSPM (free)**:\n- Continuous assessment against the **Microsoft cloud security benchmark (MCSB)**.\n- **Security recommendations** with remediation steps.\n- **Secure score**.\n- Asset inventory and DevOps code findings.\n\n**Defender CSPM (paid)** adds:\n- **Attack path analysis**: shows chains an attacker could follow, e.g. internet-exposed VM with a vulnerability that has a path to a storage account holding sensitive data.\n- **Risk hunting with cloud security explorer**: graph queries across resources.\n- **Agentless scanning** of VMs for vulnerabilities and secrets, and agentless container/Kubernetes discovery.\n- **Governance** rules to assign owners and due dates at scale.\n- **Data security posture management**: sensitive data discovery.\n- **Regulatory compliance assessments** and **AI security posture management**.\n\nCSPM is about **prevention**: fixing weaknesses before they are exploited. Detecting active attacks is the job of CWPP plans.",
+      "terms": [
+        { "t": "Foundational CSPM", "d": "Free Defender for Cloud tier: MCSB assessment, recommendations, secure score." },
+        { "t": "Defender CSPM", "d": "Paid plan adding attack paths, security explorer, agentless scanning, governance." },
+        { "t": "Attack path analysis", "d": "Graph showing how exploitable weaknesses chain toward critical assets." }
+      ],
+      "trap": "Exams list secure score and attack path analysis side by side; secure score is free, attack path analysis needs Defender CSPM.",
+      "example": "Defender CSPM shows an attack path from an internet-facing VM with a critical CVE to a storage account with credit-card data, so the team patches that VM first.",
+      "diagram": {
+        "kind": "compare",
+        "cols": ["Capability", "Foundational", "Defender CSPM"],
+        "rows": [
+          ["Secure score", "Yes", "Yes"],
+          ["MCSB recommendations", "Yes", "Yes"],
+          ["Attack path analysis", "No", "Yes"],
+          ["Agentless VM scanning", "No", "Yes"],
+          ["Regulatory compliance", "No", "Yes"]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d3.2.04",
+      "objective": "d3.2",
+      "seq": 4,
+      "title": "Security policies, standards and recommendations",
+      "short": "In Defender for Cloud a security policy contains security standards; each standard holds controls with assessment logic. When a resource fails a control, Defender for Cloud generates a security recommendation with remediation steps. The Microsoft cloud security benchmark (MCSB) is applied by default.",
+      "deep": "The chain from rulebook to action:\n\n1. **Security standards** define what 'good' looks like. Three kinds:\n   - **Security benchmarks**: the **Microsoft cloud security benchmark (MCSB)**, applied by default when you enable Defender for Cloud, plus cloud-provider benchmarks.\n   - **Regulatory compliance standards**: e.g. ISO 27001, PCI DSS, NIST SP 800-53; you can add these once a paid Defender plan is enabled (any plan except Defender for Servers Plan 1 or Defender for APIs Plan 1), and track them on the **regulatory compliance dashboard**.\n   - **Custom standards**: your own selection of built-in or custom recommendations (custom KQL-based recommendations need Defender CSPM).\n2. A **security policy** groups the standards assigned to a scope (subscription, AWS account, GCP project). In Azure, standards are implemented using **Azure Policy**.\n3. Defender for Cloud continuously **assesses** resources against each control.\n4. A resource that fails becomes **unhealthy/noncompliant**, and a **recommendation** is created: issue description, remediation steps, affected resources, severity and risk factors.\n5. You remediate manually, use **Fix** (quick fix), or use **Enforce/Deny** so new noncompliant resources can't be created. **Exemptions** handle accepted exceptions.\n\nRisk prioritization ranks recommendations by exposure, data sensitivity and exploitability, but does not change the secure score.",
+      "terms": [
+        { "t": "Security standard", "d": "Set of controls and assessment logic, e.g. MCSB or PCI DSS." },
+        { "t": "MCSB", "d": "Microsoft cloud security benchmark: Microsoft's default multicloud security baseline." },
+        { "t": "Recommendation", "d": "Actionable finding with remediation steps for a failed control." },
+        { "t": "Enforce / Deny", "d": "Options that stop new noncompliant resources from being deployed." }
+      ],
+      "trap": "Recommendations are posture findings about configuration; security alerts are threat detections. Exams swap the two.",
+      "example": "MCSB requires storage accounts to restrict network access; a storage account open to all networks is flagged unhealthy and a recommendation tells the admin to add network rules.",
+      "diagram": {
+        "kind": "flow",
+        "items": ["Standard (MCSB)", "Assessment", "Unhealthy resource", "Recommendation", "Remediate"]
+      }
+    },
+    {
+      "id": "sc-900.d3.2.05",
+      "objective": "d3.2",
+      "seq": 5,
+      "title": "Secure score",
+      "short": "Secure score turns Defender for Cloud's posture findings into a single number: higher means lower identified risk. In the classic model, points are grouped into security controls, and you earn a control's points only when all its recommendations are fixed for all resources.",
+      "deep": "**Secure score** gives leaders and engineers one metric to track posture over time.\n\n**Classic secure score** (Azure portal, shown as a percentage):\n- Recommendations are grouped into **security controls** such as *Enable MFA* (max 10 points), *Secure management ports* (8), *Apply system updates* (6), *Remediate vulnerabilities* (6).\n- Each control's **max score** reflects its importance. Points are earned in proportion to healthy resources, but the control's full points come only when **all** its recommendations are remediated on **all** resources.\n- Only built-in **MCSB** recommendations count; **preview** recommendations don't count until generally available.\n- The **potential score increase** shown on each control tells you which fixes raise the score most.\n\n**Cloud Secure Score** (Microsoft Defender portal, 0-100) is **risk-based**: it weighs open recommendations by risk level, asset risk factors (e.g. internet exposure, sensitive data) and **asset criticality**.\n\nYou can view the score per subscription or management group, query it with **Azure Resource Graph**, track it over time with workbooks or Power BI, or retrieve it through the Secure Scores REST API.",
+      "terms": [
+        { "t": "Security control", "d": "Group of related recommendations with a maximum point value." },
+        { "t": "Potential score increase", "d": "Points you would gain by fixing a control's unhealthy resources." },
+        { "t": "Cloud Secure Score", "d": "Risk-based 0-100 score in the Defender portal weighting asset criticality." }
+      ],
+      "trap": "Fixing one recommendation in a control does not earn that control's full points; all recommendations for all resources must be healthy.",
+      "example": "A CISO sees 'Enable MFA' offers the largest potential score increase, so the team enforces MFA on all subscription owners first.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d3.2.06",
+      "objective": "d3.2",
+      "seq": 6,
+      "title": "Cloud workload protection: Defender plans",
+      "short": "Enhanced security features are the paid Defender plans that add cloud workload protection (CWPP) on top of free posture management. Each plan targets a resource type, such as servers, storage, databases, containers or Key Vault, and raises security alerts when it detects threats.",
+      "deep": "Posture management reduces weaknesses, but attackers still try. **Cloud workload protection** watches running resources and alerts on suspicious behaviour. In Defender for Cloud you turn it on by enabling **Defender plans** (often called **enhanced security features**), usually per subscription.\n\nKey plans:\n- **Defender for Servers** (Plan 1 / Plan 2): Windows and Linux machines in Azure, AWS, GCP and on-premises.\n- **Defender for Storage**: malware scanning of uploads, sensitive data threat detection, suspicious access such as SAS token misuse.\n- **Defender for Databases**: Azure SQL, SQL on machines, open-source relational databases, Azure Cosmos DB.\n- **Defender for Containers**: Kubernetes hardening, image vulnerability assessment, runtime threat detection.\n- **Defender for App Service**, **Defender for Key Vault** (unusual vault access), **Defender for Resource Manager** (suspicious management operations), **Defender for APIs**, and **AI threat protection** for generative AI workloads.\n\n**Security alerts** describe the threat, affected resource, MITRE ATT&CK tactics and remediation steps; related alerts are correlated into **incidents**. Alerts can be streamed to Microsoft Sentinel or other SIEMs, and appear in the Microsoft Defender portal.",
+      "terms": [
+        { "t": "Enhanced security features", "d": "The paid Defender plans in Defender for Cloud." },
+        { "t": "Security alert", "d": "Notification of a detected threat on a protected resource." },
+        { "t": "Defender for Resource Manager", "d": "Plan that detects suspicious Azure management-layer operations." }
+      ],
+      "trap": "Free Foundational CSPM gives recommendations but no threat-detection alerts; alerts require a paid Defender plan.",
+      "example": "After enabling Defender for Storage, a company is alerted when a malicious file is uploaded to a blob container used by its customer portal.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d3.2.07",
+      "objective": "d3.2",
+      "seq": 7,
+      "title": "Defender for Servers and just-in-time VM access",
+      "short": "Defender for Servers protects Windows and Linux machines. Plan 1 provides Microsoft Defender for Endpoint EDR integration; Plan 2 adds agentless scanning, premium Defender Vulnerability Management, file integrity monitoring, just-in-time VM access and more.",
+      "deep": "**Defender for Servers** is the most-used workload plan.\n\n**Plan 1**: integrates **Microsoft Defender for Endpoint** for endpoint detection and response (**EDR**) on servers. Can be enabled per subscription or for individual resources.\n\n**Plan 2**: everything in Plan 1 plus:\n- **Agentless scanning** for vulnerabilities, malware, secrets and posture.\n- **Premium Defender Vulnerability Management** features.\n- **File integrity monitoring (FIM)**: detects changes to critical OS files and registry.\n- **Just-in-time (JIT) VM access**.\n- OS configuration and update assessment, network map, a free data ingestion benefit for certain data types, and suspicious DNS activity alerts.\n\n**How JIT works**: management ports (RDP 3389, SSH 22) are locked with deny rules in the **NSG** (and Azure Firewall). A user requests access; Defender for Cloud checks their **Azure RBAC** permissions; if approved, it opens the port **only for the requester's IP and only for the approved time**, then restores the rules. Established connections aren't cut.\n\nFor on-premises and other-cloud machines, onboard via **Azure Arc** for the full feature set.",
+      "terms": [
+        { "t": "EDR", "d": "Endpoint detection and response: records endpoint activity and detects/responds to attacks." },
+        { "t": "Just-in-time VM access", "d": "Opens management ports only on request, for a limited time and source IP." },
+        { "t": "File integrity monitoring", "d": "Tracks changes to important files and registry keys." }
+      ],
+      "trap": "JIT and FIM are Plan 2 features; a question asking for EDR at the lowest cost points to Plan 1.",
+      "example": "An admin requests three hours of RDP access to a VM; Defender for Cloud opens 3389 only from her office IP and closes it automatically afterwards.",
+      "diagram": null
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-900.d3a.q001",
+      "lesson": "sc-900.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which DDoS protection does every Azure resource with a public IP address receive at no additional cost?",
+      "options": [
+        "Infrastructure-level DDoS protection that requires no configuration",
+        "Support from the DDoS Rapid Response team during an attack",
+        "Cost protection credits for resources that scale out during an attack",
+        "Attack mitigation reports and alerts in Azure Monitor"
+      ],
+      "answer": [0],
+      "explain": "Azure applies infrastructure DDoS protection automatically and free to services with public IPs. Rapid Response and cost protection come only with DDoS Network Protection, and mitigation reports and alerts are features of the paid tiers, not the free baseline."
+    },
+    {
+      "id": "sc-900.d3a.q002",
+      "lesson": "sc-900.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company wants access to Microsoft's DDoS Rapid Response team and credits for scale-out costs caused by an attack. What should it enable?",
+      "options": [
+        "Azure DDoS IP Protection",
+        "Azure Firewall Premium",
+        "Azure DDoS Network Protection",
+        "Azure Web Application Firewall on Azure Front Door"
+      ],
+      "answer": [2],
+      "explain": "DDoS Network Protection includes Rapid Response support, cost protection and a WAF discount. DDoS IP Protection provides core mitigation and telemetry but not those extras. Azure Firewall and WAF are separate services that offer neither benefit."
+    },
+    {
+      "id": "sc-900.d3a.q003",
+      "lesson": "sc-900.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO attack categories does Azure DDoS Protection mitigate automatically at layers 3 and 4? Select TWO.",
+      "options": [
+        "Volumetric attacks such as UDP floods",
+        "Protocol attacks such as SYN floods",
+        "SQL injection against a web form",
+        "Cross-site scripting in a web page",
+        "Password spray against Microsoft Entra ID"
+      ],
+      "answer": [0, 1],
+      "explain": "DDoS Protection handles network-layer volumetric and protocol attacks. SQL injection and XSS are layer 7 web attacks that need a WAF, and password spray is an identity attack addressed by Entra ID features such as Smart lockout and ID Protection."
+    },
+    {
+      "id": "sc-900.d3a.q004",
+      "lesson": "sc-900.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure DDoS Protection tiers, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "DDoS IP Protection is billed per protected public IP address.", "a": true },
+        { "s": "DDoS IP Protection includes support from the DDoS Rapid Response team.", "a": false },
+        { "s": "DDoS Network Protection is enabled by associating a DDoS protection plan with virtual networks.", "a": true }
+      ],
+      "explain": "IP Protection is a per-IP SKU covering core mitigation, metrics and alerts. Rapid Response, cost protection and the WAF discount are only in Network Protection, which is applied by linking a DDoS protection plan to VNets."
+    },
+    {
+      "id": "sc-900.d3a.q005",
+      "lesson": "sc-900.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam hosts a public shopping site on VMs behind Azure Application Gateway. During a recent incident the site suffered a UDP flood against its public IP and, at the same time, thousands of HTTP requests containing SQL injection payloads. Fabrikam wants Microsoft-managed protection against both kinds of attack.",
+      "stem": "Which combination should Fabrikam use?",
+      "options": [
+        "Azure DDoS Network Protection plus Azure WAF on Application Gateway",
+        "Azure DDoS IP Protection on its own",
+        "Network security groups plus Azure Bastion",
+        "Azure Firewall Basic plus Azure Key Vault"
+      ],
+      "answer": [0],
+      "explain": "DDoS Protection mitigates the L3/L4 UDP flood, and Microsoft recommends a WAF for layer 7 attacks such as SQL injection. DDoS IP Protection alone doesn't inspect HTTP payloads. NSGs, Bastion, Firewall Basic and Key Vault don't block SQL injection in web requests."
+    },
+    {
+      "id": "sc-900.d3a.q006",
+      "lesson": "sc-900.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Microsoft recommends combining Azure DDoS Protection with which service to defend against layer 7 attacks such as HTTP floods?",
+      "options": [
+        "Azure Bastion",
+        "Azure Web Application Firewall",
+        "Network security groups",
+        "Microsoft Entra ID Protection"
+      ],
+      "answer": [1],
+      "explain": "Layer 7 (application) attacks are handled by a WAF, such as WAF on Application Gateway or Front Door. Bastion secures RDP/SSH, NSGs filter L3/L4 traffic, and Entra ID Protection detects identity risk."
+    },
+    {
+      "id": "sc-900.d3a.q007",
+      "lesson": "sc-900.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement best describes Azure Firewall?",
+      "options": [
+        "A host-based firewall agent you install and patch on each virtual machine",
+        "A free filter of allow and deny rules associated with subnets and network interfaces",
+        "A browser-based service that provides RDP and SSH access to VMs",
+        "A managed, cloud-native stateful firewall service with built-in high availability"
+      ],
+      "answer": [3],
+      "explain": "Azure Firewall is a managed firewall-as-a-service with built-in HA and autoscaling. The free subnet/NIC filter describes an NSG, browser-based RDP/SSH is Azure Bastion, and Azure Firewall is not an agent installed on VMs."
+    },
+    {
+      "id": "sc-900.d3a.q008",
+      "lesson": "sc-900.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need Azure Firewall to allow VMs to make outbound HTTPS connections only to *.contoso-partner.com. Which rule type should you create?",
+      "options": [
+        "DNAT rule",
+        "Network rule",
+        "Application rule",
+        "Network security group rule"
+      ],
+      "answer": [2],
+      "explain": "Application rules filter outbound HTTP/HTTPS by FQDN and support wildcards such as *.contoso-partner.com. DNAT rules translate inbound traffic, network rules work on IPs, ports and protocols, and an NSG rule is a different service that can't filter by domain name."
+    },
+    {
+      "id": "sc-900.d3a.q009",
+      "lesson": "sc-900.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Azure Firewall SKU adds TLS inspection and signature-based intrusion detection and prevention (IDPS)?",
+      "options": [
+        "Azure Firewall Standard",
+        "Azure Firewall Premium",
+        "Azure Firewall Basic",
+        "Azure Firewall Manager"
+      ],
+      "answer": [1],
+      "explain": "Premium adds TLS inspection, IDPS and full-path URL filtering for highly sensitive workloads. Standard offers threat intelligence and web categories, Basic is for small environments, and Firewall Manager is a central management tool, not a SKU."
+    },
+    {
+      "id": "sc-900.d3a.q010",
+      "lesson": "sc-900.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO capabilities are included in Azure Firewall Standard? Select TWO.",
+      "options": [
+        "Threat intelligence-based filtering that can alert on and deny known malicious IPs and domains",
+        "Filtering outbound web traffic by web categories",
+        "TLS inspection of outbound encrypted traffic",
+        "Signature-based intrusion detection and prevention (IDPS)"
+      ],
+      "answer": [0, 1],
+      "explain": "Standard supports threat intelligence filtering in alert-and-deny mode and web categories. TLS inspection and IDPS are Premium-only features, so a Standard firewall can't provide them."
+    },
+    {
+      "id": "sc-900.d3a.q011",
+      "lesson": "sc-900.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Firewall, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "Azure Firewall in a hub virtual network can filter traffic between spoke virtual networks.", "a": true },
+        { "s": "You must deploy and patch extra virtual machines to scale Azure Firewall.", "a": false },
+        { "s": "A DNAT rule can translate inbound traffic on the firewall's public IP to a private IP address.", "a": true }
+      ],
+      "explain": "With user-defined routes, spoke-to-spoke traffic passes through the hub firewall. Azure Firewall is a managed service with built-in HA and autoscaling, so there are no VMs to manage. DNAT rules publish internal services through the firewall's public IP."
+    },
+    {
+      "id": "sc-900.d3a.q012",
+      "lesson": "sc-900.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Northwind has 12 virtual networks in Azure. The security team must allow outbound internet access only to an approved list of domain names, apply the same rules to every VNet, and keep central logs of allowed and denied connections for Microsoft Sentinel.",
+      "stem": "What should Northwind implement?",
+      "options": [
+        "A network security group on every subnet with Internet service tag rules",
+        "Azure Firewall in a hub virtual network, with user-defined routes from each spoke",
+        "Azure DDoS Network Protection linked to all 12 virtual networks",
+        "Azure Bastion Standard deployed in each virtual network"
+      ],
+      "answer": [1],
+      "explain": "A hub Azure Firewall gives one central policy with FQDN-based application rules and central logging, and UDRs send spoke traffic through it. NSGs can't filter by domain name and are managed per subnet. DDoS Protection and Bastion don't control outbound access."
+    },
+    {
+      "id": "sc-900.d3a.q013",
+      "lesson": "sc-900.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is Azure Web Application Firewall (WAF) mainly designed to protect against?",
+      "options": [
+        "Brute-force RDP attempts against virtual machine management ports",
+        "Volumetric UDP floods against public IP addresses",
+        "Common web exploits such as SQL injection and cross-site scripting",
+        "Secrets accidentally committed to application source code"
+      ],
+      "answer": [2],
+      "explain": "WAF inspects HTTP/HTTPS requests and blocks common exploits like SQL injection and XSS. RDP brute force is addressed by Bastion or JIT, UDP floods by DDoS Protection, and secrets in code by Defender for Cloud DevOps security."
+    },
+    {
+      "id": "sc-900.d3a.q014",
+      "lesson": "sc-900.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "On which TWO Azure services can you deploy Azure Web Application Firewall? Select TWO.",
+      "options": [
+        "Azure Bastion",
+        "Azure Front Door",
+        "Azure VPN Gateway",
+        "Azure Application Gateway",
+        "Azure Key Vault"
+      ],
+      "answer": [1, 3],
+      "explain": "Azure WAF runs on Application Gateway (regional), Front Door (global edge), Application Gateway for Containers and Azure CDN. Bastion, VPN Gateway and Key Vault don't host WAF policies."
+    },
+    {
+      "id": "sc-900.d3a.q015",
+      "lesson": "sc-900.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A WAF policy is set to Detection mode. What happens when a request matches a managed rule?",
+      "options": [
+        "The request is blocked and the client receives a 403 response",
+        "Managed rules are skipped and only custom rules are evaluated",
+        "The request is held until an administrator approves it",
+        "The match is logged and the request is allowed through"
+      ],
+      "answer": [3],
+      "explain": "Detection mode monitors and logs threats without blocking. Prevention mode is the one that blocks and returns 403. WAF has no approval queue, and Detection mode still evaluates managed rules."
+    },
+    {
+      "id": "sc-900.d3a.q016",
+      "lesson": "sc-900.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are introducing Azure WAF in front of a production web app and want to avoid blocking legitimate users. Put the steps in order.",
+      "options": [
+        "Associate a WAF policy in Detection mode",
+        "Review WAF logs for false positives",
+        "Add exclusions or custom rules to tune the policy",
+        "Switch the policy to Prevention mode"
+      ],
+      "explain": "Microsoft recommends running a new WAF in Detection mode first, reviewing the logs, tuning exclusions and custom rules, and only then switching to Prevention mode so real attacks are blocked without breaking valid traffic."
+    },
+    {
+      "id": "sc-900.d3a.q017",
+      "lesson": "sc-900.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company serves its web app through Azure Front Door and must block all requests from two specific countries. What should it configure?",
+      "options": [
+        "A WAF custom rule with a geo-match condition",
+        "A network security group rule using the Internet service tag",
+        "Azure DDoS IP Protection on the origin",
+        "A Conditional Access policy with named locations"
+      ],
+      "answer": [0],
+      "explain": "WAF custom rules can match on the client's country (geo-filtering) and block it at the Front Door edge. NSG service tags don't represent countries, DDoS Protection doesn't filter by geography, and Conditional Access controls Entra ID sign-ins, not anonymous web traffic."
+    },
+    {
+      "id": "sc-900.d3a.q018",
+      "lesson": "sc-900.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure WAF, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "WAF on Azure Front Door can block malicious requests at Microsoft's network edge before they reach the origin.", "a": true },
+        { "s": "Azure WAF managed rules are based on Microsoft's Default Rule Set or the OWASP Core Rule Set.", "a": true },
+        { "s": "Deploying WAF removes the need for protection against volumetric network-layer floods.", "a": false }
+      ],
+      "explain": "Front Door WAF filters at the global edge, and managed rules come from DRS or OWASP CRS. WAF inspects layer 7 requests; volumetric L3/L4 floods still need Azure DDoS Protection, so the services complement each other."
+    },
+    {
+      "id": "sc-900.d3a.q019",
+      "lesson": "sc-900.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "VMs in two separate Azure virtual networks must communicate using private IP addresses over the Microsoft backbone. What should you configure?",
+      "options": [
+        "Virtual network peering",
+        "A network security group",
+        "Azure Bastion",
+        "An application security group"
+      ],
+      "answer": [0],
+      "explain": "VNets are isolated by default; peering connects them privately over Microsoft's backbone. NSGs and ASGs filter traffic but don't create connectivity, and Bastion provides admin RDP/SSH, not VNet-to-VNet routing."
+    },
+    {
+      "id": "sc-900.d3a.q020",
+      "lesson": "sc-900.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure virtual networks, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "By default, resources in different subnets of the same virtual network can communicate.", "a": true },
+        { "s": "A single virtual network can span multiple Azure regions.", "a": false },
+        { "s": "If VNet A is peered with VNet B and VNet B is peered with VNet C, VNet A can reach VNet C automatically.", "a": false }
+      ],
+      "explain": "Subnets within a VNet route to each other by default, so you add NSGs to restrict them. A VNet is scoped to one region. Peering is non-transitive, so A and C need their own peering or routing through a hub."
+    },
+    {
+      "id": "sc-900.d3a.q021",
+      "lesson": "sc-900.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "In a hub-and-spoke design, you must force all internet-bound traffic from a spoke subnet through Azure Firewall in the hub. What should you associate with the spoke subnet?",
+      "options": [
+        "A network security group",
+        "A route table with a user-defined route",
+        "A service tag",
+        "A private DNS zone"
+      ],
+      "answer": [1],
+      "explain": "A user-defined route in a route table overrides default routing and sends traffic to the firewall's private IP as the next hop. An NSG only allows or denies traffic, a service tag is an IP group used in rules, and a private DNS zone resolves names."
+    },
+    {
+      "id": "sc-900.d3a.q022",
+      "lesson": "sc-900.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailspin runs a three-tier app (web, application, database) in Azure. Following Zero Trust, the CISO wants a compromised web server to be unable to connect directly to the database. Only the application tier may reach the database on its SQL port.",
+      "stem": "Which design meets the requirement?",
+      "options": [
+        "Place all three tiers in one subnet and monitor them with Defender for Cloud secure score",
+        "Give each tier a public IP address and protect it with DDoS IP Protection",
+        "Store each tier's IP addresses as secrets in Azure Key Vault",
+        "Put each tier in its own subnet and use NSGs to allow only the required flows between them"
+      ],
+      "answer": [3],
+      "explain": "Separate subnets plus NSG rules segment the tiers, so the database subnet accepts SQL traffic only from the application subnet, limiting lateral movement. Secure score only measures posture, public IPs increase exposure, and Key Vault doesn't control network flows."
+    },
+    {
+      "id": "sc-900.d3a.q023",
+      "lesson": "sc-900.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An app in a virtual network must reach an Azure SQL database through a private IP address in that VNet, without traffic going to the database's public endpoint. What should you use?",
+      "options": [
+        "A service tag in an NSG rule",
+        "Azure Bastion",
+        "A private endpoint",
+        "Azure DDoS IP Protection"
+      ],
+      "answer": [2],
+      "explain": "A private endpoint gives the PaaS resource a private IP inside your VNet, so traffic stays on the private network. Service tags only name IP ranges in rules, Bastion is for admin RDP/SSH, and DDoS IP Protection defends public IPs."
+    },
+    {
+      "id": "sc-900.d3a.q024",
+      "lesson": "sc-900.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "To which resources can you associate a network security group (NSG)?",
+      "options": [
+        "Management groups and subscriptions",
+        "Subnets and network interfaces",
+        "Microsoft Entra ID users and groups",
+        "Key vaults and storage accounts"
+      ],
+      "answer": [1],
+      "explain": "An NSG is associated with a subnet, a VM's network interface, or both. Management groups and subscriptions are scopes for Azure Policy and RBAC, Entra users and groups are identities, and key vaults and storage accounts use their own firewalls or private endpoints."
+    },
+    {
+      "id": "sc-900.d3a.q025",
+      "lesson": "sc-900.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "An NSG has two inbound rules: priority 100 denies TCP 3389 from Any, and priority 200 allows TCP 3389 from the Internet service tag. What happens to an RDP connection from the internet?",
+      "options": [
+        "It is allowed, because Allow rules always take precedence over Deny rules",
+        "It is denied, because rule 100 is processed first and processing stops at the first match",
+        "It is allowed, because rule 200 names a more specific source",
+        "It is denied only by the default DenyAllInbound rule at priority 65500"
+      ],
+      "answer": [1],
+      "explain": "NSG rules are evaluated from the lowest priority number up, and the first match decides. Rule 100 matches and denies the traffic, so rule 200 is never reached. NSGs don't prefer Allow rules or more specific sources, and the default rule isn't involved."
+    },
+    {
+      "id": "sc-900.d3a.q026",
+      "lesson": "sc-900.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about network security groups, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "If an outbound rule allows a connection, the response traffic is allowed back automatically.", "a": true },
+        { "s": "You can delete the default DenyAllInbound rule from an NSG.", "a": false },
+        { "s": "Custom security rules use priority values from 100 to 4096.", "a": true }
+      ],
+      "explain": "NSGs are stateful, so return traffic for an allowed flow is permitted. Default rules can't be deleted, only overridden by higher-priority custom rules. Custom rule priorities range from 100 to 4096."
+    },
+    {
+      "id": "sc-900.d3a.q027",
+      "lesson": "sc-900.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure CLI command so the rule permits inbound HTTPS traffic to the subnet protected by nsg-web.",
+      "code": "az network nsg rule create --resource-group rg-web --nsg-name nsg-web --name AllowHTTPS --priority 110 --direction Inbound --access ____ --protocol Tcp --destination-port-ranges 443",
+      "options": ["Allow", "Permit", "Accept", "Enable"],
+      "answer": [0],
+      "explain": "An NSG rule's action (access) is either Allow or Deny, so --access Allow permits the traffic. Permit, Accept and Enable aren't valid values for an NSG rule action."
+    },
+    {
+      "id": "sc-900.d3a.q028",
+      "lesson": "sc-900.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "A VM has an NSG on its subnet and another NSG on its network interface. Put the steps that inbound internet traffic follows in order.",
+      "options": [
+        "Traffic arrives at the virtual network",
+        "Rules in the subnet's NSG are evaluated",
+        "Rules in the network interface's NSG are evaluated",
+        "Traffic is delivered to the VM"
+      ],
+      "explain": "For inbound traffic Azure evaluates the subnet NSG first, then the NIC NSG, and the traffic must be allowed by both before it reaches the VM. Outbound traffic is evaluated in the reverse order: NIC NSG first, then subnet NSG."
+    },
+    {
+      "id": "sc-900.d3a.q029",
+      "lesson": "sc-900.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO can you use as the source or destination of an NSG security rule instead of listing IP addresses? Select TWO.",
+      "options": [
+        "Service tags",
+        "Application security groups",
+        "Microsoft Entra ID security groups",
+        "Key Vault secret references",
+        "Conditional Access named locations"
+      ],
+      "answer": [0, 1],
+      "explain": "Service tags (such as Internet or Storage) and application security groups can replace explicit IPs in NSG rules. Entra security groups and named locations are identity constructs for access policies, and Key Vault references aren't valid in NSG rules."
+    },
+    {
+      "id": "sc-900.d3a.q030",
+      "lesson": "sc-900.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which default NSG rule blocks inbound traffic that no higher-priority rule has allowed?",
+      "options": [
+        "AllowVNetInBound",
+        "AllowAzureLoadBalancerInBound",
+        "DenyAllInbound",
+        "AllowInternetOutBound"
+      ],
+      "answer": [2],
+      "explain": "DenyAllInbound (priority 65500) is the final inbound catch-all deny. AllowVNetInBound and AllowAzureLoadBalancerInBound allow specific inbound traffic, and AllowInternetOutBound is an outbound rule."
+    },
+    {
+      "id": "sc-900.d3a.q031",
+      "lesson": "sc-900.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Azure service lets administrators connect to VMs over RDP or SSH from the Azure portal over TLS, without the VMs having public IP addresses?",
+      "options": [
+        "Azure Firewall",
+        "Just-in-time VM access",
+        "Azure VPN Gateway",
+        "Azure Bastion"
+      ],
+      "answer": [3],
+      "explain": "Azure Bastion brokers RDP/SSH from the browser over TLS to the VM's private IP. JIT only opens management ports temporarily, VPN Gateway needs client or site VPN setup, and Azure Firewall filters traffic rather than providing remote sessions."
+    },
+    {
+      "id": "sc-900.d3a.q032",
+      "lesson": "sc-900.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "An administrator connects to a VM through Azure Bastion from a web browser. Put the steps in order.",
+      "options": [
+        "Sign in to the Azure portal",
+        "Select the VM and choose Connect, then Bastion",
+        "The browser opens a TLS session on port 443 to Azure Bastion",
+        "Azure Bastion opens an RDP or SSH session to the VM's private IP address"
+      ],
+      "explain": "The admin signs in to the portal, picks the VM and chooses Bastion. The browser talks to Bastion over TLS on 443, and Bastion then connects to the VM's private IP inside the VNet, so RDP/SSH is never exposed to the internet."
+    }
+  ]
+}

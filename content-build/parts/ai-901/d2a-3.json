@@ -1,0 +1,750 @@
+{
+  "exam": "ai-901",
+  "domain": "d2",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "ai-901.d2a.q062",
+      "lesson": "ai-901.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which text analysis feature returns the ISO 639-1 code (such as 'es') and a confidence score for a document?",
+      "options": [
+        "Key phrase extraction",
+        "Entity linking",
+        "Language detection",
+        "Sentiment analysis"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Language detection identifies the primary language with its ISO 639-1 code and confidence. Key phrases list topics, entity linking connects entities to a knowledge base, and sentiment scores opinion."
+    },
+    {
+      "id": "ai-901.d2a.q063",
+      "lesson": "ai-901.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A hospital must mask patients' names, phone numbers and addresses in free-text notes before analysts see them. Which feature should it use?",
+      "options": [
+        "PII detection with redaction",
+        "Named entity recognition",
+        "Key phrase extraction",
+        "Summarization"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "PII detection finds personal (and health) data and returns redacted text. NER categorises entities but doesn't redact, key phrases list topics, and summaries can still contain personal data."
+    },
+    {
+      "id": "ai-901.d2a.q064",
+      "lesson": "ai-901.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A news app must tell whether 'Mercury' in an article means the planet or the chemical element, and attach a reference link. Which feature does this?",
+      "options": [
+        "Named entity recognition",
+        "Language detection",
+        "Opinion mining",
+        "Entity linking"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Entity linking disambiguates entities and links them to a knowledge base such as Wikipedia. NER only categorises the entity, opinion mining handles sentiment on aspects, and language detection identifies language."
+    },
+    {
+      "id": "ai-901.d2a.q065",
+      "lesson": "ai-901.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A hotel review says 'The room was spotless but the breakfast was cold.' You need to know that 'room' was positive and 'breakfast' negative. Which feature provides this?",
+      "options": [
+        "Key phrase extraction",
+        "Document-level sentiment only",
+        "Opinion mining",
+        "Entity linking"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Opinion mining (aspect-based sentiment) links each target, such as room or breakfast, to its opinion and sentiment. Document sentiment would likely return mixed, and key phrases or entity linking don't assign sentiment."
+    },
+    {
+      "id": "ai-901.d2a.q066",
+      "lesson": "ai-901.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You want to automatically generate tags listing the main talking points of each support article. Which feature fits best?",
+      "options": [
+        "PII detection",
+        "Language detection",
+        "Speech synthesis",
+        "Key phrase extraction"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Key phrase extraction returns the main concepts in text, ideal for tags and indexing. PII detection finds personal data, language detection identifies language, and speech synthesis produces audio."
+    },
+    {
+      "id": "ai-901.d2a.q067",
+      "lesson": "ai-901.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A bank processes 50,000 customer emails a day in an automated pipeline. Each email must be tagged with a language code and have personal data masked, and downstream systems need the same structured output format for every email. Developers don't want results that vary with prompt wording.",
+      "stem": "Which approach should they use?",
+      "options": [
+        "Azure Language in Foundry Tools analyzers",
+        "A general-purpose chat model in the chat playground",
+        "A voice-enabled agent",
+        "A Global Batch deployment of an image model"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Azure Language analyzers return structured, consistent results, which suits automated pipelines. A general-purpose model's output varies with phrasing, a voice agent is for speech, and an image model is irrelevant."
+    },
+    {
+      "id": "ai-901.d2a.q068",
+      "lesson": "ai-901.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about text analysis options in Foundry, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "A general-purpose LLM can summarise text and classify sentiment from a natural language prompt.",
+          "a": true
+        },
+        {
+          "s": "A general-purpose LLM is guaranteed to return identical wording each time for the same prompt.",
+          "a": false
+        },
+        {
+          "s": "You can ask a general-purpose model follow-up questions about its analysis in the same chat.",
+          "a": true
+        }
+      ],
+      "explain": "LLMs handle many text tasks via prompts and support conversational follow-ups, but generation is probabilistic, so wording can vary between calls."
+    },
+    {
+      "id": "ai-901.d2a.q069",
+      "lesson": "ai-901.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Named entity recognition should return categories for which TWO items in 'Maria met Contoso in Paris on 3 May'? Select TWO.",
+      "options": [
+        "'Paris' as a location",
+        "'met' as a verb",
+        "'3 May' as a date/time",
+        "'on' as a preposition",
+        "The overall sentiment as neutral"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "NER categorises entities such as people, organisations, locations and dates. It doesn't tag parts of speech like verbs or prepositions, and sentiment comes from sentiment analysis."
+    },
+    {
+      "id": "ai-901.d2a.q070",
+      "lesson": "ai-901.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code to create an Azure Language client that authenticates with a key.",
+      "code": "from azure.core.credentials import AzureKeyCredential\nfrom azure.ai.textanalytics import TextAnalyticsClient\n\nclient = ____(endpoint=endpoint, credential=AzureKeyCredential(key))",
+      "options": [
+        "AIProjectClient",
+        "SpeechRecognizer",
+        "OpenAI",
+        "TextAnalyticsClient"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "TextAnalyticsClient is the Azure Language client and takes endpoint plus credential. AIProjectClient is for Foundry projects, SpeechRecognizer is the Speech SDK, and OpenAI takes base_url and api_key."
+    },
+    {
+      "id": "ai-901.d2a.q071",
+      "lesson": "ai-901.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code to print the masked version of a document after PII detection.",
+      "code": "result = client.recognize_pii_entities([text])[0]\nprint(\"Masked:\", result.____)",
+      "options": [
+        "primary_language",
+        "redacted_text",
+        "key_phrases",
+        "sentiment"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "PII results expose redacted_text plus an entities list. primary_language belongs to language detection, key_phrases to key phrase extraction, and sentiment to sentiment analysis results."
+    },
+    {
+      "id": "ai-901.d2a.q072",
+      "lesson": "ai-901.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code to print the detected language's name for a document.",
+      "code": "result = client.detect_language([text])[0]\nprint(result.____.name)",
+      "options": [
+        "primary_language",
+        "entities",
+        "redacted_text",
+        "confidence_scores"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "detect_language results have primary_language with name, iso6391_name and confidence_score. entities and redacted_text belong to PII results, and confidence_scores belongs to sentiment results."
+    },
+    {
+      "id": "ai-901.d2a.q073",
+      "lesson": "ai-901.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the azure-ai-textanalytics client library, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Methods such as detect_language accept a list of documents and return one result per document.",
+          "a": true
+        },
+        {
+          "s": "Each PII entity result includes its text, category and confidence score.",
+          "a": true
+        },
+        {
+          "s": "The library is installed with pip install azure-cognitiveservices-speech.",
+          "a": false
+        }
+      ],
+      "explain": "Text Analytics methods process document lists, and PII entities expose text, category and confidence_score. The package is azure-ai-textanalytics; azure-cognitiveservices-speech is the Speech SDK."
+    },
+    {
+      "id": "ai-901.d2a.q074",
+      "lesson": "ai-901.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A support team has a Foundry agent that triages tickets. They want it to detect each ticket's language and redact PII using Azure Language, without writing code that calls the Language REST API or manages its tokens. They already have a Foundry resource.",
+      "stem": "What should they do?",
+      "options": [
+        "Create a separate Azure Language resource and call it from a function tool",
+        "Add the Azure Language in Foundry Tools (MCP) tool to the agent and connect it with the Foundry resource name",
+        "Add the code interpreter tool and install azure-ai-textanalytics in it",
+        "Enable Voice mode on the agent"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Azure Language MCP server exposes Language features as agent tools; you connect it with your Foundry resource name, which already includes Language. The other options require extra code or are unrelated."
+    },
+    {
+      "id": "ai-901.d2a.q075",
+      "lesson": "ai-901.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In Model Context Protocol (MCP), what role does an AI agent that uses an external tool play?",
+      "options": [
+        "MCP server",
+        "MCP client",
+        "Vector store",
+        "Model deployment"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The agent (or its host app) is the MCP client that sends requests; the service exposing tools, such as the Azure Language MCP server, is the MCP server."
+    },
+    {
+      "id": "ai-901.d2a.q076",
+      "lesson": "ai-901.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO TextAnalyticsClient methods would you call to find the main topics of reviews and classify how customers feel? Select TWO.",
+      "options": [
+        "extract_key_phrases",
+        "analyze_sentiment",
+        "recognize_pii_entities",
+        "detect_language",
+        "speak_text_async"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "extract_key_phrases returns topics and analyze_sentiment returns positive/negative/neutral/mixed labels. PII and language detection answer different questions, and speak_text_async is a Speech SDK method."
+    },
+    {
+      "id": "ai-901.d2a.q077",
+      "lesson": "ai-901.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What makes a model 'multimodal'?",
+      "options": [
+        "It is deployed in more than one region",
+        "It accepts or produces more than one type of data, such as text, audio and images",
+        "It has more than one deployment name",
+        "It uses both temperature and top-p"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Multimodal refers to modalities: text, audio, images and so on. Regions, deployment names and sampling parameters have nothing to do with it."
+    },
+    {
+      "id": "ai-901.d2a.q078",
+      "lesson": "ai-901.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the message content part that sends a recorded WAV question to an audio-capable chat model.",
+      "code": "content = [\n    {\"type\": \"text\", \"text\": \"Answer the question in this recording.\"},\n    {\"type\": \"____\", \"input_audio\": {\"data\": encoded_wav, \"format\": \"wav\"}},\n]",
+      "options": [
+        "image_url",
+        "input_audio",
+        "audio_url",
+        "file_search"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Audio input uses a content part of type input_audio with base64 data and its format. image_url sends images, audio_url isn't the defined part type, and file_search is an agent tool."
+    },
+    {
+      "id": "ai-901.d2a.q079",
+      "lesson": "ai-901.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about sending spoken prompts to an audio-capable model, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "The audio file is base64-encoded before being placed in the request.",
+          "a": true
+        },
+        {
+          "s": "Setting modalities to include 'audio' lets the model return a spoken response.",
+          "a": true
+        },
+        {
+          "s": "You must first run the audio through a separate speech-to-text service before an audio-native model can use it.",
+          "a": false
+        }
+      ],
+      "explain": "Audio bytes are base64-encoded in input_audio. Requesting the audio modality (with a voice and format) returns speech. Audio-native models accept audio directly, so no separate STT step is required."
+    },
+    {
+      "id": "ai-901.d2a.q080",
+      "lesson": "ai-901.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An audio chat completion returns both text and speech. Where is the text version of the spoken reply found?",
+      "options": [
+        "message.audio.transcript",
+        "message.audio.data",
+        "result.redacted_text",
+        "response.translations"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "message.audio.transcript holds the text and message.audio.data holds base64 audio to decode and play. redacted_text is a PII result and translations is a speech translation result."
+    },
+    {
+      "id": "ai-901.d2a.q081",
+      "lesson": "ai-901.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A retailer is building a browser-based shopping assistant. Customers speak into their laptop microphone and expect the assistant to reply aloud almost instantly, with natural back-and-forth conversation. The team plans to use a gpt-realtime model.",
+      "stem": "Which connection method for the Realtime API is recommended for this client-side scenario?",
+      "options": [
+        "SIP",
+        "Batch transcription with a SAS URI",
+        "WebRTC",
+        "Global Batch deployment"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "WebRTC is recommended for low-latency audio in browser and mobile clients. SIP is for telephony, WebSocket suits server-to-server, and batch options are asynchronous and far too slow."
+    },
+    {
+      "id": "ai-901.d2a.q082",
+      "lesson": "ai-901.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which model family is designed for low-latency 'speech in, speech out' conversations through the Realtime API?",
+      "options": [
+        "text-embedding-3",
+        "gpt-realtime",
+        "gpt-image",
+        "Phi-4-mini (text only)"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "gpt-realtime models stream audio in and out with low latency. Embedding models produce vectors, gpt-image generates images, and a text-only model can't hear audio."
+    },
+    {
+      "id": "ai-901.d2a.q083",
+      "lesson": "ai-901.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A developer records a user's spoken question as question.wav and wants a deployed gpt-4o-audio-preview model to answer it aloud, saving the reply as answer.wav.",
+      "stem": "Which TWO request settings are needed? Select TWO.",
+      "options": [
+        "A user content part of type input_audio containing the base64 WAV data",
+        "modalities set to include both text and audio, with an audio voice and format",
+        "A SpeechTranslationConfig with add_target_language",
+        "show_opinion_mining set to True",
+        "A stop sequence of 'wav'"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "The audio goes in as an input_audio part, and requesting the audio modality with voice and format returns spoken output. Translation config, opinion mining and stop sequences are unrelated."
+    },
+    {
+      "id": "ai-901.d2a.q084",
+      "lesson": "ai-901.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Azure Speech capability provides a fully managed speech-to-speech service that combines speech recognition, a generative model and speech synthesis for voice agents?",
+      "options": [
+        "Batch transcription",
+        "Custom neural voice",
+        "Voice Live API",
+        "Speech translation"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Voice Live orchestrates STT, the generative model and TTS in one low-latency service. Batch transcription processes stored files, custom neural voice creates a voice, and speech translation translates speech."
+    },
+    {
+      "id": "ai-901.d2a.q085",
+      "lesson": "ai-901.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "In the Foundry portal you have a working text agent and want users to talk to it by microphone. Which setting do you enable?",
+      "options": [
+        "Voice mode",
+        "Code interpreter",
+        "Global Standard deployment",
+        "PII redaction"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Voice mode adds Voice Live speech input and output to the agent definition. Code interpreter runs Python, deployment type controls capacity, and PII redaction is a Language feature."
+    },
+    {
+      "id": "ai-901.d2a.q086",
+      "lesson": "ai-901.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE conversational features does Voice Live provide? Select THREE.",
+      "options": [
+        "Noise suppression",
+        "Echo cancellation",
+        "Interruption (barge-in) detection",
+        "Automatic fine-tuning of the generative model",
+        "PII redaction of documents"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Voice Live includes noise suppression, echo cancellation, robust interruption handling and end-of-turn detection. It doesn't fine-tune models or redact document PII."
+    },
+    {
+      "id": "ai-901.d2a.q087",
+      "lesson": "ai-901.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the stages of a voice agent's turn in order.",
+      "options": [
+        "Capture the user's speech from the microphone",
+        "Convert speech to text",
+        "Generative model decides the reply",
+        "Convert the reply text to speech",
+        "Play the audio through the speaker"
+      ],
+      "explain": "A speech-to-speech pipeline captures audio, recognises it, reasons with the model, synthesises the reply, then plays it. Voice Live manages all of these stages as one service."
+    },
+    {
+      "id": "ai-901.d2a.q088",
+      "lesson": "ai-901.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A city council wants a kiosk voice assistant in a noisy lobby. Residents often pause mid-sentence or interrupt the assistant while it's speaking. The small dev team doesn't want to wire together separate speech-to-text, LLM and text-to-speech services or manage the underlying models.",
+      "stem": "Which solution best fits?",
+      "options": [
+        "Batch transcription feeding a chat model, then Text to Speech",
+        "Azure Language in Foundry Tools with opinion mining",
+        "A Global Batch deployment of gpt-4.1",
+        "A Foundry agent with Voice mode (Voice Live)"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Voice Live handles noise suppression, interruptions and end-of-turn detection as a managed service. A hand-built batch chain is slow and complex, Language is text-only, and Global Batch is asynchronous."
+    },
+    {
+      "id": "ai-901.d2a.q089",
+      "lesson": "ai-901.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Voice Live, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "You choose a generative model, such as a GPT-Realtime or GPT-4.1 model, for Voice Live to use.",
+          "a": true
+        },
+        {
+          "s": "You must deploy and host the Voice Live acoustic models on your own GPUs.",
+          "a": false
+        },
+        {
+          "s": "Voice Live uses WebSocket events designed to be compatible with the Azure OpenAI Realtime API.",
+          "a": true
+        }
+      ],
+      "explain": "You pick the generative model, but Voice Live is fully managed, so you don't deploy its models. It uses WebSocket events compatible with the Realtime API."
+    },
+    {
+      "id": "ai-901.d2a.q090",
+      "lesson": "ai-901.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which pip package provides the Azure Speech SDK for Python?",
+      "options": [
+        "azure-ai-voicelive",
+        "azure-ai-textanalytics",
+        "azure-cognitiveservices-speech",
+        "azure-ai-projects"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "azure-cognitiveservices-speech is the Speech SDK (SpeechRecognizer, SpeechSynthesizer). azure-ai-voicelive is for Voice Live sessions, textanalytics is Azure Language, and azure-ai-projects is the Foundry SDK."
+    },
+    {
+      "id": "ai-901.d2a.q091",
+      "lesson": "ai-901.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code so the recognizer transcribes a voicemail file instead of the microphone.",
+      "code": "speech_config = speechsdk.SpeechConfig(subscription=key, endpoint=endpoint)\naudio_config = speechsdk.audio.AudioConfig(____)\nrecognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)\nresult = recognizer.recognize_once_async().get()",
+      "options": [
+        "use_default_microphone=True",
+        "use_default_speaker=True",
+        "filename=\"voicemail.wav\"",
+        "voice_name=\"voicemail.wav\""
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "AudioConfig(filename=...) reads audio from a file. use_default_microphone captures live input, use_default_speaker belongs to AudioOutputConfig for playback, and voice_name isn't an AudioConfig parameter."
+    },
+    {
+      "id": "ai-901.d2a.q092",
+      "lesson": "ai-901.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the check that confirms speech was successfully transcribed.",
+      "code": "result = recognizer.recognize_once_async().get()\nif result.reason == speechsdk.ResultReason.____:\n    print(\"Recognized:\", result.text)",
+      "options": [
+        "SynthesizingAudioCompleted",
+        "TranslatedSpeech",
+        "NoMatch",
+        "RecognizedSpeech"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "RecognizedSpeech signals a successful transcription. SynthesizingAudioCompleted is for text-to-speech, TranslatedSpeech for translation, and NoMatch means no speech could be recognised."
+    },
+    {
+      "id": "ai-901.d2a.q093",
+      "lesson": "ai-901.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An app uses recognize_once_async() to transcribe hour-long board meetings streamed from a microphone. Only the first sentence or so of each meeting appears in the transcript.",
+      "stem": "What should the developer change?",
+      "options": [
+        "Use start_continuous_recognition() with recognized event handlers",
+        "Set speech_synthesis_voice_name",
+        "Change the AudioConfig to use_default_speaker=True",
+        "Call speak_ssml_async instead"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "recognize_once_async handles a single utterance (about 30 seconds or until silence). Long audio needs continuous recognition with event handlers. The other options relate to speech synthesis."
+    },
+    {
+      "id": "ai-901.d2a.q094",
+      "lesson": "ai-901.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code so spoken English is translated into French text.",
+      "code": "config = speechsdk.translation.SpeechTranslationConfig(subscription=key, endpoint=endpoint)\nconfig.speech_recognition_language = \"en-US\"\nconfig.____(\"fr\")\nrecognizer = speechsdk.translation.TranslationRecognizer(translation_config=config, audio_config=audio_config)",
+      "options": [
+        "add_target_language",
+        "speech_synthesis_language",
+        "set_voice_name",
+        "detect_language"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "add_target_language adds a translation target such as 'fr'; results appear in result.translations['fr']. speech_synthesis_language is a TTS setting, and the others aren't SpeechTranslationConfig methods."
+    },
+    {
+      "id": "ai-901.d2a.q095",
+      "lesson": "ai-901.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which two inputs does a text-to-speech (speech synthesis) solution need at minimum?",
+      "options": [
+        "An audio file and a language model",
+        "The text to speak and the voice to use",
+        "A transcript and a SAS URI",
+        "An image and a caption"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Speech synthesis needs the text and a voice. Audio files and SAS URIs are inputs to speech recognition or batch transcription, and images relate to vision."
+    },
+    {
+      "id": "ai-901.d2a.q096",
+      "lesson": "ai-901.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code to speak a plain-text message through the default speaker.",
+      "code": "speech_config.speech_synthesis_voice_name = \"en-US-AvaMultilingualNeural\"\naudio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)\nsynth = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)\nresult = synth.____(\"Your order has shipped.\").get()",
+      "options": [
+        "recognize_once_async",
+        "speak_ssml_async",
+        "speak_text_async",
+        "start_continuous_recognition"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "speak_text_async synthesises plain text. speak_ssml_async expects an SSML XML document, and the recognition methods convert speech to text rather than text to speech."
+    },
+    {
+      "id": "ai-901.d2a.q097",
+      "lesson": "ai-901.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about speech synthesis, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "SSML is a JSON format for specifying voice settings.",
+          "a": false
+        },
+        {
+          "s": "SSML can insert pauses and adjust speaking rate and pitch.",
+          "a": true
+        },
+        {
+          "s": "Neural voices use deep neural networks to produce more natural intonation than older synthetic voices.",
+          "a": true
+        }
+      ],
+      "explain": "SSML is XML-based, not JSON. It controls breaks, prosody (rate, pitch, volume), pronunciation and styles. Neural voices give more natural-sounding speech."
+    },
+    {
+      "id": "ai-901.d2a.q098",
+      "lesson": "ai-901.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An airline's announcement app reads flight notices aloud with a neural voice. Product owners want a half-second pause after the flight number and a slightly slower rate for gate changes. The developer currently calls speak_text_async with plain strings.",
+      "stem": "What should the developer do?",
+      "options": [
+        "Raise the model temperature for the voice",
+        "Build an SSML document with break and prosody elements and call speak_ssml_async",
+        "Add a stop sequence after the flight number",
+        "Switch to batch transcription"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "SSML's break and prosody rate elements control pauses and speed, and it's sent with speak_ssml_async. Temperature and stop sequences are LLM generation settings, and batch transcription is speech-to-text."
+    }
+  ]
+}

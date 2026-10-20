@@ -1,0 +1,1309 @@
+{
+  "exam": "sc-500",
+  "domain": "d2",
+  "lessons": [
+    {
+      "id": "sc-500.d2.1.01",
+      "objective": "d2.1",
+      "seq": 1,
+      "title": "Storage account security baseline",
+      "short": "Harden every storage account with a few account-level settings: **Secure transfer required** (HTTPS only), **minimum TLS version** 1.2, **Allow Blob anonymous access** off, and a deliberate **public network access** choice.",
+      "deep": "A storage account is one public endpoint per service (blob, file, queue, table, dfs). Before you think about identities or firewalls, you lock down the account itself.\n\n- **Secure transfer required** (`supportsHttpsTrafficOnly`): rejects plain HTTP and unencrypted SMB. It is on by default for new accounts.\n- **Minimum TLS version** (`MinimumTlsVersion`): set `TLS1_2`. The portal sets 1.2 for new accounts, but accounts created by CLI or templates may leave it unset. Azure Resource Graph can report the value across subscriptions.\n- **Allow Blob anonymous access** (`AllowBlobPublicAccess`): when this is false, no container can be read anonymously, whatever its own access level. Containers have three levels: **Private** (default), **Blob** (anonymous reads of blobs only) and **Container** (blobs plus listing). The account setting always wins.\n- **Public network access**: Enabled from all networks, Enabled from selected virtual networks and IP addresses, or Disabled (private endpoints only).\n\nUse Azure Policy (for example the built-in policies that require secure transfer or disallow anonymous access) so new accounts can't drift from the baseline.",
+      "terms": [
+        {
+          "t": "Secure transfer required",
+          "d": "Account setting that rejects requests not made over HTTPS (and SMB without encryption)."
+        },
+        {
+          "t": "AllowBlobPublicAccess",
+          "d": "Account property; false blocks anonymous read access to every container in the account."
+        },
+        {
+          "t": "MinimumTlsVersion",
+          "d": "Lowest TLS version the account accepts; recommended value TLS1_2."
+        },
+        {
+          "t": "Container access level",
+          "d": "Private, Blob or Container; controls anonymous access only if the account allows it."
+        }
+      ],
+      "trap": "Exams set a container to Container or Blob level and ask if anonymous reads work; if the account disallows anonymous access, they fail.",
+      "example": "An audit finds a container set to Container level; setting AllowBlobPublicAccess to false on the account blocks anonymous access immediately without touching the container.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Container level",
+          "Account allows",
+          "Account disallows"
+        ],
+        "rows": [
+          [
+            "Private",
+            "No anonymous",
+            "No anonymous"
+          ],
+          [
+            "Blob",
+            "Blobs readable",
+            "No anonymous"
+          ],
+          [
+            "Container",
+            "Blobs + listing",
+            "No anonymous"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.1.02",
+      "objective": "d2.1",
+      "seq": 2,
+      "title": "Storage encryption: CMK and infrastructure encryption",
+      "short": "Azure Storage always encrypts data at rest with 256-bit AES. You choose **Microsoft-managed keys** or **customer-managed keys (CMK)** in Key Vault or Managed HSM, and can add **infrastructure encryption** for a second layer.",
+      "deep": "**Service-side encryption** is always on and can't be disabled. The question is who controls the key.\n\n**Customer-managed keys (CMK)**: the account wraps its data keys with an RSA or RSA-HSM key (2048, 3072 or 4096 bits) in **Azure Key Vault** or **Key Vault Managed HSM**. Requirements:\n- The vault must have **soft delete** and **purge protection** enabled.\n- The storage account's **managed identity** needs get, wrapKey and unwrapKey on the key. When you enable CMK while creating the account, it must be a **user-assigned** identity; existing accounts can use system- or user-assigned.\n- If you omit the key version, Storage checks daily and uses the newest version automatically.\n- Disabling the key revokes access: blob and file reads and writes fail with **403**.\n\nBlob and file data is always covered by CMK; queue and table data are covered only if you opt in when creating the account.\n\n**Infrastructure encryption** (double encryption) adds a second AES-256 layer with a separate, always Microsoft-managed key. It must be chosen **when the account is created** and can't be turned on or off later. **Encryption scopes** let you use different keys per container or blob.",
+      "terms": [
+        {
+          "t": "Customer-managed key (CMK)",
+          "d": "Key you own in Key Vault or Managed HSM that protects the account's encryption keys."
+        },
+        {
+          "t": "Infrastructure encryption",
+          "d": "Second layer of AES-256 encryption at the infrastructure level; creation-time only."
+        },
+        {
+          "t": "Encryption scope",
+          "d": "Container- or blob-level boundary that can use its own key."
+        },
+        {
+          "t": "Purge protection",
+          "d": "Key Vault setting that blocks permanent deletion during the retention period; required for CMK."
+        }
+      ],
+      "trap": "Candidates pick 'enable infrastructure encryption' on an existing account; it is only available at account creation.",
+      "example": "A bank needs double encryption with a key it controls: create a new GPv2 account with infrastructure encryption on and CMK from a purge-protected vault.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Blob data",
+          "Service encryption (MMK or CMK)",
+          "Infrastructure encryption (MMK)",
+          "Disk hardware"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.1.03",
+      "objective": "d2.1",
+      "seq": 3,
+      "title": "Azure Storage firewall rules",
+      "short": "The storage firewall limits who reaches the public endpoint: **IP network rules** for public IPs, **virtual network rules** for subnets with a service endpoint, **resource instance rules** for specific Azure resources, and **trusted service exceptions**.",
+      "deep": "By default a storage account accepts connections from any network. Once you choose **Enabled from selected virtual networks and IP addresses** (the firewall's `defaultAction` becomes **Deny**), only listed sources reach the public endpoint. Allowed callers must still be authorized (Entra ID, SAS or key); the firewall never grants data access by itself.\n\n- **IP network rules**: public IPv4 addresses or CIDR ranges only (up to 400). Private RFC 1918 ranges are not allowed, /31 and /32 prefixes must be entered as single IPs, and IP rules have no effect on clients in the **same Azure region**.\n- **Virtual network rules**: allow a subnet (any subscription, tenant or region, up to 400). The subnet needs the **Microsoft.Storage** service endpoint (same region) or **Microsoft.Storage.Global** (any region). Traffic then uses the subnet's private source IP.\n- **Resource instance rules**: allow a specific resource instance of a supported service (such as a Synapse workspace) from the **same tenant**; its RBAC roles decide what it can do.\n- **Trusted service exceptions**: let listed Azure services that can't be network-isolated (for example logging and backup services) connect with strong authentication.\n\nA SAS that is restricted to an IP never grants more than the network rules allow.",
+      "terms": [
+        {
+          "t": "IP network rule",
+          "d": "Allows a public IPv4 address or CIDR range through the storage firewall."
+        },
+        {
+          "t": "Virtual network rule",
+          "d": "Allows a subnet that has the Microsoft.Storage service endpoint."
+        },
+        {
+          "t": "Resource instance rule",
+          "d": "Allows one specific Azure resource instance in the same tenant."
+        },
+        {
+          "t": "Trusted services exception",
+          "d": "Lets listed Azure services bypass network rules with strong authentication."
+        }
+      ],
+      "trap": "Adding a same-region VM's public IP to the IP rules does nothing; same-region traffic needs a virtual network rule (or a private endpoint).",
+      "example": "An app on VMs in West Europe can't reach a West Europe storage account behind the firewall; enabling Microsoft.Storage on the subnet and adding a virtual network rule fixes it.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Client request",
+          "Network rules",
+          "Authorization",
+          "Data access"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.1.04",
+      "objective": "d2.1",
+      "seq": 4,
+      "title": "Defender for Storage plan",
+      "short": "**Microsoft Defender for Storage** is a Defender for Cloud plan with **activity monitoring**, **malware scanning** and **sensitive data threat detection**. It is billed per storage account (plus per GB scanned) and best enabled at **subscription** level.",
+      "deep": "Defender for Storage watches the data and control plane of your storage accounts and raises security alerts in Defender for Cloud.\n\n- **Activity monitoring**: analyses telemetry for suspicious behaviour such as access from Tor exit nodes, known malicious IPs, unusual data extraction or anomalous SAS use. It doesn't require you to enable resource logs and doesn't affect performance.\n- **Malware scanning**: Microsoft Defender Antivirus scans blobs on upload or on demand (next lesson). Priced per GB scanned.\n- **Sensitive data threat detection**: uses agentless **Sensitive Data Discovery** and Microsoft Purview sensitive information types and labels to raise the severity of alerts that touch sensitive data. No extra cost.\n- **Hash reputation analysis**: compares upload hashes with known malware; included in all plans.\n\n**Enablement**: subscription level is recommended so all existing and new accounts are covered; you can then exclude or override settings on individual accounts. You can also enable per account, or at scale with the portal, IaC (Bicep, ARM, Terraform), PowerShell or the built-in **Azure Policy** definitions. Accounts on the older classic per-transaction plan should migrate to the per-account plan for current features.",
+      "terms": [
+        {
+          "t": "Activity monitoring",
+          "d": "Defender for Storage feature that detects suspicious access patterns without needing resource logs."
+        },
+        {
+          "t": "Sensitive data threat detection",
+          "d": "Prioritizes alerts on accounts that hold data matching Purview sensitive info types."
+        },
+        {
+          "t": "Subscription-level enablement",
+          "d": "Turns the plan on for all current and future storage accounts in the subscription."
+        }
+      ],
+      "trap": "Distractors claim you must enable diagnostic or resource logs for Defender for Storage to detect threats; activity monitoring doesn't need them.",
+      "example": "A company enables Defender for Storage on all subscriptions through Azure Policy, then overrides one data lake account with a lower malware scanning cap.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Feature",
+          "Detects",
+          "Cost"
+        ],
+        "rows": [
+          [
+            "Activity monitoring",
+            "Anomalous access",
+            "Per account"
+          ],
+          [
+            "Malware scanning",
+            "Malicious uploads",
+            "Per GB scanned"
+          ],
+          [
+            "Sensitive data detect",
+            "Alert priority",
+            "No extra"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.1.05",
+      "objective": "d2.1",
+      "seq": 5,
+      "title": "Defender for Storage malware scanning",
+      "short": "Malware scanning checks blobs **on upload** or **on demand** with Microsoft Defender Antivirus. Results go to **blob index tags**, **Defender for Cloud alerts**, and optionally **Event Grid** and the **StorageMalwareScanningResults** table; malicious blobs can be **soft deleted**.",
+      "deep": "**Modes**\n- **On-upload**: every blob that is uploaded or modified is scanned automatically. Ideal for user-generated content and partner uploads.\n- **On-demand**: scan an entire account, a container, a path prefix or a single blob, for example during incident response.\n\n**Limits**: files up to 50 GB; all file types including ZIP/RAR archives. A **monthly cap** (default **10,000 GB** per storage account) stops scanning when reached; alerts fire at 75% and when scanning pauses. Supported: block blobs in GPv2 and Data Lake Storage Gen2 accounts. Not supported: append and page blobs, NFS 3.0 uploads, client-side encrypted blobs, and on-upload scanning of Azure Files.\n\n**Results**\n- **Blob index tags** with the result (No threats found, Malicious, Error, Not scanned) and scan time. Tags aren't tamper-proof, so don't rely on them alone.\n- **Security alerts** for malicious files.\n- **Event Grid** custom topic (same region, public access) for near-real-time automation such as an Azure Function that moves clean files onward.\n- **Log Analytics** table `StorageMalwareScanningResults`.\n\n**Response**: the built-in **Soft delete malicious blobs** option (enables blob soft delete if needed), **ABAC** conditions to block unscanned or malicious blobs, or Logic Apps and Functions to quarantine.",
+      "terms": [
+        {
+          "t": "On-upload scanning",
+          "d": "Automatic scan of every new or modified blob."
+        },
+        {
+          "t": "On-demand scanning",
+          "d": "Targeted scan of existing blobs, containers, prefixes or the whole account."
+        },
+        {
+          "t": "Monthly scanning cap",
+          "d": "GB limit per account per month (default 10,000 GB) after which scanning stops."
+        },
+        {
+          "t": "StorageMalwareScanningResults",
+          "d": "Log Analytics table holding every scan result when logging is configured."
+        }
+      ],
+      "trap": "Defender alerts only fire for malicious files; if automation must act on clean files too, the answer is Event Grid, not an alert-triggered Logic App.",
+      "example": "A claims portal scans uploads on arrival; an Event Grid-triggered Function moves clean files to a processing container, and soft delete removes malicious ones.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Blob upload",
+          "Defender AV scan",
+          "Index tag + event",
+          "Function / alert",
+          "Soft delete"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.1.06",
+      "objective": "d2.1",
+      "seq": 6,
+      "title": "Shared access signatures and stored access policies",
+      "short": "A **shared access signature (SAS)** is a signed URL token granting limited, time-bound access. Types: **user delegation SAS** (Entra ID, preferred), **service SAS** and **account SAS** (both signed with the account key). A **stored access policy** lets you change or revoke service SASs centrally.",
+      "deep": "**SAS types**\n- **User delegation SAS**: signed with a **user delegation key** that a principal obtains with Microsoft Entra credentials (it needs the generateUserDelegationKey action, included in roles like Storage Blob Data Contributor or Storage Blob Delegator). Valid for at most **7 days**. Blob storage only. Microsoft's recommended type.\n- **Service SAS**: signed with an account key, scoped to one service (blob, queue, table or file).\n- **Account SAS**: signed with an account key, can cover several services and service-level operations.\n\n**Stored access policy**: defined on a container, queue, table or share (maximum **five** per resource). A service SAS can reference it, taking its start, expiry and permissions from the policy. To revoke, delete the policy, rename its Id, or set expiry in the past; changes can take up to 30 seconds. Stored access policies are **not** supported for user delegation SAS or account SAS. Without a policy (an ad hoc SAS), the only way to revoke a key-signed SAS is to regenerate the key that signed it.\n\n**SAS expiration policy**: sets a maximum validity interval for all SAS types. Action **Log** (default) records violations in `StorageBlobLogs` (`SasExpiryStatus`); **Block** rejects them.",
+      "terms": [
+        {
+          "t": "User delegation SAS",
+          "d": "SAS signed with a key obtained via Entra ID credentials; max 7 days; Blob only."
+        },
+        {
+          "t": "Service SAS",
+          "d": "Account-key-signed SAS scoped to a single storage service."
+        },
+        {
+          "t": "Stored access policy",
+          "d": "Server-side policy (max five per container) that service SASs reference so they can be revoked."
+        },
+        {
+          "t": "SAS expiration policy",
+          "d": "Account setting limiting SAS lifetime with Log or Block action."
+        }
+      ],
+      "trap": "Exams offer 'create a stored access policy' for a user delegation SAS; stored access policies only work with service SAS.",
+      "example": "A partner receives service SASs linked to a policy named partner-read; when the contract ends, deleting the policy invalidates all of them without rotating keys.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "SAS type",
+          "Signed with",
+          "Stored policy?"
+        ],
+        "rows": [
+          [
+            "User delegation",
+            "Entra ID key",
+            "No"
+          ],
+          [
+            "Service",
+            "Account key",
+            "Yes"
+          ],
+          [
+            "Account",
+            "Account key",
+            "No"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.1.07",
+      "objective": "d2.1",
+      "seq": 7,
+      "title": "Entra ID data access and disabling Shared Key",
+      "short": "Authorize data access with **Microsoft Entra ID and Azure RBAC data roles** (such as Storage Blob Data Reader) instead of account keys. Then set **Allow storage account key access** (`AllowSharedKeyAccess`) to false, which also blocks account and service SASs.",
+      "deep": "Storage has two planes. **Control plane** roles (Owner, Contributor, Storage Account Contributor, Reader) manage the account; roles that can call listKeys effectively get full data access through the keys. **Data plane** roles grant data access with Entra tokens: **Storage Blob Data Reader / Contributor / Owner**, **Storage Queue Data** roles, **Storage File Data** roles and **Storage Table Data** roles. Assign them at the narrowest scope (container, account, resource group). Plain **Reader** can't read blob data with Entra ID.\n\n**Shared Key authorization** uses the two account keys; anyone with a key has full access. To remove that risk:\n1. Assign the built-in policy **Storage accounts should prevent shared key access** in Audit mode.\n2. Find remaining key and SAS clients with the **Transactions** metric split by Authentication type, or `StorageBlobLogs` where AuthenticationType is AccountKey or SAS.\n3. Move them to Entra ID (or user delegation SAS).\n4. Set **AllowSharedKeyAccess** to false; key-signed requests then get 403.\n5. Switch the policy to Deny.\n\nIf you must keep keys, rotate them regularly (key1/key2 swap) and set a key expiration reminder, or store them in Key Vault.",
+      "terms": [
+        {
+          "t": "AllowSharedKeyAccess",
+          "d": "Account property; false rejects requests authorized with account keys, account SAS and service SAS."
+        },
+        {
+          "t": "Storage Blob Data Reader",
+          "d": "Data plane role that reads blobs using Entra ID tokens."
+        },
+        {
+          "t": "Control plane vs data plane",
+          "d": "Managing the resource versus reading and writing the data inside it."
+        }
+      ],
+      "trap": "Disabling Shared Key does not break user delegation SAS (Entra-signed), but it does break service and account SAS.",
+      "example": "After logs show only one legacy job using the key, the team moves it to a managed identity with Storage Blob Data Contributor and disables Shared Key.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Audit policy",
+          "Find key users",
+          "Migrate to Entra",
+          "Disable key",
+          "Policy: Deny"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.2.01",
+      "objective": "d2.2",
+      "seq": 1,
+      "title": "Azure SQL network access and Entra-only authentication",
+      "short": "Control who reaches Azure SQL with **public network access**, **server- and database-level IP firewall rules**, **virtual network rules** and **private endpoints**. Control how they sign in with **Microsoft Entra-only authentication**, which disables SQL authentication.",
+      "deep": "**Network**\n- **Public network access**: Disable (private endpoints only), Selected networks, or similar. While public access is disabled you can't create or edit firewall rules.\n- **Server-level IP rules** cover every database on the logical server (portal, PowerShell, CLI or `sp_set_firewall_rule` in master). **Database-level IP rules** cover one database and can only be created with T-SQL `sp_set_database_firewall_rule`.\n- **Allow Azure services and resources to access this server** adds a 0.0.0.0 rule that admits all of Azure, including other customers' subscriptions. Prefer explicit rules or private access.\n- **Virtual network rules** use the Microsoft.Sql service endpoint; **private endpoints** give the server a private IP (`privatelink.database.windows.net`).\n- **Minimum TLS version**: 1.2 or higher.\n\n**Microsoft Entra-only authentication**\nWhen enabled on a logical server or managed instance, only Entra identities can connect. Existing SQL logins remain but can't sign in. Prerequisites: a **Microsoft Entra admin** must be set first. Who can toggle it: Owner, Contributor or **SQL Security Manager**; SQL Server Contributor and SQL Managed Instance Contributor can't (separation of duties). Enforce at scale with Azure Policy. CLI: `az sql server ad-only-auth enable`; T-SQL check: `SERVERPROPERTY('IsExternalAuthenticationOnly')`.",
+      "terms": [
+        {
+          "t": "Database-level firewall rule",
+          "d": "IP rule for one database, created only with sp_set_database_firewall_rule."
+        },
+        {
+          "t": "Allow Azure services",
+          "d": "Setting that admits all Azure-originated traffic via a 0.0.0.0 rule."
+        },
+        {
+          "t": "Microsoft Entra-only authentication",
+          "d": "Server or managed instance setting that blocks SQL authentication logins."
+        },
+        {
+          "t": "SQL Security Manager",
+          "d": "Built-in role that can manage security settings such as Entra-only authentication."
+        }
+      ],
+      "trap": "Exams suggest SQL Server Contributor can enable Entra-only authentication; it can't, by design.",
+      "example": "A security team disables public network access on a logical server, adds a private endpoint for the app subnet, and enables Entra-only authentication after setting an Entra admin group.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Client",
+          "Public access / PE",
+          "IP & VNet rules",
+          "Entra auth",
+          "Database"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.2.02",
+      "objective": "d2.2",
+      "seq": 2,
+      "title": "TDE, customer-managed keys and Always Encrypted",
+      "short": "**Transparent data encryption (TDE)** encrypts database files, logs and backups at rest, on by default with a service-managed key. Use a **customer-managed TDE protector** in Key Vault for key control, and **Always Encrypted** to hide column values even from DBAs.",
+      "deep": "**TDE** encrypts pages in real time with a **database encryption key (DEK)** using AES-256. The DEK is protected by the **TDE protector**:\n- **Service-managed** (default for new Azure SQL Database and Managed Instance databases): a built-in server certificate Microsoft rotates.\n- **Customer-managed (BYOK)**: an asymmetric RSA key in **Azure Key Vault** or **Managed HSM**, set at the logical server (or per database). The vault needs **soft delete** and **purge protection**; the server's managed identity needs **get, wrapKey, unwrapKey**. If access to the key is revoked, the database becomes **inaccessible**.\n\nTDE protects data at rest only. Anyone who can query the database still sees plaintext.\n\n**Always Encrypted** encrypts selected columns in the **client driver**, so the server only stores ciphertext:\n- **Column master key (CMK)** in a trusted store such as Key Vault; it protects the **column encryption key (CEK)** stored in the database.\n- **Deterministic** encryption allows equality lookups, joins and grouping; **randomized** is stronger but needs **secure enclaves** for rich queries.\n- Clients enable it with `Column Encryption Setting=Enabled`.\n\nDBAs see metadata and ciphertext, not values, unless they can access the column master key.",
+      "terms": [
+        {
+          "t": "TDE protector",
+          "d": "Key that encrypts the database encryption key; service-managed or customer-managed."
+        },
+        {
+          "t": "Always Encrypted",
+          "d": "Client-side column encryption; the database engine never sees plaintext keys."
+        },
+        {
+          "t": "Deterministic encryption",
+          "d": "Same plaintext gives same ciphertext; supports equality search."
+        },
+        {
+          "t": "Column master key",
+          "d": "Key in Key Vault or another store that protects column encryption keys."
+        }
+      ],
+      "trap": "TDE with a customer-managed key doesn't stop DBAs reading data; only Always Encrypted keeps values hidden from privileged database users.",
+      "example": "A clinic encrypts the NationalID column with deterministic Always Encrypted so the app can look up patients by ID while DBAs only see ciphertext.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "TDE protector (Key Vault)",
+          "Database encryption key",
+          "Data, log, backups"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.2.03",
+      "objective": "d2.2",
+      "seq": 3,
+      "title": "Auditing for Azure SQL Database",
+      "short": "**Azure SQL auditing** records database events to an **Azure Storage account**, **Log Analytics workspace** or **Event Hubs**. Configure it at **server level** (all databases) or **database level**; if both are on, both audits run side by side.",
+      "deep": "Auditing tracks database events for compliance and investigations.\n\n**Default action groups**: `BATCH_COMPLETED_GROUP` (queries and stored procedures), `SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP` and `FAILED_DATABASE_AUTHENTICATION_GROUP`. Other groups are set via PowerShell or the REST API.\n\n**Scope**\n- **Server-level policy** applies to all existing and new databases on the logical server; logs go to a single `master` folder.\n- **Database-level policy** exists side by side with the server audit, so enabling both produces two audit records. For heavy OLTP workloads Microsoft suggests database-level auditing with filtered settings.\n\n**Destinations** (any combination)\n- **Storage**: append blobs in `.xel` format, readable in SSMS or with `sys.fn_get_audit_file`. Retention default 0 (unlimited). Prefer **managed identity** over storage keys. For a storage account behind a firewall, grant the server identity **Storage Blob Data Contributor** and allow trusted Microsoft services. Immutable storage is supported if protected append writes are allowed.\n- **Log Analytics / Event Hubs**: creates a diagnostic setting with the `SQLSecurityAuditEvents` category. Deleting it silently stops auditing, so alert on its removal.\n\nYou can also enable **auditing of Microsoft support operations**.",
+      "terms": [
+        {
+          "t": "Server-level auditing",
+          "d": "Audit policy on the logical server that covers all its databases."
+        },
+        {
+          "t": "Audit action group",
+          "d": "Named set of events to capture, such as BATCH_COMPLETED_GROUP."
+        },
+        {
+          "t": "SQLSecurityAuditEvents",
+          "d": "Diagnostic log category used to send audit records to Log Analytics or Event Hubs."
+        }
+      ],
+      "trap": "Many assume a database policy overrides the server policy; in Azure SQL Database they both apply and duplicate records.",
+      "example": "A retailer audits all databases at server level to Log Analytics for Sentinel and also to immutable storage for seven-year retention.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "SQL events",
+          "Audit policy",
+          "Storage / LA / Event Hubs",
+          "Sentinel or SSMS"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.2.04",
+      "objective": "d2.2",
+      "seq": 4,
+      "title": "Auditing for Azure SQL Managed Instance",
+      "short": "SQL Managed Instance auditing uses SQL Server-style T-SQL: **CREATE SERVER AUDIT** with a target of **TO URL** (blob storage plus a SAS credential) or **TO EXTERNAL_MONITOR** (diagnostic settings to Log Analytics or Event Hubs), then an **audit specification** and **STATE = ON**.",
+      "deep": "Managed Instance behaves like SQL Server, so auditing is configured with T-SQL objects.\n\n**To blob storage**\n1. `CREATE CREDENTIAL [https://<account>.blob.core.windows.net/<container>] WITH IDENTITY='SHARED ACCESS SIGNATURE', SECRET='<SAS without ?>'`\n2. `CREATE SERVER AUDIT [MyAudit] TO URL (PATH='<container url>', RETENTION_DAYS = n)`; 0 means unlimited.\n3. `CREATE SERVER AUDIT SPECIFICATION` (or a database audit specification) adding groups such as `SUCCESSFUL_LOGIN_GROUP`, `FAILED_LOGIN_GROUP`, `BATCH_COMPLETED_GROUP`.\n4. `ALTER SERVER AUDIT [MyAudit] WITH (STATE = ON)`.\nRenew the SAS before it expires or auditing fails.\n\n**To Log Analytics or Event Hubs**\n1. On the managed instance, add a **diagnostic setting** with category `SQLSecurityAuditEvents` (also select **DevOps operations Audit Logs** for Microsoft support operations).\n2. `CREATE SERVER AUDIT [MyAudit] TO EXTERNAL_MONITOR`.\n3. Create the audit specification and turn the audit on.\n\nAudit Microsoft support operations with a **separate** audit created `WITH (OPERATOR_AUDIT = ON)`.",
+      "terms": [
+        {
+          "t": "CREATE SERVER AUDIT",
+          "d": "T-SQL statement that defines an audit and its target."
+        },
+        {
+          "t": "TO EXTERNAL_MONITOR",
+          "d": "Audit target that sends events through diagnostic settings to Log Analytics or Event Hubs."
+        },
+        {
+          "t": "Server audit specification",
+          "d": "Defines which action groups an audit collects."
+        }
+      ],
+      "trap": "Forgetting ALTER SERVER AUDIT ... STATE = ON (or the diagnostic setting for EXTERNAL_MONITOR) means nothing is collected.",
+      "example": "A DBA sends MI audit events to the SOC's Log Analytics workspace using a diagnostic setting and CREATE SERVER AUDIT ... TO EXTERNAL_MONITOR.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Credential (SAS)",
+          "Server audit",
+          "Audit spec",
+          "STATE = ON"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d2.2.05",
+      "objective": "d2.2",
+      "seq": 5,
+      "title": "Defender for Azure SQL: vulnerability assessment and threat protection",
+      "short": "**Microsoft Defender for Azure SQL Databases** adds **SQL vulnerability assessment** (find misconfigurations, set baselines) and **Advanced Threat Protection** (alerts for SQL injection, brute force and anomalous access) to Azure SQL Database, Managed Instance and Synapse dedicated pools.",
+      "deep": "Defender for Azure SQL is one component of the **Defender for Databases** plan in Microsoft Defender for Cloud. Enabling it at subscription level protects all supported resources, including new ones.\n\n**Covered resources**: Azure SQL single databases and elastic pools, Azure SQL Managed Instance, Azure Synapse Analytics dedicated SQL pools. SQL Server on Azure VMs or Arc-enabled machines is covered by the separate **Defender for SQL Servers on Machines** component.\n\n**SQL vulnerability assessment** scans for misconfigurations, excessive permissions and unprotected sensitive data, and lets you approve a **baseline** so accepted results stop being flagged.\n- **Express configuration** (recommended, no extra cost): Defender for Cloud manages storage of results; baselines can be set in batch and apply without rescanning.\n- **Classic configuration**: you supply a storage account; baselines need a rescan. Classic APIs retire in 2027.\n\n**Advanced Threat Protection** raises alerts such as **potential SQL injection**, brute-force sign-in attempts, access from unusual locations or suspicious IPs, and logins from a compromised machine. Alerts include remediation steps and can be investigated in Microsoft Sentinel or Defender XDR.",
+      "terms": [
+        {
+          "t": "SQL vulnerability assessment",
+          "d": "Scanner that reports database misconfigurations and supports baselines."
+        },
+        {
+          "t": "Express configuration",
+          "d": "VA mode where Defender for Cloud stores results; no storage account needed."
+        },
+        {
+          "t": "Advanced Threat Protection",
+          "d": "Detection of anomalous SQL activity such as SQL injection."
+        }
+      ],
+      "trap": "Exams offer auditing or Data Discovery & Classification as the feature that finds misconfigurations; that is vulnerability assessment.",
+      "example": "After enabling Defender for Azure SQL with express VA, an admin approves a baseline for a known service account so only new drift is flagged.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d2.2.06",
+      "objective": "d2.2",
+      "seq": 6,
+      "title": "Defender for Databases across database services",
+      "short": "Turning on the **Databases** plan enables four components: **Defender for Azure SQL Databases**, **Defender for SQL Servers on Machines**, **Defender for Open-Source Relational Databases** and **Defender for Azure Cosmos DB**. Each is priced separately and can also be enabled individually.",
+      "deep": "In Defender for Cloud > **Environment settings**, choose the subscription (or AWS account / GCP project) and set **Databases** to On to enable all four components, or select components individually.\n\n- **Defender for Azure SQL Databases**: PaaS SQL (previous lesson).\n- **Defender for SQL Servers on Machines**: SQL Server on Azure VMs, on-premises or other clouds through **Azure Arc**, with vulnerability assessment and threat protection.\n- **Defender for Open-Source Relational Databases**: **Azure Database for PostgreSQL Flexible Server** and **Azure Database for MySQL Flexible Server**, plus Amazon RDS engines (Aurora PostgreSQL/MySQL, PostgreSQL, MySQL, MariaDB). Detects brute-force attempts and suspicious access, for example from a machine talking to a crypto-mining C2 server.\n- **Defender for Azure Cosmos DB**: supports **Azure Cosmos DB for NoSQL** only (not MongoDB, Cassandra, Table or Gremlin APIs). Detects potential SQL injection, access from Tor or suspicious IPs, suspicious **key enumeration** and data extraction. It analyses telemetry and doesn't access account data or affect performance.\n\nAlerts carry MITRE ATT&CK tactics and flow to Defender XDR and Sentinel. The Defender for Cloud coverage workbook shows where plans are enabled.",
+      "terms": [
+        {
+          "t": "Defender for Databases",
+          "d": "Defender for Cloud plan bundling SQL, SQL on machines, open-source relational and Cosmos DB protection."
+        },
+        {
+          "t": "Defender for Open-Source Relational Databases",
+          "d": "Threat detection for PostgreSQL and MySQL Flexible Server and Amazon RDS."
+        },
+        {
+          "t": "Defender for Azure Cosmos DB",
+          "d": "Threat detection for Cosmos DB for NoSQL accounts."
+        }
+      ],
+      "trap": "Cosmos DB for MongoDB or Cassandra isn't covered by Defender for Azure Cosmos DB; only the NoSQL API is.",
+      "example": "A SaaS company turns on the Databases plan, which protects its Azure SQL, PostgreSQL Flexible Server and Cosmos DB for NoSQL accounts at once.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Databases plan",
+          "Azure SQL Databases",
+          "SQL Servers on Machines",
+          "Open-source relational",
+          "Azure Cosmos DB"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-500.d2.q001",
+      "lesson": "sc-500.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which storage account setting causes requests sent over plain HTTP to be rejected?",
+      "options": [
+        "Secure transfer required",
+        "Minimum TLS version",
+        "Allow Blob anonymous access",
+        "Allow storage account key access"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Secure transfer required accepts only HTTPS (and encrypted SMB). Minimum TLS version rejects old TLS versions but assumes TLS is in use. Anonymous access and key access settings control authorization, not transport."
+    },
+    {
+      "id": "sc-500.d2.q002",
+      "lesson": "sc-500.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A container's anonymous access level is set to Container, but the storage account has Allow Blob anonymous access disabled. What happens when an anonymous client tries to list and read the container's blobs?",
+      "options": [
+        "Listing and reading both succeed",
+        "Reading blobs succeeds but listing fails",
+        "Both succeed only when the client uses TLS 1.2",
+        "Both requests fail because the account setting takes precedence"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "When AllowBlobPublicAccess is false, no container in the account can be accessed anonymously, whatever its own level. Blob-only reads describe the Blob level when the account allows anonymous access. TLS version doesn't affect anonymous authorization."
+    },
+    {
+      "id": "sc-500.d2.q003",
+      "lesson": "sc-500.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Storage encryption, select Yes if true.",
+      "statements": [
+        {
+          "s": "Infrastructure encryption can be enabled on an existing storage account at any time.",
+          "a": false
+        },
+        {
+          "s": "A key vault used for storage customer-managed keys must have soft delete and purge protection enabled.",
+          "a": true
+        },
+        {
+          "s": "Disabling the customer-managed key in Key Vault causes blob reads and writes to fail with HTTP 403.",
+          "a": true
+        }
+      ],
+      "explain": "Infrastructure encryption is a creation-time choice and can't be changed later. CMK requires soft delete and purge protection on the vault. Disabling the key is the documented way to revoke access, and blob and file data operations then return 403."
+    },
+    {
+      "id": "sc-500.d2.q004",
+      "lesson": "sc-500.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You are creating a new storage account and want customer-managed keys configured during creation. Which identity must the account use to access the key vault?",
+      "options": [
+        "A system-assigned managed identity",
+        "A user-assigned managed identity",
+        "An app registration with a client secret",
+        "The storage account access key"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A system-assigned identity doesn't exist until the account exists, so CMK at creation time requires a user-assigned managed identity. Existing accounts can use either type. App secrets and account keys aren't used for CMK access."
+    },
+    {
+      "id": "sc-500.d2.q005",
+      "lesson": "sc-500.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Fabrikam's regulator requires that blob data be encrypted twice with different keys, and that Fabrikam can revoke access to the data by disabling a key it controls. A new storage account will be deployed for this data.",
+      "stem": "Which two actions should you take? Select TWO.",
+      "options": [
+        "Enable infrastructure encryption when you create the account",
+        "Enable encryption at host on the storage account",
+        "Configure customer-managed keys from Key Vault for service-level encryption",
+        "Regenerate both account access keys every 90 days",
+        "Enable Always Encrypted on the blob container"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Infrastructure encryption adds a second AES-256 layer and must be set at creation. CMK gives Fabrikam a key it can disable to revoke access. Encryption at host is a VM disk feature, Always Encrypted is for SQL columns, and key rotation doesn't add encryption layers."
+    },
+    {
+      "id": "sc-500.d2.q006",
+      "lesson": "sc-500.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which entry can't be added as an IP network rule in an Azure Storage firewall?",
+      "options": [
+        "10.20.0.0/16",
+        "198.51.100.17",
+        "203.0.113.0/24",
+        "20.40.0.0/22"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Storage IP network rules accept only public IPv4 addresses and ranges. 10.20.0.0/16 is a private RFC 1918 range; private-network access needs a virtual network rule or a private endpoint. The other entries are public addresses or ranges."
+    },
+    {
+      "id": "sc-500.d2.q007",
+      "lesson": "sc-500.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "VMs in a subnet in East US must reach a storage account in East US that allows access only from selected networks. Adding the VMs' public IPs to the IP rules didn't help. What should you do?",
+      "options": [
+        "Enable the Microsoft.Storage service endpoint on the subnet and add a virtual network rule",
+        "Add a resource instance rule for each virtual machine",
+        "Select Allow Azure services on the trusted services list to access this storage account",
+        "Add the subnet's address range as an IP network rule"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "IP rules don't apply to same-region clients; a virtual network rule with a service endpoint does. Resource instance rules are for specific service instances such as Synapse workspaces, not VMs. The trusted services exception covers listed Azure services, and private ranges aren't valid IP rules."
+    },
+    {
+      "id": "sc-500.d2.q008",
+      "lesson": "sc-500.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Storage network rules, select Yes if true.",
+      "statements": [
+        {
+          "s": "A resource instance rule can allow a resource that belongs to a different Microsoft Entra tenant.",
+          "a": false
+        },
+        {
+          "s": "A client allowed by a network rule still needs valid authorization, such as an RBAC role or a SAS.",
+          "a": true
+        },
+        {
+          "s": "A SAS restricted to a specific IP address can grant access from an IP that the storage firewall blocks.",
+          "a": false
+        }
+      ],
+      "explain": "Resource instance rules require the resource to be in the same tenant as the storage account. Network rules only decide who reaches the endpoint; authorization is still required. A SAS IP restriction can only narrow access, never bypass network rules."
+    },
+    {
+      "id": "sc-500.d2.q009",
+      "lesson": "sc-500.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You want the storage firewall to deny all traffic except the IP and virtual network rules you add. Complete the Azure CLI command.",
+      "code": "az storage account update \\\n  --name contosodata \\\n  --resource-group rg-data \\\n  ____",
+      "options": [
+        "--default-action Deny",
+        "--public-network-access Deny",
+        "--bypass None",
+        "--allow-blob-public-access false"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "--default-action Deny turns on the firewall so only listed rules are allowed. --public-network-access accepts Enabled or Disabled, not Deny. --bypass controls trusted service exceptions, and --allow-blob-public-access controls anonymous access, not network rules."
+    },
+    {
+      "id": "sc-500.d2.q010",
+      "lesson": "sc-500.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Defender for Storage feature uses Microsoft Purview sensitive information types to raise the priority of alerts on accounts holding sensitive data?",
+      "options": [
+        "Activity monitoring",
+        "Malware scanning",
+        "Hash reputation analysis",
+        "Sensitive data threat detection"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Sensitive data threat detection uses Sensitive Data Discovery and Purview sensitive information types and labels to prioritize alerts. Activity monitoring finds suspicious access, malware scanning checks file content, and hash reputation compares uploads with known malware hashes."
+    },
+    {
+      "id": "sc-500.d2.q011",
+      "lesson": "sc-500.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You must ensure that every current and future storage account across 30 subscriptions is protected by Defender for Storage with minimal ongoing effort. What should you do?",
+      "options": [
+        "Enable Defender for Storage on each storage account as it is created",
+        "Enable resource logs on every account and connect them to Microsoft Sentinel",
+        "Enable the Defender CSPM plan on each subscription",
+        "Assign the built-in Azure Policy that enables Defender for Storage at subscription level"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Subscription-level enablement covers new accounts automatically, and Azure Policy enforces it across many subscriptions and prevents drift. Per-account enablement misses new accounts. Defender for Storage doesn't need resource logs, and Defender CSPM is a posture plan, not storage threat protection."
+    },
+    {
+      "id": "sc-500.d2.q012",
+      "lesson": "sc-500.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which two can Defender for Storage malware scanning scan? Select TWO.",
+      "options": [
+        "Block blobs in a Data Lake Storage Gen2 (hierarchical namespace) account",
+        "Blobs uploaded over NFS 3.0",
+        "Blobs encrypted client-side before upload",
+        "Block blobs in a general-purpose v2 account",
+        "Append blobs used for log files"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "Malware scanning supports block blobs in GPv2 and hierarchical namespace accounts. Append and page blobs, NFS 3.0 uploads, and client-side encrypted blobs aren't supported (server-side CMK encryption is fine)."
+    },
+    {
+      "id": "sc-500.d2.q013",
+      "lesson": "sc-500.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Malicious files found by malware scanning must be removed from applications' view automatically but remain recoverable for a period, without writing custom code. Which option should you configure?",
+      "options": [
+        "An ABAC condition based on the scan result index tag",
+        "Enable blob versioning on the storage account",
+        "A time-based immutability policy on the container",
+        "Soft delete malicious blobs in the Defender for Storage settings"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The built-in soft delete malicious blobs option soft-deletes flagged blobs, enabling blob soft delete if needed, so they can be restored within retention. ABAC blocks access but doesn't remove files. Versioning keeps copies but doesn't remove the current malicious blob, and immutability prevents deletion."
+    },
+    {
+      "id": "sc-500.d2.q014",
+      "lesson": "sc-500.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the default monthly malware scanning cap per storage account in Defender for Storage?",
+      "options": [
+        "1,000 GB",
+        "5,000 GB",
+        "Unlimited",
+        "10,000 GB"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The default cap is 10,000 GB scanned per storage account per month. It can be changed at subscription or account level, and alerts fire at 75% and when scanning pauses. It isn't unlimited by default."
+    },
+    {
+      "id": "sc-500.d2.q015",
+      "lesson": "sc-500.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Malware scan results are sent to a Log Analytics workspace. Complete the KQL query to list malicious files.",
+      "code": "____\n| where ScanResultType == \"Malicious\"\n| project TimeGenerated, StorageAccountName, ScannedObjectUri",
+      "options": [
+        "StorageBlobLogs",
+        "StorageMalwareScanningResults",
+        "SecurityAlert",
+        "AzureDiagnostics"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "StorageMalwareScanningResults holds every scan result with ScanResultType, StorageAccountName and ScannedObjectUri. StorageBlobLogs holds request logs, SecurityAlert holds alerts with a different schema, and AzureDiagnostics is the legacy shared table."
+    },
+    {
+      "id": "sc-500.d2.q016",
+      "lesson": "sc-500.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso's claims app stores customer uploads in a storage account with on-upload malware scanning. Within seconds of each scan, clean files must be copied to a processing container and malicious files moved to a quarantine account.",
+      "stem": "Which approach should you use?",
+      "options": [
+        "Send scan results to an Event Grid custom topic and trigger an Azure Function",
+        "Trigger a Logic App from Defender for Cloud security alerts",
+        "Query StorageMalwareScanningResults every hour with a scheduled job",
+        "Read the blob index tags with a nightly script"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Event Grid delivers every scan result, clean or malicious, in near real time, so a Function can route both. Security alerts only fire for malicious files, so they can't forward clean files. Hourly queries and nightly scripts miss the seconds-level requirement."
+    },
+    {
+      "id": "sc-500.d2.q017",
+      "lesson": "sc-500.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which type of shared access signature is signed with credentials obtained through Microsoft Entra ID?",
+      "options": [
+        "Account SAS",
+        "Service SAS",
+        "Ad hoc SAS",
+        "User delegation SAS"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A user delegation SAS is signed with a user delegation key requested with Entra credentials. Account and service SASs are signed with the account key. Ad hoc SAS describes a key-signed SAS that isn't linked to a stored access policy."
+    },
+    {
+      "id": "sc-500.d2.q018",
+      "lesson": "sc-500.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A partner holds several service SAS tokens that reference a stored access policy on a container. You must revoke them all without regenerating the account keys. What should you do?",
+      "options": [
+        "Revoke all user delegation keys for the account",
+        "Delete the stored access policy or set its expiry to a past time",
+        "Set the account's SAS expiration policy action to Block",
+        "Change the container's anonymous access level to Private"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Service SASs linked to a stored access policy become invalid when the policy is deleted, renamed or expired. Revoking user delegation keys affects only user delegation SASs. A SAS expiration policy only checks new requests against a maximum lifetime, and anonymous access level is unrelated to SAS."
+    },
+    {
+      "id": "sc-500.d2.q019",
+      "lesson": "sc-500.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about SAS and stored access policies, select Yes if true.",
+      "statements": [
+        {
+          "s": "A user delegation SAS can be associated with a stored access policy.",
+          "a": false
+        },
+        {
+          "s": "A blob container can have up to five stored access policies at the same time.",
+          "a": true
+        },
+        {
+          "s": "A user delegation SAS can be valid for at most seven days.",
+          "a": true
+        }
+      ],
+      "explain": "Stored access policies work only with service SAS. The limit is five policies per container, queue, table or share. The user delegation key, and therefore the SAS, is limited to seven days."
+    },
+    {
+      "id": "sc-500.d2.q020",
+      "lesson": "sc-500.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Security policy at Northwind says no SAS may be valid for more than 8 hours. Requests using longer-lived tokens must be refused, and the team wants a report of which accounts received such requests.",
+      "stem": "Which two actions should you take? Select TWO.",
+      "options": [
+        "Configure a SAS expiration policy of 8 hours with the action set to Log",
+        "Enable Defender for Storage activity monitoring",
+        "Create a stored access policy with an 8-hour expiry on every container",
+        "Send blob logs to Log Analytics and query StorageBlobLogs for SasExpiryStatus",
+        "Configure a SAS expiration policy of 8 hours with the action set to Block"
+      ],
+      "answer": [
+        3,
+        4
+      ],
+      "explain": "Block refuses out-of-policy SAS requests, and violations are recorded in the SasExpiryStatus field of StorageBlobLogs. Log only records violations without refusing them. Stored access policies only govern service SASs that reference them, and Defender doesn't enforce SAS lifetimes."
+    },
+    {
+      "id": "sc-500.d2.q021",
+      "lesson": "sc-500.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "All clients now use Microsoft Entra ID. Complete the Azure CLI command to block requests authorized with the account keys.",
+      "code": "az storage account update \\\n  --name contosodata \\\n  --resource-group rg-data \\\n  ____",
+      "options": [
+        "--allow-shared-key-access false",
+        "--https-only true",
+        "--allow-blob-public-access false",
+        "--default-action Deny"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "--allow-shared-key-access false sets AllowSharedKeyAccess so key-signed requests, account SAS and service SAS get 403. The other parameters control anonymous access, HTTPS enforcement and the network firewall."
+    },
+    {
+      "id": "sc-500.d2.q022",
+      "lesson": "sc-500.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "You plan to disable Shared Key authorization across storage accounts without breaking applications. Put the steps in order.",
+      "options": [
+        "Assign the policy Storage accounts should prevent shared key access in Audit mode",
+        "Identify clients using account keys or SAS with the Transactions metric or StorageBlobLogs",
+        "Migrate those clients to Microsoft Entra ID or user delegation SAS",
+        "Set AllowSharedKeyAccess to false on the accounts",
+        "Change the policy assignment effect from Audit to Deny"
+      ],
+      "explain": "Audit first to find non-compliant accounts, then find and migrate the clients that still use keys. Only then disable Shared Key, and finally switch the policy to Deny so new accounts can't re-enable it."
+    },
+    {
+      "id": "sc-500.d2.q023",
+      "lesson": "sc-500.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A user must read blobs in one container using Microsoft Entra ID and must not be able to manage the storage account or read its keys. Which role should you assign at the container scope?",
+      "options": [
+        "Reader",
+        "Storage Account Contributor",
+        "Storage Blob Delegator",
+        "Storage Blob Data Reader"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Storage Blob Data Reader grants data plane read access with Entra tokens. Reader is a control plane role that can't read blob data. Storage Account Contributor can list keys and manage the account. Storage Blob Delegator only allows getting a user delegation key."
+    },
+    {
+      "id": "sc-500.d2.q024",
+      "lesson": "sc-500.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the effect of enabling Allow Azure services and resources to access this server on an Azure SQL logical server?",
+      "options": [
+        "Only resources in your own subscription can connect",
+        "Connections from any Azure resource, including other customers' subscriptions, pass the firewall",
+        "Only Azure services on the trusted services list can connect with managed identities",
+        "Public network access is disabled and private endpoints are required"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The setting adds a 0.0.0.0 server rule that admits all traffic from Azure, including resources outside your subscription, which is why Microsoft calls it more permissive than most customers want. It isn't scoped to your subscription, isn't a trusted-services list, and doesn't disable public access."
+    },
+    {
+      "id": "sc-500.d2.q025",
+      "lesson": "sc-500.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You need an IP firewall rule that applies only to the SalesDB database, not other databases on the server. While connected to SalesDB, complete the T-SQL.",
+      "code": "EXECUTE ____\n    @name = N'BranchOffice',\n    @start_ip_address = '203.0.113.0',\n    @end_ip_address = '203.0.113.255';",
+      "options": [
+        "sp_set_firewall_rule",
+        "sp_set_database_firewall_rule",
+        "sp_add_firewall_rule",
+        "sp_set_db_network_rule"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "sp_set_database_firewall_rule creates a database-level rule, the only way to create one. sp_set_firewall_rule creates a server-level rule in master that covers every database. The other procedure names don't exist."
+    },
+    {
+      "id": "sc-500.d2.q026",
+      "lesson": "sc-500.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An administrator tries to add a server-level IP firewall rule to an Azure SQL logical server and receives an error that firewall rules can't be modified. What is the most likely cause?",
+      "options": [
+        "Public network access is set to Disable",
+        "Microsoft Entra-only authentication is enabled",
+        "The connection policy is set to Redirect",
+        "The minimum TLS version is set to 1.2"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "When public network access is disabled, only private endpoints are allowed and creating or editing IP or virtual network firewall rules is refused. Entra-only authentication, connection policy and TLS version don't block firewall rule changes."
+    },
+    {
+      "id": "sc-500.d2.q027",
+      "lesson": "sc-500.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A security engineer must be able to enable or disable Microsoft Entra-only authentication on Azure SQL servers without getting broad rights to manage the servers. Which built-in role should you assign?",
+      "options": [
+        "SQL Server Contributor",
+        "SQL DB Contributor",
+        "SQL Security Manager",
+        "Security Reader"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "SQL Security Manager includes the azureADOnlyAuthentications actions. SQL Server Contributor and SQL Managed Instance Contributor deliberately can't change this setting, for separation of duties. SQL DB Contributor manages databases, and Security Reader is read-only."
+    },
+    {
+      "id": "sc-500.d2.q028",
+      "lesson": "sc-500.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Entra-only authentication for Azure SQL, select Yes if true.",
+      "statements": [
+        {
+          "s": "Enabling it deletes the existing SQL authentication logins.",
+          "a": false
+        },
+        {
+          "s": "A Microsoft Entra admin must be set on the server before it can be enabled.",
+          "a": true
+        },
+        {
+          "s": "It is also supported on Azure SQL Managed Instance.",
+          "a": true
+        }
+      ],
+      "explain": "SQL logins remain but can't connect while the setting is on. Enabling fails if no Entra admin is configured. Managed Instance supports it too, with az sql mi ad-only-auth commands."
+    },
+    {
+      "id": "sc-500.d2.q029",
+      "lesson": "sc-500.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure CLI command that blocks SQL authentication on the logical server sql-prod.",
+      "code": "az sql server ____ enable \\\n  --resource-group rg-sql \\\n  --name sql-prod",
+      "options": [
+        "ad-admin",
+        "audit-policy",
+        "firewall-rule",
+        "ad-only-auth"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "az sql server ad-only-auth enable turns on Microsoft Entra-only authentication. ad-admin sets the Entra admin (a prerequisite), audit-policy configures auditing, and firewall-rule manages IP rules; none has an enable subcommand that blocks SQL logins."
+    },
+    {
+      "id": "sc-500.d2.q030",
+      "lesson": "sc-500.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "How is a newly created Azure SQL Database encrypted at rest by default?",
+      "options": [
+        "It isn't encrypted until you enable TDE",
+        "Always Encrypted with keys stored in Key Vault",
+        "TDE with a customer-managed key in Key Vault",
+        "Transparent data encryption with a service-managed key"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "New databases have TDE on by default with a service-managed TDE protector (AES-256). Customer-managed keys are optional. Always Encrypted is a separate column-level feature you configure yourself."
+    },
+    {
+      "id": "sc-500.d2.q031",
+      "lesson": "sc-500.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A health insurer stores national ID numbers in Azure SQL Database. Database administrators must not be able to see the plaintext values, but the claims application must still look up customers by exact national ID.",
+      "stem": "What should you implement for the national ID column?",
+      "options": [
+        "TDE with a customer-managed TDE protector",
+        "Always Encrypted with deterministic encryption",
+        "Always Encrypted with randomized encryption and no secure enclave",
+        "Dynamic data masking"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Always Encrypted keeps plaintext away from the engine and DBAs; deterministic encryption allows equality lookups. TDE only protects data at rest, so DBAs still see values. Randomized encryption without an enclave can't support lookups. Dynamic data masking can be bypassed by privileged users."
+    },
+    {
+      "id": "sc-500.d2.q032",
+      "lesson": "sc-500.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You will configure a customer-managed TDE protector for an Azure SQL logical server. Which three requirements must be met? Select THREE.",
+      "options": [
+        "The server's managed identity has get, wrapKey and unwrapKey permissions on the key",
+        "Always Encrypted is enabled on the database first",
+        "Soft delete and purge protection are enabled on the key vault",
+        "The key is an asymmetric RSA or RSA-HSM key",
+        "The key is a symmetric AES-256 key"
+      ],
+      "answer": [
+        0,
+        2,
+        3
+      ],
+      "explain": "TDE BYOK needs a vault with soft delete and purge protection, an asymmetric RSA key, and server identity permissions to get, wrap and unwrap. The TDE protector isn't a symmetric key, and Always Encrypted is unrelated."
+    },
+    {
+      "id": "sc-500.d2.q033",
+      "lesson": "sc-500.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Auditing is enabled on an Azure SQL logical server, and a database on that server also has its own database-level audit policy enabled. What happens?",
+      "options": [
+        "The database policy overrides the server policy for that database",
+        "The server policy overrides the database policy",
+        "Both audits run side by side, so the database is audited twice",
+        "Saving the database policy fails while server auditing is on"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "In Azure SQL Database the database audit exists side by side with the server audit, so both capture events. Neither overrides the other, and there is no conflict error. Usually you enable one level unless you need different destinations."
+    },
+    {
+      "id": "sc-500.d2.q034",
+      "lesson": "sc-500.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure SQL Database auditing, select Yes if true.",
+      "statements": [
+        {
+          "s": "A retention value of 0 for storage audit logs means unlimited retention.",
+          "a": true
+        },
+        {
+          "s": "Choosing Log Analytics as a destination creates a diagnostic setting with the SQLSecurityAuditEvents category.",
+          "a": true
+        },
+        {
+          "s": "Audit logs written to Azure Storage are stored as JSON files in block blobs.",
+          "a": false
+        }
+      ],
+      "explain": "Retention defaults to 0, meaning logs are kept indefinitely. Log Analytics and Event Hubs destinations work through a SQLSecurityAuditEvents diagnostic setting. Storage audit logs are .xel files in append blobs."
+    },
+    {
+      "id": "sc-500.d2.q035",
+      "lesson": "sc-500.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Server-level auditing for an Azure SQL server must write to a storage account that allows access only from selected networks and has Allow storage account key access disabled.",
+      "stem": "Which three actions should you take? Select THREE.",
+      "options": [
+        "Configure auditing to authenticate to storage with a managed identity",
+        "Assign the server's identity the Storage Blob Data Contributor role on the storage account",
+        "Create a stored access policy on the audit container",
+        "Configure auditing to use the storage access key",
+        "Allow trusted Microsoft services to access the storage account"
+      ],
+      "answer": [
+        0,
+        1,
+        4
+      ],
+      "explain": "With key access disabled, auditing must use managed identity, which needs Storage Blob Data Contributor, and the firewall must allow trusted Microsoft services. Storage keys are blocked, and stored access policies apply to service SAS, which auditing doesn't use."
+    },
+    {
+      "id": "sc-500.d2.q036",
+      "lesson": "sc-500.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are configuring auditing on Azure SQL Managed Instance to a blob container. Put the steps in order.",
+      "options": [
+        "CREATE CREDENTIAL named with the container URL, using a SAS as the secret",
+        "CREATE SERVER AUDIT ... TO URL pointing at the container",
+        "CREATE SERVER AUDIT SPECIFICATION with the required action groups",
+        "ALTER SERVER AUDIT ... WITH (STATE = ON)"
+      ],
+      "explain": "The audit needs a credential to write to the container, so create it first. Then define the audit and its target, then the specification that says what to capture, and finally turn the audit on."
+    },
+    {
+      "id": "sc-500.d2.q037",
+      "lesson": "sc-500.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A diagnostic setting on Azure SQL Managed Instance sends SQLSecurityAuditEvents to Log Analytics. Complete the T-SQL so that audit events use that path.",
+      "code": "CREATE SERVER AUDIT [SocAudit] TO ____;\nGO",
+      "options": [
+        "FILE",
+        "URL",
+        "EXTERNAL_MONITOR",
+        "APPLICATION_LOG"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "TO EXTERNAL_MONITOR sends audit events through diagnostic settings to Log Analytics or Event Hubs. TO URL writes to blob storage. FILE and APPLICATION_LOG are SQL Server audit targets that don't apply to this scenario."
+    },
+    {
+      "id": "sc-500.d2.q038",
+      "lesson": "sc-500.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Defender for Azure SQL capability reports misconfigurations such as excessive permissions and lets you approve a baseline of accepted results?",
+      "options": [
+        "SQL vulnerability assessment",
+        "Advanced Threat Protection",
+        "Data Discovery & Classification",
+        "Azure SQL auditing"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "SQL vulnerability assessment scans for misconfigurations and supports baselines. Advanced Threat Protection detects attacks such as SQL injection. Data Discovery & Classification labels sensitive columns, and auditing records events."
+    },
+    {
+      "id": "sc-500.d2.q039",
+      "lesson": "sc-500.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You want SQL vulnerability assessment on Azure SQL Database without creating or managing a storage account for scan results, and baselines should apply without a rescan. Which option should you use?",
+      "options": [
+        "Classic configuration with a storage account",
+        "Server-level auditing to Log Analytics",
+        "Express configuration",
+        "Microsoft Purview data map scanning"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Express configuration stores results in Defender for Cloud-managed storage and applies baselines without rescanning. Classic configuration needs your own storage account and a rescan. Auditing and Purview scanning don't perform vulnerability assessment."
+    },
+    {
+      "id": "sc-500.d2.q040",
+      "lesson": "sc-500.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which three plan components are turned on when you set the Databases plan to On in Defender for Cloud? Select THREE.",
+      "options": [
+        "Defender for Key Vault",
+        "Defender for Azure SQL Databases",
+        "Defender for Storage",
+        "Defender for Open-Source Relational Databases",
+        "Defender for Azure Cosmos DB"
+      ],
+      "answer": [
+        1,
+        3,
+        4
+      ],
+      "explain": "The Databases plan covers Azure SQL Databases, SQL Servers on Machines, Open-Source Relational Databases and Azure Cosmos DB. Defender for Storage and Defender for Key Vault are separate Defender for Cloud plans."
+    }
+  ]
+}

@@ -1,0 +1,304 @@
+{
+  "id": "sc-900",
+  "name": "Microsoft Security, Compliance, and Identity Fundamentals",
+  "code": "SC-900",
+  "issuer": "Microsoft",
+  "outlineVersion": "Skills measured as of October 21, 2026",
+  "sourceUrl": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/sc-900",
+  "exam": {
+    "minutes": 45,
+    "passMark": "700/1000",
+    "questionCount": "40-60",
+    "notes": "45 minutes per the certification page; proctored, may include interactive components. Question count is not officially published (40-60 is the commonly reported range). Fundamentals certification does not expire. English updated Oct 21, 2026; localized versions follow ~8 weeks later."
+  },
+  "domains": [
+    {
+      "id": "d1",
+      "name": "Describe the concepts of security, compliance, and identity",
+      "weight": "10-15%",
+      "objectives": [
+        {
+          "id": "d1.1",
+          "name": "Describe security and compliance concepts",
+          "bullets": [
+            "Shared responsibility model",
+            "Defense-in-depth",
+            "Zero Trust model",
+            "Encryption and hashing",
+            "Governance, Risk, and Compliance (GRC) concepts"
+          ]
+        },
+        {
+          "id": "d1.2",
+          "name": "Define identity concepts",
+          "bullets": [
+            "Identity as the primary security perimeter",
+            "Authentication",
+            "Authorization",
+            "Identity providers",
+            "Directory services and Active Directory",
+            "Federation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "name": "Describe the capabilities of Microsoft Entra",
+      "weight": "25-30%",
+      "objectives": [
+        {
+          "id": "d2.1",
+          "name": "Describe function and identity types of Microsoft Entra ID",
+          "bullets": [
+            "Microsoft Entra ID",
+            "Identity types, including workload identities",
+            "Hybrid identity"
+          ]
+        },
+        {
+          "id": "d2.2",
+          "name": "Describe authentication capabilities of Microsoft Entra ID",
+          "bullets": [
+            "Authentication methods",
+            "Multifactor authentication (MFA)",
+            "Password protection and management capabilities"
+          ]
+        },
+        {
+          "id": "d2.3",
+          "name": "Describe access management capabilities of Microsoft Entra ID",
+          "bullets": [
+            "Microsoft Entra Conditional Access",
+            "Microsoft Entra roles and role-based access control (RBAC)"
+          ]
+        },
+        {
+          "id": "d2.4",
+          "name": "Describe identity protection and governance capabilities of Microsoft Entra",
+          "bullets": [
+            "Microsoft Entra ID Governance",
+            "Access reviews",
+            "Microsoft Entra Privileged Identity Management (PIM)",
+            "Microsoft Entra ID Protection"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "name": "Describe the capabilities of Microsoft security solutions",
+      "weight": "35-40%",
+      "objectives": [
+        {
+          "id": "d3.1",
+          "name": "Describe core infrastructure security services in Azure",
+          "bullets": [
+            "Azure DDoS Protection",
+            "Azure Firewall",
+            "Azure Web Application Firewall (WAF)",
+            "Network segmentation with Azure virtual networks",
+            "Network security groups (NSGs)",
+            "Azure Bastion",
+            "Azure Key Vault"
+          ]
+        },
+        {
+          "id": "d3.2",
+          "name": "Describe security management capabilities of Azure",
+          "bullets": [
+            "Microsoft Defender for Cloud",
+            "Cloud Security Posture Management (CSPM)",
+            "How security policies, standards, and recommendations improve cloud security posture",
+            "Enhanced security features of cloud workload protection"
+          ]
+        },
+        {
+          "id": "d3.3",
+          "name": "Describe capabilities of Microsoft Sentinel",
+          "bullets": [
+            "SIEM and SOAR concepts",
+            "Threat detection and mitigation in Microsoft Sentinel"
+          ]
+        },
+        {
+          "id": "d3.4",
+          "name": "Describe threat protection with Microsoft Defender XDR",
+          "bullets": [
+            "Microsoft Defender XDR services",
+            "Microsoft Defender for Office 365",
+            "Microsoft Defender for Endpoint",
+            "Microsoft Defender for Cloud Apps",
+            "Microsoft Defender for Identity",
+            "Microsoft Defender Vulnerability Management",
+            "Microsoft Threat Intelligence",
+            "Microsoft Defender portal"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d4",
+      "name": "Describe the capabilities of Microsoft compliance solutions",
+      "weight": "20-25%",
+      "objectives": [
+        {
+          "id": "d4.1",
+          "name": "Describe Microsoft Service Trust Portal and privacy principles",
+          "bullets": [
+            "Service Trust Portal offerings",
+            "Microsoft privacy principles"
+          ]
+        },
+        {
+          "id": "d4.2",
+          "name": "Describe compliance management capabilities of Microsoft Purview",
+          "bullets": [
+            "Microsoft Purview portal",
+            "Compliance Manager",
+            "Uses and benefits of compliance score"
+          ]
+        },
+        {
+          "id": "d4.3",
+          "name": "Describe information protection, data lifecycle management, and data governance capabilities of Microsoft Purview",
+          "bullets": [
+            "Data classification capabilities",
+            "Benefits of Content explorer and Activity explorer",
+            "Sensitivity labels and sensitivity label policies",
+            "Data loss prevention (DLP)",
+            "Records management",
+            "Retention policies, retention labels, and retention label policies"
+          ]
+        },
+        {
+          "id": "d4.4",
+          "name": "Describe insider risk, eDiscovery, and audit capabilities in Microsoft Purview",
+          "bullets": [
+            "Insider risk management",
+            "eDiscovery solutions in Microsoft Purview",
+            "Audit solutions in Microsoft Purview"
+          ]
+        }
+      ]
+    }
+  ],
+  "keyTerms": [
+    "Zero Trust",
+    "Shared responsibility model",
+    "Defense-in-depth",
+    "Encryption",
+    "Hashing",
+    "Symmetric encryption",
+    "Asymmetric encryption",
+    "GRC",
+    "Data residency",
+    "Data sovereignty",
+    "Authentication",
+    "Authorization",
+    "Identity provider (IdP)",
+    "Active Directory Domain Services (AD DS)",
+    "Federation",
+    "Single sign-on (SSO)",
+    "Modern authentication",
+    "Microsoft Entra ID",
+    "Workload identities",
+    "Service principal",
+    "Managed identity",
+    "Hybrid identity",
+    "Microsoft Entra Connect Sync",
+    "Microsoft Entra Cloud Sync",
+    "Password hash synchronization",
+    "Pass-through authentication",
+    "B2B collaboration",
+    "External ID",
+    "Multifactor authentication (MFA)",
+    "Microsoft Authenticator",
+    "Windows Hello for Business",
+    "FIDO2 / passkeys",
+    "Certificate-based authentication",
+    "Self-service password reset (SSPR)",
+    "Microsoft Entra Password Protection",
+    "Global banned password list",
+    "Smart lockout",
+    "Conditional Access",
+    "Signals, decisions, enforcement",
+    "Role-based access control (RBAC)",
+    "Microsoft Entra built-in roles",
+    "Custom roles",
+    "Least privilege",
+    "Microsoft Entra ID Governance",
+    "Identity lifecycle",
+    "Entitlement management",
+    "Access packages",
+    "Access reviews",
+    "Privileged Identity Management (PIM)",
+    "Just-in-time access",
+    "Microsoft Entra ID Protection",
+    "User risk",
+    "Sign-in risk",
+    "Azure DDoS Protection",
+    "Azure Firewall",
+    "Web Application Firewall (WAF)",
+    "Azure Virtual Network",
+    "Network security group (NSG)",
+    "Azure Bastion",
+    "Azure Key Vault",
+    "Microsoft Defender for Cloud",
+    "Cloud Security Posture Management (CSPM)",
+    "Secure score",
+    "Microsoft cloud security benchmark",
+    "Cloud workload protection (CWPP)",
+    "Microsoft Sentinel",
+    "SIEM",
+    "SOAR",
+    "Data connectors",
+    "Workbooks",
+    "Analytics rules",
+    "Playbooks",
+    "Logic Apps",
+    "Incidents",
+    "Threat hunting",
+    "KQL",
+    "Microsoft Defender XDR",
+    "Microsoft Defender for Office 365",
+    "Safe Links",
+    "Safe Attachments",
+    "Microsoft Defender for Endpoint",
+    "Attack surface reduction",
+    "EDR",
+    "Microsoft Defender for Cloud Apps",
+    "CASB",
+    "Shadow IT / Cloud Discovery",
+    "Microsoft Defender for Identity",
+    "Microsoft Defender Vulnerability Management",
+    "Microsoft Defender Threat Intelligence",
+    "Microsoft Defender portal",
+    "Microsoft Security Copilot",
+    "Service Trust Portal",
+    "Microsoft privacy principles",
+    "Microsoft Purview",
+    "Microsoft Purview portal",
+    "Compliance Manager",
+    "Compliance score",
+    "Improvement actions",
+    "Sensitive information types",
+    "Trainable classifiers",
+    "Content explorer",
+    "Activity explorer",
+    "Sensitivity labels",
+    "Label policies",
+    "Data loss prevention (DLP)",
+    "Endpoint DLP",
+    "Records management",
+    "Retention policies",
+    "Retention labels",
+    "Insider risk management",
+    "Communication compliance",
+    "eDiscovery",
+    "Audit (Standard / Premium)",
+    "Data Map / Data Catalog"
+  ],
+  "status": "verified",
+  "caveats": "Outline refreshed Oct 21, 2026 (today). Change log rates only 'Describe function and identity types of Microsoft Entra ID' and 'Describe threat protection with Microsoft Defender XDR' as Minor changes; specific bullet changes are not itemized. No retirement announced. Question count unofficial."
+}

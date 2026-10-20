@@ -1,0 +1,831 @@
+{
+ "exam": "thm-ai1",
+ "domain": "d1",
+ "lessons": [],
+ "questions": [
+  {
+   "id": "thm-ai1.d1.q046",
+   "lesson": "thm-ai1.d1.2.01",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "A modeller is justifying scores for the AI1 15-threat scenario. For each statement, select Yes if it is sound scoring practice.",
+   "statements": [
+    {
+     "s": "Use the same scale and criteria for all 15 threats so scores are comparable",
+     "a": true
+    },
+    {
+     "s": "State the reasoning behind each likelihood and impact score",
+     "a": true
+    },
+    {
+     "s": "Rank every threat purely by impact and ignore likelihood",
+     "a": false
+    }
+   ],
+   "explain": "Consistent scales and written justification make the ranking defensible to a grader. Ranking by impact alone ignores exploitability and distorts the order."
+  },
+  {
+   "id": "thm-ai1.d1.q047",
+   "lesson": "thm-ai1.d1.2.01",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO considerations legitimately RAISE a threat's impact score? (Select TWO)",
+   "options": [
+    "The compromised component holds long-lived cloud credentials",
+    "A successful attack can destroy or exfiltrate production data",
+    "The attack needs a rare zero-day",
+    "The attacker must already be a domain admin"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "Impact is about damage/blast radius: reachable credentials and data destruction/exfiltration both raise it. Needing a zero-day or pre-existing admin access affects likelihood, not impact."
+  },
+  {
+   "id": "thm-ai1.d1.q048",
+   "lesson": "thm-ai1.d1.2.02",
+   "objective": "d1.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "After scoring 15 threats, what does the AI1 scenario ask you to produce?",
+   "options": [
+    "A fix for all 15 at once",
+    "A list of the top 5 highest-risk threats",
+    "A CVSS vector for each",
+    "A single combined risk number"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "AI1 asks you to prioritise and single out the five highest risks. Fixing all 15 at once ignores prioritisation; CVSS vectors and a single combined number are not what the scenario requests."
+  },
+  {
+   "id": "thm-ai1.d1.q049",
+   "lesson": "thm-ai1.d1.2.02",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Two threats tie on risk score. Which is the soundest tie-breaker to rank one higher?",
+   "options": [
+    "The one with the longer description",
+    "The one discovered first",
+    "The one whose exploitation chains into other threats (e.g. injection reaching a shell tool)",
+    "The one that is hardest to explain"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Chaining potential, blast radius and exploitability are valid tie-breakers; a threat that unlocks others is effectively higher risk. Description length, discovery order and explainability are not risk factors."
+  },
+  {
+   "id": "thm-ai1.d1.q050",
+   "lesson": "thm-ai1.d1.2.02",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "A modeller fills the top 5 with low-impact findings that are easy to describe, leaving a quietly exploitable injection into a privileged agent at #7. What bias is this?",
+   "options": [
+    "Confirmation bias about the model vendor",
+    "Novelty bias toward exotic attacks",
+    "Correct prioritisation",
+    "Completeness/ease bias — ranking by convenience instead of actual risk"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Choosing findings because they are easy to write up rather than by risk mis-ranks the vital few. The privileged-agent injection is higher risk and belongs in the top 5. It is not novelty bias (the opposite) nor correct."
+  },
+  {
+   "id": "thm-ai1.d1.q051",
+   "lesson": "thm-ai1.d1.2.02",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which of these is MOST likely to be a legitimate #1 risk in a tool-using AI agent?",
+   "options": [
+    "A cosmetic typo in the chatbot's greeting",
+    "The model occasionally using British spelling",
+    "Indirect prompt injection that reaches a powerful tool and exfiltrates data (LLM01 + LLM06)",
+    "A slightly slow response time"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "An unauthenticated, remote injection that chains into a privileged tool and leaks data is a classic top risk. Cosmetic, stylistic and minor-latency issues carry negligible impact."
+  },
+  {
+   "id": "thm-ai1.d1.q052",
+   "lesson": "thm-ai1.d1.2.02",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Put the risk-prioritisation workflow steps in order.",
+   "options": [
+    "Enumerate and score each threat's likelihood and impact",
+    "Multiply to get a risk value for every threat",
+    "Sort all threats by risk, highest first",
+    "Select the top 5 and break ties with blast radius and chaining",
+    "Write a one-line justification for each prioritised threat"
+   ],
+   "explain": "You score each threat, compute risk, sort, select the top five (resolving ties with secondary factors), then justify the picks so the ranking is defensible."
+  },
+  {
+   "id": "thm-ai1.d1.q053",
+   "lesson": "thm-ai1.d1.2.02",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each tie-break or promotion decision, select Yes if it is a sound reason to rank a threat higher.",
+   "statements": [
+    {
+     "s": "It is unauthenticated and remotely exploitable",
+     "a": true
+    },
+    {
+     "s": "A cheap fix removes a high-impact risk, so it is worth prioritising",
+     "a": true
+    },
+    {
+     "s": "It uses the most unusual, headline-grabbing attack technique",
+     "a": false
+    }
+   ],
+   "explain": "Unauthenticated remote reach and cheap high-value fixes are legitimate reasons to prioritise. Choosing by how exotic or headline-grabbing the technique is (novelty bias) is not sound."
+  },
+  {
+   "id": "thm-ai1.d1.q054",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What makes a mitigation plan strong in the AI-graded deliverable?",
+   "options": [
+    "It says 'add more security' for every threat",
+    "It recommends turning the system off",
+    "It lists every OWASP risk regardless of relevance",
+    "It names the specific control, explains how it reduces that threat, and notes the residual risk"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Graders reward specificity: the named control, its mechanism against the specific threat, and honest residual risk. Vague advice, irrelevant lists, or 'turn it off' do not constitute a plan."
+  },
+  {
+   "id": "thm-ai1.d1.q055",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "For an indirect prompt injection reaching a 'send_email' tool, which mitigation most directly reduces the risk?",
+   "options": [
+    "Require human-in-the-loop approval before the email is sent and scope the tool to drafts",
+    "Increase the model's context window",
+    "Switch to a larger model",
+    "Add more training data"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Human approval plus narrowing the tool to drafts stops injected instructions from auto-sending data (AML.M0029, least privilege). Bigger context, a larger model or more data do not address the excessive-agency path."
+  },
+  {
+   "id": "thm-ai1.d1.q056",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which control most directly mitigates LLM05 Improper Output Handling?",
+   "options": [
+    "Rate-limiting the API",
+    "Validating and encoding model output before it reaches a shell, SQL query or browser",
+    "Signing the model weights",
+    "Fingerprint obfuscation"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Improper output handling is fixed by validating/encoding output at the boundary into downstream systems. Rate limiting addresses consumption, weight signing addresses supply chain, and obfuscation addresses recon."
+  },
+  {
+   "id": "thm-ai1.d1.q057",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "A system must let an LLM act on untrusted web content without that content hijacking privileged tools. Which pattern best fits?",
+   "options": [
+    "The dual-LLM pattern: a quarantined LLM handles untrusted data while a privileged LLM, which never sees it raw, takes actions",
+    "Give the single LLM all tools and trust its judgement",
+    "Disable logging to reduce overhead",
+    "Return model logits to the user for transparency"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "The dual-LLM pattern isolates untrusted data from the privileged action path, limiting injection reach. Giving one LLM everything maximises blast radius; disabling logging and exposing logits worsen security."
+  },
+  {
+   "id": "thm-ai1.d1.q058",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which mitigation best addresses LLM10 Unbounded Consumption / denial of wallet?",
+   "options": [
+    "Encrypting the system prompt",
+    "Per-user and per-request rate, quota and token/step caps",
+    "Adding more plugins",
+    "Removing the audit log"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Limiting request rate, quotas, token counts and loop/step counts (AML.M0004, AML.M0036) bounds consumption. Prompt encryption, more plugins and removing logs do not cap resource use."
+  },
+  {
+   "id": "thm-ai1.d1.q059",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "multi",
+   "case": null,
+   "stem": "A RAG assistant indexes a publicly editable wiki. Which TWO controls most directly reduce RAG/corpus poisoning risk? (Select TWO)",
+   "options": [
+    "Ingestion-pipeline controls that vet and scan content before indexing",
+    "Document-level RBAC and provenance so only trusted sources are retrievable",
+    "Increasing the embedding dimension",
+    "Letting the model auto-approve its own tool calls"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "Vetting content at ingestion and enforcing source provenance/RBAC keep poisoned documents out of retrieval. Embedding dimensionality does not address poisoning, and auto-approving tool calls increases risk."
+  },
+  {
+   "id": "thm-ai1.d1.q060",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each threat-to-control mapping in a mitigation plan, select Yes if it is appropriate.",
+   "statements": [
+    {
+     "s": "LLM06 Excessive Agency → least privilege for tools and scoped, short-lived credentials",
+     "a": true
+    },
+    {
+     "s": "LLM07 System Prompt Leakage → never store secrets in the system prompt and filter outputs",
+     "a": true
+    },
+    {
+     "s": "LLM01 Prompt Injection → simply tell users not to paste malicious text",
+     "a": false
+    }
+   ],
+   "explain": "Least privilege fits excessive agency and secret-free prompts plus output filtering fit prompt leakage. Relying on users not to paste malicious text does nothing against indirect injection and automated flows."
+  },
+  {
+   "id": "thm-ai1.d1.q061",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "A tool manifest grants an email agent broad scope. Apply least privilege by completing the permission so injected instructions cannot send mail autonomously.",
+   "code": "tool: send_email\npermissions:\n  scope: ____\n  requires_human_approval: true",
+   "options": [
+    "\"admin\"",
+    "\"full_send\"",
+    "\"drafts_only\"",
+    "\"unrestricted\""
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Scoping the tool to drafts_only (with human approval) means an injection can at most create a draft, not send data out. full_send, admin and unrestricted all leave the excessive-agency path open."
+  },
+  {
+   "id": "thm-ai1.d1.q062",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the Python output-handling guard so model output is validated before being executed as a shell command (mitigating LLM05).",
+   "code": "cmd = llm_response.strip()\nif cmd not in ALLOWED_COMMANDS:\n    ____\nsubprocess.run(cmd, shell=False)",
+   "options": [
+    "print(cmd)",
+    "pass",
+    "subprocess.run(cmd, shell=True)",
+    "raise ValueError(\"command not allow-listed\")"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Rejecting any command not on an allow-list before execution enforces output validation. 'pass' and 'print' let it through; re-running with shell=True makes it worse by invoking a shell."
+  },
+  {
+   "id": "thm-ai1.d1.q063",
+   "lesson": "thm-ai1.d1.2.04",
+   "objective": "d1.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is model fingerprinting?",
+   "options": [
+    "Encrypting the model weights at rest",
+    "Signing a model with Sigstore",
+    "Identifying which model/version is behind an endpoint from its behaviour or leaked outputs",
+    "Measuring the model's accuracy"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Fingerprinting determines the model family/version (AML.T0014) so attackers can reuse known attacks. Encryption, signing and accuracy measurement are unrelated activities."
+  },
+  {
+   "id": "thm-ai1.d1.q064",
+   "lesson": "thm-ai1.d1.2.04",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Under which MITRE ATLAS tactic does model fingerprinting fall?",
+   "options": [
+    "Impact (AML.TA0011)",
+    "Persistence (AML.TA0006)",
+    "Exfiltration (AML.TA0010)",
+    "Reconnaissance (AML.TA0002)"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Fingerprinting is information gathering before an attack, so it is Reconnaissance (AML.TA0002). It is not the damage phase, data theft, or maintaining access."
+  },
+  {
+   "id": "thm-ai1.d1.q065",
+   "lesson": "thm-ai1.d1.2.04",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which signal would MOST help an attacker fingerprint the model behind an API?",
+   "options": [
+    "Distinctive refusal wording, tokenisation quirks and class scores/logits in responses",
+    "The API's TLS cipher suite",
+    "The colour scheme of the web UI",
+    "The server's time zone"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Behavioural tells (refusal style, tokenisation, exposed logits/class scores) reveal the model family. TLS ciphers, UI colours and server time zone do not identify the model."
+  },
+  {
+   "id": "thm-ai1.d1.q066",
+   "lesson": "thm-ai1.d1.2.04",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS mitigation most directly raises the cost of fingerprinting and model extraction?",
+   "options": [
+    "AML.M0029 Human-in-the-loop for agent actions",
+    "AML.M0002 Passive AI Output Obfuscation (return minimal info, hide logits/scores)",
+    "Limiting workload resource consumption",
+    "AML.M0013 Code Signing"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Output obfuscation (AML.M0002) reduces the information returned, making model discovery and extraction harder. Human-in-the-loop, resource limits and code signing address different threats."
+  },
+  {
+   "id": "thm-ai1.d1.q067",
+   "lesson": "thm-ai1.d1.2.04",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "An exam option offers 'model extraction (AML.T0024.002)' for a scenario where the tester only identifies the model family by its refusal style. Why is that the WRONG label?",
+   "options": [
+    "Extraction steals a functional copy of the model, whereas identifying the family is only fingerprinting/discovery",
+    "Extraction and fingerprinting are identical",
+    "Fingerprinting is an Impact technique",
+    "Refusal style cannot reveal anything"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Model extraction builds a working clone by mass-querying; merely identifying the family is Discover AI Model Family (fingerprinting). They are distinct, and fingerprinting is Reconnaissance/Discovery, not Impact."
+  },
+  {
+   "id": "thm-ai1.d1.q068",
+   "lesson": "thm-ai1.d1.2.04",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about AI reconnaissance, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "Knowing the model family lets an attacker reuse known jailbreaks and adversarial suffixes",
+     "a": true
+    },
+    {
+     "s": "Forcing the model to enumerate its output classes is Discover AI Model Ontology (AML.T0013)",
+     "a": true
+    },
+    {
+     "s": "Fingerprinting always requires access to the raw model weights",
+     "a": false
+    }
+   ],
+   "explain": "Model-family knowledge enables tailored attacks, and ontology discovery is AML.T0013. Fingerprinting is typically black-box via the inference API and does not require the weights."
+  },
+  {
+   "id": "thm-ai1.d1.q069",
+   "lesson": "thm-ai1.d1.2.05",
+   "objective": "d1.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is API endpoint enumeration in AI reconnaissance?",
+   "options": [
+    "Counting the tokens in a prompt",
+    "Finding hidden or undocumented AI endpoints/resources by fuzzing predictable URLs or querying metadata APIs",
+    "Measuring API latency",
+    "Encrypting API traffic"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Endpoint enumeration (Active Scanning, AML.T0006) discovers live endpoints and hosted resources by probing predictable namespaces or metadata APIs. Token counting, latency and encryption are not enumeration."
+  },
+  {
+   "id": "thm-ai1.d1.q071",
+   "lesson": "thm-ai1.d1.2.05",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Discovering an agent's tool definitions, activation triggers and call chains maps to which ATLAS technique?",
+   "options": [
+    "AML.T0024 Exfiltration via Inference API",
+    "AML.T0056 Extract LLM System Prompt",
+    "AML.T0070 RAG Poisoning",
+    "AML.T0084 Discover AI Agent Configuration"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Revealing an agent's configuration (tool definitions, triggers, call chains) is AML.T0084. System-prompt extraction, RAG poisoning and inference-API exfiltration are different techniques."
+  },
+  {
+   "id": "thm-ai1.d1.q072",
+   "lesson": "thm-ai1.d1.2.05",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Endpoint enumeration and metadata extraction are reconnaissance/discovery. Which option is the FOLLOW-ON exploitation step, not the scanning itself?",
+   "options": [
+    "Enumerate Hosted AI Resources (AML.T0006)",
+    "Scan for Exposed AI Infrastructure (AML.T0006)",
+    "Exploit Public-Facing Application (AML.T0049) against a discovered endpoint",
+    "Query Platform Metadata APIs (AML.T0006)"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Exploiting a discovered endpoint (AML.T0049) is Initial Access, the step after reconnaissance. The other three are all Active Scanning sub-techniques, i.e. the enumeration itself."
+  },
+  {
+   "id": "thm-ai1.d1.q073",
+   "lesson": "thm-ai1.d1.2.05",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which control best reduces the risk of metadata extraction and endpoint enumeration?",
+   "options": [
+    "Use predictable, guessable resource names for convenience",
+    "Disable rate limiting",
+    "Return verbose tool definitions to any caller",
+    "Authenticate and authorise all endpoints and metadata APIs, and remove publicly exposed resources"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Authentication/authorisation on every endpoint and metadata API, plus removing exposed resources (addresses AML.T0132), limits enumeration. Predictable names, verbose config exposure and no rate limiting all help the attacker."
+  },
+  {
+   "id": "thm-ai1.d1.q075",
+   "lesson": "thm-ai1.d1.2.05",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each reconnaissance statement, select Yes if it is accurate.",
+   "statements": [
+    {
+     "s": "Agentic platforms often host agents behind predictable URL patterns an attacker can fuzz",
+     "a": true
+    },
+    {
+     "s": "Unauthenticated inference servers and vector DBs can be found by scanning for exposed AI infrastructure",
+     "a": true
+    },
+    {
+     "s": "Metadata extraction is classified under the Impact tactic",
+     "a": false
+    }
+   ],
+   "explain": "Predictable namespaces and exposed infrastructure are real enumeration paths. Metadata extraction is Reconnaissance/Discovery, not Impact."
+  },
+  {
+   "id": "thm-ai1.d1.q076",
+   "lesson": "thm-ai1.d1.2.01",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "In a 5x5 risk matrix, a threat scored likelihood 4 and impact 5 falls into which band compared with one scored likelihood 2 and impact 2?",
+   "options": [
+    "Higher (20 vs 4)",
+    "Equal",
+    "Lower (8 vs 20)",
+    "Cannot be compared"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "4x5 = 20 versus 2x2 = 4, so the first threat is higher and should rank above the second. The scores are directly comparable on the same matrix."
+  },
+  {
+   "id": "thm-ai1.d1.q077",
+   "lesson": "thm-ai1.d1.1.04",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which statement best captures why an agent's tools must be enumerated during component analysis?",
+   "options": [
+    "Tools change the model's licence tier",
+    "Each tool is both a new input channel (its results) and a new action/output path, expanding the attack surface",
+    "Tools reduce the number of trust boundaries",
+    "Tools make the system prompt unnecessary"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Enumerating tools captures the expanded attack surface: results flow back in and actions flow out. Tools do not change licensing, remove trust boundaries, or replace the system prompt."
+  },
+  {
+   "id": "thm-ai1.d1.q078",
+   "lesson": "thm-ai1.d1.1.03",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which STRIDE category maps to spoofing a legitimate agent or serving the model from a look-alike endpoint?",
+   "options": [
+    "Spoofing",
+    "Repudiation",
+    "Denial of service",
+    "Tampering"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Impersonating an identity or endpoint is Spoofing. Repudiation is lack of traceability, DoS is exhaustion, and Tampering is altering data or behaviour."
+  },
+  {
+   "id": "thm-ai1.d1.q079",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Put the mitigation-plan writing steps in the order AI1 expects.",
+   "options": [
+    "Name the threat with its OWASP LLM / ATLAS IDs",
+    "Choose the specific control(s) that reduce it",
+    "Explain the mechanism by which the control works",
+    "State the residual risk that remains after the control"
+   ],
+   "explain": "A gradeable plan identifies the threat precisely, selects a matching control, explains how it works, and is honest about leftover risk."
+  },
+  {
+   "id": "thm-ai1.d1.q080",
+   "lesson": "thm-ai1.d1.1.02",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Order the threat-modelling steps for an AI architecture, from first to last.",
+   "options": [
+    "Enumerate every component",
+    "Draw data flows and mark trust boundaries",
+    "Apply STRIDE per component to find threats",
+    "Map each threat to OWASP LLM / ATLAS names"
+   ],
+   "explain": "You inventory components, draw flows and boundaries, enumerate threats with STRIDE, then label them with OWASP and ATLAS identifiers."
+  },
+  {
+   "id": "thm-ai1.d1.q081",
+   "lesson": "thm-ai1.d1.2.05",
+   "objective": "d1.2",
+   "difficulty": 3,
+   "type": "order",
+   "case": null,
+   "stem": "Order the attacker's AI reconnaissance actions, from earliest to latest in the chain.",
+   "options": [
+    "Scan for exposed AI infrastructure and endpoints",
+    "Fingerprint the model family behind an endpoint",
+    "Extract agent configuration and tool definitions",
+    "Craft a tailored injection using what was learned"
+   ],
+   "explain": "Recon moves from finding endpoints, to identifying the model, to reading the agent's config, to building a targeted attack from that knowledge."
+  },
+  {
+   "id": "thm-ai1.d1.q082",
+   "lesson": "thm-ai1.d1.1.04",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Order these from smallest to largest blast radius for the same prompt injection.",
+   "options": [
+    "Chat-only assistant with no tools",
+    "Assistant with a read-only web-search tool",
+    "Agent that can write to a customer database",
+    "Agent with a shell tool and long-lived cloud credentials"
+   ],
+   "explain": "Blast radius grows as the compromised model can reach more powerful actions: no tools, then read-only, then data write, then full shell plus credentials."
+  },
+  {
+   "id": "thm-ai1.d1.q083",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the agent config so tool calls triggered by untrusted retrieved data are blocked (mitigating indirect injection, AML.M0030).",
+   "code": "policy:\n  on_untrusted_context:\n    tool_invocation: ____",
+   "options": [
+    "\"allow\"",
+    "\"deny\"",
+    "\"auto\"",
+    "\"inherit\""
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Denying tool invocation when untrusted data is in context (AML.M0030) stops indirect injection from driving tools. allow, auto and inherit all leave the path open."
+  },
+  {
+   "id": "thm-ai1.d1.q084",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the system prompt guard so secrets are not placed where LLM07 System Prompt Leakage could expose them.",
+   "code": "system_prompt: \"You are a support bot.\"\napi_key_source: ____   # not in the prompt",
+   "options": [
+    "\"hardcoded_here\"",
+    "\"inline_in_prompt\"",
+    "\"secrets_manager\"",
+    "\"append_to_system_prompt\""
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Loading the key from a secrets manager keeps it out of the prompt, so prompt leakage cannot reveal it. The other options embed the secret in the prompt, exactly what LLM07 warns against."
+  },
+  {
+   "id": "thm-ai1.d1.q085",
+   "lesson": "thm-ai1.d1.2.01",
+   "objective": "d1.2",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the risk formula used to rank the 15 threats.",
+   "code": "risk = likelihood ____ impact",
+   "options": [
+    "==",
+    "-",
+    "/",
+    "*"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Risk is likelihood multiplied by impact, giving a comparable score (e.g. 1-25 on a 5x5 grid). Subtraction, division and equality are not the risk formula."
+  },
+  {
+   "id": "thm-ai1.d1.q086",
+   "lesson": "thm-ai1.d1.2.05",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the deployment rule that reduces endpoint enumeration by not exposing resources unauthenticated (addresses AML.T0132).",
+   "code": "endpoint: /agents/{id}\nauthentication: ____\npublic: false",
+   "options": [
+    "\"optional\"",
+    "\"none\"",
+    "\"required\"",
+    "\"disabled\""
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Requiring authentication on every endpoint stops unauthenticated enumeration and metadata extraction. none, optional and disabled leave the agent reachable to anonymous scanners."
+  },
+  {
+   "id": "thm-ai1.d1.q087",
+   "lesson": "thm-ai1.d1.1.07",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "An injected RAG document makes an agent email customer data to an attacker. Which TWO ATLAS techniques are in the chain? (Select TWO)",
+   "options": [
+    "AML.T0070 RAG Poisoning",
+    "AML.T0086 Exfiltration via AI Agent Tool Invocation",
+    "AML.T0014 Discover AI Model Family",
+    "AML.T0046 Spamming AI System with Chaff Data"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "Seeding the corpus is RAG Poisoning (AML.T0070); the email tool sending data out is Exfiltration via AI Agent Tool Invocation (AML.T0086). Model-family discovery and chaff spamming are not part of this chain."
+  },
+  {
+   "id": "thm-ai1.d1.q088",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO controls specifically reduce LLM01 Prompt Injection reaching actions? (Select TWO)",
+   "options": [
+    "The dual-LLM pattern isolating untrusted data from the privileged action path",
+    "Restricting tool invocation when untrusted data is in context (AML.M0030)",
+    "Returning model logits to users",
+    "Using predictable endpoint URLs"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "The dual-LLM pattern and restricting tool use on untrusted context both cut the injection-to-action path. Exposing logits aids recon, and predictable URLs aid enumeration; neither mitigates injection."
+  },
+  {
+   "id": "thm-ai1.d1.q089",
+   "lesson": "thm-ai1.d1.2.03",
+   "objective": "d1.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each proposed control, select Yes if it is specific and maps to the stated threat.",
+   "statements": [
+    {
+     "s": "LLM10 Unbounded Consumption → per-user token and step caps plus rate limits",
+     "a": true
+    },
+    {
+     "s": "LLM08 Vector/Embedding Weaknesses → per-tenant embedding isolation and document-level RBAC",
+     "a": true
+    },
+    {
+     "s": "LLM05 Improper Output Handling → add more GPUs",
+     "a": false
+    }
+   ],
+   "explain": "Token/step caps fit unbounded consumption and tenant isolation/RBAC fit embedding weaknesses. Adding GPUs does nothing for improper output handling, which needs output validation/encoding."
+  }
+ ]
+}

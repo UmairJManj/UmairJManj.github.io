@@ -1,0 +1,1478 @@
+{
+  "exam": "sc-900",
+  "domain": "d4",
+  "lessons": [
+    {
+      "id": "sc-900.d4.1.01",
+      "objective": "d4.1",
+      "seq": 1,
+      "title": "Service Trust Portal offerings",
+      "short": "The Service Trust Portal (STP) is Microsoft's library of security, privacy and compliance evidence: independent audit reports (ISO/IEC, SOC, FedRAMP, PCI DSS), whitepapers, pen-test summaries and industry or regional guidance showing how Microsoft cloud services meet standards.",
+      "deep": "When an auditor asks \"how do you know Microsoft 365 is secure?\", the answer lives in the **Service Trust Portal** (servicetrust.microsoft.com, aka.ms/STP). It proves Microsoft's half of the shared responsibility model.\n\nMain sections:\n- **Certifications, Regulations, and Standards**: ISO/IEC, SOC 1/2/3, GDPR, FedRAMP, PCI DSS, CSA STAR and more.\n- **Reports, Whitepapers, and Artifacts**: business continuity and DR, **pen test and security assessments**, privacy and data protection, AI resources, FAQs.\n- **Industry and Regional Resources**: financial services, healthcare and life sciences, US government, regional material.\n- **Resources for your Organization**: documents tied to your tenant's subscription and permissions.\n- **My Library**: save documents, subscribe to a series, and set **Notification Settings** to get emails when new versions come out.\n- **My Download History**: downloads from the last 18 months.\n\n**Access**: some reports and whitepapers are public. Most need a sign-in with a **Microsoft Entra** work account and acceptance of Microsoft's non-disclosure agreement for compliance materials. **Restricted Documents** need a role such as Compliance Administrator, Security Administrator or Security Reader.\n\nThe STP gives you evidence about Microsoft. It doesn't make your tenant compliant; Compliance Manager is where you track your own controls.",
+      "terms": [
+        {
+          "t": "Service Trust Portal (STP)",
+          "d": "Microsoft's portal of audit reports, certifications, whitepapers and compliance guides for its cloud services."
+        },
+        {
+          "t": "My Library",
+          "d": "Your personal STP page for saved documents, series subscriptions and update email notifications."
+        },
+        {
+          "t": "Restricted Documents",
+          "d": "STP content available only to users with roles such as Compliance Administrator or Security Reader."
+        }
+      ],
+      "trap": "When a question asks where to get Microsoft's own audit reports, such as SOC 2 or ISO 27001, the answer is the Service Trust Portal, not Compliance Manager or Purview Audit.",
+      "example": "A bank's third-party risk team downloads the latest Azure SOC 2 Type 2 report from the STP and saves it to My Library, so they get an email when the next one is published.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "STP section",
+          "What you find"
+        ],
+        "rows": [
+          [
+            "Certifications",
+            "ISO, SOC, FedRAMP"
+          ],
+          [
+            "Reports/Whitepapers",
+            "Pen tests, BCDR, privacy"
+          ],
+          [
+            "Industry/Regional",
+            "Health, finance, gov"
+          ],
+          [
+            "My Library",
+            "Saved docs + alerts"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.1.02",
+      "objective": "d4.1",
+      "seq": 2,
+      "title": "Microsoft privacy principles",
+      "short": "Microsoft's privacy commitments for its commercial cloud cover four areas: you control your data, you know where it is located, it's secured at rest and in transit, and Microsoft defends it against third-party and government requests.",
+      "deep": "Privacy is about how personal and customer data is collected, used and shared. Microsoft states its commercial cloud commitments as four principles. The Trust Center calls them data control, data location, data security and data defense.\n\n- **You control your data**: your data belongs to you, and you can access, modify or delete it at any time. Microsoft uses it only to provide the services you chose. It doesn't mine customer data for advertising or marketing research. Subprocessors are bound by the same commitments. Microsoft also follows **ISO/IEC 27018**, the code of practice for protecting personal data in the cloud.\n- **Know where your data is located**: data residency options in Azure, Microsoft 365 and Dynamics 365 let you choose the geography where data is stored.\n- **Your data is secured at rest and in transit**: encryption up to AES-256 at rest, TLS and IPsec in transit, and customer key control with Azure Key Vault.\n- **Microsoft defends your data**: government requests should go to you. Microsoft doesn't give any government direct access, and it redirects requests to you and notifies you where the law allows. It challenges requests where it can lawfully do so.\n\nOlder study material lists six principles instead: control, transparency, security, strong legal protections, no content-based targeting and benefits to you. The ideas are the same.",
+      "terms": [
+        {
+          "t": "Data residency",
+          "d": "The geographic location where customer data is stored at rest."
+        },
+        {
+          "t": "ISO/IEC 27018",
+          "d": "International code of practice for protecting personal data in public clouds."
+        },
+        {
+          "t": "Data defense",
+          "d": "Microsoft's commitment to redirect and challenge government data requests."
+        }
+      ],
+      "trap": "If a question says Microsoft uses customer content to target ads, it's wrong. Microsoft doesn't use customer data for advertising, and the data stays the customer's.",
+      "example": "A police agency asks Microsoft for a company's emails. Microsoft tells the agency to ask the company directly and lets the company know about the request, where the law allows.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d4.2.01",
+      "objective": "d4.2",
+      "seq": 1,
+      "title": "Microsoft Purview portal",
+      "short": "The Microsoft Purview portal (purview.microsoft.com) is the single place to work with Microsoft Purview data security, data governance, and risk and compliance solutions, with central settings, search, and roles and permissions.",
+      "deep": "**Microsoft Purview** is Microsoft's family of data security, governance and compliance solutions. You manage it in the **Microsoft Purview portal** at https://purview.microsoft.com. This portal replaced the retired **Microsoft Purview compliance portal** (compliance.microsoft.com) and the classic Microsoft Purview governance portal.\n\nWhat you see:\n- **Home page cards**: solution cards, a **Compliance posture status** card fed by Compliance Manager, trials and recommendations, and the **Knowledge Center** with articles, demos and tutorials.\n- **Solutions page**: solutions grouped into areas such as Data Security (e.g., Information Protection, Data Loss Prevention, Insider Risk Management), Data Governance (e.g., Unified Catalog, Data Map), and Risk & Compliance (e.g., Compliance Manager, eDiscovery, Audit).\n- **Settings**: one central place for portal-wide and solution settings.\n- **Roles and permissions**: one place to manage access to Purview.\n\nThe portal is permission-aware. Solutions you don't have the role or licence for don't show up as cards. That's why two admins in the same tenant can see different solutions.",
+      "terms": [
+        {
+          "t": "Microsoft Purview portal",
+          "d": "Unified web portal (purview.microsoft.com) for Purview data security, governance and compliance."
+        },
+        {
+          "t": "Knowledge Center",
+          "d": "Portal area with Purview articles, demos and tutorials."
+        },
+        {
+          "t": "Compliance posture status",
+          "d": "Home page card showing progress in Compliance Manager assessments."
+        }
+      ],
+      "trap": "Purview compliance solutions are managed in the Purview portal. The Microsoft Defender portal (security.microsoft.com) and the Microsoft Entra admin center are for security operations and identity.",
+      "example": "A compliance admin opens purview.microsoft.com, checks the Compliance posture status card, then goes to Solutions > Data Loss Prevention to review a new policy.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d4.2.02",
+      "objective": "d4.2",
+      "seq": 2,
+      "title": "Compliance Manager: controls, assessments, regulations",
+      "short": "Microsoft Purview Compliance Manager turns regulations into actionable work. You choose a regulation template, build an assessment of controls, and work through improvement actions. Some controls are Microsoft-managed, some are yours, and some are shared.",
+      "deep": "Compliance Manager is the Purview solution that helps you manage compliance across your multicloud environment, from finding risks to reporting to auditors.\n\nKey elements:\n- **Regulations (templates)**: over 360 prebuilt regulatory templates, such as ISO/IEC 27001, NIST CSF and GDPR. You can also build custom ones. Which templates you can use depends on your licensing.\n- **Assessments**: a grouping of controls from one regulation, standard or policy, applied to the services in scope. Each assessment has its own score.\n- **Controls**: requirements of a regulation. There are three types:\n  - **Microsoft-managed**: Microsoft implements them for its cloud services, and you can see implementation details and audit results.\n  - **Your controls** (customer-managed): your organization implements them.\n  - **Shared controls**: both parties are responsible.\n- **Improvement actions**: recommended steps that satisfy controls. You can assign them, test them and attach evidence.\n\nEvery tenant starts with the default **Microsoft 365 Data Protection Baseline** assessment. Compliance Manager is the shared responsibility model put into practice.",
+      "terms": [
+        {
+          "t": "Assessment",
+          "d": "A grouping of controls from one regulation or standard, with its own score."
+        },
+        {
+          "t": "Control",
+          "d": "A requirement of a regulation, standard or policy. It can be Microsoft-managed, yours or shared."
+        },
+        {
+          "t": "Regulation template",
+          "d": "Prebuilt definition of a regulation's controls, used to create an assessment."
+        }
+      ],
+      "trap": "Expect a question on control ownership: Microsoft-managed controls are Microsoft's job and customer-managed controls are yours. Don't mix Compliance Manager assessments up with STP audit reports.",
+      "example": "To get ready for ISO/IEC 27001 certification, a team creates an assessment from the ISO 27001 template and assigns its improvement actions to owners.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Regulation template",
+          "Assessment",
+          "Controls",
+          "Improvement actions",
+          "Score"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.2.03",
+      "objective": "d4.2",
+      "seq": 3,
+      "title": "Improvement actions and automated testing",
+      "short": "Improvement actions are the to-do items in Compliance Manager. Each one is technical or nontechnical (documentation or operational), has an implementation status and a test status, stores evidence, and can be tested automatically from Microsoft signals.",
+      "deep": "An **improvement action** tells you exactly what to do to satisfy a control.\n\n**Action types**\n- **Technical**: done by changing a configuration in a solution, such as turning on MFA or a DLP policy.\n- **Nontechnical**: done outside the technology. These come in two kinds: **documentation** (writing a policy or procedure) and **operational** (running a process, such as staff training).\n\n**Tracking**\n- **Implementation status**: Not implemented, Implemented, **Alternative implementation** (you met the requirement another way, such as with a non-Microsoft tool), Planned, or Out of scope.\n- **Test status**: for example Not assessed, Passed, Failed (low, medium or high risk), or In progress.\n- **Evidence** tab: upload files or links for auditors. Once the test status is Passed, Failed or Out of scope, evidence can't be deleted.\n- **Assign** actions to an owner, who gets an email with a link.\n\n**Automated testing** is on by default for eligible actions. It uses signals from Purview solutions (DLP, Information Protection, Data Lifecycle Management and others), Microsoft Secure Score, Microsoft Defender for Cloud (Azure, AWS and GCP), and connectors for services such as Salesforce and Zoom. Statuses refresh every 24 hours.",
+      "terms": [
+        {
+          "t": "Technical action",
+          "d": "An improvement action you implement by configuring a solution."
+        },
+        {
+          "t": "Nontechnical action",
+          "d": "A documentation or operational action you implement outside the technology."
+        },
+        {
+          "t": "Alternative implementation",
+          "d": "Status for meeting a requirement in a way Microsoft didn't recommend, such as with a third-party tool."
+        }
+      ],
+      "trap": "Writing a policy document is a nontechnical documentation action, not a technical action. Using a non-Microsoft tool is recorded as Alternative implementation.",
+      "example": "Compliance Manager detects that a DLP policy is on and marks the related action as passed. The 'publish an acceptable use policy' action stays with HR, who upload the signed document as evidence.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d4.2.04",
+      "objective": "d4.2",
+      "seq": 4,
+      "title": "Compliance score: uses and benefits",
+      "short": "Compliance score is a percentage in Compliance Manager that shows how far you've progressed on actions that reduce compliance risk. Points are weighted by risk: preventative mandatory actions are worth the most. It helps you prioritize, but it doesn't guarantee compliance.",
+      "deep": "**Compliance score** shows your overall progress on improvement actions. You earn points when actions are implemented and tested.\n\n**How points work**: each action has a risk category and is either mandatory or discretionary.\n- **Mandatory** actions can't be bypassed, such as a centrally enforced password policy. **Discretionary** actions rely on people following a policy, such as locking an unattended PC.\n- Points: preventative mandatory 27, preventative discretionary 9, detective mandatory 3, detective discretionary 1, corrective mandatory 3, corrective discretionary 1.\n\n**Initial score**: comes from the default **Microsoft 365 Data Protection Baseline** assessment, which draws mainly on NIST CSF and ISO, plus FedRAMP and GDPR. Microsoft-managed actions count toward it from the start.\n\n**Overall vs assessment score**: in the overall score, each Microsoft-managed action and each technical action counts once, but nontechnical actions count once per group. So the overall score isn't just an average of your assessment scores.\n\n**Benefits**: you can see quickly where you stand, prioritize the highest-impact actions, and show progress to auditors and leadership.\n\n**Not to be confused with Microsoft Secure Score**, which measures security posture (identity, devices, apps) in the Defender portal.",
+      "terms": [
+        {
+          "t": "Compliance score",
+          "d": "Risk-weighted percentage of points you've earned from improvement actions in Compliance Manager."
+        },
+        {
+          "t": "Mandatory action",
+          "d": "An action that can't be bypassed. It earns more points than a discretionary action."
+        },
+        {
+          "t": "Data Protection Baseline",
+          "d": "Default Microsoft 365 assessment that gives every tenant its initial score."
+        }
+      ],
+      "trap": "A high compliance score doesn't certify compliance. Compliance score measures compliance progress, while Secure Score measures security posture.",
+      "example": "The score jumps after an admin completes a preventative mandatory action worth 27 points, so the team tackles those first.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Action type",
+          "Mandatory",
+          "Discretionary"
+        ],
+        "rows": [
+          [
+            "Preventative",
+            "27",
+            "9"
+          ],
+          [
+            "Detective",
+            "3",
+            "1"
+          ],
+          [
+            "Corrective",
+            "3",
+            "1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.3.01",
+      "objective": "d4.3",
+      "seq": 1,
+      "title": "Data classification: sensitive information types",
+      "short": "Sensitive information types (SITs) are pattern-based classifiers that find data such as credit card, passport or bank account numbers. Purview includes many built-in SITs, and you can add custom SITs, exact data match (EDM), document fingerprinting and named entities.",
+      "deep": "Before you can protect data, you have to find it. **Data classification** in Purview starts with **sensitive information types (SITs)**.\n\nA SIT is defined by a **pattern**, usually a regular expression or function plus supporting evidence such as nearby **keywords** and a **checksum**. A match comes with a **confidence level** (high, medium or low), which helps reduce false positives.\n\nKinds of SIT:\n- **Built-in SITs**: ready-made for common data such as credit card numbers, national IDs and bank accounts, across many countries.\n- **Custom SITs**: your own patterns, such as employee IDs.\n- **Exact data match (EDM)**: matches the actual values from your own sensitive table, such as real customer records, so false positives are very low.\n- **Document fingerprinting**: recognizes documents built from a standard form or template, such as a patent or NDA template.\n- **Named entities**: use dictionaries and patterns to detect person names, physical addresses, and medical terms and conditions.\n- **Credential SITs** (such as All credentials) find secrets and passwords.\n\nOCR can extend scanning to text inside images. SITs feed DLP policies, sensitivity and retention auto-labeling, and the explorers. You manage them on the **Classifiers** page.",
+      "terms": [
+        {
+          "t": "Sensitive information type (SIT)",
+          "d": "A pattern-based classifier, such as a regex plus keywords and a checksum, that detects specific sensitive data."
+        },
+        {
+          "t": "Exact data match (EDM)",
+          "d": "SIT that matches the exact values from your own sensitive data source."
+        },
+        {
+          "t": "Document fingerprinting",
+          "d": "SIT that recognizes documents based on a standard form or template."
+        }
+      ],
+      "trap": "If the scenario says 'match our actual customer records', choose EDM. If it says 'detect copies of our standard form', choose document fingerprinting, not a trainable classifier.",
+      "example": "A DLP rule uses the built-in Credit Card Number SIT at high confidence to block emails containing 10 or more card numbers.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d4.3.02",
+      "objective": "d4.3",
+      "seq": 2,
+      "title": "Data classification: trainable classifiers",
+      "short": "Trainable classifiers use machine learning to recognize a category of content by what it is, such as resumes, source code or contracts, rather than by a fixed pattern. Microsoft provides pretrained classifiers, and you can train custom ones by giving the model sample content.",
+      "deep": "Some sensitive content has no neat pattern. A resume or a contract doesn't contain a fixed 16-digit number. **Trainable classifiers** solve this with **machine learning**. The model learns what an item of a category looks like, then flags new items that resemble it.\n\n- **Pretrained classifiers**: built by Microsoft and ready to use, for categories such as resumes and source code.\n- **Custom trainable classifiers**: you give the model samples of the content you want it to recognize, check its predictions, and then publish it for use.\n\n**Where classifiers are used**: as conditions in **DLP policies**, in sensitivity **auto-labeling**, in **auto-apply retention label policies**, and in communication compliance.\n\n**Other classification tools**: **OCR** scans images for sensitive text. **On-demand classification** finds sensitive content in files at rest that haven't been classified yet.\n\nThe **Classifiers** page, found in Information Protection, DLP or DSPM, lists SITs and trainable classifiers side by side. It shows how many items each one has classified and which policies depend on it.",
+      "terms": [
+        {
+          "t": "Trainable classifier",
+          "d": "Machine-learning classifier that identifies a type of content from examples."
+        },
+        {
+          "t": "Pretrained classifier",
+          "d": "Trainable classifier built by Microsoft and ready to use."
+        },
+        {
+          "t": "On-demand classification",
+          "d": "Classifies files at rest that were never classified or need updating."
+        }
+      ],
+      "trap": "If a question asks for a classifier that works without a pattern, trained on example content, the answer is a trainable classifier, not a sensitive information type or a regex.",
+      "example": "HR wants any resume stored outside the HR site to get a 'Confidential' label, so they use the pretrained Resumes classifier in an auto-labeling policy.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d4.3.03",
+      "objective": "d4.3",
+      "seq": 3,
+      "title": "Content explorer",
+      "short": "Content explorer shows a current snapshot of items that contain sensitive information types or have sensitivity or retention labels. You can drill down to where each item is stored and, with the right role group, view its contents.",
+      "deep": "Content explorer answers **\"what sensitive data do we have, and where is it right now?\"**\n\nIt shows a **current snapshot** of items that:\n- match a **sensitive information type** or trainable classifier,\n- have a **sensitivity label**, or\n- have a **retention label**,\n\nacross locations such as Exchange, SharePoint and OneDrive. You can drill down from a classifier or label to individual locations, then to individual items.\n\n**Permissions are deliberately strict**, because viewing the list can itself expose sensitive data:\n- **Content Explorer List Viewer** role group: see items and their locations in list view.\n- **Content Explorer Content Viewer** role group: view the contents of items, which is also needed to see item names that might be sensitive.\n- These two groups are independent, not cumulative. A role such as Compliance Administrator opens the tab but doesn't let you see the list or the contents.\n\nIf a document is encrypted, there's no preview and download is disabled.\n\n**Benefits**: you can confirm that classification and labeling are working, find unprotected sensitive data, and target your DLP and labeling policies.",
+      "terms": [
+        {
+          "t": "Content explorer",
+          "d": "Current snapshot of labeled or SIT-matching items, with drill-down to each item."
+        },
+        {
+          "t": "Content Explorer List Viewer",
+          "d": "Role group that lets you see items and locations in list view."
+        },
+        {
+          "t": "Content Explorer Content Viewer",
+          "d": "Role group that lets you view the contents of listed items."
+        }
+      ],
+      "trap": "Content explorer shows what is there right now. Activity explorer shows what people did with labeled content over time. Admin roles alone don't show you the item list.",
+      "example": "A privacy lead filters Content explorer on the 'U.S. Social Security Number' SIT and finds 400 files sitting in a public marketing site.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d4.3.04",
+      "objective": "d4.3",
+      "seq": 4,
+      "title": "Activity explorer",
+      "short": "Activity explorer gives a historical view, up to 30 days, of what users do with labeled and sensitive content. It shows label applied, changed or removed, file read, DLP rule matches and Endpoint DLP actions, all sourced from the unified audit log.",
+      "deep": "Activity explorer answers **\"what has been happening to our sensitive content?\"**\n\n- **Data source**: the Microsoft 365 **unified audit log**, plus DLP and endpoint signals.\n- **Time range**: up to **30 days** of data. It isn't real time; core-service activity takes about 60–90 minutes to appear.\n- **Activities shown**:\n  - sensitivity and retention labeling: **label applied**, **label changed** (upgraded, downgraded or removed), auto-labeling simulation, file read\n  - Information Protection client and scanner: protection applied, changed or removed, files discovered\n  - **DLP policy matches** in Exchange, SharePoint, OneDrive, Teams and on-premises repositories\n  - **Endpoint DLP** actions on onboarded devices, such as copy to clipboard, print, copy to network share and access by an unallowed app\n- **Filters**: around 50, such as date, activity type, location, label, user and device, plus filter sets such as *Endpoint DLP activities*.\n\n**Benefits**: you can spot unusual downgrades of labels, see justifications users gave, check whether DLP rules fire as expected, and tune policies. Access needs an Information Protection role or role group, or Compliance Administrator, Security Administrator or Security Reader.",
+      "terms": [
+        {
+          "t": "Activity explorer",
+          "d": "Historical view, up to 30 days, of actions taken on labeled and sensitive content."
+        },
+        {
+          "t": "Unified audit log",
+          "d": "Microsoft 365 log of user and admin activity. It's the data source for activity explorer."
+        },
+        {
+          "t": "Label downgrade",
+          "d": "Changing a label to a lower-priority one. It shows in activity explorer with the justification."
+        }
+      ],
+      "trap": "Activity explorer = what happened over time (up to 30 days). Content explorer = what exists now. The exam pairs them as distractors.",
+      "example": "A security analyst filters Activity explorer on 'Label changed' and sees that one user downgraded 20 'Highly Confidential' files yesterday.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Content explorer",
+          "Activity explorer"
+        ],
+        "rows": [
+          [
+            "Shows",
+            "Items that exist now",
+            "Actions over time"
+          ],
+          [
+            "Question",
+            "Where is the data?",
+            "What was done to it?"
+          ],
+          [
+            "Range",
+            "Current snapshot",
+            "Up to 30 days"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.3.05",
+      "objective": "d4.3",
+      "seq": 5,
+      "title": "Sensitivity labels",
+      "short": "Sensitivity labels, part of Microsoft Purview Information Protection, classify and protect content. A label can encrypt items, add headers, footers or watermarks, and control Teams, groups and sites. It's stored in the file's metadata, so it travels with the content.",
+      "deep": "A **sensitivity label** is a tag such as *Public*, *General*, *Confidential* or *Highly Confidential* that also **does something**:\n- **Encryption**: limits who can open the item and what they can do with it (view, edit, print, forward, expiry), using Rights Management encryption.\n- **Content marking**: headers, footers and watermarks in Office apps.\n- **Containers**: labels for **Teams, Microsoft 365 Groups and SharePoint sites** control privacy, external sharing and unmanaged device access. They don't label the files inside.\n- **Auto-labeling**: apply or recommend a label when content contains SITs or matches trainable classifiers.\n\n**Key behaviors**\n- The label is stored in **clear-text metadata** and **persists** with the file or email wherever it goes.\n- An item can have **only one sensitivity label**. It can also have a retention label at the same time.\n- **Label order is priority**: put the most restrictive label (such as Highly Confidential) at the **bottom** of the list.\n- **Sublabels** (such as Confidential \\ All Employees) group related labels.\n- Labeling is **built into Office apps** (Word, Excel, PowerPoint, Outlook) on Windows, macOS, iOS, Android and the web. Labels are also used in Power BI, Teams meetings and Microsoft 365 Copilot.",
+      "terms": [
+        {
+          "t": "Sensitivity label",
+          "d": "Persistent classification tag that can encrypt, mark and control access to content or containers."
+        },
+        {
+          "t": "Content marking",
+          "d": "A header, footer or watermark that a label adds to a document."
+        },
+        {
+          "t": "Container label",
+          "d": "A sensitivity label applied to a team, group or site to control its privacy and sharing settings."
+        }
+      ],
+      "trap": "Sensitivity labels protect content (encryption, marking) and retention labels keep or delete it. A file can have one of each, but never two sensitivity labels.",
+      "example": "A 'Highly Confidential – Finance' label encrypts a budget workbook so only Finance can open it and adds a red 'CONFIDENTIAL' footer.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Public",
+          "General",
+          "Confidential",
+          "Highly Confidential"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.3.06",
+      "objective": "d4.3",
+      "seq": 6,
+      "title": "Sensitivity label policies",
+      "short": "Sensitivity labels reach users through label policies. A label policy publishes chosen labels to users or groups and sets behavior such as a default label, mandatory labeling, justification to downgrade, and a custom help link.",
+      "deep": "Creating a label does nothing on its own. You have to **publish** it with a **sensitivity label policy**.\n\nA label policy lets you:\n- choose **which labels** to publish and **which users and groups** see them (including dynamic Microsoft 365 groups)\n- set a **default label** for unlabeled new documents and emails, meetings, new containers and Power BI content\n- require **mandatory labeling**: users must apply a label before saving a file, sending an email or creating a group or site\n- require **justification** when a user removes a label or replaces it with a lower-priority one\n- give a custom **'Learn more' help link**\n\nThings to remember:\n- Sensitivity labels are published to **users and groups**. Retention labels are published to **locations** such as mailboxes and sites.\n- A user can be in several policies. If their settings conflict, the highest-priority policy wins.\n- Changes can take **up to 24 hours** to reach users.\n- Automatic labeling with **auto-labeling policies** is configured separately from label policies.\n- Encryption and marking settings belong to the **label**, not the policy.",
+      "terms": [
+        {
+          "t": "Label policy",
+          "d": "Publishes sensitivity labels to users or groups and sets labeling behavior."
+        },
+        {
+          "t": "Mandatory labeling",
+          "d": "Policy setting that makes users apply a label before saving or sending."
+        },
+        {
+          "t": "Default label",
+          "d": "Label applied automatically to new, unlabeled content."
+        }
+      ],
+      "trap": "'Make users label every document' and 'set a default label' are label policy settings. Encryption and watermarks are configured on the label itself.",
+      "example": "Contoso publishes its labels to everyone with General as the default and turns on mandatory labeling for Outlook only.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Create labels",
+          "Publish policy",
+          "Users apply",
+          "Monitor activity"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.3.07",
+      "objective": "d4.3",
+      "seq": 7,
+      "title": "Data loss prevention (DLP)",
+      "short": "Microsoft Purview Data Loss Prevention (DLP) policies detect sensitive information in content and take action, such as showing a policy tip, blocking sharing, allowing an override with justification, or alerting. They cover Exchange, SharePoint, OneDrive, Teams, endpoints and more.",
+      "deep": "**DLP** stops people from inappropriately sharing sensitive data, whether by accident or on purpose. It uses deep content analysis, not just simple text matching.\n\n**Locations**: Exchange email, SharePoint, OneDrive, Teams chat and channel messages, Windows and macOS **devices** (Endpoint DLP), on-premises file shares and SharePoint (through the Information Protection scanner), non-Microsoft cloud apps (through Defender for Cloud Apps), Power BI and Fabric, and Microsoft 365 Copilot.\n\n**Policy building blocks**\n- **Rules** = **conditions** plus **actions**.\n- **Conditions**: content contains SITs, sensitivity labels or trainable classifier matches, or is shared outside the organization.\n- **Actions**: depend on the location. Examples are block access, encrypt, quarantine on-premises files, and hide the sensitive message in Teams.\n- **Policy tips**: in-app warnings to users. **Overrides** let users proceed with a business justification.\n- **Alerts** and incident reports for admins. All activity goes to the audit log and activity explorer.\n\n**Lifecycle**: plan, then prepare, then **design** the policy, run it in **simulation mode** (no actions enforced), **monitor and fine-tune**, then **turn it on**. Policies usually take effect about an hour after you turn them on. Templates exist for regulations such as PCI DSS and HIPAA.",
+      "terms": [
+        {
+          "t": "DLP policy",
+          "d": "Rules of conditions and actions that detect and protect sensitive data in chosen locations."
+        },
+        {
+          "t": "Policy tip",
+          "d": "In-app notice that warns a user their action conflicts with a DLP policy."
+        },
+        {
+          "t": "Simulation mode",
+          "d": "Runs a DLP policy without enforcing actions, so you can measure its impact first."
+        }
+      ],
+      "trap": "DLP is what actually blocks or warns when data is shared. Insider risk management detects risky patterns of behavior, and sensitivity labels classify and encrypt content.",
+      "example": "A DLP rule warns users with a policy tip when they share one credit card number externally, and blocks the share at 10 or more unless they enter a justification.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Design",
+          "Simulate",
+          "Monitor & tune",
+          "Enable"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.3.08",
+      "objective": "d4.3",
+      "seq": 8,
+      "title": "Endpoint DLP and DLP beyond Microsoft 365",
+      "short": "Endpoint DLP applies DLP policies on onboarded Windows 10/11 and macOS devices. It audits or blocks actions such as copying sensitive files to USB, printing, uploading to restricted cloud sites, and access by unallowed apps.",
+      "deep": "Cloud DLP protects data in Microsoft 365 services. **Endpoint DLP** extends the same policies to the **device**, covering data in use and in motion on the endpoint.\n\n**Requirements**: devices running Windows 10/11 or one of the three most recent macOS versions must be **onboarded** to Microsoft Purview. Onboarding uses the same process as Microsoft Defender for Endpoint.\n\n**Activities you can audit or restrict**\n- copying a sensitive item to a **removable USB device** or **network share**\n- **printing** sensitive documents\n- uploading to a restricted **cloud service domain** or pasting into a browser\n- **copying to the clipboard**\n- opening the file with an **unallowed app**\n\n**Enforcement options**: Audit only, **Block with override** (user gives a justification), or **Block**. Users see a notification on the device.\n\nEvents appear in **activity explorer** under the *Endpoint DLP activities* filter set.\n\nDLP also covers **inline web traffic**, such as data sent to unmanaged generative AI apps through Edge for Business or the network, and Microsoft 365 Copilot experiences.",
+      "terms": [
+        {
+          "t": "Endpoint DLP",
+          "d": "DLP enforcement on onboarded Windows and macOS devices."
+        },
+        {
+          "t": "Device onboarding",
+          "d": "Registering a device with Purview so endpoint policies apply to it."
+        },
+        {
+          "t": "Block with override",
+          "d": "Blocks an action but lets the user continue after giving a justification."
+        }
+      ],
+      "trap": "To stop users copying sensitive files to USB drives, the answer is Endpoint DLP. Retention policies, sensitivity label container settings and Conditional Access don't do this.",
+      "example": "An engineer tries to copy a 'Confidential' CAD file to a USB stick. Endpoint DLP blocks the copy and logs the attempt in activity explorer.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d4.3.09",
+      "objective": "d4.3",
+      "seq": 9,
+      "title": "Records management",
+      "short": "Microsoft Purview Records Management uses retention labels to declare items as records or regulatory records. These items are locked against edits and deletion. It adds a file plan, event-based retention, disposition review and proof of disposal.",
+      "deep": "A **record** is business, legal or regulatory content you must keep unchanged for a set time, then dispose of in a way you can prove. **Records Management** builds on retention labels to do this.\n\n**Capabilities**\n- **Declare records** with retention labels, applied by users or automatically from SITs, keywords or content types.\n- **File plan**: import or build your organization's retention schedule, with properties such as category, department and citation.\n- **Event-based retention**: start the clock when an event happens, such as an employee leaving or a contract ending.\n- **Disposition review**: reviewers approve deletion at the end of the retention period. You keep **proof of disposal**, and you can export details of disposed items.\n\n**Record vs regulatory record**\n- **Record**: deletion is blocked. It can be **locked** (no edits) or **unlocked** (edits allowed, with versioning in SharePoint and OneDrive). When locked, only container admins can remove the label.\n- **Regulatory record**: the strictest option. **Nobody, not even a Global Administrator, can remove the label.** Edits, renames and moves are blocked, and the retention period can only be made longer. It must be enabled first with PowerShell, and it can't be auto-applied.",
+      "terms": [
+        {
+          "t": "Record",
+          "d": "Item marked by a retention label so it can't be deleted and is locked against edits."
+        },
+        {
+          "t": "Regulatory record",
+          "d": "Strictest record type. No one can remove the label or edit the item."
+        },
+        {
+          "t": "Disposition review",
+          "d": "Human approval step before content is deleted at the end of retention."
+        }
+      ],
+      "trap": "If 'not even a Global Administrator can remove the label' appears, the answer is regulatory record. Records are declared with retention labels, never with sensitivity labels.",
+      "example": "A pharmaceutical company marks clinical trial reports as regulatory records, so no one can alter or delete them for 25 years.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d4.3.10",
+      "objective": "d4.3",
+      "seq": 10,
+      "title": "Retention policies",
+      "short": "Retention policies in Microsoft Purview Data Lifecycle Management apply retain and/or delete settings to whole locations, such as mailboxes, sites, OneDrive accounts, Teams chats and channels, Viva Engage and Copilot interactions, without users doing anything.",
+      "deep": "**Retention** means keeping what you must keep and deleting what you shouldn't keep, which reduces both legal risk and clutter.\n\nA **retention policy** applies the same settings to an entire **location** or scope:\n- **Retain only**: keep forever or for a set period.\n- **Delete only**: delete after a set period.\n- **Retain and then delete**.\n\n**Locations**: Exchange mailboxes, SharePoint sites, OneDrive accounts, Microsoft 365 Groups, Exchange public folders, **Teams channel messages and chats**, Viva Engage, and Copilot and AI app interactions. Teams and Viva Engage messages support **only retention policies**, not labels.\n\n**Scopes**: *static* (all instances or specific includes and excludes) or *adaptive*, a query on attributes such as department, refreshed daily.\n\n**Where kept content goes**: edited or deleted SharePoint and OneDrive content is kept in the hidden **Preservation Hold library**. Exchange uses **Recoverable Items**.\n\n**Principles of retention** (when settings conflict):\n1. Retention wins over deletion.\n2. The longest retention period wins.\n3. Explicit beats implicit for deletion: a label beats a policy, and a scoped policy beats an org-wide one.\n4. The shortest deletion period wins.\n\nAn eDiscovery hold always overrides deletion.",
+      "terms": [
+        {
+          "t": "Retention policy",
+          "d": "Applies retain or delete settings to entire locations or scopes."
+        },
+        {
+          "t": "Adaptive scope",
+          "d": "Query-based scope, such as all users in Finance, that updates its membership automatically."
+        },
+        {
+          "t": "Preservation Hold library",
+          "d": "Hidden SharePoint/OneDrive library holding retained copies of edited or deleted items."
+        }
+      ],
+      "trap": "If a scenario says 'retain all Teams chats', choose a retention policy, because retention labels can't be applied to Teams messages. Where policies conflict, retention wins over deletion.",
+      "example": "A company keeps all Exchange email for 7 years and then deletes it, using one org-wide retention policy.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d4.3.11",
+      "objective": "d4.3",
+      "seq": 11,
+      "title": "Retention labels and retention label policies",
+      "short": "Retention labels apply retention settings to individual items (a document or email) and travel with the item within the tenant. They're published to locations through retention label policies for manual use, or applied automatically through auto-apply policies.",
+      "deep": "Retention labels are used when items in the same place need **different** rules, such as contracts kept for 7 years and lunch menus for 1 year.\n\n**Retention label**: an **item-level** setting (retain, delete, or retain then delete). The period can start from when the item was **created**, **last modified**, **labeled**, or from an **event**. It can also:\n- declare the item a **record** or **regulatory record**\n- trigger a **disposition review** at the end\n- move with the item to other locations inside Microsoft 365\n\nAn item can have **only one retention label** at a time.\n\n**Getting labels onto items**\n- **Retention label policy**: publishes labels to **locations** (Exchange, SharePoint, OneDrive, Microsoft 365 Groups) so users and admins can apply them manually. One policy can hold several labels.\n- **Auto-apply retention label policy**: applies **one label** automatically when content matches **SITs, keywords or properties, or trainable classifiers**, or to cloud attachments.\n\nAllow up to **7 days** for labels to appear and policies to take effect.\n\n**Policy vs label**: a policy is broad, location-wide and invisible to users. A label is granular and visible, and it's the one that can make an item a record.",
+      "terms": [
+        {
+          "t": "Retention label",
+          "d": "Item-level retain or delete setting that can also declare a record."
+        },
+        {
+          "t": "Retention label policy",
+          "d": "Publishes retention labels to locations so people can apply them."
+        },
+        {
+          "t": "Auto-apply policy",
+          "d": "Applies one retention label automatically when content matches conditions."
+        }
+      ],
+      "trap": "Choose a retention label when settings must differ per item, a record is needed, or disposition review is required. Choose a retention policy for a blanket location-wide rule.",
+      "example": "Legal publishes 'Contract – 7 years' to SharePoint, and an auto-apply policy puts it on any document matching the custom Contracts trainable classifier.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Retention policy",
+          "Retention label"
+        ],
+        "rows": [
+          [
+            "Scope",
+            "Whole location",
+            "Single item"
+          ],
+          [
+            "Travels with item",
+            "No",
+            "Yes (in tenant)"
+          ],
+          [
+            "Declare record",
+            "No",
+            "Yes"
+          ],
+          [
+            "Disposition review",
+            "No",
+            "Yes"
+          ],
+          [
+            "Teams messages",
+            "Yes",
+            "No"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.3.12",
+      "objective": "d4.3",
+      "seq": 12,
+      "title": "Data governance: Data Map and Unified Catalog",
+      "short": "Microsoft Purview data governance uses the Data Map to scan sources across on-premises, Azure, multicloud and SaaS, capturing metadata, classifications and lineage. Unified Catalog sits on top, organizing data into governance domains, data products, glossary terms and data quality scores.",
+      "deep": "Data governance is about knowing what data you have, who owns it and whether it can be trusted.\n\n**Microsoft Purview Data Map** is the foundation. It **scans** registered sources, such as Azure SQL, Azure Data Lake, on-premises SQL Server, other clouds and Power BI. It builds an inventory of **data assets**, their **metadata**, automatic **classifications** (using the same SITs) and **lineage**, meaning where data came from and where it flows.\n\n**Microsoft Purview Unified Catalog** is the business-facing layer:\n- **Governance domains**: business boundaries such as Finance or Marketing, each acting like a mini catalog.\n- **Data products**: bundles of related assets (tables, files, reports) built for a use case, so people can find them and request access.\n- **Glossary terms**: shared business vocabulary. Policies attached to a term flow down to the linked assets.\n- **Data quality**: rules and scores at domain, product and asset level.\n- **Health management**: health controls, health actions and reports that score your governance practices.\n\nA free version covers evaluation scenarios. The enterprise version adds full scanning, automatic classification and workflows. All of it is managed in the Purview portal.",
+      "terms": [
+        {
+          "t": "Data Map",
+          "d": "Purview service that scans sources and stores metadata, classifications and lineage."
+        },
+        {
+          "t": "Unified Catalog",
+          "d": "Business catalog of governance domains, data products, glossary and data quality."
+        },
+        {
+          "t": "Data lineage",
+          "d": "Record of where data comes from and how it moves and transforms."
+        }
+      ],
+      "trap": "Data Map and Unified Catalog govern data estates such as databases and lakes. They are not the tools that block sharing (DLP) or keep or delete email (retention).",
+      "example": "A data steward publishes a 'Customer 360' data product in the Sales governance domain, so analysts can find the curated tables and request access.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Data sources",
+          "Data Map scan",
+          "Unified Catalog",
+          "Data consumers"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.4.01",
+      "objective": "d4.4",
+      "seq": 1,
+      "title": "Insider risk management",
+      "short": "Microsoft Purview Insider Risk Management correlates signals such as file downloads, deletions, exfiltration, HR resignation dates and security alerts to detect risky activity by people inside the organization. Users are pseudonymized by default, and analysts triage alerts into cases.",
+      "deep": "Not every threat comes from outside. **Insider risk** means employees or contractors who leak data, steal IP or break security policy, whether they mean to or not.\n\n**How it works**\n1. **Policies** are created from **templates**, such as *Data theft by departing users*, *Data leaks*, *Security policy violations* and *Risky AI usage*. A policy defines the users in scope, triggering events and **risk indicators**.\n2. **Alerts** are generated when activity matches the policy.\n3. **Triage**: reviewers look at alerts with status *Needs review*, then dismiss them or create a case.\n4. **Investigate** cases using user activity, Content explorer and case notes.\n5. **Action**: send a **notice** to the user, resolve the case, or **escalate to eDiscovery (Premium)**.\n\n**Connectors and signals**: the *Data theft by departing users* template is triggered by resignation and termination dates from the (optional) **Microsoft 365 HR connector**, or by the user's account being deleted in Microsoft Entra ID. Security policy templates use **Defender for Endpoint** alerts.\n\n**Privacy by design**: usernames are **pseudonymized by default**. Role-based access and audit logs protect the people being reviewed.\n\n**Adaptive Protection** gives users an insider risk level (Minor, Moderate or Elevated) and automatically applies stricter DLP, Conditional Access or data lifecycle policies to riskier users.",
+      "terms": [
+        {
+          "t": "Insider risk management",
+          "d": "Purview solution that detects and investigates risky activity by internal users."
+        },
+        {
+          "t": "HR connector",
+          "d": "Imports HR data, such as resignation dates, to trigger departing-user policies."
+        },
+        {
+          "t": "Pseudonymization",
+          "d": "Showing aliases instead of real names to protect user privacy during review."
+        }
+      ],
+      "trap": "Insider risk management finds risky behavior patterns. It doesn't block sharing itself; DLP does that. Don't confuse it with Entra ID Protection, which handles compromised identities.",
+      "example": "An engineer gives notice. The HR connector triggers the departing-user policy, which flags 3,000 downloads of source code files in the same week.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Policies",
+          "Alerts",
+          "Triage",
+          "Investigate",
+          "Action"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.4.02",
+      "objective": "d4.4",
+      "seq": 2,
+      "title": "Communication compliance and Adaptive Protection",
+      "short": "Communication compliance scans Teams, Exchange, Viva Engage and Copilot interactions for inappropriate or regulated messages, such as harassment, sensitive data or conflicts of interest. Adaptive Protection uses insider risk levels to tighten DLP and Conditional Access for risky users automatically.",
+      "deep": "**Communication compliance** is part of Purview's insider risk family. It finds messages that break company or regulatory rules.\n\n- **Channels**: Teams chats and channels, Exchange Online email, Viva Engage, **Microsoft 365 Copilot** prompts and responses, other generative AI apps, and imported third-party data such as Bloomberg.\n- **Templates**: detect inappropriate text or images, sensitive info types, financial regulatory compliance (for rules such as FINRA Rule 3110), conflict of interest, or a custom policy. Users can also report Teams messages themselves.\n- **Review**: designated reviewers see policy matches. They can **resolve**, **tag** (compliant, non-compliant or questionable), **notify the user**, **escalate** to another reviewer, **remove the message in Teams**, or escalate for investigation in eDiscovery (Premium).\n- **Privacy**: usernames are pseudonymized by default. Global Administrators don't get access by default, so roles must be assigned.\n\n**Adaptive Protection** links insider risk management to enforcement:\n- Machine learning assigns each user an **insider risk level**: **Minor**, **Moderate** or **Elevated**.\n- **DLP** policies can then act on that level, for example giving policy tips to Minor users and blocking Elevated users.\n- **Conditional Access** and **data lifecycle management** can also use the level. Content deleted by Elevated users is preserved for 120 days.",
+      "terms": [
+        {
+          "t": "Communication compliance",
+          "d": "Detects and remediates policy-violating messages in communication channels."
+        },
+        {
+          "t": "Adaptive Protection",
+          "d": "Automatically applies stricter controls to users based on their insider risk level."
+        },
+        {
+          "t": "Insider risk level",
+          "d": "Minor, Moderate or Elevated. Assigned per user and used by Adaptive Protection."
+        }
+      ],
+      "trap": "Harassment in Teams messages is a communication compliance scenario, not DLP. Dynamically tightening DLP for risky users is Adaptive Protection.",
+      "example": "A trader's chat suggests sharing insider information. The financial regulatory policy flags it, and a reviewer escalates it for investigation.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d4.4.03",
+      "objective": "d4.4",
+      "seq": 3,
+      "title": "eDiscovery in Microsoft Purview",
+      "short": "eDiscovery finds, preserves, reviews and exports electronic content for legal cases and investigations. In the Purview portal, a case holds data sources, holds, searches, review sets and exports. Premium features such as review sets and analytics need E5-level licensing.",
+      "deep": "**Electronic discovery (eDiscovery)** is the process of finding electronic information that can be used as evidence. Purview eDiscovery covers Exchange mailboxes, OneDrive, SharePoint, Teams, Microsoft 365 Groups and Viva Engage.\n\nIn the **Microsoft Purview portal** there's now one **eDiscovery** experience. Classic Content Search and classic eDiscovery (Standard) and (Premium) were retired on August 31, 2025, and content searches now run inside eDiscovery cases. Which features you get depends on your licence.\n\n**Core workflow**\n1. **Create a case**: the container for the investigation. Members control access, and eDiscovery Managers see only cases they're members of.\n2. **Add data sources** (people, groups, sites) and **place holds** on them, so content can't be permanently deleted.\n3. **Search** with KeyQL keyword queries and conditions. You get statistics and samples.\n4. **Review**: with premium features, copy results into a **review set**, a secure Azure Storage area where you can filter, **tag**, use **OCR** and run **analytics** (near-duplicate detection, email threading, themes) or predictive coding.\n5. **Export** the relevant items for outside counsel.\n\n**Licensing**: search, holds, export and cases are standard. Review sets, advanced indexing, tagging, analytics and legal hold notifications to custodians are **premium** features (Microsoft 365 E5, Office 365 E5 or E5 add-ons).",
+      "terms": [
+        {
+          "t": "eDiscovery case",
+          "d": "Container for an investigation's data sources, holds, searches, review sets and exports."
+        },
+        {
+          "t": "Hold",
+          "d": "Preserves content in place so it can't be permanently deleted during the case."
+        },
+        {
+          "t": "Review set",
+          "d": "Premium secure copy of search results for tagging, analytics and review."
+        }
+      ],
+      "trap": "Review sets and analytics such as near-duplicate detection are premium features. A hold preserves content, while retention policies are for routine lifecycle management.",
+      "example": "Legal opens a case for a contract dispute, holds three executives' mailboxes, searches for 'Project Falcon', reviews the results in a review set and exports them.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Case",
+          "Hold",
+          "Search",
+          "Review set",
+          "Export"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d4.4.04",
+      "objective": "d4.4",
+      "seq": 4,
+      "title": "Audit (Standard) and Audit (Premium)",
+      "short": "Microsoft Purview Audit records user and admin activity in the unified audit log. Audit (Standard) is on by default and keeps records for 180 days. Audit (Premium) keeps key records for 1 year by default, offers custom retention up to 10 years with an add-on, and adds intelligent insights and higher API bandwidth.",
+      "deep": "**Auditing** answers *who did what, where and when*. It's essential for forensic investigations, insider cases and proving compliance.\n\n**Audit (Standard)**\n- **Enabled by default** for organizations with an eligible subscription.\n- Records thousands of event types across Exchange, SharePoint, OneDrive, Teams, Entra ID and more in the **unified audit log**.\n- Keeps records for **180 days**.\n- Search in the Purview portal (date range, activities, users), export results to **CSV**, or use `Search-UnifiedAuditLog` in PowerShell.\n\n**Audit (Premium)** adds:\n- **Longer retention**: a default policy keeps Entra ID, Exchange, OneDrive and SharePoint records for **1 year**.\n- **Custom audit log retention policies** by service, activity or user, keeping records up to 1 year or up to **10 years** with the **10-Year Audit Log Retention add-on** license. These policies aren't retroactive.\n- **Intelligent insights**: richer forensic event data, such as the sensitivity label of mail items that were accessed, what users searched for in Exchange and SharePoint, and detailed Teams message events.\n- **Higher bandwidth** to the Office 365 Management Activity API: about twice that of Standard, from a baseline of 2,000 requests per minute.\n\nIt needs users assigned the appropriate licence, such as an E5 plan or a compliance add-on.",
+      "terms": [
+        {
+          "t": "Unified audit log",
+          "d": "Central log of user and admin activity across Microsoft 365 services."
+        },
+        {
+          "t": "Audit log retention policy",
+          "d": "Premium policy that sets how long specific audit records are kept."
+        },
+        {
+          "t": "Intelligent insights",
+          "d": "Premium forensic event details, such as searches and accessed-mail properties, for breach investigations."
+        }
+      ],
+      "trap": "Audit (Standard) keeps records for 180 days, not 90. Keeping audit records for 10 years needs Audit (Premium) plus the 10-year add-on licence.",
+      "example": "After a phishing compromise, investigators search the audit log for the user's activity over the last two weeks and export the results to CSV.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Standard",
+          "Premium"
+        ],
+        "rows": [
+          [
+            "Default retention",
+            "180 days",
+            "1 yr (key services)"
+          ],
+          [
+            "Custom retention",
+            "No",
+            "Up to 10 yrs (add-on)"
+          ],
+          [
+            "Intelligent insights",
+            "No",
+            "Yes"
+          ],
+          [
+            "API bandwidth",
+            "Baseline",
+            "About 2x"
+          ]
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-900.d4.q001",
+      "lesson": "sc-900.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A compliance officer needs to download Microsoft's latest independent SOC 2 Type 2 audit report for Microsoft 365. Where should she go?",
+      "options": [
+        "Microsoft Purview Compliance Manager",
+        "Service Trust Portal",
+        "Microsoft Purview Audit",
+        "Microsoft Defender for Cloud regulatory compliance dashboard"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Service Trust Portal publishes Microsoft's third-party audit reports, such as SOC and ISO. Compliance Manager tracks your own controls, Purview Audit logs tenant activity, and Defender for Cloud assesses your Azure resources. None of them hosts Microsoft's audit reports."
+    },
+    {
+      "id": "sc-900.d4.q002",
+      "lesson": "sc-900.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A user signs in to the Service Trust Portal but can't open anything under Restricted Documents. Which role assignment would give them access?",
+      "options": [
+        "Security Reader",
+        "Billing Administrator",
+        "Helpdesk Administrator",
+        "Reports Reader"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Restricted Documents are limited to users with roles such as Tenant Admin, Compliance Administrator, Security Administrator or Security Reader. Billing, Helpdesk and Reports Reader roles don't grant access to restricted compliance material."
+    },
+    {
+      "id": "sc-900.d4.q003",
+      "lesson": "sc-900.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the Service Trust Portal, select Yes if true.",
+      "statements": [
+        {
+          "s": "Some audit reports and whitepapers can be viewed without signing in.",
+          "a": true
+        },
+        {
+          "s": "Most other documents require signing in with a Microsoft Entra work account and accepting a non-disclosure agreement.",
+          "a": true
+        },
+        {
+          "s": "Downloading Microsoft's ISO/IEC 27001 certificate makes your own organization ISO/IEC 27001 compliant.",
+          "a": false
+        }
+      ],
+      "explain": "Some STP content is public, but most documents need an Entra sign-in and acceptance of the NDA for compliance materials. The STP proves Microsoft's controls. Your own compliance still depends on the controls you implement."
+    },
+    {
+      "id": "sc-900.d4.q004",
+      "lesson": "sc-900.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An auditor wants an email every time Microsoft publishes a new version of an Azure SOC report she relies on. What should she do?",
+      "options": [
+        "Subscribe to the Microsoft 365 admin center Message center",
+        "Create an alert policy in Microsoft Purview",
+        "Save the report to My Library in the Service Trust Portal and configure Notification Settings",
+        "Add the report as evidence to a Compliance Manager improvement action"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Saving a document to My Library subscribes you to its series, and Notification Settings sends update emails. Message center covers service changes, not STP documents. Purview alert policies monitor tenant activity, and Compliance Manager evidence doesn't notify you of new report versions."
+    },
+    {
+      "id": "sc-900.d4.q005",
+      "lesson": "sc-900.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A hospital's risk team wants Microsoft guidance written specifically for healthcare and life sciences organizations. Which Service Trust Portal section is designed for this?",
+      "options": [
+        "My Download History",
+        "Reports, Whitepapers, and Artifacts",
+        "Certifications, Regulations, and Standards",
+        "Industry and Regional Resources"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Industry and Regional Resources groups material by sector, such as healthcare and life sciences or financial services, and by region. Certifications holds audit reports, the Reports section holds general whitepapers, and My Download History only lists your past downloads."
+    },
+    {
+      "id": "sc-900.d4.q006",
+      "lesson": "sc-900.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO types of content can you obtain from the Service Trust Portal? Select TWO.",
+      "options": [
+        "Summaries of penetration tests and security assessments of Microsoft cloud services",
+        "Your tenant's unified audit log records",
+        "ISO/IEC and SOC audit reports for Microsoft cloud services",
+        "Your organization's DLP policy match reports",
+        "Sensitivity label usage from activity explorer"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "The STP publishes evidence about Microsoft's services, such as pen-test and assessment summaries and certification audit reports. Audit logs, DLP reports and activity explorer data describe your own tenant, and you view them in the Microsoft Purview portal."
+    },
+    {
+      "id": "sc-900.d4.q007",
+      "lesson": "sc-900.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement best describes the Microsoft privacy principle 'You control your data'?",
+      "options": [
+        "Microsoft may use customer data for advertising unless the customer opts out.",
+        "Your data belongs to you. You can access, modify or delete it, and Microsoft uses it only to provide the services you chose.",
+        "Customers must always manage their own encryption keys in Azure Key Vault.",
+        "Microsoft stores all customer data only in the customer's own datacenter."
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The control principle says the data is yours to access, change or delete, and Microsoft uses it only to deliver the agreed services. Microsoft doesn't use customer data for advertising. Customer-managed keys are optional, and cloud data lives in Microsoft datacenters in the regions you choose."
+    },
+    {
+      "id": "sc-900.d4.q008",
+      "lesson": "sc-900.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A government agency asks Microsoft directly for a commercial customer's mailbox content. In line with Microsoft's privacy principles, what does Microsoft try to do first?",
+      "options": [
+        "Redirect the agency to request the data from the customer, and notify the customer where legally permitted",
+        "Hand over the data and notify the customer afterwards",
+        "Delete the requested data to protect the customer",
+        "Give the agency read-only access through a dedicated government portal"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Under 'Microsoft defends your data', Microsoft redirects requests to the customer, notifies the customer when the law allows, and challenges requests where it lawfully can. It doesn't give any government direct access, and it doesn't delete customer data to avoid a request."
+    },
+    {
+      "id": "sc-900.d4.q009",
+      "lesson": "sc-900.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft's privacy principles, select Yes if true.",
+      "statements": [
+        {
+          "s": "Microsoft mines customer data in its commercial cloud services to target advertising.",
+          "a": false
+        },
+        {
+          "s": "Customers can choose where their data is stored in services such as Microsoft 365 and Azure.",
+          "a": true
+        },
+        {
+          "s": "Microsoft encrypts customer data both at rest and in transit, for example using TLS for data in transit.",
+          "a": true
+        }
+      ],
+      "explain": "Microsoft commits not to use customer data for advertising or marketing research. The data location principle offers residency choices. The security principle covers encryption at rest (up to AES-256) and in transit (TLS and IPsec)."
+    },
+    {
+      "id": "sc-900.d4.q010",
+      "lesson": "sc-900.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam, a German insurer, is moving to Microsoft 365. Its works council insists that customer records must be stored within the European Union and wants to understand which of Microsoft's privacy commitments covers this concern before approving the project.",
+      "stem": "Which Microsoft privacy principle addresses the works council's concern most directly?",
+      "options": [
+        "Microsoft defends your data",
+        "Your data is secured at rest and in transit",
+        "Know where your data is located",
+        "You control your data"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The concern is where the data is stored, which is the data location principle and its residency options. Defense is about government requests, security is about encryption, and control is about who owns and uses the data."
+    },
+    {
+      "id": "sc-900.d4.q011",
+      "lesson": "sc-900.d4.2.01",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which URL opens the Microsoft Purview portal, where you manage Purview data security, data governance, and risk and compliance solutions?",
+      "options": [
+        "https://security.microsoft.com",
+        "https://entra.microsoft.com",
+        "https://purview.microsoft.com",
+        "https://portal.azure.com"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The Microsoft Purview portal is at purview.microsoft.com. security.microsoft.com is the Microsoft Defender portal, entra.microsoft.com is the Entra admin center for identity, and portal.azure.com manages Azure resources."
+    },
+    {
+      "id": "sc-900.d4.q012",
+      "lesson": "sc-900.d4.2.01",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Two admins in the same tenant open the Microsoft Purview portal. One sees the Insider Risk Management solution card and the other doesn't. What is the most likely reason?",
+      "options": [
+        "Insider Risk Management is available only in the Microsoft Defender portal.",
+        "The Knowledge Center hides solutions the admin hasn't completed training for.",
+        "The admin's portal theme setting hides some solution cards.",
+        "The solutions shown depend on the user's role permissions and the organization's licensing."
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The Purview portal only shows solution cards you have permissions and a subscription for, so role differences explain it. Insider Risk Management is a Purview solution. The Knowledge Center is learning content, and themes only change appearance."
+    },
+    {
+      "id": "sc-900.d4.q013",
+      "lesson": "sc-900.d4.2.01",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the Microsoft Purview portal, select Yes if true.",
+      "statements": [
+        {
+          "s": "It brings data security, data governance, and risk and compliance solutions together in one experience.",
+          "a": true
+        },
+        {
+          "s": "The home page's Compliance posture status card shows information from Compliance Manager.",
+          "a": true
+        },
+        {
+          "s": "The Microsoft Purview compliance portal at compliance.microsoft.com remains the main portal for Purview solutions.",
+          "a": false
+        }
+      ],
+      "explain": "The Purview portal unifies data security, data governance and compliance, and its Compliance posture status card links to Compliance Manager. The older Microsoft Purview compliance portal has been retired, and its features moved to the new portal."
+    },
+    {
+      "id": "sc-900.d4.q014",
+      "lesson": "sc-900.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In Compliance Manager, which type of control is implemented entirely by Microsoft for its cloud services?",
+      "options": [
+        "Shared control",
+        "Your control (customer-managed)",
+        "Microsoft-managed control",
+        "Custom control"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Microsoft-managed controls are implemented by Microsoft, and you can see their implementation details and audit results. Customer-managed controls are yours, and shared controls are split between you and Microsoft. 'Custom' describes templates you build, not who is responsible for a control."
+    },
+    {
+      "id": "sc-900.d4.q015",
+      "lesson": "sc-900.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your organization must track its progress toward ISO/IEC 27001 for Microsoft 365. What should you create in Compliance Manager?",
+      "options": [
+        "An assessment based on the ISO/IEC 27001 regulation template",
+        "A sensitivity label policy scoped to ISO documents",
+        "An auto-apply retention label policy for audit evidence",
+        "An insider risk management policy"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Assessments created from regulation templates group the controls and improvement actions for a standard and score your progress. Label, retention and insider risk policies protect or govern data, but they don't measure compliance against a regulation."
+    },
+    {
+      "id": "sc-900.d4.q016",
+      "lesson": "sc-900.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE are key elements of Microsoft Purview Compliance Manager? Select THREE.",
+      "options": [
+        "Controls",
+        "Assessments",
+        "Review sets",
+        "Improvement actions",
+        "Trainable classifiers"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Compliance Manager is built from regulation templates, assessments, controls and improvement actions. Review sets belong to eDiscovery, and trainable classifiers belong to data classification."
+    },
+    {
+      "id": "sc-900.d4.q017",
+      "lesson": "sc-900.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You need to start tracking compliance with a new regulation in Compliance Manager. Put the steps in order.",
+      "options": [
+        "Choose the regulation template",
+        "Create an assessment from the template",
+        "Review the assessment's controls and improvement actions",
+        "Implement and test the improvement actions",
+        "Monitor the assessment score"
+      ],
+      "explain": "The template defines the regulation and the assessment applies it to your services. The controls lead to improvement actions, which you implement and test (manually or automatically). Points then show up in the assessment score."
+    },
+    {
+      "id": "sc-900.d4.q018",
+      "lesson": "sc-900.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In Compliance Manager, what is an improvement action called if you implement it by changing a configuration in a solution, such as enabling a DLP policy?",
+      "options": [
+        "Operational action",
+        "Documentation action",
+        "Corrective action",
+        "Technical action"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Technical actions are done by working with the technology, for example a configuration change. Documentation and operational actions are the two kinds of nontechnical action. 'Corrective' is a risk category used for scoring, not an implementation type."
+    },
+    {
+      "id": "sc-900.d4.q019",
+      "lesson": "sc-900.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your team meets a Compliance Manager improvement action's requirement with a non-Microsoft security tool instead of the recommended Microsoft feature. Which implementation status should you set?",
+      "options": [
+        "Implemented",
+        "Out of scope",
+        "Alternative implementation",
+        "Planned"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Alternative implementation records that you met the requirement with other tools or methods than Microsoft recommends. Out of scope means the action doesn't apply and earns no points. Planned means it isn't done yet, and Implemented means you followed the recommended approach."
+    },
+    {
+      "id": "sc-900.d4.q020",
+      "lesson": "sc-900.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Compliance Manager improvement actions, select Yes if true.",
+      "statements": [
+        {
+          "s": "Automatic testing is turned on by default for eligible improvement actions.",
+          "a": true
+        },
+        {
+          "s": "Compliance Manager can use Microsoft Defender for Cloud signals to test actions for Azure, AWS and Google Cloud resources.",
+          "a": true
+        },
+        {
+          "s": "Evidence attached to an action with test status Passed can still be deleted by any user with read access.",
+          "a": false
+        }
+      ],
+      "explain": "Automatic testing is on by default, and Defender for Cloud gives multicloud signals. Read-only users can only view evidence. After an action's status is Passed, Failed or Out of scope, its evidence can't be deleted at all."
+    },
+    {
+      "id": "sc-900.d4.q021",
+      "lesson": "sc-900.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An improvement action requires your organization to write and publish an acceptable use policy for staff. How does Compliance Manager classify this action?",
+      "options": [
+        "Technical action",
+        "Nontechnical documentation action",
+        "Nontechnical operational action",
+        "Microsoft-managed action"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Writing a policy document is a nontechnical documentation action. Operational actions are about running processes, such as training or reviews. Technical actions change a configuration, and Microsoft-managed actions are Microsoft's responsibility, not your HR policy."
+    },
+    {
+      "id": "sc-900.d4.q022",
+      "lesson": "sc-900.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is a new organization's initial compliance score in Compliance Manager based on?",
+      "options": [
+        "The tenant's Microsoft Secure Score",
+        "The number of DLP alerts in the last 30 days",
+        "The number of published sensitivity labels",
+        "The Microsoft 365 Data Protection Baseline assessment"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Every tenant starts with the default Microsoft 365 Data Protection Baseline assessment, and its controls produce the initial score. Secure Score is a separate security posture measure. Alert counts and label counts aren't the basis of the score."
+    },
+    {
+      "id": "sc-900.d4.q023",
+      "lesson": "sc-900.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which type of improvement action adds the most points to your compliance score when completed?",
+      "options": [
+        "Detective mandatory",
+        "Preventative mandatory",
+        "Corrective discretionary",
+        "Preventative discretionary"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Preventative mandatory actions are worth 27 points, the highest value. Preventative discretionary actions are worth 9, detective and corrective mandatory actions 3, and detective and corrective discretionary actions 1. The weighting reflects how much risk each action reduces."
+    },
+    {
+      "id": "sc-900.d4.q024",
+      "lesson": "sc-900.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about compliance score, select Yes if true.",
+      "statements": [
+        {
+          "s": "A compliance score of 100% guarantees that your organization complies with the regulation.",
+          "a": false
+        },
+        {
+          "s": "A mandatory action earns more points than a discretionary action in the same risk category.",
+          "a": true
+        },
+        {
+          "s": "Compliance score and Microsoft Secure Score measure the same thing.",
+          "a": false
+        }
+      ],
+      "explain": "Compliance score helps you track and prioritize, but Microsoft says it isn't a guarantee of compliance. Mandatory actions are weighted higher, for example 27 versus 9 for preventative actions. Secure Score measures security posture, not regulatory compliance."
+    },
+    {
+      "id": "sc-900.d4.q025",
+      "lesson": "sc-900.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Lena manages three Compliance Manager assessments: the Data Protection Baseline, ISO/IEC 27001 and NIST CSF. She presents the overall compliance score to leadership, and the CFO notices that it doesn't equal the average of the three assessment scores. He asks whether the dashboard is broken.",
+      "stem": "Which explanation should Lena give?",
+      "options": [
+        "Assessment scores never include Microsoft-managed actions, but the overall score does.",
+        "The overall score only reflects the Data Protection Baseline assessment.",
+        "In the overall score, each Microsoft-managed and technical action counts once, while nontechnical actions count once per group.",
+        "Assessment scores refresh weekly, while the overall score refreshes hourly."
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Actions shared across assessments are counted differently in the overall score. Microsoft-managed and technical actions count once, and nontechnical actions count once per group, so it isn't a simple average. Assessment scores do include Microsoft-managed actions, and statuses refresh about every 24 hours."
+    },
+    {
+      "id": "sc-900.d4.q026",
+      "lesson": "sc-900.d4.3.01",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Purview classification method detects credit card numbers by using a pattern, a checksum and nearby keywords?",
+      "options": [
+        "Trainable classifier",
+        "Sensitivity label",
+        "Retention label",
+        "Sensitive information type"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Sensitive information types match patterns with supporting evidence such as checksums and keywords, and report a confidence level. Trainable classifiers use machine learning on example content. Sensitivity and retention labels are what you apply after classification. They don't detect content themselves."
+    },
+    {
+      "id": "sc-900.d4.q027",
+      "lesson": "sc-900.d4.3.01",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A bank wants DLP to match only its real customer account numbers, taken from a database export, so that look-alike numbers don't cause false positives. Which classification method fits best?",
+      "options": [
+        "Named entity sensitive information type",
+        "Exact data match (EDM) sensitive information type",
+        "Pretrained trainable classifier",
+        "Document fingerprinting"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "EDM matches the actual values from your own sensitive data table, which keeps false positives very low. Named entities detect generic names, addresses and medical terms. Pretrained classifiers recognize document categories, and fingerprinting recognizes forms built from a template."
+    },
+    {
+      "id": "sc-900.d4.q028",
+      "lesson": "sc-900.d4.3.01",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "The legal team wants Purview to detect any completed copy of the company's standard nondisclosure agreement form, no matter what has been filled in. Which feature should you use?",
+      "options": [
+        "Document fingerprinting",
+        "Exact data match",
+        "Named entities",
+        "Keyword dictionary in a custom SIT"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Document fingerprinting creates a sensitive information type from a template, so it recognizes filled-in variations of that form. EDM needs a table of exact values, named entities detect people, places and medical terms, and a keyword dictionary would miss the form's structure or match unrelated documents."
+    },
+    {
+      "id": "sc-900.d4.q029",
+      "lesson": "sc-900.d4.3.02",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What best describes how trainable classifiers differ from sensitive information types?",
+      "options": [
+        "They only work for Exchange Online email.",
+        "They encrypt content as soon as it's classified.",
+        "They use machine learning to recognize a category of content, such as resumes or source code, rather than a fixed pattern.",
+        "They must be applied manually by users in Office apps."
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Trainable classifiers learn from examples to recognize kinds of content that have no fixed pattern. They work across many locations and don't encrypt anything (labels do that). They're applied automatically in policies, not chosen by users."
+    },
+    {
+      "id": "sc-900.d4.q030",
+      "lesson": "sc-900.d4.3.02",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO Microsoft Purview features can use trainable classifiers as a condition? Select TWO.",
+      "options": [
+        "Data loss prevention policies",
+        "Auto-apply retention label policies",
+        "Content explorer role groups",
+        "Audit log retention policies",
+        "Service Trust Portal notifications"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "DLP policies and auto-apply retention label policies (as well as sensitivity auto-labeling and communication compliance) can use trainable classifiers. Role groups control permissions, audit retention policies filter by service, activity or user, and STP notifications are about document updates."
+    },
+    {
+      "id": "sc-900.d4.q031",
+      "lesson": "sc-900.d4.3.02",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about data classification in Microsoft Purview, select Yes if true.",
+      "statements": [
+        {
+          "s": "Microsoft provides pretrained trainable classifiers that are ready to use.",
+          "a": true
+        },
+        {
+          "s": "Named entity SITs can detect items such as person names and physical addresses.",
+          "a": true
+        },
+        {
+          "s": "You create a custom trainable classifier by writing a regular expression.",
+          "a": false
+        }
+      ],
+      "explain": "Pretrained classifiers are available out of the box, and named entities use dictionaries and patterns for names, addresses and medical terms. You train a custom classifier by giving it sample content. Regular expressions define custom sensitive information types."
+    },
+    {
+      "id": "sc-900.d4.q032",
+      "lesson": "sc-900.d4.3.03",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Purview tool shows a current snapshot of items that have sensitivity labels, retention labels or sensitive information types, and where those items are stored?",
+      "options": [
+        "Activity explorer",
+        "Content explorer",
+        "Audit (Standard)",
+        "Compliance Manager"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Content explorer shows what exists now and where, with drill-down to individual items. Activity explorer shows actions taken over time. Audit searches activity logs, and Compliance Manager tracks regulatory controls."
+    },
+    {
+      "id": "sc-900.d4.q033",
+      "lesson": "sc-900.d4.3.03",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Amir is a Compliance Administrator at Northwind. He can open the Content explorer tab, but the list of items is empty for him. His manager wants him to see which items match each sensitive information type and where they're stored. He must not be able to open or read the files' contents.",
+      "stem": "Which role group should you add Amir to?",
+      "options": [
+        "eDiscovery Manager",
+        "Security Reader",
+        "Information Protection Reader",
+        "Content Explorer List Viewer"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Content Explorer List Viewer lets you see items and their locations in list view. Viewing item contents needs the separate Content Explorer Content Viewer group. Admin and reader roles open the tab but don't show the list, and eDiscovery Manager is for eDiscovery cases."
+    },
+    {
+      "id": "sc-900.d4.q034",
+      "lesson": "sc-900.d4.3.04",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Purview tool gives a historical view of actions on labeled content, such as 'label applied', 'label changed' and 'file read'?",
+      "options": [
+        "Activity explorer",
+        "Content explorer",
+        "Microsoft Purview Data Map",
+        "Compliance score"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Activity explorer shows labeling, DLP and endpoint activities over time, using data from the unified audit log. Content explorer is a current inventory of items. Data Map catalogs data estate metadata, and compliance score measures regulatory progress."
+    },
+    {
+      "id": "sc-900.d4.q035",
+      "lesson": "sc-900.d4.3.04",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about activity explorer, select Yes if true.",
+      "statements": [
+        {
+          "s": "Activity explorer reports on up to 30 days of data.",
+          "a": true
+        },
+        {
+          "s": "Activity explorer data comes from the Microsoft 365 unified audit log.",
+          "a": true
+        },
+        {
+          "s": "Activities in core services such as SharePoint appear in activity explorer in real time.",
+          "a": false
+        }
+      ],
+      "explain": "Activity explorer covers up to 30 days and uses the unified audit log. It isn't real time: Microsoft says to allow about 60–90 minutes for Exchange, SharePoint, OneDrive and Teams activity to appear."
+    },
+    {
+      "id": "sc-900.d4.q036",
+      "lesson": "sc-900.d4.3.04",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": null,
+      "stem": "A security lead is choosing between content explorer and activity explorer. Which TWO questions can activity explorer answer? Select TWO.",
+      "options": [
+        "Which user downgraded the sensitivity label on a file last week?",
+        "How many SharePoint files currently contain credit card numbers?",
+        "Which DLP rule matched when a user copied a file to a USB drive?",
+        "Which regulations the tenant is being assessed against",
+        "Which version of Microsoft's SOC report is current"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Activity explorer records actions such as label changes and Endpoint DLP rule matches over time. A count of files containing card numbers right now is content explorer's job. Regulations are tracked in Compliance Manager, and SOC reports are in the Service Trust Portal."
+    }
+  ]
+}

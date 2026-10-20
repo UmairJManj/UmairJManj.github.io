@@ -1,0 +1,1467 @@
+{
+ "exam": "sc-200",
+ "domain": "d1",
+ "lessons": [
+  {
+   "id": "sc-200.d1.1.01",
+   "objective": "d1.1",
+   "seq": 1,
+   "title": "Defender XDR email notifications",
+   "short": "Defender XDR can email people about new **incidents**, about **response actions**, and about new or updated **Threat analytics** reports. All three are rule-based and live under Settings > Microsoft Defender XDR > Email notifications, each on its own tab.",
+   "deep": "Email notifications let a SOC react without watching the portal all day. In the Microsoft Defender portal go to **Settings > Microsoft Defender XDR > Email notifications**. There are three tabs:\n- **Incidents**: an incident notification rule has Basics (name), Notification settings (alert **severity**, **device group scope**, optional filtering by service/detection source, **Send only one notification per incident**, **Include organization name**, **Include tenant-specific portal link**), Recipients, and Review. Use **Send test email** to check delivery.\n- **Actions**: notifies when response actions run. Filter by **action source** (Manual, Automated or both), the actions themselves, device groups, and **action status** (Completed, Failed).\n- **Threat analytics**: notify on all new or updated reports, or only reports of a certain type or tag (for example ransomware).\n\nYou need the **Manage security settings** permission (Security Administrator or higher under basic permissions). With RBAC you can only create, edit and receive notifications for device groups you are allowed to manage. Recipients only get emails for incidents that occur after they are added.",
+   "terms": [
+    {
+     "t": "Incident notification rule",
+     "d": "Rule that emails chosen recipients when incidents matching severity, source and device group conditions are created or updated."
+    },
+    {
+     "t": "Send only one notification per incident",
+     "d": "Option that sends a single email per incident instead of one for every update."
+    },
+    {
+     "t": "Action status",
+     "d": "Filter in action notification rules: Completed and/or Failed response actions."
+    }
+   ],
+   "trap": "Candidates confuse these with Sentinel automation rules or the endpoint-only vulnerability notifications; incident, action and threat analytics emails are all under Settings > Microsoft Defender XDR > Email notifications.",
+   "example": "A SOC manager creates an incident rule for High severity only, ticks 'one notification per incident' and adds the on-call distribution list, then sends a test email.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Tab",
+     "Triggers on",
+     "Key filter"
+    ],
+    "rows": [
+     [
+      "Incidents",
+      "New/updated incident",
+      "Severity, device group"
+     ],
+     [
+      "Actions",
+      "Response action",
+      "Manual/automated, status"
+     ],
+     [
+      "Threat analytics",
+      "Report published",
+      "All or type/tag"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.1.02",
+   "objective": "d1.1",
+   "seq": 2,
+   "title": "Alert tuning (formerly alert suppression)",
+   "short": "**Alert tuning** rules automatically hide or resolve alerts that match conditions you define, such as a known scanner process. They reduce queue noise but can hide real threats if too broad, so keep conditions specific.",
+   "deep": "Alert tuning (previously called **alert suppression**) is configured in **Settings > Microsoft Defender XDR > Alert tuning**, or straight from an alert's details page (which pre-fills conditions from the alert's evidence).\n\nA rule chooses **service sources** (for example Defender for Endpoint, Defender for Office 365) and then conditions based on **evidence/IOC types** such as file, process, scheduled task, AMSI script or WMI event. Conditions can be combined with **AND/OR** and grouping; up to 200 conditions per rule; values are not case-sensitive and some support wildcards.\n\nActions:\n- **Hide alert**: suppresses the alert so no incident is created; data stays in `AlertInfo` and `AlertEvidence`. Defender for Endpoint alerts only.\n- **Resolve alert**: the alert (and related incident) is created but auto-resolved.\n- **Set as behavior**: turns matches into behaviors kept for hunting.\n\nMicrosoft also ships **built-in tuning rules** for common benign noise; they do not apply to custom detections, and you can disable them. Example: the built-in rule that auto-resolves user-reported phish stops the Security Copilot Phishing Triage Agent from classifying those alerts. In Unified RBAC, managing tuning needs **Detection tuning (manage)**.",
+   "terms": [
+    {
+     "t": "Hide alert",
+     "d": "Tuning action that suppresses a Defender for Endpoint alert; no incident is created but the data stays in AlertInfo/AlertEvidence."
+    },
+    {
+     "t": "Resolve alert",
+     "d": "Tuning action that lets the alert be created but resolves it automatically."
+    },
+    {
+     "t": "Detection tuning",
+     "d": "Unified RBAC permission to manage custom detections, alert tuning and indicators."
+    }
+   ],
+   "trap": "Alert tuning is not an exclusion: the activity still happens and is still logged; the exam may offer AV exclusions or automation folder exclusions as wrong ways to cut alert noise.",
+   "example": "A nightly vulnerability scanner triggers 'suspicious process' alerts; the team creates a tuning rule matching that scanner process on the scanning server with the Resolve alert action.",
+   "diagram": null
+  },
+  {
+   "id": "sc-200.d1.1.03",
+   "objective": "d1.1",
+   "seq": 3,
+   "title": "Alert correlation and incident merging",
+   "short": "Defender XDR **correlates** related alerts from all its products (and the primary Sentinel workspace) into one **incident**, and keeps **merging** incidents that share entities, artifacts or attack sequences. Admins can exclude specific Sentinel analytics rules from correlation.",
+   "deep": "**Correlation** groups alerts that are related within a time frame (same users, devices, mailboxes, files, processes, or a recognisable attack chain) into a single incident. Only the **primary** Sentinel workspace correlates with Defender alerts; secondary workspaces don't.\n\n**Merging**: when two incidents turn out to be related, Defender moves alerts, entities and tags from the source incident to the target. The source is closed and tagged **Redirected**. Defender picks the merge direction.\n\nAutomatic merging is blocked when one incident is **closed**, they're **assigned to different people**, they have **different classifications/determinations**, the merge would exceed the entity limit, or (if enabled) devices are in different device groups. You can fix the blocker and merge manually (up to five incidents at once).\n\nTo keep a Sentinel analytics rule out of correlation, set **Incident correlation** to *Disabled* in the rule wizard's Incident settings, which adds `#DONT_CORR#` to the start of the rule description (`#INC_CORR#` includes it). This needs Microsoft Sentinel Contributor.\n\nFor Defender for Endpoint, the advanced feature **Restrict correlation to within scoped device groups** stops alerts from different device groups being joined, useful for local SOCs.",
+   "terms": [
+    {
+     "t": "Correlation",
+     "d": "Automatic grouping of related alerts from different sources into one incident."
+    },
+    {
+     "t": "#DONT_CORR#",
+     "d": "Tag at the start of a Sentinel analytics rule description that excludes the rule from Defender XDR correlation."
+    },
+    {
+     "t": "Redirected",
+     "d": "Tag on a source incident that was merged into another and closed."
+    }
+   ],
+   "trap": "Turning off alert grouping in a Sentinel rule does not stop Defender XDR correlation; the exam answer is the Incident correlation setting / #DONT_CORR# tag.",
+   "example": "A phishing email alert and a later malicious-file alert on the recipient's laptop are correlated into one multi-stage incident.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Alerts",
+     "Correlation",
+     "Incident",
+     "Merge check",
+     "Single incident"
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.1.04",
+   "objective": "d1.1",
+   "seq": 4,
+   "title": "Defender for Endpoint advanced features",
+   "short": "**Advanced features** are tenant-wide on/off switches in Settings > Endpoints > Advanced features, such as EDR in block mode, tamper protection, custom network indicators, live response, and integrations with Intune, Defender for Cloud Apps and Purview.",
+   "deep": "Go to **Settings > Endpoints > Advanced features**, toggle On/Off and select **Save preferences**. Exam-relevant switches:\n- **Restrict correlation to within scoped device groups**: local SOCs only see incidents for their device groups (affects future correlation only).\n- **Enable EDR in block mode**: EDR blocks malicious artifacts even when Defender Antivirus runs in **passive mode**.\n- **Automatically resolve alerts**: resolves alerts where no threats were found or threats were remediated.\n- **Allow or block file**: needed to block files by indicator; requires Defender Antivirus as the **active** antimalware and **cloud-based protection** on.\n- **Custom network indicators**: allow/block IPs, domains and URLs from your indicator list.\n- **Tamper protection**: stops apps and users changing Defender security settings.\n- **Web content filtering**, **Device discovery**, **Show user details**.\n- **Live response**, **Live response for servers**, **Allow unsigned script execution in live response** (each separate).\n- **Download quarantined files** (on by default).\n- **Microsoft Intune connection** (device risk for Conditional Access), **Microsoft Defender for Cloud Apps**, **Share endpoint alerts with Microsoft Purview** (insider risk).\n- **Hide potential duplicate device records** (on by default).",
+   "terms": [
+    {
+     "t": "EDR in block mode",
+     "d": "Lets Defender for Endpoint EDR block threats even when a non-Microsoft AV is primary and Defender AV is passive."
+    },
+    {
+     "t": "Tamper protection",
+     "d": "Locks Defender Antivirus settings so malware or users cannot turn protection off."
+    },
+    {
+     "t": "Live response for servers",
+     "d": "Separate switch that allows live response sessions on server operating systems."
+    }
+   ],
+   "trap": "Live response, live response for servers and unsigned script execution are three separate switches; enabling one does not enable the others.",
+   "example": "A company running a third-party AV turns on EDR in block mode so Defender for Endpoint can still remediate post-breach detections.",
+   "diagram": null
+  },
+  {
+   "id": "sc-200.d1.1.05",
+   "objective": "d1.1",
+   "seq": 5,
+   "title": "Rules settings: indicators of compromise",
+   "short": "Under Settings > Endpoints > Rules > **Indicators** you define **IoCs** (file hashes, IPs, URLs/domains, certificates) with an action such as Allow, Audit, Warn, Block execution or Block and remediate, scoped to device groups.",
+   "deep": "The **Rules** section of Defender for Endpoint settings holds rule-type configuration: **Indicators**, automation uploads, automation folder exclusions, web content filtering and custom data collection.\n\n**Indicators of compromise (IoCs)** let you decide how specific entities are treated. For each indicator you set the **action**, an expiry and the **device groups** in scope:\n- **Files** (hash): Allow, Audit, Warn, Block execution, Block and remediate.\n- **IP addresses** and **URLs/domains**: Allow, Audit, Warn, Block execution.\n- **Certificates** (.CER/.PEM): Allow, Block and remediate.\n\nNotes: limit of **15,000 indicators per tenant** (cannot be increased). IP indicators need full IPv4/IPv6 addresses (no CIDR ranges or wildcards). A domain indicator also matches subdomains. Indicators are not supported when Defender Antivirus is in **passive mode**, and Microsoft-signed apps can't be blocked. File indicators require the **Allow or block file** advanced feature; IP/URL indicators require **Custom network indicators**. **Audit** raises an alert at the severity you choose; **Warn** shows a bypassable prompt. Managing indicators needs Unified RBAC **Detection tuning** (or Response for automation allow/block lists).",
+   "terms": [
+    {
+     "t": "IoC",
+     "d": "Indicator of compromise: a file hash, IP, URL/domain or certificate with a defined action."
+    },
+    {
+     "t": "Block and remediate",
+     "d": "Indicator action for files/certificates that blocks and also removes the item."
+    },
+    {
+     "t": "Warn",
+     "d": "Indicator action that shows the user a warning they can bypass."
+    }
+   ],
+   "trap": "Block and remediate is not available for IP or URL indicators, and IP indicators cannot take a CIDR range.",
+   "example": "During an incident the SOC adds the attacker's C2 domain as a Block execution indicator for all device groups.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "IoC type",
+     "Warn",
+     "Block & remediate"
+    ],
+    "rows": [
+     [
+      "File hash",
+      "Yes",
+      "Yes"
+     ],
+     [
+      "IP address",
+      "Yes",
+      "No"
+     ],
+     [
+      "URL/domain",
+      "Yes",
+      "No"
+     ],
+     [
+      "Certificate",
+      "No",
+      "Yes"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.1.06",
+   "objective": "d1.1",
+   "seq": 6,
+   "title": "Rules settings: automation uploads and folder exclusions",
+   "short": "**Automation uploads** controls which file types are sent to the cloud for deeper inspection during automated investigation (Content analysis). **Automation folder exclusions** tell automated investigation to skip specific folders, while antivirus still scans them.",
+   "deep": "Two Defender for Endpoint settings tune how automated investigation treats files.\n\n**Automation uploads** (Settings > Endpoints > Rules > Automation uploads): turn **Content analysis** On/Off and list file extension names (comma-separated, for example `exe,bat`). Matching suspicious files are uploaded for cloud inspection during automated investigation. Submitted files are kept for six months.\n\n**Automation folder exclusions**: add a **folder** (required; includes subfolders, trailing wildcard allowed), optional **extensions** and **file names**, and a **description**. Automated investigation ignores excluded items, and live response attempts to collect those files fail with *File is excluded*. Exclusions apply to all onboarded devices and affect **only automated investigation**; antivirus still scans the files. Specify file names where possible so attackers can't hide in an excluded folder.\n\nPermissions: Unified RBAC **Core security settings (manage)**, or Security Administrator. Not available in Defender for Business.",
+   "terms": [
+    {
+     "t": "Content analysis",
+     "d": "Automation uploads toggle that sends selected file types to the cloud for inspection during automated investigation."
+    },
+    {
+     "t": "Automation folder exclusion",
+     "d": "Folder that automated investigation skips; antivirus scanning still applies."
+    }
+   ],
+   "trap": "Automation folder exclusions are not antivirus exclusions; they only stop automated investigation from examining the folder.",
+   "example": "A build server folder full of compiled test binaries keeps generating investigations, so the team excludes the folder for named build outputs only.",
+   "diagram": null
+  },
+  {
+   "id": "sc-200.d1.1.07",
+   "objective": "d1.1",
+   "seq": 7,
+   "title": "Custom data collection in Defender for Endpoint",
+   "short": "**Custom data collection** rules gather extra endpoint events beyond default telemetry, filtered by paths, process names or connections, from devices chosen by **dynamic tags**, and send them to a connected **Microsoft Sentinel** workspace in `DeviceCustom*` tables.",
+   "deep": "Default Defender for Endpoint telemetry is sampled and summarised. When you need more (for example every PowerShell launch on admin workstations), create a **custom data collection rule** at **Settings > Endpoints > Rules > Custom Data Collection**.\n\n**Prerequisites**: Defender for Endpoint **Plan 2**; a connected **Microsoft Sentinel workspace** (currently one per tenant) selected in the rule wizard; **dynamic tags** created in **Asset rule management** (manual tags are not supported); Windows 10/11 or Windows Server 2019+.\n\n**Steps**: choose the workspace, Create rule (name), choose the **table**, actions and conditions, define **scope** (all devices or dynamic tags), review and submit. Rules deploy in about 20 minutes to 1 hour.\n\n**Tables** in Sentinel: `DeviceCustomProcessEvents`, `DeviceCustomFileEvents`, `DeviceCustomNetworkEvents`, `DeviceCustomScriptEvents`, `DeviceCustomImageLoadEvents`. Each row has a **RuleName** column; use `TimeGenerated` for time.\n\n**Limits and cost**: each rule collects up to **75,000 events per device per 24-hour rolling window**; then that rule pauses on that device while other rules continue. The feature is included in Plan 2, but **Sentinel ingestion is billed**.",
+   "terms": [
+    {
+     "t": "DeviceCustomProcessEvents",
+     "d": "Sentinel table holding process events gathered by custom data collection rules."
+    },
+    {
+     "t": "Dynamic tag",
+     "d": "Device tag assigned automatically by Asset rule management rules; required to target custom collection."
+    },
+    {
+     "t": "RuleName",
+     "d": "Column showing which custom collection rule captured the event."
+    }
+   ],
+   "trap": "Custom collection data goes to the Sentinel workspace (DeviceCustom* tables), not to the standard Device* tables, and it needs dynamic, not manual, tags.",
+   "example": "To meet a PCI audit, the team collects all file modifications in a cardholder-data folder on tagged servers into DeviceCustomFileEvents.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Dynamic tag",
+     "Collection rule",
+     "Endpoint sensor",
+     "Sentinel workspace",
+     "DeviceCustom* query"
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.1.08",
+   "objective": "d1.1",
+   "seq": 8,
+   "title": "Endpoint security policies in the Defender portal",
+   "short": "With **security settings management**, you create Defender for Endpoint **endpoint security policies** (antivirus, firewall, EDR, ASR rules and more) directly in the Defender portal and assign them to Microsoft Entra groups, even for devices not enrolled in Intune.",
+   "deep": "The **Endpoint security policies** page in the Defender portal uses the same policy engine as Intune. Before you can use it you must connect Intune and Defender for Endpoint and enable **security settings management**.\n\nPolicy types include **Microsoft Defender Antivirus**, **Antivirus exclusions**, **Microsoft Defender Firewall** and **Firewall rules**, **Endpoint detection and response (EDR)**, **Attack surface reduction (ASR) rules**, **Device control** and **Windows Security experience**. Windows supports all; macOS and Linux support Antivirus and EDR.\n\nCreate a policy: **Create new policy** > choose platform and template > **Basics** (name) > **Configuration settings** > **Assignments** (include/exclude groups) > **Review + create**.\n\nAssignment uses Microsoft **Entra security groups**. Devices managed only by security settings management (not Intune-enrolled) must be targeted with **device groups**; user targeting isn't supported for them. Such devices check in every **90 minutes**; force it with **More actions > Policy sync** on the device page.\n\nPermissions: a role that applies to all devices, such as Unified RBAC **Core security settings**, Intune **Endpoint Security Manager**, or Security Administrator.",
+   "terms": [
+    {
+     "t": "Security settings management",
+     "d": "Feature that lets Defender-onboarded devices receive Intune endpoint security policies without full Intune enrollment."
+    },
+    {
+     "t": "Policy sync",
+     "d": "Device action that forces an immediate check-in for endpoint security policies."
+    }
+   ],
+   "trap": "Defender-only managed devices cannot be targeted with user groups; policies must go to Entra groups containing the devices.",
+   "example": "A Linux server fleet gets an EDR policy from the Defender portal without being enrolled in Intune.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Create policy",
+     "Basics",
+     "Settings",
+     "Assignments",
+     "Review + create"
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.1.09",
+   "objective": "d1.1",
+   "seq": 9,
+   "title": "Attack surface reduction (ASR) rules",
+   "short": "**ASR rules** block risky behaviours malware uses, such as Office spawning child processes or credential theft from LSASS. Each rule can be Not configured, **Block**, **Audit** or **Warn**. Test in Audit first, then Block.",
+   "deep": "Attack surface reduction rules target behaviours rather than signatures. Each rule has a GUID and a mode:\n- **Not configured / Disabled** (`0`)\n- **Block** (`1`): behaviour is stopped and logged.\n- **Audit** (`2`): behaviour is allowed but logged, for impact testing.\n- **Warn** (`6`): user sees a block they can bypass. Not supported by *Block credential stealing from the Windows local security authority subsystem* or *Block Office applications from injecting code into other processes*.\n\nMicrosoft's **standard protection rules** (block vulnerable signed drivers, block LSASS credential stealing, block WMI persistence) are the minimum set to enable broadly.\n\nDeploy via **endpoint security ASR policy** (Defender portal or Intune), Configuration Manager, Group Policy, or PowerShell, e.g. `Add-MpPreference -AttackSurfaceReductionRules_Ids <GUID> -AttackSurfaceReductionRules_Actions 2`.\n\nMonitor in **Reports > Attack surface reduction rules** (Detections, Configuration, Add exclusions tabs) and in advanced hunting: `DeviceEvents | where ActionType startswith \"Asr\"` (for example `AsrLsassCredentialTheftAudited` / `...Blocked`). Exclusions can be global or per rule; switch a suspected false positive to Audit before excluding.",
+   "terms": [
+    {
+     "t": "Audit mode",
+     "d": "ASR mode that logs what would have been blocked without blocking it."
+    },
+    {
+     "t": "Warn mode",
+     "d": "ASR mode that blocks but lets the user choose to unblock."
+    },
+    {
+     "t": "Standard protection rules",
+     "d": "Microsoft's recommended baseline ASR rules to enable on almost all devices."
+    }
+   ],
+   "trap": "The LSASS credential-theft rule has no Warn mode, and ASR events are in DeviceEvents (ActionType starting 'Asr'), not in a dedicated ASR table.",
+   "example": "Before blocking 'Block all Office applications from creating child processes', an admin runs it in Audit for two weeks and reviews DeviceEvents for business macros.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Mode",
+     "Value",
+     "Blocks?"
+    ],
+    "rows": [
+     [
+      "Disabled",
+      "0",
+      "No"
+     ],
+     [
+      "Block",
+      "1",
+      "Yes"
+     ],
+     [
+      "Audit",
+      "2",
+      "No (logs)"
+     ],
+     [
+      "Warn",
+      "6",
+      "Yes, bypassable"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.1.10",
+   "objective": "d1.1",
+   "seq": 10,
+   "title": "Automated investigation and response (AIR)",
+   "short": "**AIR** investigates alerts like a tier-1 analyst, gives each piece of evidence a verdict (Malicious, Suspicious, No threats found) and either remediates automatically or queues actions for approval in the **Action center**.",
+   "deep": "When an alert starts an automated investigation, AIR examines related entities across devices (Defender for Endpoint), email and content (Defender for Office 365) and on-premises identities (Defender for Identity). Each item gets a verdict: **Malicious**, **Suspicious** or **No threats found**. Remediation actions (quarantine file, stop process, isolate device, soft-delete email, block URL) run automatically or wait for approval depending on configuration; for devices that's the **device group automation level**.\n\nThe **Action center** (security.microsoft.com/action-center) has **Pending** (approve/reject) and **History** (audit log of automated and manual actions, live response commands and AV remediations; some actions such as **Isolate device** can be **undone**). Email remediation from AIR is never automatic; it always waits for approval.\n\nApproving: Unified RBAC **Response (manage)** for devices; **Email & collaboration advanced actions (manage)** for email (or Security Administrator plus Search and Purge).\n\n**2026 change**: from **September 1, 2026**, AIR in Defender for Endpoint no longer runs as a separate investigation experience and can't be triggered manually; its capabilities run inside default antivirus protection. Use a **full antivirus scan** for on-demand investigation. AIR for Defender for Office 365 continues.",
+   "terms": [
+    {
+     "t": "Action center",
+     "d": "Single place to approve pending remediation actions and review/undo completed ones."
+    },
+    {
+     "t": "Verdict",
+     "d": "AIR's judgement on evidence: Malicious, Suspicious or No threats found."
+    }
+   ],
+   "trap": "Email remediation found by AIR is never fully automatic; it always needs approval in the Action center.",
+   "example": "An automated investigation finds a malicious attachment in 40 mailboxes; the analyst approves the pending soft-delete action in the Action center.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Alert",
+     "Investigation",
+     "Verdicts",
+     "Pending/auto action",
+     "Action center"
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.1.11",
+   "objective": "d1.1",
+   "seq": 11,
+   "title": "Automatic attack disruption",
+   "short": "**Automatic attack disruption** spots high-confidence attacks in progress (ransomware, BEC, AiTM) and automatically contains attacker-controlled assets, for example containing devices or disabling users, to stop lateral movement while analysts investigate.",
+   "deep": "Attack disruption works at incident level using correlated XDR signals. Actions include **Contain device**, **Isolate device**, **Contain IP** and **Contain user** (Defender for Endpoint), **Disable user in AD** (Defender for Identity, via the sensor on a domain controller), **Disable/suspend user in Entra ID**, **Revoke user session**, and protection against **OAuth app compromise** (Defender for Cloud Apps).\n\n**Prerequisites**: Device discovery set to **Standard discovery** (for Contain device); device groups at **Full** automation recommended (Semi still allows disruption); Defender for Identity sensors on DCs with auditing configured; the Defender for Cloud Apps **Microsoft 365 connector with all checkboxes**; Exchange Online mailboxes with audit. It works whatever the Defender Antivirus state (active, passive, EDR block mode).\n\n**Exclusions** (not recommended): **Settings > Microsoft Defender XDR > Automated response**: **Identities** tab > Add user exclusion (e.g. break-glass, service accounts); **Devices** tab for device groups (automation level **No automated response**) and **Exclude IP**.\n\n**Seeing and undoing**: incidents get the **Attack Disruption** tag and a yellow banner; actions appear in the Action center. Select the asset and choose **Release from containment** or **Enable user**.",
+   "terms": [
+    {
+     "t": "Contain user",
+     "d": "Defender for Endpoint action that blocks a compromised account's communication and authentication from onboarded devices."
+    },
+    {
+     "t": "Attack Disruption tag",
+     "d": "Tag added to incidents where automatic disruption took action."
+    },
+    {
+     "t": "Automated response settings",
+     "d": "Settings page where users, device groups and IPs are excluded from disruption."
+    }
+   ],
+   "trap": "Excluding an account from disruption is done in Defender XDR Automated response settings, not with a Conditional Access exclusion or alert tuning.",
+   "example": "During a ransomware attack, disruption disables the compromised domain admin in AD and contains the encrypting servers before files on other hosts are touched.",
+   "diagram": null
+  },
+  {
+   "id": "sc-200.d1.1.12",
+   "objective": "d1.1",
+   "seq": 12,
+   "title": "Device groups and permissions in Defender for Endpoint",
+   "short": "**Device groups** sort devices by matching rules (name, domain, tag, OS). They control **who can see which devices** (via Entra user groups and roles) and which **automation level** applies. A device belongs only to its highest-ranked matching group.",
+   "deep": "Create device groups at **Settings > Endpoints > Permissions > Device groups**. Each group has:\n- **General**: unique name, **automation (remediation) level**, description.\n- **Devices**: matching rule on **device name, domain, tags, OS platform**. All specified conditions must match; multiple rows of the same property are ORed.\n- **Preview devices**.\n- **User access**: Microsoft Entra user groups that already have roles.\n\n**Rank** decides membership: rank 1 is highest and a device joins only the **highest-ranked** group it matches. **Ungrouped devices (default)** catches the rest; it can't be deleted or re-ranked, but you can change its automation level and access.\n\nA group with no assigned user groups is visible to all portal users. Tags (manual, registry `DeviceTagging\\Group`, Intune, API or dynamic rules) drive membership.\n\n**Permissions**: Microsoft Defender XDR **Unified RBAC** is now the default (new tenants since February 2025, with remaining tenants being auto-enabled from late 2026). Custom roles combine permissions such as **Security data basics (read)**, **Alerts (manage)**, **Response (manage)**, **Basic/Advanced live response**, **Detection tuning**, **Authorization** (manage device groups and roles), and are scoped to device groups. In legacy MDE RBAC, turning RBAC on was irreversible.",
+   "terms": [
+    {
+     "t": "Device group rank",
+     "d": "Priority order; a device joins only the highest-ranked group whose rule it matches."
+    },
+    {
+     "t": "Ungrouped devices (default)",
+     "d": "Built-in catch-all group that can't be deleted or re-ranked."
+    },
+    {
+     "t": "Unified RBAC",
+     "d": "Single Defender XDR permission model across Defender workloads and Sentinel, with device-group scoping."
+    }
+   ],
+   "trap": "A device that matches two groups is not in both; it goes only to the higher-ranked group.",
+   "example": "A 'DE-Servers' group matches tag DE and OS Windows Server, ranked above 'All-Servers', and only the German SOC's Entra group has access to it.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Rank 1: Tier-0 servers",
+     "Rank 2: DE devices",
+     "Rank 3: All workstations",
+     "Ungrouped devices (default)"
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.1.13",
+   "objective": "d1.1",
+   "seq": 13,
+   "title": "Automation levels for device groups",
+   "short": "Each device group's **automation level** decides whether AIR remediations run automatically or need approval: Full, three Semi levels (all folders, core folders, non-temp folders), or No automated response. Microsoft recommends **Full**.",
+   "deep": "The levels, from most to least automated:\n- **Full - remediate threats automatically**: remediation runs on malicious entities; actions show in Action center History and can be undone. Recommended, and the default for tenants created on or after 16 August 2020.\n- **Semi - require approval for core folders remediation**: approval only for files in **core folders** (operating system directories such as `\\windows\\*`); other folders auto-remediate.\n- **Semi - require approval for non-temp folders remediation**: only files in **temporary folders** (e.g. `\\users\\*\\appdata\\local\\temp\\*`, `\\windows\\temp\\*`, Downloads) auto-remediate; everything else needs approval.\n- **Semi - require approval for all folders**: every remediation waits on the Pending tab (default for tenants created before 16 August 2020).\n- **No automated response**: automated investigation doesn't run. Not recommended; also excludes the group from attack disruption device actions.\n\nPending actions not approved time out after seven days. Set the level per device group, including **Ungrouped devices (default)**.",
+   "terms": [
+    {
+     "t": "Core folders",
+     "d": "Operating system directories such as \\windows\\*."
+    },
+    {
+     "t": "Full automation",
+     "d": "Remediation actions on malicious entities run without approval."
+    }
+   ],
+   "trap": "'Core folders' means OS folders, and 'non-temp folders' is the stricter Semi level: only temp-folder files are fixed automatically.",
+   "example": "Domain controllers are placed in a group with 'Semi - require approval for core folders remediation' so no system files are changed without review.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Full",
+     "Semi: core folders",
+     "Semi: non-temp folders",
+     "Semi: all folders",
+     "No automated response"
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.1.14",
+   "objective": "d1.1",
+   "seq": 14,
+   "title": "Microsoft Sentinel automation rules",
+   "short": "**Automation rules** centrally automate incident and alert handling in Sentinel: a **trigger** (incident created, incident updated, alert created), **conditions**, and ordered **actions** such as change status/severity, assign owner, add tags or tasks, or **run playbook**.",
+   "deep": "Automation rules are lightweight SOAR without code.\n\n**Triggers**: **When incident is created**; **When incident is updated** (status, owner, severity, alerts, comments, tags, tactics change); **When alert is created** (Scheduled/NRT rules; mainly for rules that don't create incidents).\n\n**Conditions**: incident properties (including analytics rule name, entities) with operators like equals, contains, starts with. Update triggers add **Updated by** (user, application, AIR, alert grouping/Defender XDR correlation, playbook, automation rule) and state-change operators (changed, changed to). Conditions see the **current state**: if an earlier rule lowered severity, later rules see the new value.\n\n**Actions** (run in listed order): change status (close with reason and comment), change severity, assign owner, add tags, **add task**, **run playbook** (incident rules run incident-trigger playbooks; alert rules run alert-trigger playbooks).\n\n**Order**: rules run **sequentially, never in parallel**, by order number; duplicate numbers run in random order. Optional **expiration** date auto-disables a rule (handy for pen-test suppression). Rules can be created from the Automation page, the analytics rule wizard, or an incident (pre-filled suppression).\n\nTo run playbooks, the **Sentinel service account** needs permissions on the playbook's resource group.",
+   "terms": [
+    {
+     "t": "Automation rule",
+     "d": "Sentinel rule with trigger, conditions and actions that runs sequentially by order number."
+    },
+    {
+     "t": "Updated by",
+     "d": "Update-trigger condition identifying who changed the incident, used to avoid automation loops."
+    },
+    {
+     "t": "Expiration",
+     "d": "Date after which an automation rule is disabled automatically."
+    }
+   ],
+   "trap": "Automation rules run one at a time in order, and each sees the incident as changed by earlier rules.",
+   "example": "A rule closes incidents from the 'Pen test sign-ins' analytics rule as Benign Positive and expires at the end of the test week.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Trigger",
+     "Conditions",
+     "Actions in order",
+     "Run playbook"
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.1.15",
+   "objective": "d1.1",
+   "seq": 15,
+   "title": "Microsoft Sentinel playbooks",
+   "short": "**Playbooks** are **Azure Logic Apps** workflows that Sentinel runs on an incident, alert or entity, automatically through automation rules or manually, for enrichment, ticketing, notifications and response such as disabling a user.",
+   "deep": "A playbook is a Logic App that starts from a Microsoft Sentinel connector **trigger**: **incident** (receives the incident with its alerts and entities, called a *case* in the Defender portal), **alert**, or **entity** (run manually during investigation or hunting).\n\n**Use cases**: enrichment (IP reputation), bi-directional sync with ServiceNow, orchestration (post to Teams), response (block an account, isolate a device).\n\n**Consumption vs Standard**: Consumption runs in multi-tenant Logic Apps and supports Sentinel **playbook templates** (from the Automation page or Content hub). **Standard** runs single-tenant, supports **private endpoints and VNet integration**, but can't be created from templates and Sentinel doesn't support **stateless** Standard workflows.\n\n**Authentication** to Sentinel: managed identity (recommended), service principal, or user. Give the managed identity **Microsoft Sentinel Responder** to update incidents, or **Reader** if it only receives them.\n\n**Roles**: **Logic App Contributor** to build/edit; **Microsoft Sentinel Playbook Operator** to run manually; the Sentinel service account needs **Microsoft Sentinel Automation Contributor** on the playbook's resource group so automation rules can call it (granted via **Manage playbook permissions**, which needs Owner).",
+   "terms": [
+    {
+     "t": "Playbook",
+     "d": "Azure Logic Apps workflow triggered by Sentinel on an incident, alert or entity."
+    },
+    {
+     "t": "Managed identity",
+     "d": "Azure identity for the logic app, granted a Sentinel role so it can call Sentinel without stored credentials."
+    },
+    {
+     "t": "Automation Contributor",
+     "d": "Role for the Sentinel service account so automation rules can run playbooks; not for users."
+    }
+   ],
+   "trap": "If a playbook doesn't appear in an automation rule, the fix is granting Sentinel permissions on the playbook's resource group, not giving the analyst Logic App Contributor.",
+   "example": "An incident-trigger playbook with a managed identity enriches IP entities with threat intel and posts the incident summary to a Teams channel.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Feature",
+     "Consumption",
+     "Standard"
+    ],
+    "rows": [
+     [
+      "Hosting",
+      "Multi-tenant",
+      "Single-tenant"
+     ],
+     [
+      "Templates",
+      "Yes",
+      "No"
+     ],
+     [
+      "Private endpoints",
+      "No",
+      "Yes"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.2.01",
+   "objective": "d1.2",
+   "seq": 1,
+   "title": "Microsoft Sentinel roles",
+   "short": "Sentinel uses Azure RBAC built-in roles: **Reader** (view), **Responder** (view + manage incidents), **Contributor** (+ create rules, workbooks, content hub), plus **Playbook Operator** and **Automation Contributor**. Assign at resource-group scope with least privilege.",
+   "deep": "Built-in Azure roles for the Sentinel SIEM:\n- **Microsoft Sentinel Reader**: view data, incidents, workbooks and recommendations.\n- **Microsoft Sentinel Responder**: Reader + manage incidents (assign, change status, dismiss).\n- **Microsoft Sentinel Contributor**: Responder + create/edit analytics rules, workbooks and other content; install/update solutions in **Content hub**.\n- **Microsoft Sentinel Playbook Operator**: list, view and manually run playbooks.\n- **Microsoft Sentinel Automation Contributor**: lets Sentinel add playbooks to automation rules; **not for user accounts**.\n\nCompanion roles: **Logic App Contributor** (build playbooks), **Workbook Contributor** (needed with Reader/Responder to save workbooks), **Log Analytics Reader/Contributor**. Roles are **cumulative**. Microsoft's guidance: SOC analysts = Responder + Playbook Operator; security engineers = Contributor + Logic App Contributor. Guest users assigned incidents also need Entra **Directory Reader**.\n\nThe **Sentinel data lake** uses **Microsoft Entra roles**: Global Reader, Security Reader, Security Operator, Security Administrator and Global Administrator can read; only **Security Operator**, Security Administrator and Global Administrator can write (KQL jobs, notebooks) or manage scheduled jobs.\n\nIn the Defender portal, **Unified RBAC** can also grant Sentinel workspace access (it syncs with Azure RBAC).",
+   "terms": [
+    {
+     "t": "Microsoft Sentinel Responder",
+     "d": "Role that adds incident management (assign, status, dismiss) on top of Reader."
+    },
+    {
+     "t": "Microsoft Sentinel Contributor",
+     "d": "Role that can create and edit analytics rules, workbooks and content hub solutions."
+    },
+    {
+     "t": "Playbook Operator",
+     "d": "Role that can run but not edit playbooks."
+    }
+   ],
+   "trap": "Automation Contributor is never the answer for a human user; it's for the Sentinel service account.",
+   "example": "Tier-1 analysts get Microsoft Sentinel Responder on the Sentinel resource group and Playbook Operator on the playbooks' resource group.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Contributor: rules, content hub",
+     "Responder: manage incidents",
+     "Reader: view only"
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.2.02",
+   "objective": "d1.2",
+   "seq": 2,
+   "title": "Data tiers and retention: Analytics vs Data lake",
+   "short": "Sentinel tables live in the **Analytics tier** (hot, all features, 30 days to 2 years) or the **Data lake tier** (cheap, long-term, up to 12 years total, queried with KQL jobs and notebooks). Manage both per table in Microsoft Sentinel > Configuration > **Tables**.",
+   "deep": "**Analytics tier**: full-feature storage for analytics rules, hunting, workbooks, watchlists and real-time queries. Analytics retention can be set from **30 days to 2 years**; Sentinel-enabled workspaces include **90 days** of retention at no extra charge.\n\n**Data lake tier**: low-cost storage for data you don't need for real-time detection (high-volume firewall, proxy, audit or compliance logs). Query it with **KQL jobs**, scheduled jobs, **summary rules** and **notebooks**. It is **not** available to analytics rules, hunting queries, watchlists or workbooks.\n\nBy default analytics data is **mirrored** to the data lake, and **total retention** can extend to **12 years**. A table can also be set to **Data lake tier** only.\n\nManage in the Defender portal: **Microsoft Sentinel > Configuration > Tables**, select a table, **Manage table**, choose tier, analytics retention and total retention. Needs Unified RBAC **Data (manage)** or Log Analytics Contributor-level workspace rights.\n\nBehaviour: analytics retention changes apply immediately; shortening total retention waits 30 days; increasing it applies to existing data. Moving Analytics → Data lake stops rules and hunting on that table. Basic Logs tables can be viewed but are managed in the Log Analytics workspace.",
+   "terms": [
+    {
+     "t": "Analytics tier",
+     "d": "Hot storage supporting all Sentinel features; 30 days to 2 years retention."
+    },
+    {
+     "t": "Data lake tier",
+     "d": "Low-cost long-term storage (total retention up to 12 years) queried by KQL jobs and notebooks."
+    },
+    {
+     "t": "Total retention",
+     "d": "Analytics retention plus data lake retention for a table."
+    }
+   ],
+   "trap": "Data that analytics rules or workbooks must use cannot sit only in the data lake tier.",
+   "example": "Firewall traffic logs are set to Data lake tier with 1-year total retention, while SigninLogs stay in Analytics for 180 days.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "",
+     "Analytics",
+     "Data lake"
+    ],
+    "rows": [
+     [
+      "Retention",
+      "30 d - 2 yrs",
+      "Up to 12 yrs total"
+     ],
+     [
+      "Analytics rules",
+      "Yes",
+      "No"
+     ],
+     [
+      "Query with",
+      "KQL, hunting",
+      "KQL jobs, notebooks"
+     ],
+     [
+      "Cost",
+      "Higher",
+      "Low"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.2.03",
+   "objective": "d1.2",
+   "seq": 3,
+   "title": "Retention for Defender XDR tables",
+   "short": "Defender XDR advanced hunting tables (e.g. `DeviceProcessEvents`) keep **30 days** by default at no extra cost. With Sentinel onboarded to the Defender portal you can extend them in Table management, in the Analytics tier or straight to the **Data lake tier**.",
+   "deep": "The **XDR default tier** holds advanced hunting data for **30 days**, included with the Defender licence. (Defender for Endpoint keeps its own portal data such as timelines for 180 days, but **advanced hunting queries reach back 30 days**.)\n\nTo keep XDR data longer, onboard Microsoft Sentinel to the Defender portal, then in **Microsoft Sentinel > Configuration > Tables** set retention above 30 days for supported XDR tables:\n- **Analytics tier** (e.g. 90 or 180 days): the data is ingested into Sentinel, so **Sentinel ingestion costs apply**; storage up to 90 days is included.\n- **Data lake tier only**: avoids analytics ingestion cost; the first 30 days remain in advanced hunting at no extra cost, and older data is queried with KQL jobs or notebooks.\n\nResetting both analytics and total retention back to 30 days stops analytics-tier ingestion for that table. Some XDR and solution tables must stay in the Analytics tier because Microsoft services need them for near-real-time detection.\n\nTable types shown in the portal: **Microsoft Sentinel** tables, **Custom** tables (`_CL`, also summary rule and search job results), and **XDR** tables (view-only until managed).",
+   "terms": [
+    {
+     "t": "XDR default tier",
+     "d": "Built-in 30-day advanced hunting retention included with Defender licences."
+    },
+    {
+     "t": "Table management",
+     "d": "Defender portal page (Sentinel > Configuration > Tables) to set tier and retention per table."
+    }
+   ],
+   "trap": "Extending XDR tables in the Analytics tier costs Sentinel ingestion; choosing Data lake tier avoids that but loses real-time analytics on the older data.",
+   "example": "To hunt a dwell-time of four months, a SOC sets DeviceNetworkEvents to 180 days analytics retention.",
+   "diagram": null
+  },
+  {
+   "id": "sc-200.d1.2.04",
+   "objective": "d1.2",
+   "seq": 4,
+   "title": "Microsoft Sentinel workbooks",
+   "short": "**Workbooks** are interactive dashboards built on Azure Monitor workbooks. Install templates from **Content hub**, save them to **My workbooks**, then edit by adding text, KQL queries and **parameters** such as a time range.",
+   "deep": "Workbooks visualise Sentinel data with charts, grids and tiles. Each saved workbook is an **Azure resource** in the workspace's resource group, so access uses Azure RBAC: at least **Workbook Reader** to view, **Workbook Contributor** to create/edit (Sentinel Contributor includes it).\n\n**From a template**: install the solution in **Content hub** (e.g. Microsoft Entra solution for the sign-in and audit logs workbooks), go to **Workbooks > Templates**, check **Required data types**, **Save**, then **View saved workbook** and **Edit**. Saving stores only the JSON definition, not data. Templates can't be deleted.\n\n**From scratch**: **Add workbook** > **Edit** > add text, queries (data source **Logs**, resource type **Log Analytics**) and parameters > **Done editing** > **Save**. Microsoft recommends **ASIM parsers** so a workbook works across data sources.\n\n**Parameters**: a time range parameter is referenced in KQL as `{TimeRange}` (expands to e.g. `> ago(1d)`), with `{TimeRange:start}`, `{TimeRange:end}` and `{TimeRange:grain}` for `make-series`.\n\n**Auto refresh** can be 5 minutes to 1 day (off by default). Workbooks can't query data-lake-only tables.",
+   "terms": [
+    {
+     "t": "Workbook template",
+     "d": "Read-only workbook installed from Content hub; save it to create your own copy."
+    },
+    {
+     "t": "{TimeRange}",
+     "d": "Workbook time parameter placeholder used in KQL filters."
+    },
+    {
+     "t": "Workbook Contributor",
+     "d": "Azure role needed (with Reader/Responder) to save or edit workbooks."
+    }
+   ],
+   "trap": "A Sentinel Reader or Responder can view workbooks but needs Workbook Contributor to save one.",
+   "example": "An engineer saves the 'Microsoft Entra sign-in logs' template, adds a parameter for country and a TimeRange picker, and shares it with the SOC.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Content hub",
+     "Template",
+     "Save",
+     "My workbooks",
+     "Edit"
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.2.05",
+   "objective": "d1.2",
+   "seq": 5,
+   "title": "SOC optimization recommendations",
+   "short": "**SOC optimization** in the Defender portal gives tailored recommendations to get more value from ingested data (**data value**), close detection gaps (**threat-based / risk-based coverage**, AI MITRE tagging) and add data sources that **similar organizations** use.",
+   "deep": "SOC optimization requires a Sentinel workspace **onboarded to the Defender portal** and standard Sentinel roles. Recommendations are recalculated every **24 hours**.\n\n**Types**:\n- **Data value**: for billable tables with data in the last 30 days. If a table isn't used by any analytics rule but is used by workbooks/hunting, turn on rule templates or move it to a cheaper plan; if it's unused entirely, enable templates or stop ingesting it. Tables used for UEBA or TI matching are left alone.\n- **Threat-based coverage**: compares your data and rules to what's needed against attacks such as ransomware or AiTM. Data present but detections missing → turn on analytics rule templates; rules on but data missing → connect data sources.\n- **Risk-based coverage** (preview) and **AI MITRE ATT&CK tagging** (preview, suggests tactics/techniques for untagged rules).\n- **Similar organizations**: tables missing from your workspace that comparable organisations ingest (excludes custom tables, Syslog/CommonSecurityLog).\n\n**States**: Active, In progress (*Mark as in progress*), Completed (manual or automatic), Dismissed. Actions: View details, **Go to Content Hub**, Change plan, provide feedback, reactivate. The overview shows data ingested (90 days) and threat coverage levels (High >75%, Medium, Low).",
+   "terms": [
+    {
+     "t": "Data value recommendation",
+     "d": "Suggests using or reducing ingested tables that give little detection value."
+    },
+    {
+     "t": "Threat-based coverage",
+     "d": "Recommendation that maps data and rules against specific attack scenarios."
+    }
+   ],
+   "trap": "When the data exists but detections are missing, the recommendation is to enable analytics rule templates, not to connect more data.",
+   "example": "SOC optimization shows the AiTM scenario at Low coverage because Entra sign-in data is present but the matching rule templates are off.",
+   "diagram": {
+    "kind": "cycle",
+    "items": [
+     "Active",
+     "In progress",
+     "Implement",
+     "Completed"
+    ]
+   }
+  },
+  {
+   "id": "sc-200.d1.2.06",
+   "objective": "d1.2",
+   "seq": 6,
+   "title": "Optimizing Sentinel cost and health",
+   "short": "Optimize the platform by watching **ingestion** (the `Usage` table), choosing a pricing plan (**commitment tiers** from 100 GB/day), using free data sources, and monitoring automation and connectors with the **SentinelHealth** table.",
+   "deep": "**Measure ingestion** with the `Usage` table: `Quantity` is in **MB**, `IsBillable` marks billable data, `DataType` is the table, `Solution` the source solution (SecurityInsights = Sentinel). Summing `Quantity` by `DataType` shows which tables cost most.\n\n**Pricing**: pay-as-you-go by default, or **commitment tiers** starting at **100 GB/day** for a discount. You can raise the tier any time but lower it only once every **31 days**. Free sources include **AzureActivity**, **OfficeActivity** (Office 365 audit), **SentinelHealth**, and Defender alerts/incidents (**SecurityAlert**, **SecurityIncident**). Analytics data is retained free for 90 days.\n\nOther levers: move verbose tables to the data lake tier, filter with DCR transformations, act on SOC optimization data value recommendations.\n\n**Health**: turn on Sentinel **health monitoring** to populate **SentinelHealth**. For automation, `OperationName` is *Automation rule run* (Status Success, Partial success, Failure) or *Playbook was triggered*. Playbook run details need Logic Apps diagnostic settings sending to the workspace (**AzureDiagnostics**).",
+   "terms": [
+    {
+     "t": "Usage table",
+     "d": "Hourly ingestion volume per table; Quantity in MB."
+    },
+    {
+     "t": "Commitment tier",
+     "d": "Discounted fixed daily ingestion level from 100 GB/day; decrease once every 31 days."
+    },
+    {
+     "t": "SentinelHealth",
+     "d": "Table recording health events for connectors, analytics rules and automation."
+    }
+   ],
+   "trap": "Usage.Quantity is in megabytes, not bytes or GB; divide by 1000 for GB.",
+   "example": "A weekly query on Usage shows CommonSecurityLog is 60% of cost, so the team filters noisy firewall events with a DCR transformation.",
+   "diagram": null
+  }
+ ],
+ "questions": [
+  {
+   "id": "sc-200.d1a.q001",
+   "lesson": "sc-200.d1.1.01",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Where in the Microsoft Defender portal do you create a rule that emails the SOC when a new high-severity incident is created?",
+   "options": [
+    "Settings > Endpoints > Advanced features",
+    "Settings > Microsoft Defender XDR > Alert tuning",
+    "Settings > Microsoft Defender XDR > Email notifications > Incidents",
+    "Microsoft Sentinel > Configuration > Automation"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Incident email rules are on the Incidents tab of Settings > Microsoft Defender XDR > Email notifications. Advanced features are endpoint toggles, Alert tuning suppresses alerts, and Sentinel automation rules handle incident actions, not Defender email notifications."
+  },
+  {
+   "id": "sc-200.d1a.q002",
+   "lesson": "sc-200.d1.1.01",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Your tenant uses RBAC with device groups. An analyst whose role covers only the 'EU-Servers' device group creates an incident notification rule. What applies?",
+   "options": [
+    "The rule covers all device groups because email notifications are tenant-wide",
+    "Device group scope applies only to Threat analytics notification rules",
+    "Device group scope can be set only by a Global Administrator",
+    "The analyst can only create, edit and receive notifications for device groups they can manage"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "With RBAC, users can only manage and receive notifications for device groups they're allowed to manage. Notifications are not automatically tenant-wide, scoping isn't Global-Admin-only, and device group scope is an incident/action setting, not a threat analytics one."
+  },
+  {
+   "id": "sc-200.d1a.q003",
+   "lesson": "sc-200.d1.1.01",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "The SOC lead wants exactly one email per incident, only for High severity incidents, containing a link that opens the correct tenant. Which incident notification settings should you configure? Select THREE.",
+   "options": [
+    "Action status: Completed",
+    "Alert severity: High",
+    "Send only one notification per incident",
+    "Content analysis: On",
+    "Include tenant-specific portal link"
+   ],
+   "answer": [
+    1,
+    2,
+    4
+   ],
+   "explain": "Severity High, one notification per incident, and the tenant-specific portal link meet all three needs. Action status belongs to action notification rules, and Content analysis is an automation uploads setting."
+  },
+  {
+   "id": "sc-200.d1a.q004",
+   "lesson": "sc-200.d1.1.01",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Defender XDR email notifications, select Yes if true.",
+   "statements": [
+    {
+     "s": "Recipients added to an incident notification rule also receive emails for incidents that occurred before they were added.",
+     "a": false
+    },
+    {
+     "s": "An action notification rule can be limited to manual actions, automated actions, or both.",
+     "a": true
+    },
+    {
+     "s": "A Threat analytics notification rule can be limited to reports with a specific tag, such as ransomware.",
+     "a": true
+    }
+   ],
+   "explain": "Recipients only get notifications for incidents after they are added. Action rules filter by action source (manual/automated). Threat analytics rules can send for all reports or only filtered types/tags."
+  },
+  {
+   "id": "sc-200.d1a.q005",
+   "lesson": "sc-200.d1.1.02",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which alert tuning action suppresses a Defender for Endpoint alert so that no incident is created, while still keeping the alert data in the AlertInfo and AlertEvidence tables?",
+   "options": [
+    "Resolve alert",
+    "Set as behavior",
+    "Classify as false positive",
+    "Hide alert"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Hide alert suppresses the alert (Defender for Endpoint only) and prevents incident creation, but data stays in AlertInfo/AlertEvidence. Resolve alert creates and auto-resolves it. Set as behavior converts signals into behaviors. Classifying is a manual triage step, not a tuning action."
+  },
+  {
+   "id": "sc-200.d1a.q006",
+   "lesson": "sc-200.d1.1.02",
+   "objective": "d1.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Contoso runs an authorised vulnerability scanner, scan.exe, every night from server SCAN01. Each run raises several Defender for Endpoint 'suspicious process' alerts that analysts close by hand every morning. Security wants the noise gone without weakening detection of the same behaviour from any other process or device.",
+   "stem": "What should you do?",
+   "options": [
+    "Create an alert tuning rule with conditions on scan.exe and SCAN01 and a Resolve alert action",
+    "Add the scanner's folder to automation folder exclusions",
+    "Set SCAN01's device group to No automated response",
+    "Turn on 'Automatically resolve alerts' in advanced features"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "A narrowly scoped alert tuning rule handles this known benign activity only. Folder exclusions only affect automated investigation, No automated response stops remediation not alerts, and auto-resolve applies tenant-wide to remediated/no-threat alerts, not this scanner."
+  },
+  {
+   "id": "sc-200.d1a.q007",
+   "lesson": "sc-200.d1.1.02",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about alert tuning in Defender XDR, select Yes if true.",
+   "statements": [
+    {
+     "s": "Conditions in an alert tuning rule can be combined with AND and OR logic.",
+     "a": true
+    },
+    {
+     "s": "Microsoft's built-in alert tuning rules also apply to custom detection rules.",
+     "a": false
+    },
+    {
+     "s": "Alert tuning was previously called alert suppression.",
+     "a": true
+    }
+   ],
+   "explain": "Rules support AND/OR and grouping. Built-in tuning rules don't apply to custom detection rules or Custom TI. The feature was renamed from alert suppression to alert tuning."
+  },
+  {
+   "id": "sc-200.d1a.q008",
+   "lesson": "sc-200.d1.1.02",
+   "objective": "d1.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Fabrikam deployed the Security Copilot Phishing Triage Agent. Users report suspicious emails with the Report button, but the agent never classifies those alerts. The alerts appear as resolved in the queue almost immediately after they are created.",
+   "stem": "What is the most likely cause?",
+   "options": [
+    "Restrict correlation to within scoped device groups is turned on",
+    "Automatic attack disruption contained the reporting users' mailboxes",
+    "A built-in alert tuning rule auto-resolves user-reported phishing alerts",
+    "The incident notification rule excludes Low severity alerts"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "The built-in 'Auto-Resolve - Email reported by user as malware or phish' tuning rule resolves these alerts, so the agent doesn't classify them; disable it and any similar custom rules. Correlation scoping, attack disruption and email notification rules don't resolve alerts."
+  },
+  {
+   "id": "sc-200.d1a.q009",
+   "lesson": "sc-200.d1.1.03",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Alerts from one Microsoft Sentinel analytics rule keep being merged by Defender XDR into large multi-stage incidents. You want that rule's alerts grouped only by the rule's own settings. What should you do?",
+   "options": [
+    "Set Incident correlation to Disabled in the rule's Incident settings",
+    "Turn off alert grouping in the analytics rule",
+    "Create an alert tuning rule with the Hide alert action",
+    "Turn on 'Restrict correlation to within scoped device groups'"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Setting Incident correlation to Disabled adds #DONT_CORR# to the description so the rule bypasses the correlation engine. Alert grouping is Sentinel's own grouping, Hide alert suppresses alerts entirely (and only for MDE), and the device-group setting affects Defender for Endpoint correlation."
+  },
+  {
+   "id": "sc-200.d1a.q010",
+   "lesson": "sc-200.d1.1.03",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which conditions prevent Defender XDR from automatically merging two related incidents? Select THREE.",
+   "options": [
+    "The incidents share the same user entity",
+    "One of the incidents is closed",
+    "The incidents are assigned to different analysts",
+    "The incidents were raised by different detection sources",
+    "The incidents have different classifications"
+   ],
+   "answer": [
+    1,
+    2,
+    4
+   ],
+   "explain": "Closed incidents, different assignees and different classifications/determinations block automatic merging. Shared entities and multiple detection sources are reasons to merge, not blockers."
+  },
+  {
+   "id": "sc-200.d1a.q011",
+   "lesson": "sc-200.d1.1.02",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Hidden alerts are still stored in the hunting tables. Complete the advanced hunting query so it returns each alert together with its file evidence.",
+   "code": "AlertInfo\n| where Timestamp > ago(7d)\n| join kind=inner (AlertEvidence | where EntityType == \"File\") on ____\n| project Timestamp, Title, Severity, FileName, SHA256",
+   "options": [
+    "Title",
+    "AlertId",
+    "DeviceId",
+    "IncidentId"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "AlertInfo and AlertEvidence share the AlertId column, the documented join key. AlertInfo has no DeviceId or IncidentId columns, and Title isn't a key for joining evidence."
+  },
+  {
+   "id": "sc-200.d1a.q012",
+   "lesson": "sc-200.d1.1.04",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Your devices use a third-party antivirus, so Microsoft Defender Antivirus runs in passive mode. Which advanced feature lets Defender for Endpoint still block malicious artifacts it detects?",
+   "options": [
+    "Tamper protection",
+    "Allow or block file",
+    "Automatically resolve alerts",
+    "Enable EDR in block mode"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "EDR in block mode blocks malicious artifacts even when Defender Antivirus is passive. Tamper protection locks settings, Allow or block file needs Defender AV active, and auto-resolve only changes alert status."
+  },
+  {
+   "id": "sc-200.d1a.q013",
+   "lesson": "sc-200.d1.1.04",
+   "objective": "d1.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A global company has local SOC teams in each region, each scoped by RBAC to its own device groups. Regional analysts complain that incidents contain alerts from devices in other regions that they can't open.",
+   "stem": "Which Defender for Endpoint advanced feature addresses this?",
+   "options": [
+    "Restrict correlation to within scoped device groups",
+    "Hide potential duplicate device records",
+    "Show user details",
+    "Device discovery"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Restricting correlation to scoped device groups keeps alerts from different device groups out of the same incident (for future correlations). The other features affect inventory, user display and unmanaged device discovery."
+  },
+  {
+   "id": "sc-200.d1a.q014",
+   "lesson": "sc-200.d1.1.04",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "You turn on the 'Allow or block file' advanced feature so you can block a file hash with an indicator. What must be true on the devices for blocking to work? Select TWO.",
+   "options": [
+    "Device discovery is set to Standard discovery",
+    "Microsoft Defender Antivirus is the active antimalware solution",
+    "Live response is enabled",
+    "Cloud-based protection is enabled",
+    "Web content filtering is enabled"
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "explain": "Allow or block file requires Defender Antivirus in active mode and cloud-based protection. Device discovery, live response and web content filtering are unrelated to file indicators."
+  },
+  {
+   "id": "sc-200.d1a.q015",
+   "lesson": "sc-200.d1.1.04",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Defender for Endpoint advanced features, select Yes if true.",
+   "statements": [
+    {
+     "s": "Live response for servers is a separate setting from Live response.",
+     "a": true
+    },
+    {
+     "s": "Download quarantined files is turned on by default.",
+     "a": true
+    },
+    {
+     "s": "Allow unsigned script execution in live response must be on before any script, signed or unsigned, can run in a live response session.",
+     "a": false
+    }
+   ],
+   "explain": "Server live response has its own toggle, and Download quarantined files is on by default. The unsigned-script toggle is only needed for unsigned scripts; signed scripts run without it."
+  },
+  {
+   "id": "sc-200.d1a.q016",
+   "lesson": "sc-200.d1.1.05",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is the maximum number of indicators of compromise a single Defender for Endpoint tenant can hold?",
+   "options": [
+    "5,000",
+    "15,000",
+    "50,000",
+    "500,000"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Defender for Endpoint supports 15,000 indicators per tenant, and the limit can't be increased. The other numbers are not the documented limit."
+  },
+  {
+   "id": "sc-200.d1a.q017",
+   "lesson": "sc-200.d1.1.05",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "HR wants users who browse to a gambling domain to see a warning but still be able to continue if they have a business reason. Which indicator action should you use?",
+   "options": [
+    "Audit",
+    "Block execution",
+    "Warn",
+    "Block and remediate"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Warn shows a bypassable warning. Audit only raises an alert with no user prompt, Block execution stops access entirely, and Block and remediate isn't available for URL/domain indicators."
+  },
+  {
+   "id": "sc-200.d1a.q018",
+   "lesson": "sc-200.d1.1.05",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Defender for Endpoint indicators, select Yes if true.",
+   "statements": [
+    {
+     "s": "An IP address indicator can specify a CIDR range such as 10.0.0.0/24.",
+     "a": false
+    },
+    {
+     "s": "Indicators aren't supported when Microsoft Defender Antivirus is in passive mode.",
+     "a": true
+    },
+    {
+     "s": "A domain indicator for contoso.com also matches its subdomains.",
+     "a": true
+    }
+   ],
+   "explain": "IP indicators need full single addresses; wildcards and ranges aren't supported. Indicators require Defender Antivirus not in passive mode. A domain indicator matches subdomains."
+  },
+  {
+   "id": "sc-200.d1a.q019",
+   "lesson": "sc-200.d1.1.06",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "You add D:\\BuildOutput as an automation folder exclusion in Defender for Endpoint. What is the effect?",
+   "options": [
+    "Microsoft Defender Antivirus stops scanning the folder",
+    "Automated investigation skips the folder, but antivirus still scans it",
+    "ASR rules no longer evaluate processes started from the folder",
+    "Files in the folder are always uploaded for content analysis"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Automation folder exclusions affect only automated investigation and remediation; antivirus scanning continues. They aren't AV or ASR exclusions, and uploads are controlled by the Automation uploads setting."
+  },
+  {
+   "id": "sc-200.d1a.q020",
+   "lesson": "sc-200.d1.1.06",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which Defender for Endpoint setting lets you list file extensions that are sent to the cloud for extra inspection during automated investigation?",
+   "options": [
+    "Automation uploads (Content analysis)",
+    "Custom data collection",
+    "Automation folder exclusions",
+    "Indicators"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Automation uploads with Content analysis on sends the listed extensions for cloud inspection. Custom data collection sends telemetry to Sentinel, folder exclusions skip folders, and indicators allow or block entities."
+  },
+  {
+   "id": "sc-200.d1a.q021",
+   "lesson": "sc-200.d1.1.07",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Where are events gathered by Defender for Endpoint custom data collection rules stored for analysis?",
+   "options": [
+    "In a connected Microsoft Sentinel workspace",
+    "Only in the 30-day advanced hunting store",
+    "In Microsoft Purview Audit",
+    "In an Azure Storage account through the streaming API"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Custom data collection routes matching events to the connected Sentinel workspace in DeviceCustom* tables. It doesn't use the default advanced hunting store, Purview Audit, or the streaming API."
+  },
+  {
+   "id": "sc-200.d1a.q022",
+   "lesson": "sc-200.d1.1.07",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "A custom data collection rule captures powershell.exe process launches on admin workstations. Complete the Sentinel query to review the events from the last day that the rule collected.",
+   "code": "____\n| where TimeGenerated > ago(1d)\n| where FileName =~ \"powershell.exe\"\n| project TimeGenerated, DeviceName, ProcessCommandLine, RuleName",
+   "options": [
+    "DeviceProcessEvents",
+    "DeviceCustomNetworkEvents",
+    "DeviceCustomProcessEvents",
+    "SecurityEvent"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Process events from custom collection rules land in DeviceCustomProcessEvents, which has the RuleName column. DeviceProcessEvents is default telemetry without RuleName, DeviceCustomNetworkEvents holds connections, and SecurityEvent is Windows event log data."
+  },
+  {
+   "id": "sc-200.d1a.q023",
+   "lesson": "sc-200.d1.1.07",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "You plan to create custom data collection rules in Defender for Endpoint. Which prerequisites must be in place? Select THREE.",
+   "options": [
+    "Microsoft Purview Audit (Premium)",
+    "Microsoft Defender for Endpoint Plan 2",
+    "A connected Microsoft Sentinel workspace",
+    "Manual device tags added on each device page",
+    "Dynamic tags configured in Asset rule management"
+   ],
+   "answer": [
+    1,
+    2,
+    4
+   ],
+   "explain": "You need Plan 2, a connected Sentinel workspace, and dynamic tags from Asset rule management to target devices. Manual tags aren't supported, and Purview Audit isn't involved."
+  },
+  {
+   "id": "sc-200.d1a.q024",
+   "lesson": "sc-200.d1.1.07",
+   "objective": "d1.1",
+   "difficulty": 3,
+   "type": "yesno",
+   "case": null,
+   "stem": "A rule collecting file events on a busy file server reaches its limit by mid-afternoon. For each statement, select Yes if true.",
+   "statements": [
+    {
+     "s": "The rule stops collecting on that device after 75,000 events within a 24-hour rolling window.",
+     "a": true
+    },
+    {
+     "s": "All other custom collection rules on the same device also stop until the window resets.",
+     "a": false
+    },
+    {
+     "s": "Data collected by custom rules is billed at the Sentinel ingestion rates you pay.",
+     "a": true
+    }
+   ],
+   "explain": "Each rule is capped at 75,000 events per device per rolling 24 hours; only that rule pauses while others continue. The feature is included in Plan 2, but Sentinel ingestion is billed."
+  },
+  {
+   "id": "sc-200.d1a.q025",
+   "lesson": "sc-200.d1.1.08",
+   "objective": "d1.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Litware onboarded 300 Windows servers to Defender for Endpoint. They aren't enrolled in Intune but security settings management is enabled. You create an ASR rules policy on the Endpoint security policies page of the Defender portal.",
+   "stem": "How should you assign the policy?",
+   "options": [
+    "To Microsoft Entra user groups of the server administrators",
+    "To Intune scope tags for the servers",
+    "To Microsoft Entra security groups that contain the server devices",
+    "To the Defender for Endpoint 'Servers' device group in Settings > Endpoints"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Devices managed only by security settings management must be targeted with Entra groups containing the devices; user targeting isn't supported. Scope tags aren't available in the Defender wizard, and Defender device groups control RBAC/automation, not policy assignment."
+  },
+  {
+   "id": "sc-200.d1a.q026",
+   "lesson": "sc-200.d1.1.08",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You create an endpoint security policy in the Microsoft Defender portal. Put the steps in order.",
+   "options": [
+    "Select Create new policy, then choose the platform and template",
+    "Enter a unique name on the Basics page",
+    "Configure the settings on Configuration settings",
+    "Add include or exclude groups on Assignments",
+    "Review + create, then Save"
+   ],
+   "explain": "The wizard runs platform/template selection, Basics, Configuration settings, Assignments, then Review + create."
+  },
+  {
+   "id": "sc-200.d1a.q028",
+   "lesson": "sc-200.d1.1.09",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which attack surface reduction rule mode blocks the behaviour but lets the user choose to unblock it?",
+   "options": [
+    "Audit",
+    "Warn",
+    "Block",
+    "Not configured"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Warn mode blocks with a prompt the user can bypass. Audit only logs, Block blocks with no bypass, and Not configured leaves the rule off."
+  },
+  {
+   "id": "sc-200.d1a.q029",
+   "lesson": "sc-200.d1.1.09",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the advanced hunting query so it returns all audited and blocked ASR rule events from the last 7 days.",
+   "code": "DeviceEvents\n| where Timestamp > ago(7d)\n| where ActionType ____ \"Asr\"\n| summarize Events = count() by ActionType, DeviceName",
+   "options": [
+    "==",
+    "endswith",
+    "startswith",
+    "!contains"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "ASR action types begin with 'Asr' (e.g. AsrLsassCredentialTheftBlocked), so startswith matches them all. == matches only the literal 'Asr', endswith matches nothing, and !contains excludes them."
+  },
+  {
+   "id": "sc-200.d1a.q030",
+   "lesson": "sc-200.d1.1.09",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "You want to test the LSASS credential-theft ASR rule on one device without blocking anything. Complete the PowerShell command.",
+   "code": "Add-MpPreference -AttackSurfaceReductionRules_Ids 9e6c4e1f-7d60-472f-ba1a-a39ef669e4b2 -AttackSurfaceReductionRules_Actions ____",
+   "options": [
+    "1",
+    "2",
+    "6",
+    "0"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "2 is Audit mode, which logs without blocking. 1 is Block, 6 is Warn (not supported by the LSASS rule), and 0 disables the rule."
+  },
+  {
+   "id": "sc-200.d1a.q031",
+   "lesson": "sc-200.d1.1.09",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about attack surface reduction rules, select Yes if true.",
+   "statements": [
+    {
+     "s": "The 'Block credential stealing from the Windows local security authority subsystem' rule supports Warn mode.",
+     "a": false
+    },
+    {
+     "s": "If you suspect a false positive, Microsoft recommends switching the rule to Audit mode before adding an exclusion.",
+     "a": true
+    },
+    {
+     "s": "ASR exclusions can be applied globally or to an individual rule.",
+     "a": true
+    }
+   ],
+   "explain": "The LSASS rule doesn't support Warn. Microsoft advises testing in Audit before excluding because exclusions let files run unreported. Both global and per-rule exclusions exist."
+  },
+  {
+   "id": "sc-200.d1a.q032",
+   "lesson": "sc-200.d1.1.10",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "After September 1, 2026, AIR can no longer be triggered manually for Defender for Endpoint. What does Microsoft recommend for an on-demand investigation of a suspicious device?",
+   "options": [
+    "Run a full Microsoft Defender Antivirus scan",
+    "Collect an investigation package",
+    "Initiate a live response session",
+    "Restrict app execution on the device"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Microsoft says full antivirus scans replace manual AIR investigations, because AIR now runs inside default antivirus protection. The other actions are useful response tools but aren't the stated replacement."
+  },
+  {
+   "id": "sc-200.d1a.q033",
+   "lesson": "sc-200.d1.1.10",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which verdicts can an automated investigation assign to a piece of evidence? Select THREE.",
+   "options": [
+    "Informational",
+    "Malicious",
+    "Suspicious",
+    "Benign positive",
+    "No threats found"
+   ],
+   "answer": [
+    1,
+    2,
+    4
+   ],
+   "explain": "AIR verdicts are Malicious, Suspicious and No threats found. Informational is an alert severity and Benign positive is an incident/alert classification set by analysts."
+  },
+  {
+   "id": "sc-200.d1a.q034",
+   "lesson": "sc-200.d1.1.10",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about the Action center, select Yes if true.",
+   "statements": [
+    {
+     "s": "Email remediation actions identified by automated investigation wait for approval on the Pending tab.",
+     "a": true
+    },
+    {
+     "s": "Some completed actions, such as Isolate device, can be undone from the History tab.",
+     "a": true
+    },
+    {
+     "s": "The History tab lists only actions from automated investigations, not live response commands.",
+     "a": false
+    }
+   ],
+   "explain": "Email remediation always needs approval. Isolate device and Restrict code execution can be undone in History. History also records manual actions, live response commands and AV remediations."
+  },
+  {
+   "id": "sc-200.d1a.q035",
+   "lesson": "sc-200.d1.1.10",
+   "objective": "d1.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Your tenant uses Microsoft Defender XDR Unified RBAC. An automated investigation found a phishing campaign and proposed soft-deleting the messages from 60 mailboxes. A tier-2 analyst with a custom role containing Security data basics (read) and Response (manage) can see the pending action but can't approve it.",
+   "stem": "Which permission should you add to the analyst's custom role?",
+   "options": [
+    "Detection tuning (manage)",
+    "Core security settings (manage)",
+    "Email & collaboration advanced actions (manage)",
+    "Authorization (manage)"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Approving email remediation needs Email & collaboration advanced actions (manage). Response (manage) covers device actions. Detection tuning manages custom detections and tuning, and the other two govern settings and roles."
+  },
+  {
+   "id": "sc-200.d1a.q036",
+   "lesson": "sc-200.d1.1.11",
+   "objective": "d1.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "In the incident queue, how can you quickly identify incidents where automatic attack disruption took action?",
+   "options": [
+    "They are tagged Redirected",
+    "They are tagged Attack Disruption",
+    "Their status is set to Resolved",
+    "Their severity is raised to High"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Disrupted incidents carry the Attack Disruption tag (and a yellow banner on the incident page). Redirected marks merged source incidents; status and severity don't identify disruption."
+  },
+  {
+   "id": "sc-200.d1a.q037",
+   "lesson": "sc-200.d1.1.11",
+   "objective": "d1.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which response actions can automatic attack disruption take? Select THREE.",
+   "options": [
+    "Contain device",
+    "Wipe the device through Intune",
+    "Disable the user in Active Directory through Defender for Identity",
+    "Delete the user's mailbox",
+    "Revoke the user's sessions"
+   ],
+   "answer": [
+    0,
+    2,
+    4
+   ],
+   "explain": "Disruption can contain devices, disable AD users via the Defender for Identity sensor, and revoke sessions. It doesn't wipe devices or delete mailboxes; actions are containment and reversible."
+  }
+ ]
+}

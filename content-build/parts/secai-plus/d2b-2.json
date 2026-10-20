@@ -1,0 +1,633 @@
+{
+ "exam": "secai-plus",
+ "domain": "d2",
+ "lessons": [],
+ "questions": [
+  {
+   "id": "secai-plus.d2b.q033",
+   "lesson": "secai-plus.d2.6.01",
+   "objective": "d2.6",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "A help-desk assistant starts following instructions hidden in a customer-uploaded PDF. Which attack does this evidence indicate?",
+   "options": [
+    "Indirect prompt injection",
+    "Model theft",
+    "Model denial of service",
+    "Membership inference"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Instructions arriving inside processed content are indirect prompt injection."
+  },
+  {
+   "id": "secai-plus.d2b.q034",
+   "lesson": "secai-plus.d2.6.01",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which compensating control separates fixed developer instructions from user-supplied data in each request?",
+   "options": [
+    "Encryption at rest",
+    "Prompt templates",
+    "Model watermarking",
+    "Data sovereignty controls"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Prompt templates keep instructions and user data in defined slots, making injection harder."
+  },
+  {
+   "id": "secai-plus.d2b.q035",
+   "lesson": "secai-plus.d2.6.02",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Logs show many requests rephrased through role-play and encodings until the safety filter stops triggering. What is this?",
+   "options": [
+    "Model skewing",
+    "Transfer learning attack",
+    "Circumventing AI guardrails (jailbreaking)",
+    "Output integrity attack"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Iterating phrasing to slip past filters is guardrail circumvention."
+  },
+  {
+   "id": "secai-plus.d2b.q036",
+   "lesson": "secai-plus.d2.6.02",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which compensating control inspects prompts and responses at a gateway in front of the model?",
+   "options": [
+    "Feature store",
+    "Model registry",
+    "Data catalogue",
+    "Prompt firewall"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "A prompt firewall sits inline and filters inputs and outputs."
+  },
+  {
+   "id": "secai-plus.d2b.q037",
+   "lesson": "secai-plus.d2.6.03",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "After a fine-tuning run on crowd-sourced labels, a classifier consistently misclassifies one vendor's invoices as low risk. What is the most likely attack?",
+   "options": [
+    "Data poisoning",
+    "Insecure plug-in design",
+    "Model inversion",
+    "Model denial of service"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Corrupted training labels causing targeted misbehaviour is data poisoning."
+  },
+  {
+   "id": "secai-plus.d2b.q038",
+   "lesson": "secai-plus.d2.6.03",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A hiring model's recommendations shift against one demographic after attacker-influenced training data was added. Which attack is this?",
+   "options": [
+    "Model DoS",
+    "Introducing biases",
+    "Output integrity attack",
+    "Model theft"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Poisoning aimed at skewing outcomes against a group is introducing bias."
+  },
+  {
+   "id": "secai-plus.d2b.q039",
+   "lesson": "secai-plus.d2.6.03",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which compensating control best detects tampering with training datasets before they are used?",
+   "options": [
+    "Rate limiting",
+    "Prompt templates",
+    "Data integrity controls such as hashes and signed dataset versions",
+    "Output caching"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Integrity checks reveal unauthorised changes to data."
+  },
+  {
+   "id": "secai-plus.d2b.q040",
+   "lesson": "secai-plus.d2.6.04",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Small, nearly invisible changes to images make a vision model misclassify them. What is this attack?",
+   "options": [
+    "Sensitive information disclosure",
+    "Membership inference",
+    "Model skewing",
+    "Input manipulation (adversarial examples/evasion)"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Crafted perturbations at inference time are evasion or adversarial examples."
+  },
+  {
+   "id": "secai-plus.d2b.q041",
+   "lesson": "secai-plus.d2.6.04",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An attacker abuses an AI assistant's connector to a ticketing system to create and close tickets at will. Which attack category fits?",
+   "options": [
+    "Manipulating application integrations",
+    "Model inversion",
+    "Transfer learning attack",
+    "Hallucination"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Abusing the connectors around the model is integration manipulation."
+  },
+  {
+   "id": "secai-plus.d2b.q042",
+   "lesson": "secai-plus.d2.6.04",
+   "objective": "d2.6",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "A model confidently cites a law that doesn't exist, and staff act on it. Which TWO issues does this combine?",
+   "options": [
+    "Bias and encryption failure",
+    "Hallucination and overreliance",
+    "Model theft and DoS",
+    "Skewing and plug-in design"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "False confident output is hallucination; acting on it without checking is overreliance."
+  },
+  {
+   "id": "secai-plus.d2b.q043",
+   "lesson": "secai-plus.d2.6.05",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An attacker queries a medical model repeatedly and reconstructs features of patients in its training set. Which attack is this?",
+   "options": [
+    "Model skewing",
+    "Insecure output handling",
+    "Model inversion",
+    "Prompt injection"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Reconstructing training data features from outputs is model inversion."
+  },
+  {
+   "id": "secai-plus.d2b.q044",
+   "lesson": "secai-plus.d2.6.05",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which mitigation most directly reduces both inversion and membership inference risk?",
+   "options": [
+    "Prompt templates",
+    "Plug-in allow-lists",
+    "Larger context windows",
+    "Reducing output detail (no raw confidence scores) and applying differential privacy"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Less output detail and differential privacy limit what can be inferred about individual records."
+  },
+  {
+   "id": "secai-plus.d2b.q045",
+   "lesson": "secai-plus.d2.6.06",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An API shows one account issuing millions of systematic queries, and a near-identical competitor model appears soon after. What is the likely attack?",
+   "options": [
+    "Model theft by extraction",
+    "Model skewing",
+    "Data poisoning",
+    "Jailbreaking"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Training a copy from large volumes of API answers is model extraction, a form of model theft."
+  },
+  {
+   "id": "secai-plus.d2b.q046",
+   "lesson": "secai-plus.d2.6.06",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO compensating controls reduce model theft risk? (Select TWO)",
+   "options": [
+    "Raising output verbosity",
+    "Publishing the weights to a public repository",
+    "Disabling authentication for ease of use",
+    "Rate limiting and query monitoring on the inference API",
+    "Access controls and encryption for model files in registries and storage"
+   ],
+   "answer": [
+    3,
+    4
+   ],
+   "explain": "Rate limits slow extraction; access control and encryption protect weight files."
+  },
+  {
+   "id": "secai-plus.d2b.q047",
+   "lesson": "secai-plus.d2.6.07",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A team fine-tunes a downloaded pretrained model, and the result contains a hidden trigger the team never trained. Which attack fits?",
+   "options": [
+    "Output integrity attack",
+    "Transfer learning attack via a backdoored base model",
+    "Model DoS",
+    "Membership inference"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Backdoors in a pretrained base model carry over into fine-tuned models."
+  },
+  {
+   "id": "secai-plus.d2b.q048",
+   "lesson": "secai-plus.d2.6.07",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A popular ML library on a package registry is replaced with a malicious version that exfiltrates training data. What is this?",
+   "options": [
+    "Hallucination",
+    "Model inversion",
+    "AI supply chain attack",
+    "Overreliance"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Compromising third-party components you build on is a supply chain attack."
+  },
+  {
+   "id": "secai-plus.d2b.q049",
+   "lesson": "secai-plus.d2.6.08",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Attackers flood a recommendation system's feedback channel with fake ratings so the continuously trained model drifts in their favour. What is this?",
+   "options": [
+    "Model theft",
+    "Prompt injection",
+    "Insecure plug-in design",
+    "Model skewing"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Manipulating ongoing learning data so predictions drift is model skewing."
+  },
+  {
+   "id": "secai-plus.d2b.q050",
+   "lesson": "secai-plus.d2.6.08",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Fraud scores are altered in transit between the model and the payments system. Which attack, and which control?",
+   "options": [
+    "Output integrity attack; sign or hash results and use authenticated, encrypted channels",
+    "Jailbreak; prompt firewall",
+    "Model inversion; differential privacy",
+    "Model DoS; token limits"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Tampering with results after inference is an output integrity attack; integrity checks and secure channels address it."
+  },
+  {
+   "id": "secai-plus.d2b.q051",
+   "lesson": "secai-plus.d2.6.09",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Model output containing script tags runs in users' browsers. Which attack is this?",
+   "options": [
+    "Model skewing",
+    "Insecure output handling",
+    "Transfer learning attack",
+    "Membership inference"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Passing unvalidated output to a browser enables XSS: insecure output handling."
+  },
+  {
+   "id": "secai-plus.d2b.q052",
+   "lesson": "secai-plus.d2.6.09",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A plug-in accepts a free-text 'query' that is passed straight to a SQL database. Which weakness does this show?",
+   "options": [
+    "Model skewing",
+    "Data sovereignty violation",
+    "Insecure plug-in design",
+    "Model theft"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Plug-ins should take strictly typed, validated parameters with least privilege."
+  },
+  {
+   "id": "secai-plus.d2b.q053",
+   "lesson": "secai-plus.d2.6.10",
+   "objective": "d2.6",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Users submit extremely long, recursive prompts that max out context and spike costs. Which attack is this?",
+   "options": [
+    "Output integrity attack",
+    "Bias introduction",
+    "Model inversion",
+    "Model denial of service"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Resource-exhausting requests are model DoS."
+  },
+  {
+   "id": "secai-plus.d2b.q054",
+   "lesson": "secai-plus.d2.6.10",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO compensating controls address model DoS? (Select TWO)",
+   "options": [
+    "Rate limiting per user and per API key",
+    "Encrypting model weights",
+    "Maximum input and output token limits",
+    "Prompt templates only",
+    "Publishing system prompts"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "Rate and token limits cap resource use."
+  },
+  {
+   "id": "secai-plus.d2b.q055",
+   "lesson": "secai-plus.d2.6.11",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A chatbot reveals another customer's order history. Which cause should the analyst check FIRST?",
+   "options": [
+    "Retrieval or tools running without per-user access controls",
+    "The tokenizer version",
+    "The model's temperature",
+    "The UI colour scheme"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Cross-user disclosure usually means missing per-user access control on data sources."
+  },
+  {
+   "id": "secai-plus.d2b.q056",
+   "lesson": "secai-plus.d2.6.12",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An AI agent with full admin rights deletes production resources after misreading a request. Which weakness is primary, and the fix?",
+   "options": [
+    "Model theft; encryption",
+    "Excessive agency; least privilege and human approval for destructive actions",
+    "Bias; fairness testing",
+    "Hallucination; a larger model"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Too much permission and autonomy turned an error into damage."
+  },
+  {
+   "id": "secai-plus.d2b.q057",
+   "lesson": "secai-plus.d2.6.13",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each pairing, select Yes if the compensating control fits the attack.",
+   "statements": [
+    {
+     "s": "Prompt injection → prompt firewall plus prompt templates",
+     "a": true
+    },
+    {
+     "s": "Model DoS → rate limiting and token caps",
+     "a": true
+    },
+    {
+     "s": "Model theft from storage → prompt templates",
+     "a": false
+    }
+   ],
+   "explain": "Prompt-layer controls fit injection; rate limits fit DoS; stolen weight files need access control and encryption."
+  },
+  {
+   "id": "secai-plus.d2b.q058",
+   "lesson": "secai-plus.d2.6.14",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each pairing, select Yes if the compensating control fits the attack.",
+   "statements": [
+    {
+     "s": "Training data tampering → data integrity controls",
+     "a": true
+    },
+    {
+     "s": "Excessive agency → least privilege",
+     "a": true
+    },
+    {
+     "s": "Membership inference → larger output detail",
+     "a": false
+    }
+   ],
+   "explain": "Integrity checks detect tampering; least privilege limits agency; more output detail makes inference easier."
+  },
+  {
+   "id": "secai-plus.d2b.q059",
+   "lesson": "secai-plus.d2.6.13",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Order the analyst's workflow for an AI incident.",
+   "options": [
+    "Review the evidence in logs and outputs",
+    "Identify the attack type",
+    "Select compensating controls",
+    "Implement and verify the controls"
+   ],
+   "explain": "Analyse evidence, classify the attack, choose controls, then implement and verify."
+  },
+  {
+   "id": "secai-plus.d2b.q060",
+   "lesson": "secai-plus.d2.6.14",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which control best protects model weights and embeddings stored in object storage?",
+   "options": [
+    "Output caching",
+    "Longer system prompts",
+    "Encryption at rest with strict access controls on keys and buckets",
+    "Prompt templates"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Encryption and access control protect stored artefacts."
+  },
+  {
+   "id": "secai-plus.d2b.q061",
+   "lesson": "secai-plus.d2.6.13",
+   "objective": "d2.6",
+   "difficulty": 3,
+   "type": "multi",
+   "case": null,
+   "stem": "Case: a customer bot has been jailbroken, flooded with costly prompts, and leaks its system prompt containing an API key. Which TWO controls address the MOST issues at once? (Select TWO)",
+   "options": [
+    "Raising the temperature",
+    "A prompt firewall/guardrail layer inspecting inputs and outputs",
+    "Publishing the API key so it isn't secret",
+    "Rate limiting with token caps",
+    "Disabling logging"
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "explain": "A firewall/guardrail layer addresses jailbreak and leakage attempts; rate and token limits address DoS. The key must also be rotated and moved out of the prompt."
+  },
+  {
+   "id": "secai-plus.d2b.q062",
+   "lesson": "secai-plus.d2.6.12",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each scenario, select Yes if it describes overreliance.",
+   "statements": [
+    {
+     "s": "Analysts paste AI-generated firewall rules into production without review",
+     "a": true
+    },
+    {
+     "s": "A reviewer checks AI-drafted code against tests before merging",
+     "a": false
+    },
+    {
+     "s": "Managers accept AI risk scores as final without any human validation",
+     "a": true
+    }
+   ],
+   "explain": "Overreliance is trusting outputs without verification; review and testing counter it."
+  },
+  {
+   "id": "secai-plus.d2b.q063",
+   "lesson": "secai-plus.d2.6.11",
+   "objective": "d2.6",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A model trained on unsanitised support tickets reproduces customers' phone numbers. Which control should have prevented this?",
+   "options": [
+    "Rate limiting",
+    "Prompt templates",
+    "Model watermarking",
+    "Sanitising and minimising training data (PII removal) before training"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "PII in training data can be memorised and regurgitated; sanitise it first."
+  },
+  {
+   "id": "secai-plus.d2b.q064",
+   "lesson": "secai-plus.d2.6.09",
+   "objective": "d2.6",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Case: an AI coding assistant's output is executed by a CI pipeline without review, and one suggestion opens a reverse shell. Which TWO weaknesses combine here?",
+   "options": [
+    "Insecure output handling and overreliance",
+    "Model theft and bias",
+    "Membership inference and DoS",
+    "Data sovereignty and model skewing"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Executing model output unvalidated (insecure output handling) and trusting it without review (overreliance)."
+  }
+ ]
+}

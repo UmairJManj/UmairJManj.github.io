@@ -1,0 +1,1217 @@
+{
+  "exam": "sc-300",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "sc-300.d3.1.01",
+      "objective": "d3.1",
+      "seq": 1,
+      "title": "Choosing an identity for apps and workloads",
+      "short": "Workloads need identities too. In Azure, a managed identity is best because Azure handles its credentials. Code running outside Azure uses a service principal from an app registration. Avoid giving a workload a user account: users are for people, and a user account used by a workload is a shared password waiting to leak.",
+      "deep": "A **workload identity** is the identity that software (an app, a script, a VM, a pipeline) uses to authenticate. Microsoft Entra ID offers several types:\n- **Managed identity**: an Entra identity tied to an Azure resource. Azure creates and rotates its credentials, so your code never handles a secret. It is the first choice for code running on Azure resources (VMs, App Service, Functions, AKS, Logic Apps) or on Azure Arc-enabled servers.\n- **Service principal (app registration)**: the identity of an application object in a tenant. You authenticate it with a **certificate**, a **client secret** or a **federated credential**. Use it for workloads outside Azure, for multitenant apps, and for SaaS integrations.\n- **User account**: meant for humans. Using one as a service account brings password rotation, MFA and Conditional Access problems, and the account is easy to misuse.\nUnder the hood, a managed identity is a special type of service principal (`servicePrincipalType` = ManagedIdentity) that has no app registration you can manage. Decide in this order: is the workload on Azure? Use a managed identity. Is it outside Azure? Use workload identity federation if the platform supports it, then a certificate, then a secret as a last resort.",
+      "terms": [
+        {
+          "t": "Workload identity",
+          "d": "An identity assigned to software (apps, services, scripts, containers) rather than to a person."
+        },
+        {
+          "t": "Managed identity",
+          "d": "An Entra identity for an Azure resource whose credentials Azure creates, stores and rotates automatically."
+        },
+        {
+          "t": "Service principal",
+          "d": "The local representation of an application in a tenant; it is what gets roles and permissions."
+        }
+      ],
+      "trap": "The exam offers 'create an app registration with a client secret' for code running on an Azure VM. A managed identity is the better answer because there's no secret to manage.",
+      "example": "A web app on Azure App Service reads secrets from Key Vault using its managed identity. A nightly job on a server in a colo datacenter uses an app registration with a certificate.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Type",
+          "Credential",
+          "Best for"
+        ],
+        "rows": [
+          [
+            "Managed identity",
+            "Azure-managed",
+            "Code on Azure"
+          ],
+          [
+            "Service principal",
+            "Cert/secret/fed",
+            "Outside Azure, SaaS"
+          ],
+          [
+            "User account",
+            "Password + MFA",
+            "Humans only"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.1.02",
+      "objective": "d3.1",
+      "seq": 2,
+      "title": "Managed service accounts (on-premises AD)",
+      "short": "Managed service accounts are Active Directory accounts for Windows services whose passwords AD rotates automatically. A standalone MSA (sMSA) works on one server. A group MSA (gMSA) can be shared by several servers, such as a web farm. They protect on-premises services, not cloud workloads.",
+      "deep": "Before the cloud, Windows services often ran as regular domain user accounts with passwords that never changed. **Managed service accounts** fix this inside **Active Directory Domain Services**:\n- **Standalone managed service account (sMSA)**: tied to a single computer. AD manages its password.\n- **Group managed service account (gMSA)**: can be used by multiple servers (for example, IIS nodes, SQL Server clusters, scheduled tasks). Domain controllers generate the password using the Key Distribution Service (KDS) root key, and authorized hosts retrieve it. By default the password rotates every 30 days.\n- **Delegated managed service account (dMSA)**: introduced with Windows Server 2025 to replace legacy service accounts during migration.\nNobody types an MSA password interactively. That stops attackers from guessing it and removes the burden of rotating it.\nFor SC-300, the point is choosing the right identity. Use an MSA or gMSA for an on-premises Windows service that needs a domain identity. Use a managed identity for an Azure resource. Use a service principal for an app outside Azure that calls Entra-protected APIs. Note that the Microsoft Entra Connect Sync installation can also use a gMSA as its service account.",
+      "terms": [
+        {
+          "t": "gMSA",
+          "d": "Group managed service account: an AD account shared by multiple servers with automatic password management."
+        },
+        {
+          "t": "sMSA",
+          "d": "Standalone managed service account: an AD-managed service account limited to a single computer."
+        },
+        {
+          "t": "KDS root key",
+          "d": "The key domain controllers use to generate gMSA passwords."
+        }
+      ],
+      "trap": "Candidates choose an sMSA for a service on a server farm. Only a gMSA can be shared across multiple hosts.",
+      "example": "Four IIS servers behind a load balancer run the same app pool as a gMSA, so every node uses one identity and nobody manages its password.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.1.03",
+      "objective": "d3.1",
+      "seq": 3,
+      "title": "Creating managed identities",
+      "short": "There are two kinds of managed identity. A system-assigned identity is switched on inside a resource and is deleted with it. A user-assigned identity is a standalone Azure resource that you create, can share across many resources, and must delete yourself. You need the Managed Identity Contributor role to create user-assigned identities.",
+      "deep": "**System-assigned managed identity**\n- You enable it on the resource (the VM's Identity blade, Status = On). Azure creates a service principal for that one resource.\n- Its lifecycle matches the resource: delete the VM and the identity is deleted.\n- It can't be shared.\n**User-assigned managed identity**\n- You create it as an Azure resource of type `Microsoft.ManagedIdentity/userAssignedIdentities` in a subscription and resource group. Use the portal (search **Managed Identities** > Create), `az identity create`, `New-AzUserAssignedIdentity`, or an ARM/Bicep template.\n- It has its own lifecycle. One identity can be attached to many resources, and one resource can have several user-assigned identities.\n- Microsoft recommends user-assigned identities when resources are recycled often but permissions should stay constant, or when many resources need the same access. Granting the role once avoids repeating role assignments.\n**RBAC roles**\n- **Managed Identity Contributor**: create, read, update and delete user-assigned identities.\n- **Managed Identity Operator**: read and assign user-assigned identities to resources.\nDeleting a user-assigned identity doesn't remove it from the resources it was attached to. Clean those up as well.",
+      "terms": [
+        {
+          "t": "System-assigned",
+          "d": "A managed identity created on and deleted with a single Azure resource."
+        },
+        {
+          "t": "User-assigned",
+          "d": "A standalone managed identity resource that can be attached to multiple Azure resources."
+        },
+        {
+          "t": "Managed Identity Contributor",
+          "d": "An Azure RBAC role to create, update and delete user-assigned identities."
+        }
+      ],
+      "trap": "Answers often claim a system-assigned identity can be shared between VMs. It can't; only a user-assigned identity can be shared.",
+      "example": "An admin runs `az identity create -g rg-app -n id-orders` once, then attaches id-orders to all eight container apps in the orders service.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "System-assigned",
+          "User-assigned"
+        ],
+        "rows": [
+          [
+            "Created",
+            "On the resource",
+            "As own resource"
+          ],
+          [
+            "Lifecycle",
+            "Dies with resource",
+            "Independent"
+          ],
+          [
+            "Sharing",
+            "One resource",
+            "Many resources"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.1.04",
+      "objective": "d3.1",
+      "seq": 4,
+      "title": "Assigning a managed identity to an Azure resource",
+      "short": "To enable a system-assigned identity, turn it on in the resource's Identity blade. To attach a user-assigned identity, add it on the User assigned tab. In Azure CLI, `az vm identity assign` does both. Attaching a user-assigned identity needs Managed Identity Operator on the identity, plus write access to the resource.",
+      "deep": "Assigning means attaching an identity to compute so that code on that resource can request tokens as that identity.\n**Portal**: open the resource (VM, App Service, Function App, Logic App and so on) > **Identity**.\n- **System assigned** tab: set Status to **On** and save. The resource gets an Object (principal) ID.\n- **User assigned** tab: select **Add**, then choose one or more existing user-assigned identities.\n**Azure CLI examples**\n- `az vm identity assign -g rg1 -n vm1` enables the system-assigned identity.\n- `az vm identity assign -g rg1 -n vm1 --identities <identity resource ID>` attaches a user-assigned identity.\n- `az webapp identity assign` and `az functionapp identity assign` work the same way for App Service and Functions.\n**Permissions**\n- To change the VM, you need a role such as Virtual Machine Contributor on it.\n- To attach a user-assigned identity, you also need **Managed Identity Operator** (the assign action) on that identity.\nA resource can have a system-assigned identity and several user-assigned identities at the same time. Assigning an identity grants no access by itself. You still have to give the identity roles or permissions on the target resource, which is covered next.",
+      "terms": [
+        {
+          "t": "Identity blade",
+          "d": "The resource page where you enable system-assigned or attach user-assigned identities."
+        },
+        {
+          "t": "Managed Identity Operator",
+          "d": "An Azure RBAC role that can read and assign user-assigned identities, but not create or delete them."
+        },
+        {
+          "t": "Principal ID",
+          "d": "The object ID of the identity's service principal, used in role assignments."
+        }
+      ],
+      "trap": "Assigning an identity to a VM doesn't grant access to anything. You still need a role assignment on the target resource.",
+      "example": "A platform engineer with Managed Identity Operator on id-shared and Contributor on the resource group attaches id-shared to three new VMs.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.1.05",
+      "objective": "d3.1",
+      "seq": 5,
+      "title": "Using a managed identity to access Azure resources",
+      "short": "Give the managed identity an Azure RBAC role on the target resource, such as Storage Blob Data Reader or Key Vault Secrets User. Code then gets a token from the Instance Metadata Service (IMDS) endpoint at 169.254.169.254 or through Azure.Identity, and calls the resource with no stored secret.",
+      "deep": "**Step 1: grant access.** In the target's **Access control (IAM)**, add a role assignment and choose **Managed identity** as the member type. Use a data-plane role for data access, for example **Storage Blob Data Reader**, **Key Vault Secrets User** or **Azure Service Bus Data Sender**. A management role like Contributor does not let you read blob data. Some services, such as Azure SQL, also need the identity created as a database user.\n**Step 2: get a token.** On a VM, code calls the **Azure Instance Metadata Service (IMDS)**:\n`GET http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://storage.azure.com/` with header `Metadata: true`.\n- `resource` is the App ID URI of the target, such as `https://vault.azure.net` or `https://management.azure.com/`.\n- If the VM has several user-assigned identities, add `client_id`, `object_id` or `msi_res_id` to choose one.\nApp Service and Functions expose a local endpoint (`IDENTITY_ENDPOINT` plus `IDENTITY_HEADER`) instead. Most developers simply use **Azure.Identity** (`ManagedIdentityCredential` or `DefaultAzureCredential`).\n**Step 3: call the API** with the bearer token.\nThe VM is the security boundary: any code running on it can request tokens for its identities.",
+      "terms": [
+        {
+          "t": "IMDS",
+          "d": "Azure Instance Metadata Service, a non-routable endpoint at 169.254.169.254 that issues managed identity tokens on VMs."
+        },
+        {
+          "t": "resource parameter",
+          "d": "The App ID URI of the target service; it becomes the aud claim of the token."
+        },
+        {
+          "t": "DefaultAzureCredential",
+          "d": "An Azure.Identity credential chain that uses managed identity automatically when running in Azure."
+        }
+      ],
+      "trap": "Assigning Contributor on a storage account doesn't let a managed identity read blob data. You need a data-plane role such as Storage Blob Data Reader.",
+      "example": "A Function App's system-assigned identity gets Key Vault Secrets User on kv-prod. The code uses DefaultAzureCredential to read the database password at startup.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Enable identity",
+          "Assign RBAC role",
+          "Token from IMDS",
+          "Call resource"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.2.01",
+      "objective": "d3.2",
+      "seq": 1,
+      "title": "Tenant-level enterprise app settings",
+      "short": "Tenant-wide app settings control what every user can do: register applications, consent to apps, request admin consent, and see Microsoft 365 or gallery apps in My Apps. You find them under Enterprise apps > User settings, Consent and permissions, and Entra ID > User settings.",
+      "deep": "**Enterprise applications** are the service principals in your tenant: gallery SaaS apps, your own apps, App Proxy apps and Microsoft first-party apps. Settings exist at two levels.\n**Tenant-level settings** apply to all apps:\n- **Users can register applications** (Entra ID > User settings). The default is Yes. Set it to No and give developers the **Application Developer** role instead.\n- **User consent for applications** (Enterprise apps > Consent and permissions). Choose whether users can consent, and with which app consent policy.\n- **Admin consent settings**: turn on the admin consent workflow and choose reviewers.\n- **Permission classifications**: mark low-impact delegated permissions.\n- **Enterprise apps > User settings**: My Apps options such as whether users can see Office 365 apps only in the Office 365 portal.\n- **App launchers / Collections**: how apps are grouped in My Apps.\nTenant settings set the guardrails, and app-level settings (next lesson) tune each app. Good practice: limit user consent to verified publishers with low-impact permissions, enable the admin consent workflow so users have a path to request more, and restrict app registration where governance requires it.",
+      "terms": [
+        {
+          "t": "Enterprise application",
+          "d": "A service principal in your tenant that represents an app users or services sign in to."
+        },
+        {
+          "t": "Users can register applications",
+          "d": "A tenant setting (default Yes) that allows any member to create app registrations."
+        },
+        {
+          "t": "App consent policy",
+          "d": "A set of conditions that defines which permissions users may consent to themselves."
+        }
+      ],
+      "trap": "Setting 'Users can register applications' to No also blocks developers unless you assign them the Application Developer (or a higher) role.",
+      "example": "Contoso sets app registration to No, gives its 15 developers Application Developer, and limits user consent to verified publishers.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.2.02",
+      "objective": "d3.2",
+      "seq": 2,
+      "title": "App-level enterprise app properties",
+      "short": "Each enterprise app's Properties page has three key switches. 'Enabled for users to sign in?' disables the app completely. 'Assignment required?' limits tokens to assigned users and apps. 'Visible to users?' controls whether the app shows in My Apps. Owners, SSO, provisioning, self-service and Conditional Access are also set per app.",
+      "deep": "Open **Enterprise apps > [app] > Properties**:\n- **Enabled for users to sign in?** Set to No (the service principal's `accountEnabled` = false) and no one can sign in, even assigned users. Tokens aren't issued, and other services can't use the app's application permissions either. This is the kill switch for a suspicious app.\n- **Assignment required?** Set to Yes and only users, groups or service principals assigned to the app can get tokens. Set to No and anyone in the tenant, including guests, can sign in. It applies to SAML, OIDC, OAuth 2.0, WS-Fed and pre-authenticated App Proxy apps. It doesn't apply to the other SSO modes, such as password-based or linked.\n- **Visible to users?** Controls only the My Apps and Microsoft 365 launcher tiles. Hiding an app doesn't block access, and users see it in My Apps only if they're assigned.\n- **Notes**: free text for admins (up to 1,024 characters).\nOther app-level blades: **Owners** (who can manage this one app), **Users and groups**, **Single sign-on**, **Provisioning**, **Self-service** (users request access, optionally with approval), **Conditional Access**, **Permissions** (view and revoke granted consent), and **Sign-in logs**.",
+      "terms": [
+        {
+          "t": "Assignment required",
+          "d": "When Yes, only assigned principals can get tokens for the app."
+        },
+        {
+          "t": "Enabled for users to sign in",
+          "d": "Maps to accountEnabled; No blocks all sign-ins and token issuance for the app."
+        },
+        {
+          "t": "Visible to users",
+          "d": "Shows or hides the app tile in My Apps; it doesn't affect access."
+        }
+      ],
+      "trap": "Setting 'Visible to users' to No is offered as a way to block access. It only hides the tile. Use 'Assignment required' or disable sign-in instead.",
+      "example": "After a breach report, an admin sets 'Enabled for users to sign in' to No on a third-party CRM app. That instantly stops all token issuance while the team investigates.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.2.03",
+      "objective": "d3.2",
+      "seq": 3,
+      "title": "Entra roles for managing enterprise apps",
+      "short": "Application Administrator manages all app registrations and enterprise apps, including Application Proxy. Cloud Application Administrator has the same rights except App Proxy. Application Developer can create registrations even when users can't. App owners manage only their own apps. You can also scope roles to a single app.",
+      "deep": "Follow least privilege when you delegate app management:\n- **Application Administrator**: create and manage every aspect of app registrations and enterprise apps, including **Application Proxy** settings and connectors. It can grant consent for delegated permissions and for application permissions, except Microsoft Graph and Azure AD Graph app roles.\n- **Cloud Application Administrator**: the same as Application Administrator **except App Proxy**. It's a common choice for SaaS integration teams.\n- **Application Developer**: can create app registrations even when 'Users can register applications' is No. It becomes the owner of what it creates and can grant consent on its own behalf.\n- **Owner** (object-level): users added on an app's **Owners** blade can manage that specific app registration or enterprise app.\n- **Privileged Role Administrator** or **Global Administrator**: needed to grant tenant-wide consent for Microsoft Graph application permissions.\n**Scoping**: you can assign Application Administrator or Cloud Application Administrator at the scope of a **single app** instead of the whole tenant. You can also build **custom roles** with app management permissions, which require Microsoft Entra ID P1. Both options let a helpdesk lead manage the HR app without touching the CRM.",
+      "terms": [
+        {
+          "t": "Application Administrator",
+          "d": "Manages all app registrations and enterprise apps, including Application Proxy."
+        },
+        {
+          "t": "Cloud Application Administrator",
+          "d": "Same as Application Administrator but without Application Proxy rights."
+        },
+        {
+          "t": "Application Developer",
+          "d": "Can create app registrations regardless of the 'Users can register applications' setting."
+        }
+      ],
+      "trap": "When the task involves App Proxy, Cloud Application Administrator is wrong. Choose Application Administrator.",
+      "example": "The SaaS team gets Cloud Application Administrator. The on-premises web team, which publishes intranet apps through App Proxy, gets Application Administrator.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Role",
+          "Regs + ent. apps",
+          "App Proxy"
+        ],
+        "rows": [
+          [
+            "Application Admin",
+            "All",
+            "Yes"
+          ],
+          [
+            "Cloud App Admin",
+            "All",
+            "No"
+          ],
+          [
+            "App Developer",
+            "Create/own",
+            "No"
+          ],
+          [
+            "Owner",
+            "That app only",
+            "No"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.2.04",
+      "objective": "d3.2",
+      "seq": 4,
+      "title": "Microsoft Entra application proxy",
+      "short": "Application proxy publishes on-premises web apps for secure remote access without a VPN or inbound firewall ports. A lightweight agent, the Microsoft Entra private network connector, makes outbound connections to the cloud service. Users pre-authenticate with Entra ID, so Conditional Access and MFA apply. It needs Entra ID P1 or P2.",
+      "deep": "**How it works**: a user browses to the **External URL** (for example `https://hr-contoso.msappproxy.net` or a custom domain). Entra ID authenticates the user (**pre-authentication**). The cloud service then passes the request to a **connector** on-premises, which forwards it to the **Internal URL** (`http://hr-srv01/`).\n**Connector** (now called the **Microsoft Entra private network connector**, shared with Global Secure Access Private Access):\n- Installed on Windows Server 2016 or later with TLS 1.2 enabled. Registering it requires Application Administrator.\n- **Outbound only**: 443 for service traffic and 80 for CRL downloads. No inbound ports and no DMZ.\n- Install at least two connectors per **connector group** for high availability. Groups let you route apps to connectors near their back end.\n**Pre-authentication**: **Microsoft Entra ID** (recommended; enables Conditional Access, MFA and Defender for Cloud Apps monitoring) or **Passthrough** (no Entra check).\n**SSO to the back end**: Integrated Windows Authentication through **Kerberos constrained delegation (KCD)**, header-based, password-based, SAML, or linked.\n**Steps**: install the connector > Enterprise apps > New application > **Add an on-premises application** > set the internal URL, external URL, pre-authentication and connector group > assign users > test. For new App Proxy apps (from June 30, 2026), admin consent for User.Read must be granted manually.",
+      "terms": [
+        {
+          "t": "Private network connector",
+          "d": "The on-premises agent that relays App Proxy traffic using outbound connections only."
+        },
+        {
+          "t": "Pre-authentication",
+          "d": "Entra ID authenticates the user before any traffic reaches the internal network."
+        },
+        {
+          "t": "KCD",
+          "d": "Kerberos constrained delegation: lets the connector obtain Kerberos tickets for users to provide SSO to IWA apps."
+        }
+      ],
+      "trap": "Answers that open inbound 443 to the connector or put it in a DMZ are wrong. The connector only makes outbound connections.",
+      "example": "A legacy timesheet site on IIS is published with App Proxy, Entra pre-authentication and KCD. Remote staff sign in once with MFA and no VPN.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User",
+          "External URL",
+          "Entra pre-auth",
+          "App Proxy service",
+          "Connector",
+          "Internal app"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.2.05",
+      "objective": "d3.2",
+      "seq": 5,
+      "title": "Integrating SaaS apps and single sign-on",
+      "short": "Add SaaS apps from the Microsoft Entra app gallery, or create a non-gallery app. Then choose an SSO method: SAML or OpenID Connect federation for modern apps, password-based SSO for form logins, or linked for a simple shortcut. SAML needs an Identifier (Entity ID), a Reply URL (ACS) and the signing certificate.",
+      "deep": "**Adding the app**: Enterprise apps > **New application** > browse the **Microsoft Entra app gallery** (thousands of pre-integrated apps with templates and tutorials), or choose **Create your own application** for a non-gallery app.\n**SSO methods** (Single sign-on blade):\n- **SAML**: the app trusts Entra ID as the IdP. In **Basic SAML Configuration** set the **Identifier (Entity ID)** and the **Reply URL (Assertion Consumer Service URL)**, plus optional Sign-on and Logout URLs. Configure **Attributes & Claims** (the NameID is typically user.userprincipalname). Download the **SAML signing certificate** or the federation metadata XML and upload it to the SaaS app. Watch the certificate expiry date (3 years by default) and set notification emails.\n- **OpenID Connect / OAuth**: modern apps, usually multitenant, added through consent.\n- **Password-based**: Entra stores credentials and the My Apps extension fills in the sign-in form. Use it for apps without federation.\n- **Linked**: only a tile that links to the app. No real SSO.\n- **Disabled**: no Entra SSO.\nOn-premises apps can also use header-based or IWA SSO through App Proxy. After SSO is set up, assign users, add Conditional Access, and configure provisioning (next lesson).",
+      "terms": [
+        {
+          "t": "Identifier (Entity ID)",
+          "d": "The unique SAML identifier of the service provider that Entra ID issues tokens for."
+        },
+        {
+          "t": "Reply URL (ACS)",
+          "d": "The Assertion Consumer Service endpoint where Entra ID posts the SAML response."
+        },
+        {
+          "t": "Password-based SSO",
+          "d": "Entra ID securely stores and replays a username and password for apps without federation."
+        }
+      ],
+      "trap": "SAML options in exam answers often include 'redirect URI' or 'client secret'. Those are app registration and OIDC concepts. SAML uses the Entity ID, the Reply URL and a signing certificate.",
+      "example": "An admin adds a gallery expense app, enters the Entity ID and ACS URL from the vendor's tutorial, and uploads the federation metadata to the vendor portal.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Add from gallery",
+          "Configure SSO",
+          "Assign users",
+          "Provisioning",
+          "Conditional Access"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.2.06",
+      "objective": "d3.2",
+      "seq": 6,
+      "title": "Automatic user provisioning to SaaS apps (SCIM)",
+      "short": "SSO lets users sign in. Provisioning creates, updates and disables their accounts in the SaaS app. Entra ID uses SCIM 2.0 to sync assigned users and groups. You configure it on the app's Provisioning tab with a tenant URL and a secret token. It removes access when people leave.",
+      "deep": "Many apps need a user account to exist before SSO works. **Automatic provisioning** in Microsoft Entra ID handles the account lifecycle: create, update attributes, and disable or delete.\n- **SCIM** (System for Cross-domain Identity Management, v2.0) is the standard REST protocol. Gallery apps with a provisioning connector show **Automatic** mode. Apps without one show **Manual**, meaning you create accounts yourself.\n- **Setup**: Provisioning > Mode **Automatic** > **Admin credentials** (Tenant URL plus Secret token, or OAuth) > **Test connection** > edit **Mappings** (attribute mappings and expressions) > **Settings**: scope **Sync only assigned users and groups** (recommended) or all users, plus a notification email > turn provisioning **On**.\n- **Cycles**: an initial cycle processes all in-scope objects. Incremental cycles then process only changes. **Provision on demand** tests one user immediately.\n- **Scoping filters** narrow by attribute (for example department = Sales).\n- **Quarantine**: repeated failures, such as an expired token, pause the job until you fix them.\nCompare this with SAML **just-in-time (JIT) provisioning**, which creates an account at first sign-in but never deprovisions. That's why SCIM is preferred for joiner, mover and leaver automation. Assigning groups to apps requires Entra ID P1.",
+      "terms": [
+        {
+          "t": "SCIM 2.0",
+          "d": "A standard REST/JSON protocol for automating user and group provisioning between systems."
+        },
+        {
+          "t": "Attribute mappings",
+          "d": "Rules that define which Entra attributes flow to which target app attributes."
+        },
+        {
+          "t": "Provision on demand",
+          "d": "Immediately provisions a single user to test mappings and scoping."
+        }
+      ],
+      "trap": "JIT provisioning through SAML is offered as a way to automate deprovisioning. It only creates accounts. Use SCIM automatic provisioning to disable them.",
+      "example": "When an employee leaves, HR disables the Entra account and the next SCIM cycle deactivates the user in the ticketing SaaS app automatically.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Assign user",
+          "SCIM create",
+          "Attribute update",
+          "Unassign/disable",
+          "SCIM deactivate"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.2.07",
+      "objective": "d3.2",
+      "seq": 7,
+      "title": "Assigning users, groups and app roles",
+      "short": "Assign users or groups to an enterprise app on its Users and groups blade, choosing an app role when the app defines roles. Group-based assignment needs Entra ID P1 and doesn't flow to nested groups. The assigned roles reach the app in the token's roles claim.",
+      "deep": "**Assignment** links a principal to an app and, optionally, to one of the app's **app roles**.\n- Enterprise apps > [app] > **Users and groups** > **Add user/group** > pick users or groups > **Select a role** > Assign. If the app defines no roles, the assignment uses **Default Access**.\n- **Group-based assignment** requires **Microsoft Entra ID P1** or P2. Only **direct members** of the assigned group get access, because nested groups aren't expanded. Dynamic groups and synced AD groups both work.\n- **App roles** are defined in the app registration (for example Reader or Approver). Gallery apps such as AWS or Salesforce can expose roles that drive provisioning.\n- **Automation** with Microsoft Graph PowerShell: `New-MgUserAppRoleAssignment` or `New-MgGroupAppRoleAssignment`, with `-PrincipalId`, `-ResourceId` (the app's service principal ID) and `-AppRoleId`.\n- **Self-service**: on the Self-service blade, users can request access from My Apps, optionally with approval and added to a chosen group.\n- **Manage**: review assignments with **access reviews** (Entra ID P2 / ID Governance), and use **Assignment required = Yes** so only assigned principals get in.\nThe app reads the user's roles from the `roles` claim. Assigning a role doesn't change Entra directory roles.",
+      "terms": [
+        {
+          "t": "App role",
+          "d": "An application-specific role defined in the app registration and emitted in the roles claim."
+        },
+        {
+          "t": "Default Access",
+          "d": "The implicit role used when an app has no app roles defined."
+        },
+        {
+          "t": "Group-based assignment",
+          "d": "Assigning a group to an app; requires Entra ID P1 and covers direct members only."
+        }
+      ],
+      "trap": "Assigning a parent group whose members are other groups doesn't give the nested groups' users access. Nested groups aren't expanded for app assignment.",
+      "example": "The Finance-Managers group is assigned to the expenses app with the Approver role. Its members' tokens carry roles: ['Approver'].",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.2.08",
+      "objective": "d3.2",
+      "seq": 8,
+      "title": "User consent and permission classifications",
+      "short": "Consent is how a user or admin allows an app to access data on their behalf. Tenant settings control user consent: disable it, allow it only for verified publishers and low-impact permissions, or allow broader consent. Permission classifications let you label delegated permissions as low impact so users can consent to them.",
+      "deep": "When an app requests permissions (scopes) such as `User.Read` or `Mail.Read`, someone must **consent**. **User consent** covers only that user and only **delegated** permissions that don't require admin consent.\n**User consent settings** (Enterprise apps > **Consent and permissions** > User consent settings):\n- **Do not allow user consent**: every app needs an admin.\n- **Allow user consent for apps from verified publishers, for selected permissions**: users can consent only to apps from a **verified publisher** (or registered in your tenant) and only to permissions classified **low impact**. This uses the built-in policy `microsoft-user-default-low` and is the recommended setting.\n- **Allow user consent for apps**: any non-admin permission, any app (the legacy, riskier policy).\n- You can also apply custom **app consent policies** through Microsoft Graph.\n**Permission classifications** (Consent and permissions > Permission classifications): add delegated, non-admin permissions such as `User.Read`, `openid`, `profile`, `email` and `offline_access` as **Low**. Medium and High levels are in preview. Classifications are stored on the API's service principal. Graph PowerShell: `New-MgServicePrincipalDelegatedPermissionClassification`.\nChanges affect only future consent; existing grants stay. Review and revoke grants on the app's **Permissions** blade. Configuring these settings needs Privileged Role Administrator (or Global Administrator in the admin center).",
+      "terms": [
+        {
+          "t": "Delegated permission",
+          "d": "Lets an app act on behalf of a signed-in user, limited to what that user can do."
+        },
+        {
+          "t": "Verified publisher",
+          "d": "An app whose publisher has verified a Microsoft AI Cloud Partner Program (MPN) identity, shown with a blue badge."
+        },
+        {
+          "t": "Permission classification",
+          "d": "Labels a delegated permission as low (or medium/high) impact for use in consent policies."
+        }
+      ],
+      "trap": "Application permissions can't be classified for user consent. Only delegated permissions that don't require admin consent can be classified.",
+      "example": "Fabrikam allows user consent for verified publishers and classifies only openid, profile, email and User.Read as Low. A Mail.Read request goes to admin consent.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.2.09",
+      "objective": "d3.2",
+      "seq": 9,
+      "title": "Admin consent and the admin consent workflow",
+      "short": "Admin consent grants an app's permissions for the whole tenant and is required for application permissions and high-privilege delegated permissions. The admin consent workflow lets users request consent they can't give. Designated reviewers then approve or deny the request, and requests expire after a set number of days.",
+      "deep": "**Admin consent** (tenant-wide) is granted from Enterprise apps > [app] > **Permissions** > **Grant admin consent for <tenant>**, from the app registration's **API permissions** page, or with `az ad app permission admin-consent`. It's needed for:\n- all **application permissions** (app roles), which have no signed-in user\n- delegated permissions marked 'Admin consent required', such as `Directory.ReadWrite.All`\n- any delegated permission once user consent is disabled.\n**Who can grant**: Cloud Application Administrator and Application Administrator can grant most consent. Granting **Microsoft Graph application permissions** needs Privileged Role Administrator or Global Administrator.\n**Admin consent workflow** (Consent and permissions > **Admin consent settings**):\n- **Users can request admin consent to apps they are unable to consent to** = Yes\n- **Who can review admin consent requests**: users, groups or roles\n- Email notifications and expiry reminders\n- **Consent request expires after (days)**.\nThe user submits a justification from the consent prompt. Reviewers see it under **Admin consent requests** and can approve, deny or block it. Being a reviewer **doesn't grant** consent rights. Reviewers still need a role that can grant the requested permissions. Configuring the workflow requires Global Administrator.",
+      "terms": [
+        {
+          "t": "Admin consent",
+          "d": "Tenant-wide approval of an app's permissions on behalf of all users."
+        },
+        {
+          "t": "Application permission",
+          "d": "Lets an app act as itself with no signed-in user; always requires admin consent."
+        },
+        {
+          "t": "Admin consent workflow",
+          "d": "Lets users request admin consent and routes the request to designated reviewers."
+        }
+      ],
+      "trap": "Designating someone as a reviewer doesn't let them approve everything. They still need a role that can grant the requested permissions.",
+      "example": "A marketer requests consent for a survey app that needs Mail.Send. A Cloud Application Administrator reviewer checks the publisher and approves it.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User blocked",
+          "Request + reason",
+          "Reviewer notified",
+          "Approve/deny",
+          "Tenant consent"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.2.10",
+      "objective": "d3.2",
+      "seq": 10,
+      "title": "Application collections in My Apps",
+      "short": "Collections group apps into named tabs in the My Apps portal, such as 'HR tools' or 'Sales'. Admins create them in Enterprise apps > App launchers, add apps, set owners, and assign the collection to users or groups. Users see only the apps in a collection that they already have access to.",
+      "deep": "The **My Apps** portal (`myapps.microsoft.com`) shows every app a user is assigned. In large tenants that becomes cluttered. **Collections** organize it.\n**Create a collection**: Microsoft Entra admin center > **Enterprise apps** > **App launchers** > **New collection**:\n1. Enter a name (for example 'Finance'), and a description.\n2. **Applications** tab: add apps and set their order.\n3. **Owners** tab: add users who can manage the collection.\n4. **Users and groups** tab: assign the collection to the users or groups who should see the tab.\n5. **Review + Create**.\n**Key facts**\n- Requires **Microsoft Entra ID P1 or P2**.\n- Roles: **Cloud Application Administrator** or **Application Administrator** (or an owner).\n- A collection is a **filter, not an assignment**. It never grants access to an app. Users see only the collection's apps that they're already assigned. If an app is missing, assign the user to the app itself.\n- Admin collections are managed in the admin center, not in My Apps. Users can also organize their own view in My Apps.\n- Create, edit and delete events appear in the Enterprise apps **audit logs** under the My Apps service.",
+      "terms": [
+        {
+          "t": "My Apps",
+          "d": "The end-user portal listing apps a user can launch, at myapps.microsoft.com."
+        },
+        {
+          "t": "Collection",
+          "d": "An admin-defined tab in My Apps that groups related applications."
+        },
+        {
+          "t": "App launchers",
+          "d": "The Enterprise apps blade where collections are created and managed."
+        }
+      ],
+      "trap": "Adding an app to a collection doesn't give users access. They must also be assigned to the app.",
+      "example": "The Sales collection holds the CRM, quoting and e-signature apps and is assigned to the Sales group, so sellers see one focused tab.",
+      "diagram": null
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-300.d3.q001",
+      "lesson": "sc-300.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which identity is deleted automatically when the Azure virtual machine it belongs to is deleted?",
+      "options": [
+        "A user-assigned managed identity attached to the VM",
+        "The VM's system-assigned managed identity",
+        "A service principal created from an app registration",
+        "A group managed service account used by the VM"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A system-assigned managed identity shares the lifecycle of its resource and is deleted with it. A user-assigned identity is a separate resource that must be deleted explicitly. App registrations and gMSAs are unrelated to the VM's lifecycle."
+    },
+    {
+      "id": "sc-300.d3.q002",
+      "lesson": "sc-300.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Twenty Azure Functions apps need identical read access to one key vault. The function apps are torn down and recreated weekly. You want the fewest role assignments and no credentials to manage. Which identity should you use?",
+      "options": [
+        "A system-assigned managed identity on each function app",
+        "An app registration with a client secret stored in app settings",
+        "One user-assigned managed identity attached to all function apps",
+        "A user account excluded from MFA used by all function apps"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A user-assigned managed identity survives the function apps being recreated, and one role assignment covers all of them. System-assigned identities would need new role assignments after every rebuild. A client secret or a user account adds credentials to manage and is less secure."
+    },
+    {
+      "id": "sc-300.d3.q003",
+      "lesson": "sc-300.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A Windows service runs on four on-premises servers in an Active Directory domain. It needs one domain identity whose password is rotated automatically and never known to administrators. What should you use?",
+      "options": [
+        "A group managed service account (gMSA)",
+        "A standalone managed service account (sMSA)",
+        "A system-assigned managed identity",
+        "A service principal with a certificate"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A gMSA is an AD account that several hosts can share, with automatic password management. An sMSA is limited to a single computer. Managed identities and service principals are Entra ID identities and don't provide a domain identity for an on-premises Windows service."
+    },
+    {
+      "id": "sc-300.d3.q004",
+      "lesson": "sc-300.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Litware runs a reporting job on a Linux server in a third-party colocation datacenter. The server isn't Azure Arc-enabled and has no Azure footprint. The job must upload files to an Azure Storage account every hour. Security policy forbids user accounts for automation and prefers credentials that are hard to exfiltrate.",
+      "stem": "Which identity should the job use?",
+      "options": [
+        "A system-assigned managed identity enabled on the server",
+        "A user-assigned managed identity assigned to the server",
+        "A dedicated cloud user account excluded from Conditional Access",
+        "An app registration whose service principal authenticates with a certificate"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Managed identities can be attached only to Azure resources (or Arc-enabled servers), so they aren't available here. A service principal with a certificate works from anywhere and is stronger than a secret. A user account breaks the policy."
+    },
+    {
+      "id": "sc-300.d3.q005",
+      "lesson": "sc-300.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about user-assigned managed identities are true? Select TWO.",
+      "options": [
+        "They can be assigned to multiple Azure resources at the same time.",
+        "They are deleted automatically when the last resource using them is deleted.",
+        "They require you to rotate a client secret periodically.",
+        "They are created as standalone Azure resources in a resource group."
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "User-assigned identities are their own Azure resources and can be shared across many resources. They have an independent lifecycle, so they persist until you delete them. Like all managed identities, their credentials are handled by Azure, so there's no secret to rotate."
+    },
+    {
+      "id": "sc-300.d3.q006",
+      "lesson": "sc-300.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "A managed identity is represented in Microsoft Entra ID as a special type of service principal.",
+          "a": true
+        },
+        {
+          "s": "A single system-assigned managed identity can be shared by two virtual machines.",
+          "a": false
+        },
+        {
+          "s": "The Managed Identity Contributor role allows a user to create user-assigned managed identities.",
+          "a": true
+        }
+      ],
+      "explain": "Every managed identity is backed by a service principal of type ManagedIdentity. A system-assigned identity belongs to exactly one resource. Managed Identity Contributor can create, update and delete user-assigned identities, while Managed Identity Operator can only read and assign them."
+    },
+    {
+      "id": "sc-300.d3.q007",
+      "lesson": "sc-300.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure CLI command to create a user-assigned managed identity named id-orders.",
+      "code": "az identity ____ --resource-group rg-app --name id-orders --location westeurope",
+      "options": [
+        "create",
+        "assign",
+        "add",
+        "new"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "`az identity create` creates a user-assigned managed identity resource. `assign` is used with `az vm identity` or `az webapp identity` to attach identities to compute. `add` and `new` aren't valid subcommands of `az identity`."
+    },
+    {
+      "id": "sc-300.d3.q008",
+      "lesson": "sc-300.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You need to enable the system-assigned managed identity on an existing VM named vm1. Complete the command.",
+      "code": "az vm identity ____ --resource-group rg1 --name vm1",
+      "options": [
+        "create",
+        "enable",
+        "assign",
+        "set"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "`az vm identity assign` without `--identities` enables the system-assigned identity. Adding `--identities <resource ID>` attaches a user-assigned identity instead. `create`, `enable` and `set` aren't subcommands of `az vm identity`."
+    },
+    {
+      "id": "sc-300.d3.q009",
+      "lesson": "sc-300.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A platform engineer must attach an existing user-assigned managed identity to VMs. The engineer must not be able to create or delete managed identities. Which role should you grant on the identity, following least privilege?",
+      "options": [
+        "Managed Identity Contributor",
+        "User Access Administrator",
+        "Reader",
+        "Managed Identity Operator"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Managed Identity Operator can read and assign user-assigned identities but can't create or delete them. Managed Identity Contributor can create and delete, which exceeds the requirement. Reader can't assign. User Access Administrator manages role assignments and doesn't attach identities."
+    },
+    {
+      "id": "sc-300.d3.q010",
+      "lesson": "sc-300.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "An app on an Azure VM must read blobs by using the VM's system-assigned managed identity. Put the steps in order.",
+      "options": [
+        "Enable the system-assigned managed identity on the VM",
+        "Assign the Storage Blob Data Reader role to the VM's identity on the storage account",
+        "Have the app request a token from IMDS for https://storage.azure.com/",
+        "Call the Blob service REST API with the token as a bearer token"
+      ],
+      "explain": "The identity must exist before it can receive a role. The role assignment authorizes it on the data plane. The app then gets a token for the storage resource from the Instance Metadata Service and presents that token to Azure Storage."
+    },
+    {
+      "id": "sc-300.d3.q011",
+      "lesson": "sc-300.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Code on an Azure VM must get a managed identity token for Azure Key Vault. Complete the request.",
+      "code": "curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net' -H ____",
+      "options": [
+        "Authorization:Bearer",
+        "Content-Type:application/json",
+        "X-IDENTITY-HEADER:true",
+        "Metadata:true"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "IMDS requires the header `Metadata: true` (lowercase true) to block server-side request forgery. There's no bearer token yet, because that's what you're requesting. X-IDENTITY-HEADER is used by the App Service endpoint, not by IMDS on a VM."
+    },
+    {
+      "id": "sc-300.d3.q012",
+      "lesson": "sc-300.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "complete",
+      "case": "VM-Batch01 has no system-assigned identity and has two user-assigned managed identities: id-reader and id-writer. Only id-writer has the Storage Blob Data Contributor role. A script's token request to IMDS fails because it doesn't say which identity to use.",
+      "stem": "Complete the request so that the token is issued for id-writer.",
+      "code": "curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fstorage.azure.com%2F&____=<id-writer client ID>' -H Metadata:true",
+      "options": [
+        "tenant_id",
+        "client_id",
+        "principal_name",
+        "identity_id"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "When a VM has several user-assigned identities, the request must name one with `client_id`, `object_id` or `msi_res_id`. Here the value is a client ID, so `client_id` is correct. `tenant_id`, `principal_name` and `identity_id` aren't IMDS identity selector parameters."
+    },
+    {
+      "id": "sc-300.d3.q013",
+      "lesson": "sc-300.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "Code on an Azure VM can obtain a token for its managed identity without storing any secret or certificate.",
+          "a": true
+        },
+        {
+          "s": "Assigning the Contributor role on a storage account is enough for a managed identity to read blob data with Microsoft Entra authorization.",
+          "a": false
+        },
+        {
+          "s": "A managed identity can be used directly by an on-premises server that isn't Azure Arc-enabled.",
+          "a": false
+        }
+      ],
+      "explain": "Managed identity tokens come from IMDS with no stored credential. Contributor is a control-plane role, and blob data access needs a data role such as Storage Blob Data Reader. Managed identities are available only on Azure resources or Azure Arc-enabled servers."
+    },
+    {
+      "id": "sc-300.d3.q014",
+      "lesson": "sc-300.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which enterprise application property, when set to No, prevents all users from signing in to the app, even if they are assigned, and stops token issuance for it?",
+      "options": [
+        "Visible to users?",
+        "Assignment required?",
+        "Enabled for users to sign in?",
+        "Owners"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "'Enabled for users to sign in?' maps to accountEnabled. Setting it to No disables the service principal, so nobody can sign in or get tokens. 'Assignment required?' only limits access to assigned principals. 'Visible to users?' only hides the My Apps tile."
+    },
+    {
+      "id": "sc-300.d3.q015",
+      "lesson": "sc-300.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A SAML enterprise app is assigned to the Legal group. Users outside Legal can still sign in to it. You need only assigned users to get tokens. What should you do?",
+      "options": [
+        "Set 'Assignment required?' to Yes",
+        "Set 'Visible to users?' to No",
+        "Remove the app from all My Apps collections",
+        "Set 'Enabled for users to sign in?' to No"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "When 'Assignment required?' is No, any user in the tenant can sign in. Setting it to Yes restricts tokens to assigned principals. Hiding the app or removing it from collections changes only visibility. Disabling sign-in would block the Legal users too."
+    },
+    {
+      "id": "sc-300.d3.q016",
+      "lesson": "sc-300.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about enterprise app properties, select Yes if true.",
+      "statements": [
+        {
+          "s": "Setting 'Visible to users?' to No prevents assigned users from signing in to the app.",
+          "a": false
+        },
+        {
+          "s": "The Notes property has no effect on sign-in behavior.",
+          "a": true
+        },
+        {
+          "s": "When 'Assignment required?' is No for an OIDC app, guest users in the tenant can also sign in to it.",
+          "a": true
+        }
+      ],
+      "explain": "Visibility only controls the My Apps and Microsoft 365 launcher tile, so users can still sign in by URL. Notes is free text for administrators. With assignment not required, any user in the tenant can sign in, including invited external (guest) users."
+    },
+    {
+      "id": "sc-300.d3.q017",
+      "lesson": "sc-300.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Users are creating unmanaged app registrations. You must stop regular users from registering applications but still let the 12-person development team create them, using least privilege. What should you do?",
+      "options": [
+        "Set 'Users can register applications' to No and assign the Cloud Application Administrator role to the developers",
+        "Set 'Users can register applications' to No and assign the Application Developer role to the developers",
+        "Disable user consent and enable the admin consent workflow",
+        "Set 'Users can register applications' to No and make the developers owners of existing apps"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Application Developer can create registrations regardless of the tenant setting and is the least-privileged fit. Cloud Application Administrator can manage every app in the tenant, which is too much. Consent settings don't control registration. Owning existing apps doesn't let users create new ones."
+    },
+    {
+      "id": "sc-300.d3.q018",
+      "lesson": "sc-300.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Entra built-in role can manage all aspects of app registrations and enterprise apps EXCEPT Application Proxy?",
+      "options": [
+        "Application Administrator",
+        "Application Developer",
+        "Cloud Application Administrator",
+        "Hybrid Identity Administrator"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Cloud Application Administrator matches Application Administrator except for Application Proxy. Application Administrator includes App Proxy. Application Developer can only create registrations and manage the ones it owns. Hybrid Identity Administrator manages sync and federation, not enterprise apps."
+    },
+    {
+      "id": "sc-300.d3.q019",
+      "lesson": "sc-300.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An administrator must publish on-premises web apps through Microsoft Entra application proxy and manage their connector groups. Which role should you assign, following least privilege?",
+      "options": [
+        "Global Administrator",
+        "Application Administrator",
+        "Cloud Application Administrator",
+        "Security Administrator"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Application Administrator includes Application Proxy settings and is the least-privileged built-in role for this task. Cloud Application Administrator specifically excludes App Proxy. Global Administrator works but is excessive. Security Administrator manages security features, not app publishing."
+    },
+    {
+      "id": "sc-300.d3.q020",
+      "lesson": "sc-300.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": null,
+      "stem": "A team lead must configure SSO and manage user assignments for the HR enterprise app only. They must not be able to manage other apps. Which TWO actions meet the requirement? Select TWO.",
+      "options": [
+        "Add the team lead as an owner of the HR enterprise app",
+        "Assign the Cloud Application Administrator role at tenant scope",
+        "Assign the Application Developer role at tenant scope",
+        "Assign the Cloud Application Administrator role scoped to the HR app only",
+        "Add the team lead to the Users and groups assignment of the HR app"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "Owners can manage the specific app they own, and app-scoped role assignments limit the role to that one app. A tenant-wide Cloud Application Administrator assignment covers every app. Application Developer can't manage SSO for an existing app it doesn't own. Being assigned as a user only grants sign-in."
+    },
+    {
+      "id": "sc-300.d3.q021",
+      "lesson": "sc-300.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "A user with the Application Developer role can create app registrations even when 'Users can register applications' is set to No.",
+          "a": true
+        },
+        {
+          "s": "A user with the Cloud Application Administrator role can configure Application Proxy settings for an app.",
+          "a": false
+        },
+        {
+          "s": "An owner of an enterprise application can manage that application without holding an Entra admin role.",
+          "a": true
+        }
+      ],
+      "explain": "Application Developer ignores the 'Users can register applications' setting. Cloud Application Administrator excludes Application Proxy, which requires Application Administrator. Object-level owners can manage the app they own."
+    },
+    {
+      "id": "sc-300.d3.q022",
+      "lesson": "sc-300.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which component must you install on-premises to publish an internal web app through Microsoft Entra application proxy?",
+      "options": [
+        "Microsoft Entra Connect Health agent",
+        "Microsoft Entra private network connector",
+        "Microsoft Entra provisioning agent",
+        "Microsoft Entra Connect Sync"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Application proxy relays traffic through the Microsoft Entra private network connector, the same connector used by Global Secure Access Private Access. The provisioning agent is used for Cloud Sync and on-premises provisioning. Connect Sync and the Connect Health agent handle directory sync and monitoring."
+    },
+    {
+      "id": "sc-300.d3.q023",
+      "lesson": "sc-300.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Your network team asks what firewall changes the application proxy connector server needs. What should you tell them?",
+      "options": [
+        "Allow inbound TCP 443 from the internet to the connector server",
+        "Place the connector server in a perimeter network and allow inbound TCP 80",
+        "Allow outbound TCP 443 (and 80 for CRL checks) from the connector server; no inbound ports are needed",
+        "Create a site-to-site VPN between the connector server and Azure"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The connector makes outbound connections only: 443 to the service and 80 for certificate revocation lists. No inbound ports, perimeter network or VPN are needed. That's a main benefit of application proxy."
+    },
+    {
+      "id": "sc-300.d3.q024",
+      "lesson": "sc-300.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are publishing an on-premises intranet site with Microsoft Entra application proxy. Put the steps in order.",
+      "options": [
+        "Install and register the private network connector on a Windows server that can reach the site",
+        "In Enterprise apps, select Add an on-premises application and enter the internal and external URLs",
+        "Set Pre Authentication to Microsoft Entra ID and select the connector group",
+        "Assign users or groups to the new enterprise app",
+        "Browse to the external URL as an assigned user to test access"
+      ],
+      "explain": "A registered connector must exist before the app can use a connector group. You create the on-premises app with its URLs, set pre-authentication and the connector group, assign users who are allowed to sign in, and then test through the external URL."
+    },
+    {
+      "id": "sc-300.d3.q025",
+      "lesson": "sc-300.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailspin publishes a claims-processing site through application proxy with Pre Authentication set to Passthrough. Auditors require MFA through Conditional Access for every external session. They also require real-time session monitoring through Microsoft Defender for Cloud Apps.",
+      "stem": "What should you change first?",
+      "options": [
+        "Set Pre Authentication to Microsoft Entra ID",
+        "Configure Kerberos constrained delegation on the connector",
+        "Move the app to a new connector group",
+        "Enable header-based single sign-on"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "With Passthrough, Entra ID doesn't authenticate users, so Conditional Access and Defender for Cloud Apps can't apply. Entra ID pre-authentication is required for both. KCD and header-based SSO handle back-end sign-in, and connector groups handle routing."
+    },
+    {
+      "id": "sc-300.d3.q026",
+      "lesson": "sc-300.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An on-premises app published through application proxy uses Integrated Windows Authentication. Users are prompted again after Entra sign-in. What should you configure to provide SSO?",
+      "options": [
+        "Password-based single sign-on",
+        "SAML-based single sign-on",
+        "Header-based single sign-on",
+        "Kerberos constrained delegation for the connector's computer account"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "For IWA apps, the connector gets Kerberos tickets for users through Kerberos constrained delegation (KCD), which removes the second prompt. Password-based SSO is for form logins, SAML for federation-capable apps, and header-based SSO for apps that read identity from HTTP headers."
+    },
+    {
+      "id": "sc-300.d3.q027",
+      "lesson": "sc-300.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "You are configuring SAML SSO for a gallery app. Which TWO values are required in the Basic SAML Configuration section? Select TWO.",
+      "options": [
+        "Identifier (Entity ID)",
+        "Redirect URI for a single-page application",
+        "Client secret",
+        "Reply URL (Assertion Consumer Service URL)",
+        "Application ID URI for an exposed API"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "SAML requires the service provider's Identifier (Entity ID) and the Reply URL (ACS) where Entra ID posts the assertion. Redirect URIs, client secrets and Application ID URIs belong to OAuth and OIDC app registrations, not SAML configuration."
+    },
+    {
+      "id": "sc-300.d3.q028",
+      "lesson": "sc-300.d3.2.09",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso enabled the admin consent workflow and made Ben, a Cloud Application Administrator, a reviewer. A user requests consent for a reporting tool that asks for the Microsoft Graph application permission Reports.Read.All. Ben can see the request but can't approve it.",
+      "stem": "What is the most likely reason?",
+      "options": [
+        "Admin consent requests can be approved only by the user who submitted them",
+        "The request expired the moment Ben opened it",
+        "The app must be removed from the My Apps collection before approval",
+        "Granting Microsoft Graph application permissions needs a higher-privileged role than Cloud Application Administrator"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Being a reviewer doesn't grant consent rights. Consent for Microsoft Graph application permissions (app roles) needs a higher-privileged role, such as Global Administrator. Requesters can't approve their own requests, opening a request doesn't expire it, and collections are irrelevant."
+    },
+    {
+      "id": "sc-300.d3.q029",
+      "lesson": "sc-300.d3.2.10",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Sales staff want their CRM, quoting and e-signature apps grouped on one tab in the My Apps portal. What should you configure?",
+      "options": [
+        "An administrative unit containing the three apps",
+        "A collection in Enterprise apps > App launchers, assigned to the Sales group",
+        "An access package catalog containing the three apps",
+        "Company branding for the Sales group"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Collections, created under App launchers, add named tabs to My Apps and are assigned to users or groups. Administrative units scope admin rights. Access package catalogs govern access requests. Company branding changes the sign-in page."
+    },
+    {
+      "id": "sc-300.d3.q030",
+      "lesson": "sc-300.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Using Microsoft Graph PowerShell, you must assign a user to the Approver app role of an enterprise app. Complete the command.",
+      "code": "____ -UserId $user.Id -PrincipalId $user.Id -ResourceId $sp.Id -AppRoleId $approverRole.Id",
+      "options": [
+        "New-MgServicePrincipalOwnerByRef",
+        "New-MgOauth2PermissionGrant",
+        "New-MgUserAppRoleAssignment",
+        "New-MgGroupMember"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "New-MgUserAppRoleAssignment creates an app role assignment for a user. The resource is the app's service principal and the AppRoleId is the role. The owner cmdlet adds owners, an OAuth2 permission grant records delegated consent, and New-MgGroupMember changes group membership."
+    },
+    {
+      "id": "sc-300.d3.q031",
+      "lesson": "sc-300.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A gallery SaaS app supports SCIM 2.0. Accounts must be created when users are assigned and deactivated when they're unassigned or disabled. What should you configure?",
+      "options": [
+        "Just-in-time provisioning through the app's SAML configuration",
+        "Microsoft Entra Cloud Sync for the app",
+        "Automatic provisioning on the app's Provisioning tab with the tenant URL and secret token",
+        "A dynamic group assigned to the app with Visible to users set to Yes"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Automatic provisioning uses SCIM to create, update and deactivate accounts for in-scope users. SAML JIT provisioning creates accounts at first sign-in but never deprovisions them. Cloud Sync syncs AD to Entra ID, not to SaaS apps. A dynamic group alone doesn't create accounts in the app."
+    },
+    {
+      "id": "sc-300.d3.q032",
+      "lesson": "sc-300.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about assigning access to enterprise apps, select Yes if true.",
+      "statements": [
+        {
+          "s": "Assigning a group to an enterprise app requires Microsoft Entra ID P1 or P2.",
+          "a": true
+        },
+        {
+          "s": "When you assign a group to an app, members of groups nested inside it also get access.",
+          "a": false
+        },
+        {
+          "s": "Provisioning can be scoped to sync only assigned users and groups.",
+          "a": true
+        }
+      ],
+      "explain": "Group-based app assignment is a P1 feature. Only direct members of an assigned group get access, because nested groups aren't expanded. Provisioning settings offer 'Sync only assigned users and groups', which is the recommended scope."
+    },
+    {
+      "id": "sc-300.d3.q033",
+      "lesson": "sc-300.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Developers defined two app roles, Reader and Approver, in the Expenses app registration. The app grants approval rights only when the token's roles claim contains Approver. The Finance-Managers security group must get approval rights.",
+      "stem": "What should you do?",
+      "options": [
+        "Add Finance-Managers as an owner of the Expenses app registration",
+        "Add a groups optional claim to the Expenses app's token configuration",
+        "Create a dynamic group named Approver and add the managers to it",
+        "In Enterprise apps > Expenses > Users and groups, assign Finance-Managers with the Approver role"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Assigning the group to the enterprise app with the Approver role makes Entra ID put Approver in members' roles claim. Owners can manage the app but don't get roles. A groups claim emits group IDs, not app roles. Naming a group 'Approver' doesn't map it to the role."
+    },
+    {
+      "id": "sc-300.d3.q034",
+      "lesson": "sc-300.d3.2.08",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Users should consent only to apps from verified publishers, and only for permissions you've classified as low impact. Everything else should go to an admin. Which user consent setting should you choose?",
+      "options": [
+        "Do not allow user consent",
+        "Allow user consent for apps",
+        "Allow user consent for apps from verified publishers, for selected permissions",
+        "Users can request admin consent to apps they are unable to consent to"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "This option applies the built-in low-impact policy: users consent only to apps from verified publishers (or registered in your tenant) and only for classified low-impact permissions. 'Do not allow' blocks all user consent, 'Allow user consent for apps' is too broad, and the last option is an admin consent workflow setting."
+    },
+    {
+      "id": "sc-300.d3.q035",
+      "lesson": "sc-300.d3.2.08",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about permission classifications in Microsoft Entra ID are true? Select TWO.",
+      "options": [
+        "Only delegated permissions that don't require admin consent can be classified.",
+        "Application permissions can be classified as low impact so users can consent to them.",
+        "Classifying a permission as low grants it to all users immediately.",
+        "Classifications are stored on the service principal of the API that exposes the permission."
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "Only delegated, non-admin permissions can be classified, and the classification lives on the API's service principal (for example, Microsoft Graph). Application permissions always need admin consent. A classification only feeds consent policies and grants nothing by itself."
+    },
+    {
+      "id": "sc-300.d3.q036",
+      "lesson": "sc-300.d3.2.09",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are setting up and using the admin consent workflow. Put the steps in order.",
+      "options": [
+        "Set 'Users can request admin consent to apps they are unable to consent to' to Yes",
+        "Choose the reviewers and set the request expiration in days",
+        "A user who is blocked at the consent prompt submits a request with a justification",
+        "A reviewer with a role that can grant the permissions approves the request in Admin consent requests"
+      ],
+      "explain": "An administrator enables the workflow and configures reviewers and expiration. Only then can users submit requests from the consent prompt. Reviewers act under Admin consent requests, and they need sufficient privileges to grant the requested permissions."
+    }
+  ]
+}

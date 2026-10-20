@@ -1,0 +1,465 @@
+{
+  "exam": "sc-500",
+  "domain": "d2",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-500.d2.q071",
+      "lesson": "sc-500.d2.3.09",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which private DNS zone should be linked to a VNet so that clients resolve an Azure SQL Database private endpoint?",
+      "options": [
+        "privatelink.sql.azure.com",
+        "privatelink.database.windows.net",
+        "privatelink.blob.core.windows.net",
+        "privatelink.vaultcore.azure.net"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Azure SQL Database (sqlServer sub-resource) uses privatelink.database.windows.net. privatelink.blob.core.windows.net is for blob storage and privatelink.vaultcore.azure.net for Key Vault. privatelink.sql.azure.com isn't the recommended zone for SQL Database."
+    },
+    {
+      "id": "sc-500.d2.q072",
+      "lesson": "sc-500.d2.3.09",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "After you create a blob private endpoint and disable public network access, a VM in a peered spoke VNet gets 403 errors because contoso.blob.core.windows.net resolves to a public IP. VMs in the hub VNet work. What should you do?",
+      "options": [
+        "Change the app's connection string to contoso.privatelink.blob.core.windows.net",
+        "Add the spoke subnet as a virtual network rule on the storage account",
+        "Link the privatelink.blob.core.windows.net private DNS zone to the spoke VNet",
+        "Create a second private endpoint in the spoke VNet"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The spoke VNet isn't linked to the private DNS zone, so it follows the public CNAME chain. Linking the zone (or centralizing DNS) fixes resolution. Changing connection strings isn't recommended, VNet rules apply to the public endpoint that is disabled, and a second endpoint is unnecessary across peering."
+    },
+    {
+      "id": "sc-500.d2.q073",
+      "lesson": "sc-500.d2.3.09",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about private endpoint DNS, select Yes if true.",
+      "statements": [
+        {
+          "s": "Applications should keep using the service's normal FQDN, such as contoso.blob.core.windows.net.",
+          "a": true
+        },
+        {
+          "s": "Successfully resolving the privatelink CNAME from the internet grants access to the resource.",
+          "a": false
+        },
+        {
+          "s": "A private DNS zone group on the private endpoint can create its A record in the private zone automatically.",
+          "a": true
+        }
+      ],
+      "explain": "Connection strings stay unchanged; DNS steers them to the private IP. The public CNAME chain is resolvable anywhere but grants nothing, since public access rules still block callers. A DNS zone group manages the A record automatically."
+    },
+    {
+      "id": "sc-500.d2.q074",
+      "lesson": "sc-500.d2.3.09",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Adatum's on-premises servers use on-premises DNS servers and reach Azure over ExpressRoute. A storage account has a blob private endpoint in the hub VNet, with privatelink.blob.core.windows.net linked to the hub. On-premises servers still resolve the storage account to its public IP.",
+      "stem": "What should you implement?",
+      "options": [
+        "An Azure DNS Private Resolver inbound endpoint in the hub, with on-premises DNS conditionally forwarding blob.core.windows.net to it",
+        "A hosts file entry on one domain controller pointing at the public IP",
+        "A public DNS A record for contoso.blob.core.windows.net pointing to the private IP",
+        "A service endpoint for Microsoft.Storage on the GatewaySubnet"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "On-premises DNS must forward the storage zone to a resolver inside Azure that can see the linked private zone; Private Resolver's inbound endpoint provides that. A public IP hosts entry is wrong, you can't create records in Microsoft's public zones, and service endpoints don't serve on-premises clients."
+    },
+    {
+      "id": "sc-500.d2.q075",
+      "lesson": "sc-500.d2.3.10",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What must sit in front of an application before you can publish it with Azure Private Link service?",
+      "options": [
+        "An Azure Application Gateway",
+        "A Basic Load Balancer",
+        "A Standard Load Balancer",
+        "An Azure Firewall"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Private Link service attaches to the frontend IP configuration of a Standard Load Balancer. Basic Load Balancer isn't supported. Application Gateway has its own Private Link feature, and Azure Firewall isn't a Private Link service frontend."
+    },
+    {
+      "id": "sc-500.d2.q076",
+      "lesson": "sc-500.d2.3.10",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You publish a service with Azure Private Link service. Customers' subscriptions are in other Microsoft Entra tenants and have no permissions on your resources. Requests from two named customer subscriptions should be approved automatically, and other customers shouldn't be able to find the service. How should you configure it?",
+      "options": [
+        "Set visibility to Anyone with your alias and leave auto-approval empty",
+        "Set visibility to Role-based access control only and add the subscriptions to auto-approval",
+        "Set visibility to Restricted by subscription and add both subscriptions to the visibility and auto-approval lists",
+        "Disable the privateLinkServiceNetworkPolicies setting and share the alias publicly"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Restricted by subscription limits who can see and request the service, and the auto-approval list approves those subscriptions automatically. Anyone with your alias is public. RBAC only is for consumers who already hold RBAC permissions, typically in your own tenant. The subnet setting doesn't control visibility."
+    },
+    {
+      "id": "sc-500.d2.q077",
+      "lesson": "sc-500.d2.3.10",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An application published through Private Link service logs only NAT IP addresses as the client source. The security team needs the consumer's original source IP. What should you enable?",
+      "options": [
+        "TCP Proxy v2 on the Private Link service, and parse the PROXY header in the app",
+        "Floating IP on the load balancer rule",
+        "Private endpoint network policies on the consumer subnet",
+        "More NAT IP addresses on the Private Link service"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "TCP Proxy v2 adds a PROXY protocol header carrying the consumer source IP and LinkID; the app must parse it. Floating IP and consumer subnet policies don't preserve source IP through Private Link, and more NAT IPs just add port capacity."
+    },
+    {
+      "id": "sc-500.d2.q078",
+      "lesson": "sc-500.d2.3.10",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Private Link service, select Yes if true.",
+      "statements": [
+        {
+          "s": "Consumers can connect even if their VNet address space overlaps the provider's VNet.",
+          "a": true
+        },
+        {
+          "s": "When deploying with Azure CLI, privateLinkServiceNetworkPolicies must be Disabled on the subnet hosting the service.",
+          "a": true
+        },
+        {
+          "s": "A consumer's private endpoint passes traffic while its connection is still in the Pending state.",
+          "a": false
+        }
+      ],
+      "explain": "Private Link NATs consumer traffic, so overlapping address spaces aren't a problem. The portal disables the subnet policy automatically, but CLI, PowerShell and templates need it set. Only approved connections pass traffic."
+    },
+    {
+      "id": "sc-500.d2.q079",
+      "lesson": "sc-500.d2.3.10",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Woodgrove hosts a payments API on VMs in its own VNet. Ten bank customers, each in their own Microsoft Entra tenant, must reach the API privately from their VNets. Several customers use 10.0.0.0/16, the same range as Woodgrove's VNet. Woodgrove must approve each customer.",
+      "stem": "What should you use?",
+      "options": [
+        "Global VNet peering with each customer VNet",
+        "A site-to-site VPN connection to each customer",
+        "Azure Private Link service behind a Standard Load Balancer, with customers creating private endpoints",
+        "Service endpoints with VNet rules for each customer subnet"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Private Link service supports cross-tenant consumers, overlapping address spaces and per-connection approval. Peering and VPNs fail with overlapping ranges and expose more of the network. Service endpoints apply to Azure PaaS services, not a customer-hosted API."
+    },
+    {
+      "id": "sc-500.d2.q080",
+      "lesson": "sc-500.d2.3.11",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In what order does Azure Firewall process rule collections in a firewall policy?",
+      "options": [
+        "Application rules, network rules, then DNAT rules",
+        "Network rules, DNAT rules, then application rules",
+        "Strictly by rule collection priority, regardless of type",
+        "DNAT rules, network rules, then application rules"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Azure Firewall makes passes in the order DNAT, network, then application, with priorities applied within each type. Priority alone doesn't decide across types, so a low-priority network rule still runs before any application rule."
+    },
+    {
+      "id": "sc-500.d2.q081",
+      "lesson": "sc-500.d2.3.11",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A child firewall policy has a rule collection group at priority 100 that allows a site. Its parent policy has a rule collection group at priority 500 that denies the same site with the same rule type. What happens?",
+      "options": [
+        "The site is allowed because 100 is the higher priority",
+        "The site is denied because parent policy rule collection groups always take precedence",
+        "The site is allowed because child policies override the parent",
+        "Deployment fails because the policies conflict"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Rule collection groups from the parent policy are always processed before those in the child, whatever the priority numbers, so the parent's Deny matches first. Child policies inherit but can't override parent rules, and the conflict doesn't block deployment."
+    },
+    {
+      "id": "sc-500.d2.q082",
+      "lesson": "sc-500.d2.3.11",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which two Azure Firewall features require at least the Standard SKU and aren't available in Basic? Select TWO.",
+      "options": [
+        "DNS proxy",
+        "Web categories",
+        "Application-level FQDN filtering for HTTPS",
+        "FQDN tags",
+        "Service tags in network rules"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "DNS proxy and web categories need Standard or Premium. Basic supports application FQDN filtering, FQDN tags and service tags. Basic's threat intelligence can only alert, not deny."
+    },
+    {
+      "id": "sc-500.d2.q083",
+      "lesson": "sc-500.d2.3.11",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "You will route all outbound internet traffic from spoke VNets through Azure Firewall in a hub VNet. Put the steps in order.",
+      "options": [
+        "Create a subnet named AzureFirewallSubnet (/26) in the hub VNet",
+        "Deploy Azure Firewall with a firewall policy into that subnet",
+        "Add application and network rule collections that allow approved traffic",
+        "Create a route table with 0.0.0.0/0 to the firewall's private IP and associate it with spoke subnets"
+      ],
+      "explain": "The firewall needs its dedicated /26 subnet first, then the firewall and policy. Allow rules should exist before traffic is redirected, or legitimate traffic is denied by default. Finally, UDRs in spokes send traffic to the firewall's private IP."
+    },
+    {
+      "id": "sc-500.d2.q084",
+      "lesson": "sc-500.d2.3.11",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Azure Firewall uses resource-specific logs in Log Analytics. Complete the KQL query to find denied network rule traffic to port 3389.",
+      "code": "____\n| where Action == \"Deny\" and DestinationPort == 3389\n| summarize count() by SourceIp, Rule",
+      "options": [
+        "AZFWApplicationRule",
+        "AZFWNetworkRule",
+        "AZFWThreatIntel",
+        "AzureActivity"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "AZFWNetworkRule records network rule matches with Action, SourceIp, DestinationPort and Rule. AZFWApplicationRule covers FQDN-based application rules, AZFWThreatIntel records threat intelligence hits, and AzureActivity is the control plane log."
+    },
+    {
+      "id": "sc-500.d2.q085",
+      "lesson": "sc-500.d2.3.11",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You must publish an internal server's RDP port through the Azure Firewall public IP for a vendor's fixed IP address. Which rule type should you create?",
+      "options": [
+        "An application rule",
+        "A network rule",
+        "A DNAT rule",
+        "A threat intelligence allowlist entry"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "DNAT rules translate inbound traffic on the firewall's public IP and port to a private IP and port, and can restrict the source. Application rules don't apply to inbound connections, network rules filter but don't translate, and the allowlist only exempts traffic from threat intelligence."
+    },
+    {
+      "id": "sc-500.d2.q086",
+      "lesson": "sc-500.d2.3.12",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You are enabling TLS inspection on Azure Firewall Premium. How should the firewall access the intermediate CA certificate stored in Azure Key Vault?",
+      "options": [
+        "A system-assigned managed identity with the Key Vault Certificates Officer role",
+        "A user-assigned managed identity with Get and List permissions on secrets",
+        "A service principal with a client secret stored in the firewall policy",
+        "The firewall's public IP added to the key vault firewall"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Azure Firewall reads the CA through the Secrets interface using a user-assigned managed identity with secret Get and List. Certificate permissions alone aren't enough, a system identity isn't the documented option, and network access doesn't grant authorization."
+    },
+    {
+      "id": "sc-500.d2.q087",
+      "lesson": "sc-500.d2.3.12",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which two features require Azure Firewall Premium? Select TWO.",
+      "options": [
+        "Full URL path filtering on HTTPS traffic",
+        "Threat intelligence in Alert and deny mode",
+        "IDPS that can alert on and deny malicious traffic",
+        "DNS proxy",
+        "Network rules with FQDNs"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "IDPS and full-path URL filtering (which needs TLS inspection) are Premium-only. Threat intelligence deny mode, DNS proxy and network-level FQDN filtering are available in Standard."
+    },
+    {
+      "id": "sc-500.d2.q088",
+      "lesson": "sc-500.d2.3.12",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the default threat intelligence mode on Azure Firewall Standard and Premium?",
+      "options": [
+        "Off",
+        "Alert and deny",
+        "Deny only",
+        "Alert only"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Threat intelligence defaults to Alert only, logging matches with known malicious IPs and domains without blocking. You can switch to Alert and deny or turn it off. Deny only isn't a mode."
+    },
+    {
+      "id": "sc-500.d2.q089",
+      "lesson": "sc-500.d2.3.12",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Firewall Premium, select Yes if true.",
+      "statements": [
+        {
+          "s": "Azure Firewall Premium performs TLS inspection on inbound internet traffic to web apps.",
+          "a": false
+        },
+        {
+          "s": "Threat intelligence filtering is evaluated before NAT, network and application rules.",
+          "a": true
+        },
+        {
+          "s": "Without TLS inspection, IDPS can't see signatures inside encrypted HTTPS payloads.",
+          "a": true
+        }
+      ],
+      "explain": "Premium inspects outbound and east-west TLS; inbound TLS inspection is done by Application Gateway WAF. Threat intelligence runs before configured rules. IDPS can only match payload signatures in traffic it can read, so encrypted payloads need TLS inspection."
+    },
+    {
+      "id": "sc-500.d2.q090",
+      "lesson": "sc-500.d2.3.13",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Network Watcher tool tells you whether a specific TCP flow to a VM is allowed or denied and names the security rule responsible?",
+      "options": [
+        "Next hop",
+        "IP flow verify",
+        "Connection monitor",
+        "Traffic analytics"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "IP flow verify tests a 5-tuple against the NSGs and admin rules on the VM's NIC and returns allowed or denied with the rule name. Next hop checks routing, Connection monitor tracks reachability over time, and Traffic analytics visualizes flow logs."
+    },
+    {
+      "id": "sc-500.d2.q091",
+      "lesson": "sc-500.d2.3.13",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Users report that a VM can't reach an internet API. IP flow verify shows outbound TCP 443 is allowed. The spokes are supposed to send internet traffic through an NVA, and a recent change added route tables.",
+      "stem": "Which Network Watcher tool should you use next?",
+      "options": [
+        "Effective security rules",
+        "NSG diagnostics",
+        "Next hop",
+        "VPN troubleshoot"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Security rules allow the flow, so routing is the next suspect; Next hop shows the next hop type and route table used. Effective security rules and NSG diagnostics would only repeat the security check, and VPN troubleshoot is for gateways."
+    },
+    {
+      "id": "sc-500.d2.q092",
+      "lesson": "sc-500.d2.3.13",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which three sources of rules are included in a network interface's effective security rules in Network Watcher? Select THREE.",
+      "options": [
+        "The NSG associated with the subnet",
+        "The NSG associated with the network interface",
+        "Azure Firewall network rules",
+        "Route table user-defined routes",
+        "Azure Virtual Network Manager security admin rules applied to the VNet"
+      ],
+      "answer": [
+        0,
+        1,
+        4
+      ],
+      "explain": "Effective security rules aggregate the NIC NSG, the subnet NSG and AVNM admin rules on the VNet. Azure Firewall rules are evaluated by the firewall, not the NIC, and UDRs are routes, shown by effective routes or Next hop."
+    },
+    {
+      "id": "sc-500.d2.q093",
+      "lesson": "sc-500.d2.3.13",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure CLI command to test whether inbound TCP 22 from 203.0.113.10 to VM vm-web is allowed.",
+      "code": "az network watcher ____ \\\n  --resource-group rg-web --vm vm-web \\\n  --direction Inbound --protocol TCP \\\n  --local 10.0.1.4:22 --remote 203.0.113.10:50000",
+      "options": [
+        "show-next-hop",
+        "test-connectivity",
+        "show-topology",
+        "test-ip-flow"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "az network watcher test-ip-flow runs IP flow verify with direction, protocol, and local and remote IP:port. show-next-hop checks routing, test-connectivity runs connection troubleshoot from the VM outward, and show-topology lists resources."
+    }
+  ]
+}

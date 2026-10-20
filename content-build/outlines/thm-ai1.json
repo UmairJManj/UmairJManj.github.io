@@ -1,0 +1,265 @@
+{
+  "id": "thm-ai1",
+  "name": "TryHackMe AI Security Certification (AI1)",
+  "code": "AI1",
+  "issuer": "TryHackMe",
+  "outlineVersion": "AI1 Exam Guide (help.tryhackme.com) and certification page as fetched 21 Oct 2026; scenario breakdown from Dragkob AI1 review (27 May 2026)",
+  "sourceUrl": "https://help.tryhackme.com/en/articles/15301082-ai1-exam-guide",
+  "exam": {
+    "minutes": 2880,
+    "passMark": "70%",
+    "questionCount": "13 hands-on scenarios across 4 sections (no multiple-choice question count)",
+    "notes": "Practical, 48-hour, non-proctored, fully browser-based exam (no VPN or local tools). Expected effort is 6-8 hours, and scenarios can be done in any order. Scenarios use static sites, live AI chatbots, model-artefact analysis environments, RAG systems and monitoring dashboards. Technical tasks are auto-graded with immediate results. Written deliverables (mitigation plans, remediation and threat reports) use AI-assisted grading within 24-48h. Identity is checked with ID/passport plus a selfie. Credly badge, valid 3 years. No formal prerequisites. The cert page links the AI Security learning path: 5 modules, 25 rooms, 40-60h, included with Premium. Path rooms: (1) AI Fundamentals: AI/ML Security Threats, AI Models & Data, Prompt Engineering, AI Forensics, ContAInment. (2) Secure AI Systems: Securing AI Systems, LLM Security, AI Threat Modelling, AI System Reconnaissance, AI Threat Modelling Assessment. (3) Prompt Security: Prompt Injection, Jailbreaking, Prompt Defence, LLMborghini (CTF), White Rabbit (CTF). (4) AI Supply Chain Security: Understanding AI Supply Chains, Supply Chain Attack Vectors, Securing the AI Supply Chain, Payload (CTF), Checkpoint (CTF). (5) Data Poisoning: RAG Security Fundamentals, Data Poisoning in RAG Systems, Sensitive Information Disclosure, UnIndexed (CTF), Lockdown (CTF). Price per a third-party review: USD 399 with one free retake (not confirmed on an official page). TryHackMe publishes no section weights, so the 4 sections are split equally at 25% each."
+  },
+  "domains": [
+    {
+      "id": "d1",
+      "name": "Threat Modelling Assessment",
+      "weight": "25% (equal split; not published)",
+      "objectives": [
+        {
+          "id": "d1.1",
+          "name": "Component analysis of an AI system architecture",
+          "bullets": [
+            "Analyse an interactive AI architecture diagram (models, data stores, APIs, plugins, users)",
+            "Identify trust boundaries and data flows across the AI system",
+            "Identify threats per component using STRIDE adapted for ML",
+            "Map threats to OWASP Top 10 for LLM Applications and MITRE ATLAS tactics/techniques"
+          ]
+        },
+        {
+          "id": "d1.2",
+          "name": "Risk prioritisation and mitigation planning",
+          "bullets": [
+            "Score threats by likelihood and impact (one scenario has 15 threats)",
+            "Prioritise the highest risks (top 5)",
+            "Write mitigation plans for the prioritised threats (AI-graded written deliverable)",
+            "Apply AI reconnaissance concepts: model fingerprinting, API endpoint enumeration, metadata extraction"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "name": "Prompt Injection & Jailbreaking",
+      "weight": "25% (equal split; not published)",
+      "objectives": [
+        {
+          "id": "d2.1",
+          "name": "Direct prompt injection",
+          "bullets": [
+            "Extract a hidden system prompt from a protected AI chatbot (system prompt leakage)",
+            "Use role-play, instruction override and obfuscation techniques"
+          ]
+        },
+        {
+          "id": "d2.2",
+          "name": "Indirect prompt injection",
+          "bullets": [
+            "Embed malicious instructions in content the AI ingests (documents, web pages, emails)",
+            "Hijack tools or agent actions through injected content"
+          ]
+        },
+        {
+          "id": "d2.3",
+          "name": "Direct injection with guardrail bypass",
+          "bullets": [
+            "Combine direct injection with moderation/guardrail evasion",
+            "Apply jailbreak techniques: DAN-style personas, adversarial suffixes (GCG), many-shot, token-level and encoding bypasses"
+          ]
+        },
+        {
+          "id": "d2.4",
+          "name": "Indirect injection with guardrail bypass against an agent",
+          "bullets": [
+            "Trigger unauthorised actions in a workplace AI assistant via a crafted email",
+            "Exploit excessive agency and tool access in agentic workflows",
+            "Know defences: input/output filtering, NeMo Guardrails, dual-LLM pattern, semantic anomaly detection, least privilege for tools"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "name": "AI Supply Chain Security",
+      "weight": "25% (equal split; not published)",
+      "objectives": [
+        {
+          "id": "d3.1",
+          "name": "Reconnaissance and artefact analysis",
+          "bullets": [
+            "Triage candidate models by risk using metadata, model cards and documentation",
+            "Assess provenance and publisher trust of model repositories"
+          ]
+        },
+        {
+          "id": "d3.2",
+          "name": "Static analysis of model artefacts",
+          "bullets": [
+            "Identify compromised models from pickle files (unsafe deserialisation / Pickle RCE)",
+            "Review configs and dependencies for tampering, typosquatting and dependency confusion",
+            "Compare serialisation formats: Pickle vs SafeTensors vs ONNX"
+          ]
+        },
+        {
+          "id": "d3.3",
+          "name": "Behavioural testing",
+          "bullets": [
+            "Discover hidden backdoor triggers in sandboxed suspicious models",
+            "Detect trojaned/backdoored behaviour (e.g. Neural Cleanse concepts)"
+          ]
+        },
+        {
+          "id": "d3.4",
+          "name": "Remediation and reporting",
+          "bullets": [
+            "Write a comprehensive remediation strategy (AI-graded written deliverable)",
+            "Recommend controls: model signing (Sigstore), SafeTensors, AI/ML SBOM, SLSA, MLOps pipeline hardening"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d4",
+      "name": "Data Poisoning",
+      "weight": "25% (equal split; not published)",
+      "objectives": [
+        {
+          "id": "d4.1",
+          "name": "RAG corpus poisoning",
+          "bullets": [
+            "Craft a poisoned document that manipulates AI responses",
+            "Apply relevance hijacking and direct, indirect and behavioural poisoning techniques"
+          ]
+        },
+        {
+          "id": "d4.2",
+          "name": "Sensitive information extraction via RAG",
+          "bullets": [
+            "Extract sensitive data through a RAG chatbot by bypassing guardrails",
+            "Understand semantic fuzzing exfiltration, membership inference and embedding inversion"
+          ]
+        },
+        {
+          "id": "d4.3",
+          "name": "RAG defence",
+          "bullets": [
+            "Propose defences against the poisoning and extraction attacks (written deliverable)",
+            "Recommend ingestion pipeline controls, document-level RBAC/access control, provenance checks, output guardrails and monitoring"
+          ]
+        }
+      ]
+    }
+  ],
+  "keyTerms": [
+    "LLM01:2025 Prompt Injection",
+    "LLM02:2025 Sensitive Information Disclosure",
+    "LLM03:2025 Supply Chain",
+    "LLM04:2025 Data and Model Poisoning",
+    "LLM05:2025 Improper Output Handling",
+    "LLM06:2025 Excessive Agency",
+    "LLM07:2025 System Prompt Leakage",
+    "LLM08:2025 Vector and Embedding Weaknesses",
+    "LLM09:2025 Misinformation",
+    "LLM10:2025 Unbounded Consumption",
+    "ASI01 Agent Goal Hijack",
+    "ASI02 Tool Misuse and Exploitation",
+    "ASI03 Identity and Privilege Abuse",
+    "ASI04 Agentic Supply Chain Vulnerabilities",
+    "ASI05 Unexpected Code Execution (RCE)",
+    "ASI06 Memory & Context Poisoning",
+    "ASI07 Insecure Inter-Agent Communication",
+    "ASI08 Cascading Failures",
+    "ASI09 Human-Agent Trust Exploitation",
+    "ASI10 Rogue Agents",
+    "ATLAS Reconnaissance (AML.TA0002)",
+    "ATLAS Resource Development (AML.TA0003)",
+    "ATLAS Initial Access (AML.TA0004)",
+    "ATLAS AI Model Access (AML.TA0000)",
+    "ATLAS Execution (AML.TA0005)",
+    "ATLAS Persistence (AML.TA0006)",
+    "ATLAS Privilege Escalation (AML.TA0012)",
+    "ATLAS Defense Evasion (AML.TA0007)",
+    "ATLAS Credential Access (AML.TA0013)",
+    "ATLAS Discovery (AML.TA0008)",
+    "ATLAS Lateral Movement (AML.TA0015)",
+    "ATLAS Collection (AML.TA0009)",
+    "ATLAS AI Attack Staging (AML.TA0001)",
+    "ATLAS Command and Control (AML.TA0014)",
+    "ATLAS Exfiltration (AML.TA0010)",
+    "ATLAS Impact (AML.TA0011)",
+    "MITRE ATLAS",
+    "OWASP Top 10 for LLM Applications",
+    "OWASP Top 10 for Agentic Applications",
+    "STRIDE",
+    "Threat modelling",
+    "Trust boundary",
+    "Data flow diagram",
+    "Attack surface",
+    "Likelihood and impact scoring",
+    "Risk prioritisation",
+    "Mitigation plan",
+    "Model fingerprinting",
+    "API endpoint enumeration",
+    "System prompt",
+    "Direct prompt injection",
+    "Indirect prompt injection",
+    "Jailbreaking",
+    "DAN (Do Anything Now)",
+    "Adversarial suffix (GCG)",
+    "Many-shot jailbreaking",
+    "Token smuggling / encoding bypass",
+    "Role-play attack",
+    "Guardrail bypass",
+    "Tool hijacking",
+    "Multi-modal injection",
+    "Agentic attack chain",
+    "Multi-agent chain",
+    "Data exfiltration via markdown/links",
+    "NeMo Guardrails",
+    "Dual-LLM pattern",
+    "Input/output filtering",
+    "Semantic anomaly detection",
+    "Least privilege for tools",
+    "Human-in-the-loop",
+    "AI supply chain",
+    "Model card",
+    "Model provenance",
+    "Hugging Face model hub",
+    "Pickle deserialisation",
+    "Pickle RCE",
+    "SafeTensors",
+    "ONNX",
+    "Backdoor trigger",
+    "Trojaned model",
+    "Neural Cleanse",
+    "Dependency confusion",
+    "Typosquatting",
+    "ShadowRay",
+    "MLOps pipeline",
+    "Model signing (Sigstore)",
+    "AI/ML SBOM",
+    "SLSA",
+    "Behavioural testing",
+    "Sandboxing",
+    "Retrieval-augmented generation (RAG)",
+    "Embeddings",
+    "Vector database",
+    "Chunking",
+    "RAG corpus poisoning",
+    "Relevance hijacking",
+    "Data poisoning",
+    "Behavioural poisoning",
+    "Training data poisoning",
+    "Membership inference",
+    "Embedding inversion",
+    "Semantic fuzzing",
+    "Ingestion pipeline controls",
+    "Document-level RBAC",
+    "Data provenance",
+    "AI forensics",
+    "Audit logging"
+  ],
+  "status": "verified",
+  "caveats": "The official exam guide confirms the 4 sections, 13 scenarios, 48-hour window, 6-8h expected effort, 70% pass mark, AI-assisted grading of written answers, 3-year validity and the 25-room learning path. Per-scenario names and the USD 399 price with one free retake come from a third-party review (Dragkob), as does a conflicting grading table (6 scenarios x 10 questions = 600 points). Room names come from a community GitHub notes repo and match the module names TryHackMe publishes. Section weights are not published and are split equally at 25%. Objective bullets are derived from scenario descriptions and path room topics, not from an official bulleted outline. exam.minutes=2880 is the 48h window, not the expected working time. OWASP Agentic Top 10 (ASI01-ASI10) was published Dec 2025. ATLAS tactic IDs come from the mitre-atlas/atlas-data dist file (16 tactics including Lateral Movement and Command and Control)."
+}

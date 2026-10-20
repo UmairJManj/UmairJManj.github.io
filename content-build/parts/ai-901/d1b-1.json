@@ -1,0 +1,1514 @@
+{
+  "exam": "ai-901",
+  "domain": "d1",
+  "lessons": [
+    {
+      "id": "ai-901.d1.2.01",
+      "objective": "d1.2",
+      "seq": 1,
+      "title": "How generative AI models work",
+      "short": "A generative language model splits text into tokens, turns them into embeddings, and uses a transformer's attention layers to predict the next token, over and over. Large models trained on broad data are called foundation models.",
+      "deep": "**Generative AI** creates new content (text, code, images, audio) instead of only classifying existing data. Most text models are **large language models (LLMs)** built on the **transformer** architecture.\n\nHow a reply is produced:\n- **Tokenization**: text is split into **tokens** (whole words, word pieces, or punctuation). Roughly, one token is about four English characters.\n- **Embeddings**: each token becomes a vector of numbers. Similar meanings end up close together in this vector space.\n- **Attention**: transformer layers let every token weigh how relevant every other token is, so \"bank\" means something different next to \"river\" than next to \"loan\".\n- **Next-token prediction**: the model outputs a probability for every possible next token, one is chosen, appended, and the loop repeats until a stop condition.\n\nA **foundation model** is pretrained on huge, broad datasets and can be adapted to many tasks through prompting or fine-tuning. Because the model predicts plausible text rather than looking facts up, it can **hallucinate**. Usage on pay-as-you-go deployments is billed per token, for both input (prompt) and output (completion) tokens.",
+      "terms": [
+        {
+          "t": "Token",
+          "d": "The unit of text a model reads and writes; a word, part of a word, or punctuation."
+        },
+        {
+          "t": "Embedding",
+          "d": "A numeric vector representing meaning; similar items are close together."
+        },
+        {
+          "t": "Attention",
+          "d": "Transformer mechanism that weighs how each token relates to every other token in context."
+        },
+        {
+          "t": "Foundation model",
+          "d": "A large model pretrained on broad data that can be adapted to many tasks."
+        }
+      ],
+      "trap": "The exam may suggest the model 'looks up' answers in a database; it actually predicts the next token from learned probabilities.",
+      "example": "When you type 'The capital of France is', the model assigns high probability to the token ' Paris' and appends it.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Text",
+          "Tokens",
+          "Embeddings",
+          "Attention layers",
+          "Next token"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.2.02",
+      "objective": "d1.2",
+      "seq": 2,
+      "title": "Prompts, context window and grounding",
+      "short": "The system prompt sets rules and persona; the user prompt asks the question. Everything must fit in the model's context window. Grounding with retrieval-augmented generation (RAG) adds trusted data to the prompt to reduce hallucination.",
+      "deep": "A chat request is a list of **messages** with roles:\n- **System prompt** (role `system`): instructions that shape behaviour for the whole conversation, such as persona, tone, and rules like \"answer only from the provided context\".\n- **User prompt** (role `user`): the person's question or task.\n- **Assistant** messages: the model's earlier replies, sent back so the model can see the conversation history.\n\nThe **context window** is the maximum number of tokens (prompt plus history plus output) a model can consider in one request. When a conversation exceeds it, older content must be dropped or summarized.\n\n**Prompt engineering** techniques:\n- **Zero-shot**: just ask, with no examples.\n- **Few-shot**: include a few example input/output pairs so the model copies the pattern.\n\n**Hallucination** is confident but false output. The main mitigation is **grounding**: supply relevant, trusted data in the prompt. **Retrieval-augmented generation (RAG)** automates this: search an index (for example Azure AI Search) for content related to the question, insert it into the prompt, then let the model answer. RAG does **not** change model weights; fine-tuning does.",
+      "terms": [
+        {
+          "t": "System prompt",
+          "d": "Message that sets the model's role, rules and tone for the conversation."
+        },
+        {
+          "t": "Context window",
+          "d": "Maximum tokens a model can process in one request, including output."
+        },
+        {
+          "t": "Few-shot prompting",
+          "d": "Giving example input/output pairs in the prompt to guide the format."
+        },
+        {
+          "t": "RAG",
+          "d": "Retrieve relevant data and add it to the prompt so answers are grounded."
+        }
+      ],
+      "trap": "RAG is often confused with fine-tuning; RAG adds data at request time and never retrains the model.",
+      "example": "An HR bot retrieves the leave-policy paragraph from an index and adds it to the prompt before answering 'How many sick days do I get?'.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User question",
+          "Search index",
+          "Add grounding",
+          "Model answers"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.2.03",
+      "objective": "d1.2",
+      "seq": 3,
+      "title": "Choosing a model by capability",
+      "short": "Pick the model that fits the task: LLMs for broad reasoning, small language models (SLMs) for low cost and edge, multimodal models for images plus text, embedding models for search, reasoning models for hard multi-step problems. Compare them in the Foundry model catalog and benchmarks.",
+      "deep": "The **Microsoft Foundry model catalog** holds models from Microsoft, OpenAI, Meta, Mistral, DeepSeek, Hugging Face and others. Each has a **model card** describing intended use, inputs, limitations and licensing.\n\nCommon model types:\n- **LLM** (for example GPT models): broad knowledge, strong language and reasoning, higher cost.\n- **SLM** (for example Microsoft Phi): fewer parameters, faster and cheaper, can run on constrained or edge devices; good for focused tasks.\n- **Reasoning models**: spend extra (reasoning) tokens thinking before answering; best for complex maths, code, and planning where accuracy beats latency.\n- **Multimodal models**: accept more than one input type, for example an image plus a text question (vision-enabled chat).\n- **Embedding models**: turn text into vectors for semantic search and RAG; they do not generate text.\n- **Image generation**, **speech** and other specialized models.\n\n**Model benchmarks / leaderboards** in Foundry let you compare models on **quality** (a quality index from accuracy benchmarks), **safety**, **performance** (latency, throughput, time to first token) and **cost**, and to view trade-off charts such as quality versus cost.",
+      "terms": [
+        {
+          "t": "Small language model (SLM)",
+          "d": "Compact model with fewer parameters; cheaper, faster, can run at the edge."
+        },
+        {
+          "t": "Multimodal model",
+          "d": "Model that accepts or produces more than one modality, such as image and text."
+        },
+        {
+          "t": "Model catalog",
+          "d": "Foundry's browsable collection of models from Microsoft and partners."
+        },
+        {
+          "t": "Model benchmarks",
+          "d": "Leaderboards comparing models on quality, safety, performance and cost."
+        }
+      ],
+      "trap": "Embedding models are a common wrong answer for chat tasks; they produce vectors, not text replies.",
+      "example": "A field-service app that must run offline on a tablet uses a Phi SLM, while the head-office analytics bot uses a larger reasoning model.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Need",
+          "Model type"
+        ],
+        "rows": [
+          [
+            "Cheap, edge, simple",
+            "SLM"
+          ],
+          [
+            "Image + question",
+            "Multimodal"
+          ],
+          [
+            "Semantic search",
+            "Embedding"
+          ],
+          [
+            "Hard multi-step",
+            "Reasoning model"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.2.04",
+      "objective": "d1.2",
+      "seq": 4,
+      "title": "Model deployment options in Foundry",
+      "short": "You must deploy a model before calling it. Foundry offers standard deployment in a Foundry resource (the preferred, token-billed option), serverless API endpoints (token-billed, hub projects), and managed compute (dedicated VMs billed per compute hour, required for open models such as Hugging Face).",
+      "deep": "A **deployment** makes a model available at an **endpoint** your code calls, using an **API key** or **Microsoft Entra ID** (keyless) authentication.\n\nThree deployment options:\n- **Standard deployment in Foundry resources**: preferred option. Supports Foundry Models sold directly by Azure (such as Azure OpenAI models) plus many partner models. Billed by **tokens** or **provisioned throughput units (PTU)**. Offers global, data zone and regional processing, custom content filters, and keyless auth.\n- **Serverless API endpoint**: pay-per-token endpoint in a hub-based project; regional only; Microsoft hosts the infrastructure.\n- **Managed compute**: the model runs on dedicated virtual machines you choose. Billed per **compute core hour** from creation until you delete it, even if idle. Required for open and custom models such as **Hugging Face** and NVIDIA NIM collections. No built-in content filtering.\n\nAfter deploying, you can try the model in the **playground**, then call it with the **Foundry SDK** (Azure AI Projects client library) or OpenAI SDK.",
+      "terms": [
+        {
+          "t": "Deployment",
+          "d": "A named instance of a model reachable at an endpoint."
+        },
+        {
+          "t": "Serverless API deployment",
+          "d": "Pay-per-token endpoint with no VMs to manage."
+        },
+        {
+          "t": "Managed compute deployment",
+          "d": "Model hosted on dedicated VMs, billed per compute hour."
+        }
+      ],
+      "trap": "Managed compute is billed while running even with zero traffic; the exam contrasts this with pay-per-token options.",
+      "example": "A team deploys gpt-4o-mini as a standard deployment for its chatbot but hosts a Hugging Face model on managed compute.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Option",
+          "Billing",
+          "Typical models"
+        ],
+        "rows": [
+          [
+            "Standard (Foundry)",
+            "Tokens or PTU",
+            "Azure OpenAI, partners"
+          ],
+          [
+            "Serverless API",
+            "Tokens",
+            "Pay-go catalog"
+          ],
+          [
+            "Managed compute",
+            "Compute hours",
+            "Hugging Face, custom"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.2.05",
+      "objective": "d1.2",
+      "seq": 5,
+      "title": "Deployment types: Global, Data Zone, Provisioned, Batch",
+      "short": "Standard deployments come in types that set where inference runs and how you pay: Global Standard (pay-per-token, any region, highest quota), Data Zone (stays in EU or US zone), Standard (one geography), Provisioned (reserved PTU capacity) and Batch (async, about 50% cheaper).",
+      "deep": "When you create a standard deployment you choose a **deployment type**:\n- **Global Standard**: pay-per-token; requests may be processed in any Azure region; highest default quota. Good default for most workloads.\n- **Data Zone Standard**: pay-per-token, but processing stays inside a data zone (for example EU or US) for compliance.\n- **Standard**: pay-per-token, processing stays in the resource's Azure geography; suited to lower volume with geography requirements.\n- **Provisioned** (Global, Data Zone, Regional): you reserve capacity in **provisioned throughput units (PTU)** for predictable latency and throughput at steady high volume; billed for the reservation, not per token.\n- **Batch** (Global Batch, Data Zone Batch): submit a file of many requests; about **50% cheaper** than Global Standard with a **24-hour** target turnaround and separate quota, so it doesn't affect online traffic.\n- **Developer**: low-cost type for evaluating fine-tuned models only; no SLA.\n\nData at rest stays in your chosen geography for all types; the type controls where **inference** runs.",
+      "terms": [
+        {
+          "t": "Global Standard",
+          "d": "Pay-per-token deployment processed in any Azure region, highest quota."
+        },
+        {
+          "t": "Provisioned throughput (PTU)",
+          "d": "Reserved model capacity for predictable latency and throughput."
+        },
+        {
+          "t": "Global Batch",
+          "d": "Asynchronous file-based jobs at about half price, 24-hour target."
+        }
+      ],
+      "trap": "If the scenario says 'results within 24 hours is fine, minimize cost', the answer is Batch, not Provisioned.",
+      "example": "An EU retailer uses Data Zone Standard for its chatbot and Global Batch to re-summarize its product catalogue overnight.",
+      "diagram": null
+    },
+    {
+      "id": "ai-901.d1.2.06",
+      "objective": "d1.2",
+      "seq": 6,
+      "title": "Configuration parameters",
+      "short": "Parameters shape output: temperature and top-p control randomness, max tokens caps length, stop sequences end generation early, frequency penalty reduces repetition, and presence penalty encourages new topics.",
+      "deep": "You can set these in the playground or in code:\n- **Temperature**: higher values make output more random and creative; lower values (toward 0) make it more focused and repeatable. Use low values for factual Q&A, higher for brainstorming.\n- **Top-p** (nucleus sampling): the model samples only from the smallest set of tokens whose cumulative probability reaches p. Lower top-p means fewer, safer choices. General guidance is to adjust temperature **or** top-p, not both.\n- **Max tokens** (`max_tokens`, now `max_completion_tokens` in newer APIs): the upper limit on generated tokens; controls length and cost. For reasoning models it includes reasoning tokens.\n- **Stop sequences** (`stop`): strings that make the model stop generating when produced.\n- **Frequency penalty** (-2.0 to 2.0): positive values penalize tokens in proportion to how often they have already appeared, reducing verbatim repetition.\n- **Presence penalty** (-2.0 to 2.0): positive values penalize any token that has appeared at all, nudging the model toward new topics.\n\nThe **system prompt** is also a key configuration: it defines role and guardrails for the conversation.",
+      "terms": [
+        {
+          "t": "Temperature",
+          "d": "Randomness control; low is deterministic, high is creative."
+        },
+        {
+          "t": "Top-p",
+          "d": "Samples from the top tokens whose combined probability reaches p."
+        },
+        {
+          "t": "Frequency penalty",
+          "d": "Reduces repetition based on how often a token has appeared."
+        },
+        {
+          "t": "Presence penalty",
+          "d": "Encourages new topics by penalizing any already-used token."
+        }
+      ],
+      "trap": "Max tokens limits output length; it does not make answers more accurate or change the context window.",
+      "example": "A legal FAQ bot uses temperature 0.1 and max_completion_tokens 300; a slogan generator uses temperature 1.0.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Goal",
+          "Parameter"
+        ],
+        "rows": [
+          [
+            "More creative",
+            "Raise temperature"
+          ],
+          [
+            "Shorter replies",
+            "Lower max tokens"
+          ],
+          [
+            "Less repetition",
+            "Frequency penalty"
+          ],
+          [
+            "New topics",
+            "Presence penalty"
+          ],
+          [
+            "End at marker",
+            "Stop sequence"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.3.01",
+      "objective": "d1.3",
+      "seq": 1,
+      "title": "Generative and agentic AI workloads",
+      "short": "Generative AI creates new content from prompts. Agentic AI goes further: an AI agent combines a model, instructions and tools so it can reason about a goal and take actions across multiple steps. Foundry Agent Service hosts agents.",
+      "deep": "**Generative AI workloads** produce new content: drafting emails, summarizing reports, writing code, chat assistants, creating images.\n\n**Agentic AI** adds autonomy. An **AI agent** uses a model to reason about a request, decide what to do, and call **tools** to fetch data or take actions, possibly over several steps, before replying.\n\nIn **Foundry Agent Service** every agent has three components:\n- **Model**: from the Foundry catalog; provides reasoning.\n- **Instructions**: the agent's goals, constraints and behaviour (like a system prompt).\n- **Tools**: access to knowledge or actions, such as **file search** (answer from uploaded documents), **code interpreter** (run Python for calculations and charts), web search, Azure AI Search, **function calling** to your own APIs, and **MCP** servers.\n\nAgent types include **prompt agents** (no code, defined by model, instructions and tools in the portal), workflow agents for multi-step orchestration, and hosted agents built in code. A conversation's messages are kept as **conversation/thread** state so the agent remembers context across turns. **Tool calling** is when the model decides to invoke a tool and uses its result.",
+      "terms": [
+        {
+          "t": "AI agent",
+          "d": "Software that uses a model plus tools to pursue a goal and take actions."
+        },
+        {
+          "t": "Agent instructions",
+          "d": "Text defining an agent's goals, rules and behaviour."
+        },
+        {
+          "t": "Tool calling",
+          "d": "The model choosing to invoke a tool and using its output."
+        },
+        {
+          "t": "Foundry Agent Service",
+          "d": "Managed service to build, host and scale agents."
+        }
+      ],
+      "trap": "A plain chatbot that only answers from its training data is generative AI, not an agent; look for tools and actions.",
+      "example": "An IT agent reads a ticket, queries the asset database through a function tool, resets the user's licence, and posts a summary.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Goal",
+          "Reason (model)",
+          "Call tool",
+          "Observe result",
+          "Respond"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.3.02",
+      "objective": "d1.3",
+      "seq": 2,
+      "title": "Matching scenarios to AI workloads",
+      "short": "Recognize the workload from the scenario: text analysis (meaning in written text), speech (audio to text or text to audio), computer vision (understanding images and video), and information extraction (pulling structured fields from documents, images, audio and video).",
+      "deep": "Exam scenarios describe a business need; you name the workload and the Foundry Tool.\n- **Text analysis** (Azure Language in Foundry Tools): sentiment of reviews, key phrases, named entities, PII redaction, language detection, summarization.\n- **Speech** (Azure Speech in Foundry Tools): transcribing calls or live captions (speech-to-text), reading text aloud (text-to-speech), speech translation, voice agents.\n- **Computer vision** (Azure Vision in Foundry Tools, or vision-enabled models): classifying images, detecting and locating objects, reading text with OCR, captioning images.\n- **Image generation**: creating new images from text prompts (GPT-image models).\n- **Information extraction** (Azure Content Understanding, Document Intelligence): turning invoices, forms, recordings or videos into structured fields such as dates, totals and names.\n- **Generative / agentic AI**: open-ended content creation, chat, and agents that act using tools.\n\nTip: ask \"what is the input?\" (text, audio, image, document) and \"what is the output?\" (label, text, audio, fields, new content).",
+      "terms": [
+        {
+          "t": "Foundry Tools",
+          "d": "Current name for the prebuilt AI services (formerly Azure AI services)."
+        },
+        {
+          "t": "Computer vision",
+          "d": "AI that interprets images and video."
+        },
+        {
+          "t": "Information extraction",
+          "d": "Pulling structured data from unstructured content."
+        }
+      ],
+      "trap": "Transcribing audio is speech, not text analysis, even though the output is text.",
+      "example": "A bank wants to flag angry customer emails (text analysis), transcribe calls (speech) and read cheque amounts (vision/extraction).",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Input",
+          "Output",
+          "Workload"
+        ],
+        "rows": [
+          [
+            "Text",
+            "Sentiment, entities",
+            "Text analysis"
+          ],
+          [
+            "Audio",
+            "Text",
+            "Speech recognition"
+          ],
+          [
+            "Text",
+            "Audio",
+            "Speech synthesis"
+          ],
+          [
+            "Image",
+            "Labels, boxes",
+            "Computer vision"
+          ],
+          [
+            "Document",
+            "Fields",
+            "Info extraction"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.3.03",
+      "objective": "d1.3",
+      "seq": 3,
+      "title": "Text analysis: key phrases, entities and PII",
+      "short": "Azure Language in Foundry Tools can extract key phrases (main talking points), recognize named entities (people, places, organizations, dates), link entities to Wikipedia to disambiguate them, and detect and redact personally identifiable information (PII).",
+      "deep": "**Azure Language in Foundry Tools** provides prebuilt natural language processing:\n- **Key phrase extraction**: returns the main concepts in text, such as \"battery life\" or \"customer service\". Useful for tagging and quick topic overviews.\n- **Named entity recognition (NER)**: finds entities and assigns **categories** such as Person, Location, Organization, DateTime, Quantity. **Custom NER** lets you train your own categories.\n- **Entity linking**: identifies an entity and links it to a knowledge base (Wikipedia), resolving ambiguity, for example whether \"Mars\" means the planet or the company.\n- **PII detection**: finds personal data such as names, phone numbers, email addresses and credit card numbers, and can return **redacted** text. It also works on conversation transcripts.\n- **Text Analytics for health**: extracts medical entities such as diagnoses and medications.\n\nIn Python, the `azure-ai-textanalytics` client exposes methods like `extract_key_phrases`, `recognize_entities`, `recognize_linked_entities` and `recognize_pii_entities`. Each result includes confidence scores. Generative models can also perform these tasks via prompts, but the prebuilt features give consistent, structured output.",
+      "terms": [
+        {
+          "t": "Key phrase extraction",
+          "d": "Returns the main talking points of a text."
+        },
+        {
+          "t": "Named entity recognition",
+          "d": "Identifies entities and categorizes them, e.g. Person, Location."
+        },
+        {
+          "t": "Entity linking",
+          "d": "Links recognized entities to a knowledge base such as Wikipedia."
+        },
+        {
+          "t": "PII detection",
+          "d": "Finds and can redact personal information in text."
+        }
+      ],
+      "trap": "NER categorizes entities; entity linking disambiguates them with a knowledge-base link. Exams swap the two.",
+      "example": "A support platform redacts card numbers with PII detection, then tags tickets with key phrases before routing.",
+      "diagram": null
+    },
+    {
+      "id": "ai-901.d1.3.04",
+      "objective": "d1.3",
+      "seq": 4,
+      "title": "Sentiment, language detection and summarization",
+      "short": "Sentiment analysis labels text positive, negative, neutral or mixed with confidence scores; opinion mining ties sentiment to specific aspects. Language detection identifies the language. Summarization can be extractive (picks original sentences) or abstractive (writes new sentences).",
+      "deep": "- **Sentiment analysis** returns a label (**positive**, **negative**, **neutral**, and at document level **mixed**) plus confidence scores between 0 and 1, for the whole document and for each sentence.\n- **Opinion mining** (aspect-based sentiment) links opinions to **targets**: \"The room was great but breakfast was cold\" gives room = positive, breakfast = negative.\n- **Language detection** returns the language name, an ISO 639-1 code (such as `fr`) and a confidence score. Use it to route text to the right translator or agent.\n- **Summarization**:\n  - **Extractive**: selects the most important sentences from the source, unchanged.\n  - **Abstractive**: generates new, concise sentences that capture the meaning.\n  - **Conversation summarization**: recaps meetings or call-centre chats (issue and resolution, chapters).\n\nPython methods include `analyze_sentiment` (with `show_opinion_mining=True` for opinions) and `detect_language`. Generative models can also summarize via prompts; the exam may ask which is better when you need verbatim sentences (extractive) or fluent rewriting (abstractive).",
+      "terms": [
+        {
+          "t": "Sentiment analysis",
+          "d": "Classifies text as positive, negative, neutral or mixed."
+        },
+        {
+          "t": "Opinion mining",
+          "d": "Sentiment tied to specific aspects (targets) in the text."
+        },
+        {
+          "t": "Extractive summarization",
+          "d": "Summary made of original sentences from the text."
+        },
+        {
+          "t": "Abstractive summarization",
+          "d": "Summary written as new sentences."
+        }
+      ],
+      "trap": "'Mixed' is a valid document sentiment label; 'neutral' means no strong sentiment, not a mix.",
+      "example": "A hotel chain uses opinion mining to learn guests love the pool but dislike parking.",
+      "diagram": null
+    },
+    {
+      "id": "ai-901.d1.3.05",
+      "objective": "d1.3",
+      "seq": 5,
+      "title": "Speech recognition (speech to text)",
+      "short": "Azure Speech in Foundry Tools converts spoken audio into text. Use real-time transcription for live audio, fast transcription for pre-recorded files, batch transcription for large asynchronous volumes, and custom speech models for noisy environments or domain jargon.",
+      "deep": "**Speech recognition** (speech-to-text, STT) turns audio into text. Options in **Azure Speech in Foundry Tools**:\n- **Real-time transcription**: streams microphone or live audio; used for live captions, dictation and voice assistants.\n- **Fast transcription**: synchronous, faster-than-real-time transcription of a pre-recorded file.\n- **Batch transcription**: asynchronous REST jobs over large numbers of stored recordings, such as a call-centre archive.\n- **Custom speech**: train with your own audio and text to improve accuracy for accents, background noise, or specialist vocabulary like product codes.\n- **Language identification**: detect which language is being spoken.\n- **Diarization**: separate who spoke when (speaker labels) in transcripts.\n\nIn Python, the Speech SDK (`azure.cognitiveservices.speech`) uses a `SpeechConfig` (key or Entra ID token plus region or endpoint), an `AudioConfig` (microphone or file), and a `SpeechRecognizer` whose `recognize_once_async()` returns a result with `.text`. Multimodal models such as gpt-4o-transcribe can also transcribe audio.",
+      "terms": [
+        {
+          "t": "Speech-to-text",
+          "d": "Converting spoken audio into written text."
+        },
+        {
+          "t": "Batch transcription",
+          "d": "Asynchronous transcription of many stored audio files."
+        },
+        {
+          "t": "Custom speech",
+          "d": "Model adapted with your data for noise, accents or jargon."
+        }
+      ],
+      "trap": "Live captions need real-time transcription; batch is for archives and is not real time.",
+      "example": "A broadcaster adds live captions with real-time STT and later transcribes its back catalogue with batch transcription.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Audio",
+          "SpeechConfig",
+          "SpeechRecognizer",
+          "Text"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.3.06",
+      "objective": "d1.3",
+      "seq": 6,
+      "title": "Speech synthesis, translation and voice live",
+      "short": "Text to speech turns text into natural audio using neural voices, controlled with SSML. You can build a custom brand voice or a talking avatar. Speech translation converts speech into another language, and Voice Live powers low-latency voice agents.",
+      "deep": "**Speech synthesis** (text-to-speech, TTS) generates spoken audio from text.\n- **Neural voices**: humanlike prebuilt voices in many languages and styles, chosen by name (for example `en-US-AvaMultilingualNeural`).\n- **SSML (Speech Synthesis Markup Language)**: XML markup to control pronunciation, pitch, speaking rate, volume, pauses and speaking style.\n- **Custom voice**: train a unique voice for your brand (subject to Microsoft's limited-access and consent requirements).\n- **Text to speech avatar**: produces a video of a talking avatar from text.\n\nOther speech capabilities:\n- **Speech translation**: real-time speech-to-text or speech-to-speech translation into other languages.\n- **Voice Live**: an API for fast, natural, real-time voice conversations between people and agents, combining recognition, a model and synthesis.\n- **Pronunciation assessment**: scores the accuracy and fluency of a learner's speech.\n\nIn Python: set `speech_config.speech_synthesis_voice_name`, create a `SpeechSynthesizer`, then call `speak_text_async(text)` or `speak_ssml_async(ssml)`.",
+      "terms": [
+        {
+          "t": "Text-to-speech",
+          "d": "Generating spoken audio from text."
+        },
+        {
+          "t": "Neural voice",
+          "d": "Natural-sounding synthetic voice produced by deep neural networks."
+        },
+        {
+          "t": "SSML",
+          "d": "XML markup that controls how synthesized speech sounds."
+        },
+        {
+          "t": "Speech translation",
+          "d": "Translating spoken audio into another language as text or speech."
+        }
+      ],
+      "trap": "Pronunciation assessment evaluates a human speaker; it does not create voices.",
+      "example": "An airline uses SSML to slow down gate numbers in announcements and a custom neural voice for its brand.",
+      "diagram": null
+    },
+    {
+      "id": "ai-901.d1.3.07",
+      "objective": "d1.3",
+      "seq": 7,
+      "title": "Computer vision capabilities",
+      "short": "Computer vision lets AI interpret images: image classification assigns a label to a whole image, object detection locates items with bounding boxes, OCR reads printed and handwritten text, and captioning describes the scene in a sentence. Vision-enabled chat models answer questions about images.",
+      "deep": "Core **computer vision** tasks:\n- **Image classification**: one or more labels for the whole image (\"defective\" vs \"ok\").\n- **Object detection**: finds each object and returns its **bounding box** coordinates and a confidence score, so you can count and locate items.\n- **Optical character recognition (OCR)**: extracts printed and handwritten text with its position (the Read feature).\n- **Image captioning**: a human-readable sentence describing the image; **dense captions** describe individual regions.\n- **Tagging**: keywords for objects, scenery and actions.\n- **People detection** and **smart crop** (area of interest for thumbnails).\n\n**Azure Vision in Foundry Tools** (Image Analysis) provides these as prebuilt APIs. Increasingly, **multimodal / vision-enabled chat models** such as GPT-4o or GPT-5 accept an image plus a text prompt and can describe, compare or reason about images in natural language, for example \"Which items on this shelf are out of stock?\". Choose prebuilt APIs for consistent structured output (boxes, OCR coordinates) and vision-enabled models for flexible, open-ended questions.",
+      "terms": [
+        {
+          "t": "Image classification",
+          "d": "Assigns labels to an entire image."
+        },
+        {
+          "t": "Object detection",
+          "d": "Locates objects with bounding boxes and labels."
+        },
+        {
+          "t": "OCR",
+          "d": "Optical character recognition: reading text in images."
+        },
+        {
+          "t": "Vision-enabled chat",
+          "d": "A multimodal model answering prompts about supplied images."
+        }
+      ],
+      "trap": "If the scenario needs the location or count of items, choose object detection, not image classification.",
+      "example": "A supermarket detects products on shelves with object detection and reads price tags with OCR.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Task",
+          "Output"
+        ],
+        "rows": [
+          [
+            "Classification",
+            "Label for image"
+          ],
+          [
+            "Object detection",
+            "Labels + boxes"
+          ],
+          [
+            "OCR",
+            "Text + positions"
+          ],
+          [
+            "Captioning",
+            "Sentence"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.3.08",
+      "objective": "d1.3",
+      "seq": 8,
+      "title": "Image generation models",
+      "short": "Image-generation models create new images from a text prompt, and can edit existing images using a mask. In Foundry the current models are the GPT-image series; DALL-E 3 has been retired. Prompts and outputs pass through content filters.",
+      "deep": "**Image generation** is a generative AI workload: the input is a text **prompt**, the output is a new image.\n\nHow it works: many image generators are **diffusion models**, which start from random noise and refine it step by step, guided by the prompt's meaning, until an image appears. Newer GPT-image models are natively multimodal and follow detailed instructions closely.\n\nIn Microsoft Foundry:\n- **GPT-image series** models (for example gpt-image-1, gpt-image-1-mini, GPT-image-2) are used for new deployments. **DALL-E 3 was retired in March 2026**.\n- **Generate**: `client.images.generate(model=..., prompt=..., size=..., quality=..., n=...)`; GPT-image models return base64 image data.\n- **Edit**: supply one or more images and an optional **mask** (transparent pixels mark the area to change) plus a prompt (inpainting).\n- Options include size, quality (low/medium/high), number of images and output format.\n\n**Content filtering** checks both prompts and generated images; a flagged request returns an error and no image. Responsible AI matters here: avoid generating likenesses of real people and disclose AI-generated images.",
+      "terms": [
+        {
+          "t": "Diffusion model",
+          "d": "Generates images by iteratively removing noise guided by a prompt."
+        },
+        {
+          "t": "GPT-image",
+          "d": "OpenAI image generation models available in Foundry."
+        },
+        {
+          "t": "Mask (image edit)",
+          "d": "Image whose transparent area marks what the model may change."
+        }
+      ],
+      "trap": "Image generation creates new images; captioning describes existing ones. Don't confuse direction of input and output.",
+      "example": "A marketing team generates three banner concepts with gpt-image-1 and uses a mask to swap the background of one.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Text prompt",
+          "Content filter",
+          "Image model",
+          "Content filter",
+          "New image"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.3.09",
+      "objective": "d1.3",
+      "seq": 9,
+      "title": "Azure Content Understanding",
+      "short": "Azure Content Understanding in Foundry Tools uses generative AI to turn documents, images, audio and video into structured output. An analyzer holds the settings and a field schema; each field is produced by extract, classify or generate, with confidence scores and grounding.",
+      "deep": "**Azure Content Understanding** is a Foundry Tool for **multimodal information extraction**. It handles four modalities: **documents, images, audio and video**.\n\nKey concepts:\n- **Analyzer**: the reusable configuration that defines extraction settings, the **field schema**, and the model deployments it uses. Apply one analyzer to every incoming file for consistent results.\n- **Prebuilt analyzers** cover common scenarios (for example invoices, call-centre analytics, media analysis); **custom analyzers** use your own schema.\n- **Field methods**:\n  - **Extract**: take a value exactly as it appears (such as an invoice date); documents only.\n  - **Classify**: choose from a fixed set of categories (such as call sentiment or document type).\n  - **Generate**: create a value freely (such as a summary of a call or a description of a video scene).\n- **Confidence scores** (0 to 1) and **grounding** (where in the source each value came from) support human review and straight-through processing.\n- Output is **Markdown** (good for search/RAG) or **structured JSON** that matches your schema.\n\nFor audio and video, it also produces **transcription**, speaker and scene/segment information.",
+      "terms": [
+        {
+          "t": "Analyzer",
+          "d": "Content Understanding configuration with settings and field schema."
+        },
+        {
+          "t": "Field schema",
+          "d": "The list of named fields, types and methods to produce."
+        },
+        {
+          "t": "Grounding (extraction)",
+          "d": "Location in the source where an extracted value came from."
+        }
+      ],
+      "trap": "'Generate' fields create new text such as summaries; 'extract' copies a value that exists in the document.",
+      "example": "A call-centre analyzer outputs a transcript, a generated summary, and a classified sentiment field for every recording.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "File",
+          "Analyzer",
+          "Field schema",
+          "JSON + confidence"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d1.3.10",
+      "objective": "d1.3",
+      "seq": 10,
+      "title": "Document intelligence and forms processing",
+      "short": "Document Intelligence in Foundry Tools extracts text, layout, tables, key-value pairs and fields from documents. Use prebuilt models (read, layout, invoice, receipt, ID), a custom template model for fixed layouts, or a custom neural model for varied layouts.",
+      "deep": "**Forms processing** means turning scanned or digital documents into structured data. **Document Intelligence** (part of Foundry Tools) offers:\n- **Read**: OCR of printed and handwritten text.\n- **Layout**: text plus structure such as tables, selection marks (checkboxes), paragraphs and headings.\n- **Prebuilt models**: trained for common documents such as invoices, receipts, identity documents and tax forms; return named fields like `InvoiceTotal` or `VendorName`.\n- **Custom extraction models**:\n  - **Custom template**: for documents with a **fixed, consistent layout** (same form every time); trains in minutes.\n  - **Custom neural**: for **varied layouts** that contain the same information (for example the same tax form issued by many employers); one model covers all variations.\n- **Custom classification**: identifies document type to route files.\n\nEach field includes a **confidence score**, so low-confidence values can go to human review. For mixed content including audio and video, or when you want generative fields such as summaries, Azure Content Understanding is the newer option.",
+      "terms": [
+        {
+          "t": "Prebuilt model",
+          "d": "Ready-made extractor for common documents such as invoices."
+        },
+        {
+          "t": "Custom template model",
+          "d": "Custom extractor for fixed, consistent layouts."
+        },
+        {
+          "t": "Custom neural model",
+          "d": "Custom extractor that handles varying layouts."
+        }
+      ],
+      "trap": "Varied layouts point to custom neural; identical forms point to custom template.",
+      "example": "An accounts team uses the prebuilt invoice model to capture vendor, date and total from thousands of PDFs.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Need",
+          "Model"
+        ],
+        "rows": [
+          [
+            "Just text",
+            "Read"
+          ],
+          [
+            "Tables, checkboxes",
+            "Layout"
+          ],
+          [
+            "Invoices, receipts",
+            "Prebuilt"
+          ],
+          [
+            "Same fixed form",
+            "Custom template"
+          ],
+          [
+            "Varied layouts",
+            "Custom neural"
+          ]
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "ai-901.d1b.q001",
+      "lesson": "ai-901.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A large language model is producing a reply to a prompt. What is the model fundamentally doing at each step of generation?",
+      "options": [
+        "Retrieving a stored answer from a database of earlier responses",
+        "Predicting the next token from probabilities computed over the preceding tokens",
+        "Running a decision tree trained on labelled answers",
+        "Assigning the prompt to the nearest cluster and returning the cluster label"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "LLMs generate text one token at a time by predicting a probability distribution for the next token given all previous tokens. They don't look up stored answers, use decision trees, or return cluster labels."
+    },
+    {
+      "id": "ai-901.d1b.q002",
+      "lesson": "ai-901.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which transformer mechanism lets a model weigh how relevant each token is to every other token in the input, so that 'bank' is understood differently next to 'river' than next to 'loan'?",
+      "options": [
+        "Tokenization",
+        "Temperature",
+        "Attention",
+        "Stop sequences"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Attention computes how strongly each token relates to the others, giving context-dependent meaning. Tokenization only splits text; temperature and stop sequences are generation settings."
+    },
+    {
+      "id": "ai-901.d1b.q003",
+      "lesson": "ai-901.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about how generative models work, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "A token is always exactly one whole word.",
+          "a": false
+        },
+        {
+          "s": "Embeddings represent tokens as numeric vectors so that items with similar meaning are close together.",
+          "a": true
+        },
+        {
+          "s": "On a pay-per-token deployment, both prompt (input) and completion (output) tokens count toward usage.",
+          "a": true
+        }
+      ],
+      "explain": "Tokens can be words, parts of words or punctuation. Embeddings are vectors capturing meaning. Token-based billing counts input and output tokens."
+    },
+    {
+      "id": "ai-901.d1b.q004",
+      "lesson": "ai-901.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "In a very long chat session, a model begins ignoring instructions that were given at the very start of the conversation. Which concept best explains this?",
+      "options": [
+        "Frequency penalty",
+        "Top-p sampling",
+        "Content filtering",
+        "The model's context window limit"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A model can only consider a fixed number of tokens per request (its context window). When history exceeds it, early content is truncated. Penalties, top-p and content filters don't remove earlier messages."
+    },
+    {
+      "id": "ai-901.d1b.q005",
+      "lesson": "ai-901.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order to describe how a transformer-based language model produces output from a prompt.",
+      "options": [
+        "The prompt text is split into tokens",
+        "Each token is converted into an embedding vector",
+        "Attention layers compute contextual relationships between tokens",
+        "The model outputs a probability for each possible next token",
+        "A token is selected, appended, and the process repeats"
+      ],
+      "explain": "Text is tokenized, tokens become embeddings, attention builds context, the model scores candidate next tokens, then one is chosen and the loop continues until a stop condition."
+    },
+    {
+      "id": "ai-901.d1b.q006",
+      "lesson": "ai-901.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements describe a foundation model? Select TWO.",
+      "options": [
+        "It is pretrained on very large, broad datasets",
+        "It can be adapted to many tasks through prompting or fine-tuning",
+        "It is built for exactly one narrow task, such as spam detection",
+        "It guarantees factually correct output because of its size"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Foundation models are pretrained on broad data and adapted to many downstream tasks. They aren't single-task models, and size does not prevent hallucination."
+    },
+    {
+      "id": "ai-901.d1b.q007",
+      "lesson": "ai-901.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which message role should you use to set a model's persona, tone and rules for an entire conversation?",
+      "options": [
+        "System",
+        "User",
+        "Assistant",
+        "Tool"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The system message (system prompt) sets behaviour for the whole conversation. User messages carry the person's request, assistant messages are the model's prior replies, and tool messages return tool results."
+    },
+    {
+      "id": "ai-901.d1b.q008",
+      "lesson": "ai-901.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A customer-service chatbot confidently describes a refund policy that your company has never offered. What is this behaviour called, and what is the most appropriate mitigation?",
+      "options": [
+        "Overfitting; retrain the model from scratch on more data",
+        "Hallucination; ground responses in company documents using retrieval-augmented generation (RAG)",
+        "Data drift; raise the temperature so answers vary more",
+        "Throttling; increase the max tokens setting"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Confident false output is hallucination. Grounding the model with retrieved company content (RAG) and instructing it to answer only from that content reduces it. Raising temperature or max tokens would not help."
+    },
+    {
+      "id": "ai-901.d1b.q009",
+      "lesson": "ai-901.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Before the real customer email, your prompt includes three example emails, each followed by the correct category. Which prompt engineering technique is this?",
+      "options": [
+        "Zero-shot prompting",
+        "Retrieval-augmented generation (RAG)",
+        "Fine-tuning",
+        "Few-shot prompting"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Supplying a few input/output examples in the prompt is few-shot prompting. Zero-shot gives no examples, RAG adds retrieved data, and fine-tuning retrains the model's weights."
+    },
+    {
+      "id": "ai-901.d1b.q010",
+      "lesson": "ai-901.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about grounding and RAG, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Retrieval-augmented generation updates the model's weights with your company's documents.",
+          "a": false
+        },
+        {
+          "s": "In a RAG solution, retrieved content is added to the prompt at request time.",
+          "a": true
+        },
+        {
+          "s": "A system prompt can instruct the model to answer only from the supplied context.",
+          "a": true
+        }
+      ],
+      "explain": "RAG never changes weights (that's fine-tuning); it injects retrieved content into the prompt per request. The system prompt can restrict answers to that grounding data."
+    },
+    {
+      "id": "ai-901.d1b.q011",
+      "lesson": "ai-901.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order for how a retrieval-augmented generation (RAG) application answers a question.",
+      "options": [
+        "The user submits a question",
+        "The application searches an index for relevant content",
+        "Retrieved content is added to the prompt as grounding data",
+        "The model generates a response from the grounded prompt"
+      ],
+      "explain": "RAG retrieves relevant data after the question arrives, injects it into the prompt, and only then calls the model to generate a grounded answer."
+    },
+    {
+      "id": "ai-901.d1b.q012",
+      "lesson": "ai-901.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A logistics company needs a language model that runs offline on rugged handheld devices with limited memory to classify short driver notes. Cost and speed matter more than broad knowledge. Which model type fits best?",
+      "options": [
+        "A large reasoning model hosted in the cloud",
+        "A small language model (SLM), such as a Phi model",
+        "An image generation model",
+        "A text-to-speech neural voice model"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "SLMs have fewer parameters, so they are faster, cheaper and can run on constrained edge devices for focused tasks. A large cloud reasoning model needs connectivity and more compute; image and voice models don't classify text."
+    },
+    {
+      "id": "ai-901.d1b.q013",
+      "lesson": "ai-901.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which type of model converts text into numeric vectors so that you can perform semantic search over documents?",
+      "options": [
+        "Embedding model",
+        "Chat completion model",
+        "Image generation model",
+        "Speech synthesis model"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Embedding models output vectors that capture meaning, enabling similarity search for RAG. Chat models generate text, image models create pictures, and speech synthesis produces audio."
+    },
+    {
+      "id": "ai-901.d1b.q014",
+      "lesson": "ai-901.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An insurance app must let customers upload a photo of a damaged car and ask, in text, 'Is the headlight broken?'. Which kind of model should you choose?",
+      "options": [
+        "An embedding model",
+        "A speech-to-text model",
+        "A multimodal model that accepts image and text input",
+        "A text-only small language model"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The request combines an image and a text question, so a multimodal (vision-enabled) chat model is needed. Embedding, speech-to-text and text-only models can't reason over the photo."
+    },
+    {
+      "id": "ai-901.d1b.q015",
+      "lesson": "ai-901.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are comparing candidate models with the model leaderboards in the Microsoft Foundry portal. Which THREE categories of metrics can you compare? Select THREE.",
+      "options": [
+        "Quality",
+        "Training data lineage",
+        "Cost",
+        "Performance, such as latency and throughput",
+        "Data residency guarantee"
+      ],
+      "answer": [
+        0,
+        2,
+        3
+      ],
+      "explain": "Foundry model leaderboards compare quality, safety, performance (latency, throughput) and cost. Training data lineage and data residency are not leaderboard metrics; residency depends on deployment type."
+    },
+    {
+      "id": "ai-901.d1b.q016",
+      "lesson": "ai-901.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam's engineering team wants an assistant that solves complex multi-step maths and code-debugging problems. Users are willing to wait a few extra seconds if answers are more accurate. Cost per request is a secondary concern.",
+      "stem": "Which type of model should the team select from the model catalog?",
+      "options": [
+        "A small language model optimized for lowest latency",
+        "An embedding model",
+        "A reasoning model that uses extra tokens to think before answering",
+        "A speech translation model"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Reasoning models spend additional reasoning tokens working through problems, improving accuracy on hard multi-step tasks at the cost of latency. An SLM prioritizes speed, and embedding or speech models don't solve problems."
+    },
+    {
+      "id": "ai-901.d1b.q017",
+      "lesson": "ai-901.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the Microsoft Foundry model catalog, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Model cards describe a model's intended uses, capabilities and limitations.",
+          "a": true
+        },
+        {
+          "s": "Every model in the catalog is developed by Microsoft.",
+          "a": false
+        },
+        {
+          "s": "A small language model generally needs less compute than a large language model.",
+          "a": true
+        }
+      ],
+      "explain": "Model cards document use and limitations. The catalog includes models from OpenAI, Meta, Mistral, DeepSeek, Hugging Face and others. SLMs have fewer parameters and lower compute needs."
+    },
+    {
+      "id": "ai-901.d1b.q018",
+      "lesson": "ai-901.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You want to deploy an open model from the Hugging Face collection in the Microsoft Foundry model catalog. Which deployment option is required?",
+      "options": [
+        "Serverless API endpoint",
+        "Global Standard deployment",
+        "Global Batch deployment",
+        "Managed compute"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Hugging Face, NVIDIA NIM and custom models require managed compute, where the model runs on dedicated VMs. Global Standard and Global Batch are standard deployment types for supported Foundry Models; serverless covers pay-as-you-go catalog models."
+    },
+    {
+      "id": "ai-901.d1b.q019",
+      "lesson": "ai-901.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Foundry deployment option runs the model on dedicated virtual machines and is billed by compute core hours for as long as the deployment exists, rather than by tokens?",
+      "options": [
+        "Global Standard",
+        "Managed compute",
+        "Serverless API endpoint",
+        "Data Zone Standard"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Managed compute hosts the model on dedicated VMs and bills compute core hours from creation until deletion, regardless of traffic. Global Standard, Data Zone Standard and serverless API endpoints are billed by token usage."
+    },
+    {
+      "id": "ai-901.d1b.q020",
+      "lesson": "ai-901.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about model deployment options, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "A managed compute deployment continues to incur charges while it exists, even if no requests are sent.",
+          "a": true
+        },
+        {
+          "s": "Standard deployment in a Foundry resource supports global, data zone and regional processing.",
+          "a": true
+        },
+        {
+          "s": "Serverless API endpoints are billed per compute core hour.",
+          "a": false
+        }
+      ],
+      "explain": "Managed compute bills for uptime. Standard deployments in Foundry resources offer global, data zone and regional types. Serverless endpoints are billed by tokens, not core hours."
+    },
+    {
+      "id": "ai-901.d1b.q021",
+      "lesson": "ai-901.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order to start using a generative model from Microsoft Foundry in an application.",
+      "options": [
+        "Create a Foundry project",
+        "Deploy a model from the model catalog to the project",
+        "Test the deployment in the playground",
+        "Call the deployment's endpoint from your code by using the SDK"
+      ],
+      "explain": "A project is needed before you can deploy a model into it. You then try the deployment in the playground and finally call its endpoint from code."
+    },
+    {
+      "id": "ai-901.d1b.q022",
+      "lesson": "ai-901.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": "Tailspin Toys must generate short summaries for two million archived product reviews. The job is not urgent: results any time within a day are acceptable. The priority is the lowest possible cost without affecting the live chatbot's quota.",
+      "stem": "Which deployment type should Tailspin use for this job?",
+      "options": [
+        "Global Standard",
+        "Global Provisioned",
+        "Global Batch",
+        "Developer"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Global Batch processes large files of requests asynchronously at about 50% less than Global Standard, with a 24-hour target and separate quota. Provisioned reserves paid capacity; Developer is only for evaluating fine-tuned models."
+    },
+    {
+      "id": "ai-901.d1b.q023",
+      "lesson": "ai-901.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A European bank is deploying a GPT model in Microsoft Foundry. Compliance requires that model inference is processed only within the European Union. The bank wants pay-per-token billing and as much default quota as possible within that constraint.",
+      "stem": "Which deployment type best meets the requirements?",
+      "options": [
+        "Global Standard",
+        "Data Zone Standard",
+        "Global Batch",
+        "Global Provisioned"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Data Zone Standard is pay-per-token and keeps processing inside the EU data zone. Global types (Standard, Batch, Provisioned) may process requests in any Azure region, breaking the residency requirement."
+    },
+    {
+      "id": "ai-901.d1b.q024",
+      "lesson": "ai-901.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A trading platform sends a steady, high volume of requests to a model and needs predictable latency. It is willing to pay for reserved capacity. What should you configure?",
+      "options": [
+        "A Global Standard pay-per-token deployment",
+        "A Global Batch deployment",
+        "A Developer deployment",
+        "A provisioned deployment using provisioned throughput units (PTU)"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Provisioned deployments reserve model capacity measured in PTUs, giving predictable throughput and latency for steady heavy workloads. Standard is shared pay-per-token; Batch is asynchronous; Developer has no SLA."
+    },
+    {
+      "id": "ai-901.d1b.q025",
+      "lesson": "ai-901.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO deployment types are billed per token rather than for reserved capacity? Select TWO.",
+      "options": [
+        "Global Standard",
+        "Global Provisioned",
+        "Data Zone Standard",
+        "Regional Provisioned"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Standard types (Global Standard, Data Zone Standard, Standard) are pay-per-token. Provisioned types are billed for reserved PTU capacity."
+    },
+    {
+      "id": "ai-901.d1b.q026",
+      "lesson": "ai-901.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A policy assistant must give consistent, focused and repeatable answers to the same question. Which configuration change helps most?",
+      "options": [
+        "Lower the temperature toward 0",
+        "Raise the temperature toward the top of its range",
+        "Increase the presence penalty to 2",
+        "Remove the system prompt"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Low temperature makes the model favour the most probable tokens, producing deterministic, focused output. High temperature adds randomness; presence penalty pushes new topics; removing the system prompt loses guardrails."
+    },
+    {
+      "id": "ai-901.d1b.q027",
+      "lesson": "ai-901.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which parameter makes the model sample only from the smallest set of tokens whose cumulative probability reaches a chosen threshold?",
+      "options": [
+        "Temperature",
+        "Frequency penalty",
+        "Max tokens",
+        "Top-p"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Top-p (nucleus sampling) restricts choices to the top tokens whose probabilities add up to p. Temperature reshapes the whole distribution; frequency penalty discourages repetition; max tokens limits length."
+    },
+    {
+      "id": "ai-901.d1b.q028",
+      "lesson": "ai-901.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Python code so that each response is capped at 150 generated tokens.",
+      "code": "response = client.chat.completions.create(\n    model=\"gpt-4o-mini\",\n    messages=[{\"role\": \"user\", \"content\": \"Summarize this support ticket.\"}],\n    ____=150\n)",
+      "options": [
+        "top_p",
+        "max_completion_tokens",
+        "stop",
+        "presence_penalty"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "max_completion_tokens sets the upper limit on generated tokens (it replaces the older max_tokens). top_p and presence_penalty take small decimal values, and stop takes strings, not a token count."
+    },
+    {
+      "id": "ai-901.d1b.q029",
+      "lesson": "ai-901.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about model parameters, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "A positive frequency penalty reduces the chance of the model repeating the same phrases verbatim.",
+          "a": true
+        },
+        {
+          "s": "Presence penalty accepts values from -2.0 to 2.0.",
+          "a": true
+        },
+        {
+          "s": "A stop sequence forces the model to keep generating until it reaches the max token limit.",
+          "a": false
+        }
+      ],
+      "explain": "Frequency penalty scales with how often a token has appeared, reducing repetition. Presence and frequency penalties range from -2.0 to 2.0. A stop sequence ends generation early when that text appears."
+    },
+    {
+      "id": "ai-901.d1b.q030",
+      "lesson": "ai-901.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A brainstorming assistant keeps circling back to the same few ideas. You want it to introduce new topics. Which parameter should you increase?",
+      "options": [
+        "Presence penalty",
+        "Max tokens",
+        "Number of stop sequences",
+        "Top-p set to 0.1"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A positive presence penalty penalizes any token already used, pushing the model toward new topics. More max tokens only lengthens output, stop sequences end it, and a low top-p narrows choices further."
+    },
+    {
+      "id": "ai-901.d1b.q031",
+      "lesson": "ai-901.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code so the first message sets the assistant's behaviour for the whole conversation.",
+      "code": "messages = [\n    {\"role\": \"____\", \"content\": \"You are a polite support agent. Answer only from the provided policy.\"},\n    {\"role\": \"user\", \"content\": \"Can I return opened items?\"}\n]",
+      "options": [
+        "assistant",
+        "tool",
+        "system",
+        "function"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The system role carries the system prompt that sets persona and rules. Assistant holds the model's earlier replies, and tool/function roles return tool output."
+    },
+    {
+      "id": "ai-901.d1b.q032",
+      "lesson": "ai-901.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What most clearly distinguishes an AI agent from a basic chat completion?",
+      "options": [
+        "The agent always uses a smaller model",
+        "The agent cannot be given a system prompt",
+        "The agent can reason about a goal and call tools to take actions across multiple steps",
+        "The agent answers only from its training data"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Agents combine a model, instructions and tools so they can plan and act, for example calling APIs or searching files. Model size, prompts and training-data-only answers don't define an agent."
+    },
+    {
+      "id": "ai-901.d1b.q033",
+      "lesson": "ai-901.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE components does every agent in Foundry Agent Service have? Select THREE.",
+      "options": [
+        "A model",
+        "Instructions",
+        "Tools",
+        "A Content Understanding analyzer",
+        "A custom neural voice"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "An agent is defined by its model (reasoning), instructions (goals and rules) and tools (data and actions). Analyzers and custom voices belong to other Foundry Tools."
+    },
+    {
+      "id": "ai-901.d1b.q034",
+      "lesson": "ai-901.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A travel company wants an assistant that, given 'Get me to Berlin on Friday morning', checks flight availability through the airline API, books a seat, adds the trip to the traveller's calendar and emails a confirmation, without a person directing each step.",
+      "stem": "Which type of AI workload does this describe?",
+      "options": [
+        "Sentiment analysis",
+        "Optical character recognition",
+        "Speech synthesis",
+        "Agentic AI"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The assistant pursues a goal and autonomously calls several tools (APIs, calendar, email) across steps, which is agentic AI. Sentiment, OCR and speech synthesis are single-purpose perception tasks."
+    },
+    {
+      "id": "ai-901.d1b.q035",
+      "lesson": "ai-901.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You are creating a prompt agent with the Azure AI Projects client library. Complete the code to define the agent's behaviour.",
+      "code": "agent = project.agents.create_version(\n    agent_name=\"hr-assistant\",\n    definition=PromptAgentDefinition(\n        model=\"gpt-5-mini\",\n        ____=\"You are a helpful HR assistant. Answer questions about leave policy.\",\n    ),\n)",
+      "options": [
+        "system_message",
+        "persona",
+        "prompt_template",
+        "instructions"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A prompt agent is defined by a model plus instructions (and optional tools). The instructions parameter holds the agent's goals and rules; the other names aren't parameters of PromptAgentDefinition."
+    },
+    {
+      "id": "ai-901.d1b.q036",
+      "lesson": "ai-901.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about generative and agentic AI, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Generative AI creates new content, such as text, code or images, in response to a prompt.",
+          "a": true
+        },
+        {
+          "s": "Agents in Foundry Agent Service can use tools such as file search and code interpreter.",
+          "a": true
+        },
+        {
+          "s": "An agent can only be created by writing code; the Foundry portal cannot create one.",
+          "a": false
+        }
+      ],
+      "explain": "Generative AI produces new content. Agents can use built-in tools like file search and code interpreter. Prompt agents can be created in the Foundry portal with no code."
+    },
+    {
+      "id": "ai-901.d1b.q037",
+      "lesson": "ai-901.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso HR is building an agent in Foundry Agent Service. Employees will ask questions such as 'How many days of parental leave do I get?'. Answers must come from the 80-page benefits handbook PDF that HR will upload, not from the model's general knowledge.",
+      "stem": "Which tool should you add to the agent?",
+      "options": [
+        "Code interpreter",
+        "File search",
+        "Image generation",
+        "Speech translation"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "File search indexes uploaded documents and retrieves relevant passages to ground the agent's answers. Code interpreter runs Python for calculations; image generation and speech translation don't retrieve handbook content."
+    },
+    {
+      "id": "ai-901.d1b.q038",
+      "lesson": "ai-901.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A call centre wants to convert its recorded customer calls into written transcripts. Which AI workload is this?",
+      "options": [
+        "Speech synthesis",
+        "Key phrase extraction",
+        "Speech recognition (speech-to-text)",
+        "Object detection"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Turning spoken audio into text is speech recognition. Speech synthesis does the reverse, key phrase extraction analyzes existing text, and object detection works on images."
+    },
+    {
+      "id": "ai-901.d1b.q039",
+      "lesson": "ai-901.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO scenarios are computer vision workloads? Select TWO.",
+      "options": [
+        "Counting cars in frames from a traffic camera",
+        "Reading the licence plate number in a photo of a car",
+        "Detecting the language of an email",
+        "Converting a news article into spoken audio",
+        "Scoring product reviews as positive or negative"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Counting cars (object detection) and reading plates (OCR) analyze images. Language detection and review scoring are text analysis; converting text to audio is speech synthesis."
+    },
+    {
+      "id": "ai-901.d1b.q040",
+      "lesson": "ai-901.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An insurer needs to pull the policy number, claim date and claimed amount from thousands of scanned claim forms into a database. Which workload is this?",
+      "options": [
+        "Information extraction from documents",
+        "Speech synthesis",
+        "Sentiment analysis",
+        "Image generation"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Pulling specific fields from forms into structured data is information extraction (Document Intelligence or Content Understanding). The other workloads don't produce structured fields from documents."
+    },
+    {
+      "id": "ai-901.d1b.q041",
+      "lesson": "ai-901.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A retailer wants to know whether thousands of written product reviews are positive or negative. Which AI workload should it use?",
+      "options": [
+        "Computer vision",
+        "Speech translation",
+        "Image generation",
+        "Text analysis"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Determining opinion in written text is sentiment analysis, a text analysis workload in Azure Language. Vision, speech translation and image generation don't evaluate written opinions."
+    },
+    {
+      "id": "ai-901.d1b.q042",
+      "lesson": "ai-901.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if the scenario is correctly matched to its workload. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Creating marketing images from a text description is a generative AI workload.",
+          "a": true
+        },
+        {
+          "s": "Transcribing a podcast episode is a computer vision workload.",
+          "a": false
+        },
+        {
+          "s": "Finding personal data such as phone numbers in support tickets is a text analysis workload.",
+          "a": true
+        }
+      ],
+      "explain": "Image creation from prompts is generative AI. Transcribing audio is speech recognition, not vision. PII detection in text belongs to text analysis."
+    },
+    {
+      "id": "ai-901.d1b.q043",
+      "lesson": "ai-901.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A museum is building a mobile app for visually impaired visitors. A visitor points the phone camera at an exhibit, and the app should describe what is in the picture and read that description aloud.",
+      "stem": "Which combination of AI capabilities does the app need?",
+      "options": [
+        "Key phrase extraction and object detection",
+        "Image captioning and speech synthesis",
+        "Speech recognition and entity linking",
+        "Image generation and sentiment analysis"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Image captioning (computer vision) produces a description of the scene, and speech synthesis reads it aloud. The other pairs either analyze text, need spoken input, or create new images instead of describing one."
+    }
+  ]
+}

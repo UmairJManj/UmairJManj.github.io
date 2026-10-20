@@ -1,0 +1,1254 @@
+{
+  "exam": "ai-901",
+  "domain": "d2",
+  "lessons": [
+    {
+      "id": "ai-901.d2.3.01",
+      "objective": "d2.3",
+      "seq": 1,
+      "title": "Interpreting images with a multimodal model",
+      "short": "A multimodal (vision-enabled) model accepts an image and text in the same prompt and answers in natural language. In Microsoft Foundry you deploy one, such as gpt-4.1-mini or Phi-4-multimodal-instruct, then upload an image in the chat playground and ask questions about it.",
+      "deep": "Classic computer vision needed a separate, trained model for each task (classification, object detection, OCR). A **multimodal model** is a generative model trained on text *and* images, so one deployment can do many visual tasks just by being asked.\n\nWhat a vision-enabled model can do:\n- Describe what is in a photo\n- Answer questions about objects, text or scenes\n- Interpret charts, screenshots, diagrams and scanned pages\n- Combine your text instructions with what it sees (\"list the safety issues in this photo as bullets\")\n\nIn the **Foundry model catalog**, vision-capable options include the **GPT-4.1** family (gpt-4.1, gpt-4.1-mini, gpt-4.1-nano), the **GPT-5** series, Microsoft **Phi-4-multimodal-instruct**, and partner models.\n\nTypical workflow: deploy the model, open it in the **chat playground**, attach a local image, type a question in the same message and review the answer. When the prompt works, move it into code. Your code refers to the model by its **deployment name** (the name you chose when deploying), which can differ from the base model name.\n\nRemember the answer is generated: it can be wrong, and content filters still apply.",
+      "terms": [
+        {
+          "t": "Multimodal model",
+          "d": "A model that accepts more than one kind of input, such as text plus images."
+        },
+        {
+          "t": "Vision-enabled chat",
+          "d": "A chat exchange where the user message contains an image as well as text."
+        },
+        {
+          "t": "Chat playground",
+          "d": "Foundry portal page for testing a deployed chat model interactively, including image uploads."
+        },
+        {
+          "t": "Deployment name",
+          "d": "The name you give a model deployment; code passes it as the model value."
+        }
+      ],
+      "trap": "Distractors offer an image generation model (GPT-image), an embeddings model or a custom-trained vision model when a deployed multimodal chat model is all that is needed to answer questions about an image.",
+      "example": "A field engineer uploads a photo of a control panel in the chat playground and asks gpt-4.1-mini which warning lights are on and what they usually mean.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Deploy model",
+          "Chat playground",
+          "Attach image",
+          "Ask question",
+          "Review answer"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.3.02",
+      "objective": "d2.3",
+      "seq": 2,
+      "title": "Image generation models in Foundry",
+      "short": "Image generation models create new images from a text description (text-to-image) and can edit existing images. For new projects Microsoft recommends the GPT-image-1 family, especially GPT-image-1.5; DALL-E 3 has been retired.",
+      "deep": "Vision models usually map an image to text. **Image generation** runs the other way: the model reads a prompt and produces pixels. Most modern generators are built on **diffusion** ideas: start from noise and refine it step by step towards an image that matches the prompt.\n\nModels you will see in Foundry:\n- **GPT-image-1.5**: highest fidelity, strong prompt alignment, text-to-image, image-to-image and precise editing. Recommended starting point.\n- **GPT-image-1**: general-purpose generation, variations and editing.\n- **GPT-image-1-mini**: cheaper and faster, for high volume or experiments where top quality matters less.\n- **FLUX** (Black Forest Labs): third-party models for photoreal or stylised images.\n\n**DALL-E 3** was retired in March 2026; existing deployments stop working, so use a GPT-image model.\n\nYou deploy the model in a Foundry resource and test it in the playground by describing the image. Common parameters for the GPT-image-1 series: `size` (`1024x1024`, `1024x1536`, `1536x1024`), `quality` (`low`, `medium`, `high`), `n` (number of images) and `output_format` (`png` or `jpeg`).\n\nPrompts and generated images pass through **content filters**; a blocked request returns a `contentFilter` error.",
+      "terms": [
+        {
+          "t": "Text-to-image",
+          "d": "Generating a new image from a written description."
+        },
+        {
+          "t": "Diffusion model",
+          "d": "A generator that turns random noise into an image by repeated denoising steps guided by the prompt."
+        },
+        {
+          "t": "GPT-image-1.5",
+          "d": "Microsoft's recommended image generation and editing model for most new Foundry projects."
+        },
+        {
+          "t": "FLUX",
+          "d": "Third-party image generation model family from Black Forest Labs, available in Foundry."
+        }
+      ],
+      "trap": "DALL-E 3 still appears in older material; for new deployments the right answer is a GPT-image model, and GPT-image-1-mini is the pick when cost or speed matters more than fidelity.",
+      "example": "A marketing team deploys GPT-image-1.5 and generates 1536x1024 banner images in a consistent flat-illustration style for a product launch.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Model",
+          "Best for"
+        ],
+        "rows": [
+          [
+            "GPT-image-1.5",
+            "Top fidelity + editing"
+          ],
+          [
+            "GPT-image-1",
+            "General purpose"
+          ],
+          [
+            "GPT-image-1-mini",
+            "Low cost, high volume"
+          ],
+          [
+            "FLUX",
+            "Third-party styles"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.3.03",
+      "objective": "d2.3",
+      "seq": 3,
+      "title": "Generating and editing images in code",
+      "short": "With the OpenAI Python SDK you can generate images through the Responses API by adding the image_generation tool, or through the Images API. GPT-image models return the picture as base64 data, which you decode and save; edits can use a mask to change only part of an image.",
+      "deep": "**Option 1: Responses API with a tool.** Call `client.responses.create(model=<deployment>, input=prompt, tools=[{\"type\": \"image_generation\"}])`. The response `output` contains an item whose `type` is `image_generation_call`; its `result` holds the image as base64. Decode it with `base64.b64decode()` and write the bytes to a `.png` file.\n\n**Option 2: Images API.** `client.images.generate(model=<deployment>, prompt=..., size=..., quality=..., n=...)` returns `data[0].b64_json`. GPT-image models always return base64, not a URL.\n\n**Base64** turns binary data into plain ASCII text so it can travel inside JSON. You decode it back to bytes before saving.\n\n**Editing**: the edits operation takes one or more input images plus a prompt. To change only one region, add a **mask**: a PNG the same size as the image where fully transparent pixels mark the area to repaint (inpainting).\n\nYou need a Foundry resource, a deployed image model (its deployment name goes in `model`) and authentication by **API key** or **Microsoft Entra ID**. Default quota is low (a few images per minute per deployment), so handle `429` rate-limit errors with retries.",
+      "terms": [
+        {
+          "t": "image_generation tool",
+          "d": "Responses API tool that lets the call return a generated image."
+        },
+        {
+          "t": "b64_json",
+          "d": "Field in an Images API response holding the base64-encoded image."
+        },
+        {
+          "t": "Mask",
+          "d": "PNG matching the image size; transparent pixels mark the area an edit may change."
+        },
+        {
+          "t": "Base64",
+          "d": "Encoding that represents binary data as text so it can sit inside JSON."
+        }
+      ],
+      "trap": "Questions test that the output is base64 you must decode (not a ready-made URL) and that partial edits use a mask, not a detail or quality setting.",
+      "example": "A publisher's script sends a prompt with the image_generation tool, finds the image_generation_call item, decodes its result and saves cover.png for an editor to review.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Prompt",
+          "responses.create",
+          "Image gen call",
+          "b64decode",
+          "Save .png"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.3.04",
+      "objective": "d2.3",
+      "seq": 4,
+      "title": "Video generation with Sora",
+      "short": "Sora models are the native video generation models in Foundry. Sora 2 supports text-to-video, image-to-video and video-to-video remix with audio. Because rendering takes minutes, the REST API runs it as an asynchronous job: create, poll, then download the MP4.",
+      "deep": "Foundry's video generators are OpenAI **Sora** models; other multimodal models can read video-related input but don't produce video.\n\n- **Sora 1**: text-to-video, can use an image to guide the clip; several resolutions and durations.\n- **Sora 2** (preview): text-to-video, image-to-video and **video-to-video remix**, which makes targeted changes to an existing clip instead of regenerating it. Adds **audio generation** and better realism.\n\nYou can test a deployment in the **video playground**, setting dimensions and duration, and copy sample REST code.\n\nThe REST pattern (Azure OpenAI v1 API) is an **asynchronous job**:\n1. `POST https://<resource>.openai.azure.com/openai/v1/videos` with `model`, `prompt`, `size` (e.g. `1280x720`) and `seconds`. The response returns a video **id**.\n2. `GET .../videos/{video_id}` repeatedly until the status is `completed` (or `failed`).\n3. `GET .../videos/{video_id}/content` to download the MP4.\n\nJobs usually take 1 to 5 minutes. Authenticate with an API key or Microsoft Entra ID. Responsible AI safeguards restrict content such as real people and copyrighted characters.",
+      "terms": [
+        {
+          "t": "Sora 2",
+          "d": "OpenAI video model in Foundry supporting text, image and video (remix) input, with audio."
+        },
+        {
+          "t": "Remix",
+          "d": "Video-to-video editing that changes part of an existing clip without regenerating all of it."
+        },
+        {
+          "t": "Asynchronous job",
+          "d": "Request that starts work and returns an id you poll until it finishes."
+        }
+      ],
+      "trap": "The exam expects you to poll the job and download only after status is completed; the POST does not return the finished video.",
+      "example": "A training team posts a prompt for an 8-second 1280x720 clip, polls the job id every few seconds and downloads output.mp4 once it completes.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "POST /videos",
+          "Get video id",
+          "Poll status",
+          "completed",
+          "Download MP4"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.3.05",
+      "objective": "d2.3",
+      "seq": 5,
+      "title": "Vision chat app with the Responses API",
+      "short": "A vision chat app works like a text chat app, but the user message is multi-part: an input_text item plus an input_image item. The image is a public URL or a base64 data URL, and the reply is read from response.output_text.",
+      "deep": "Steps for a lightweight Python client:\n1. `pip install openai`.\n2. Create the client: `OpenAI(base_url=\"https://<resource>.openai.azure.com/openai/v1/\", api_key=...)`. Keyless Microsoft Entra ID auth also works.\n3. Build the input:\n```\ninput=[\n {\"role\": \"developer\", \"content\": \"You are a chef's assistant.\"},\n {\"role\": \"user\", \"content\": [\n   {\"type\": \"input_text\", \"text\": \"What could I make with this?\"},\n   {\"type\": \"input_image\", \"image_url\": data_url}]}]\n```\n4. Call `client.responses.create(model=<deployment name>, input=...)` and print `response.output_text`.\n\n**Local images**: open the file in binary mode, `base64.b64encode(...).decode(\"utf-8\")`, then build a **data URL**: `data:image/jpeg;base64,<data>` (swap `jpeg` for `png` etc.). Web images can be passed as a URL string instead, but the URL must be publicly reachable; the service fetches it from Microsoft-managed infrastructure, so private or VNet-only URLs fail.\n\n`model` is the **deployment name**, not necessarily the base model name.",
+      "terms": [
+        {
+          "t": "input_image",
+          "d": "Responses API content type for an image; its image_url is a URL or data URL string."
+        },
+        {
+          "t": "Data URL",
+          "d": "Inline image string: data:<mime type>;base64,<encoded bytes>."
+        },
+        {
+          "t": "output_text",
+          "d": "Convenience property holding the text reply from a Responses API call."
+        }
+      ],
+      "trap": "Wrong options pass a local file path or a private storage URL; the service can only use a public URL or base64 data embedded in the request.",
+      "example": "A recipe app reads dragon-fruit.jpeg, base64-encodes it, sends it with \"What desserts could I make?\" and shows response.output_text.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Read file (rb)",
+          "Base64 encode",
+          "Data URL",
+          "input_image",
+          "output_text"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.3.06",
+      "objective": "d2.3",
+      "seq": 6,
+      "title": "Chat Completions format and image detail",
+      "short": "Models that don't support the Responses API, such as Phi-4-multimodal-instruct, take images through Chat Completions: a text part plus an image_url part whose value is an object with url. The detail setting (low, high, auto) trades accuracy against tokens and speed.",
+      "deep": "**Chat Completions** shape:\n```\nmessages=[\n {\"role\": \"system\", \"content\": \"...\"},\n {\"role\": \"user\", \"content\": [\n   {\"type\": \"text\", \"text\": \"What can I make with this fruit?\"},\n   {\"type\": \"image_url\", \"image_url\": {\"url\": data_url}}]}]\n```\nRead the reply from `response.choices[0].message.content`.\n\n**detail** (inside `image_url`):\n- `low`: processes a 512x512 version; faster and fewer tokens, but small text and objects may be missed.\n- `high`: looks at the low-res image, then detailed 512x512 tiles, each costing extra tokens; best for fine print.\n- `auto`: the default; the model chooses based on image size.\n\nImages count as **input tokens**, so bigger detail costs more. Supported formats for Azure OpenAI vision include JPEG, PNG, WEBP and GIF (first frame only), up to 20 MB each and 10 images per chat request. Set `max_tokens` so long answers aren't cut off (`finish_reason` = `length`).",
+      "terms": [
+        {
+          "t": "image_url (Chat Completions)",
+          "d": "Content part whose value is an object containing url and optional detail."
+        },
+        {
+          "t": "detail",
+          "d": "Image fidelity setting: low, high or auto (default)."
+        },
+        {
+          "t": "choices[0].message.content",
+          "d": "Where Chat Completions returns the assistant's text reply."
+        }
+      ],
+      "trap": "Mixing the two formats is the classic error: Responses uses input_image with a string, Chat Completions uses image_url with an object holding url.",
+      "example": "An inventory app reading tiny serial numbers sets detail to high, accepting the extra tokens for better accuracy.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Aspect",
+          "Responses API",
+          "Chat Completions"
+        ],
+        "rows": [
+          [
+            "Instructions",
+            "developer role",
+            "system role"
+          ],
+          [
+            "Text part",
+            "input_text",
+            "text"
+          ],
+          [
+            "Image part",
+            "input_image (string)",
+            "image_url {url}"
+          ],
+          [
+            "Reply",
+            "output_text",
+            "choices[0].message"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.4.01",
+      "objective": "d2.4",
+      "seq": 1,
+      "title": "Azure Content Understanding and analyzers",
+      "short": "Azure Content Understanding in Foundry Tools uses generative AI to turn unstructured documents, images, audio and video into structured output that matches a schema you define. The core building block is the analyzer: extraction settings, a field schema and model deployments applied to every input.",
+      "deep": "Organisations have information locked in invoices, photos, call recordings and meeting videos. **Information extraction** pulls out the specific facts you need as machine-readable data.\n\n**Azure Content Understanding in Foundry Tools** is part of a **Microsoft Foundry resource** (you must create one to use it). It combines OCR, layout analysis, speech transcription and generative models.\n\nThe central concept is the **analyzer**, which holds:\n- content extraction settings (OCR, layout, transcription)\n- a **field schema**: the named fields you want, their types and how to fill them\n- the **model deployments** to use: you bring a generative (completion) model for field extraction and a text-embedding model\n\nAnalyzers are **prebuilt** (ready for invoices, receipts, IDs, calls, RAG ingestion) or **custom** (your own schema).\n\nWorkflow: choose or create an analyzer, submit content, the service applies the schema, and you receive results as **JSON** (fields for automation) and **Markdown** (text for search and RAG).\n\nUnlike plain OCR, schemas are applied **semantically**: the service understands meaning, so different labels for the same value still map to one field.",
+      "terms": [
+        {
+          "t": "Analyzer",
+          "d": "Configuration of extraction settings, field schema and model deployments applied to content."
+        },
+        {
+          "t": "Field schema",
+          "d": "Definition of the fields to return, with name, type, description and generation method."
+        },
+        {
+          "t": "Prebuilt analyzer",
+          "d": "Ready-made analyzer for a common scenario, e.g. prebuilt-invoice."
+        },
+        {
+          "t": "Information extraction",
+          "d": "Turning unstructured content into structured, searchable data."
+        }
+      ],
+      "trap": "Distractors name Azure Language or Azure Speech; when the requirement is schema-based structured output from documents, images, audio or video, the answer is Content Understanding.",
+      "example": "An accounts team points prebuilt-invoice at supplier PDFs and gets VendorName, InvoiceTotal and line items as JSON for its ERP system.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Content",
+          "Analyzer + schema",
+          "AI analysis",
+          "JSON / Markdown"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "seq": 2,
+      "title": "Extracting from documents and forms",
+      "short": "For documents, Content Understanding offers OCR and layout analyzers, domain analyzers such as prebuilt-invoice and prebuilt-idDocument, and custom schemas. Fields use extract, generate or classify, and can return a confidence score and grounding back to the source.",
+      "deep": "**Content extraction analyzers** (no language or embedding model needed):\n- `prebuilt-read`: OCR of words, paragraphs, formulas, barcodes; no layout.\n- `prebuilt-layout`: adds tables, sections, figures, hyperlinks.\n\n**RAG analyzer**: `prebuilt-documentSearch` outputs layout-aware Markdown, figure descriptions, a summary and chunks ready for vector indexing.\n\n**Domain analyzers**: e.g. `prebuilt-invoice`, `prebuilt-receipt`, `prebuilt-idDocument` (passports, driver licences), `prebuilt-contract`, US tax and mortgage forms.\n\n**Field generation methods** in a schema:\n- **extract**: copies a value as it appears in the content (documents only), e.g. an invoice date.\n- **generate**: produces a value by reasoning over the content, e.g. a summary.\n- **classify**: picks one category from an `enum` list, e.g. document type.\n\nField types include string, date, time, number, integer, boolean, plus arrays (lists, tables) and objects (groups).\n\nWith `estimateFieldSourceAndConfidence`, each value gets a **confidence** score from 0 to 1 and **grounding** (the exact region it came from). High-confidence values can flow straight through; low ones go to human review.",
+      "terms": [
+        {
+          "t": "extract method",
+          "d": "Returns a value exactly as it appears; supported for documents only."
+        },
+        {
+          "t": "classify method",
+          "d": "Assigns one value from a predefined enum of categories."
+        },
+        {
+          "t": "Confidence score",
+          "d": "0 to 1 estimate of how reliable an extracted value is."
+        },
+        {
+          "t": "Grounding",
+          "d": "Location in the source content where a field value was found."
+        }
+      ],
+      "trap": "prebuilt-read vs prebuilt-layout vs prebuilt-documentSearch is a favourite: plain OCR, OCR plus structure, or RAG-ready output with figure descriptions and chunks.",
+      "example": "An insurer extracts PolicyNumber with extract, classifies ClaimType from an enum and auto-approves only fields with confidence above its chosen threshold.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Method",
+          "What it does"
+        ],
+        "rows": [
+          [
+            "extract",
+            "Copies value as shown"
+          ],
+          [
+            "generate",
+            "Infers or summarises"
+          ],
+          [
+            "classify",
+            "Picks from enum list"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.4.03",
+      "objective": "d2.4",
+      "seq": 3,
+      "title": "Extracting from images",
+      "short": "Content Understanding image analyzers return schema-based fields from photos, charts and diagrams, such as counts, defect types or descriptions, using the generate and classify methods. For text-heavy images, Microsoft recommends a document analyzer instead.",
+      "deep": "An **image analyzer** applies your field schema to pictures (JPG, PNG, BMP, HEIF and similar). Because images have no fixed text layout, fields are filled with **generate** (the model infers a value, e.g. a description or a count) or **classify** (pick from an enum, e.g. defect type). The *extract* method is for documents only.\n\nTypical scenarios:\n- **Manufacturing quality control**: flag scratches, cracks or misalignment.\n- **Shelf analysis and inventory**: detect and count products.\n- **Business charts**: read trends from performance graphs.\n- **RAG indexing**: describe images so they can be searched.\n\nPrebuilt options: `prebuilt-image` is the **base analyzer** you build image analyzers on; `prebuilt-imageSearch` writes a one-paragraph description and extracts visual content for search.\n\nImage analyzers are **not optimised for analysis based mainly on text**. A photographed receipt or scanned form should go to a document analyzer, which also accepts JPG and PNG files.\n\nWhy not just vision chat? Content Understanding applies the *same schema* to every image and returns consistent JSON for automation, rather than a free-form answer per prompt.",
+      "terms": [
+        {
+          "t": "prebuilt-image",
+          "d": "Base analyzer for building custom image analyzers."
+        },
+        {
+          "t": "prebuilt-imageSearch",
+          "d": "Prebuilt analyzer that describes an image for search and RAG."
+        },
+        {
+          "t": "generate method",
+          "d": "Model produces a value from the content, e.g. a count or description."
+        }
+      ],
+      "trap": "If the image is really a document (receipt, form), the expected answer is a document analyzer, not an image analyzer.",
+      "example": "A meeting-room camera image is analysed with fields Location, InPersonAttendees and RemoteAttendees, returning Conference room, 1 and 3.",
+      "diagram": null
+    },
+    {
+      "id": "ai-901.d2.4.04",
+      "objective": "d2.4",
+      "seq": 4,
+      "title": "Extracting from audio",
+      "short": "Audio analyzers transcribe speech to WEBVTT, separate speakers (diarization) and fill schema fields such as summary, sentiment or callback number. prebuilt-callCenter handles post-call analytics; prebuilt-audioSearch gives a transcript and conversation summary.",
+      "deep": "Content Understanding processes audio in two layers.\n\n**Content extraction**:\n- **Transcription** to text in **WEBVTT** format, with sentence or word timestamps on request.\n- **Diarization**: works out who spoke when and labels transcript parts by speaker.\n- **Speaker role detection**: identifies agent and customer in contact-centre calls.\n- **Multilingual transcription** is used when you don't set `locales` or set it to `auto`; supplying a list of locales enables language detection of the dominant language.\n\n**Field extraction** uses a generative model with the **generate** and **classify** methods (no *extract* for audio). For a voicemail you might define Caller, MessageSummary, RequestedActions and CallbackNumber.\n\nPrebuilt analyzers:\n- `prebuilt-callCenter` (post-call analysis): transcript with agent/customer roles, summary, sentiment, people, companies, call categories.\n- `prebuilt-audioSearch` (conversation analysis): transcript and summary, speakers labelled generically (\"Speaker 1\").\n\nFormats include WAV, MP3, MP4, FLAC, OGG/Opus and M4A. Only speech is transcribed.",
+      "terms": [
+        {
+          "t": "WEBVTT",
+          "d": "Timed-text transcript format used for audio and video transcripts."
+        },
+        {
+          "t": "Diarization",
+          "d": "Attributing parts of a transcript to individual speakers."
+        },
+        {
+          "t": "prebuilt-callCenter",
+          "d": "Post-call analytics: roles, summary, sentiment, entities, categories."
+        },
+        {
+          "t": "prebuilt-audioSearch",
+          "d": "Transcript plus conversation summary with generic speaker labels."
+        }
+      ],
+      "trap": "Role detection (agent vs customer) comes with prebuilt-callCenter, not prebuilt-audioSearch; and audio fields use generate or classify, never extract.",
+      "example": "A support centre runs prebuilt-callCenter on every recorded call and charts sentiment and top call categories per week.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Audio file",
+          "Transcribe",
+          "Diarize",
+          "Generate fields",
+          "JSON"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.4.05",
+      "objective": "d2.4",
+      "seq": 5,
+      "title": "Extracting from video",
+      "short": "Video analysis first extracts a transcript, key frames and shot boundaries, then a generative model fills your fields for each segment. Segmentation can treat the whole video as one segment or split it by rules you describe in natural language.",
+      "deep": "**Stage 1: content extraction**\n- **Transcript** in WEBVTT with speaker diarization (speech only; music and sound effects are ignored).\n- **Key frames** chosen so each shot has enough frames to analyse.\n- **Shot detection**: camera-shot boundaries in `cameraShotTimesMs` (needs `returnDetails: true`).\n\n**Stage 2: field extraction and segmentation** with a generative model, using **generate** and **classify** fields.\n- `enableSegment: false`: the whole video is one segment; good for brand-safety checks or a full summary.\n- `enableSegment: true` plus `contentCategories`: you describe in plain language how to split the video (e.g. \"one segment per news story, ignore ads\"). Fields are filled per segment. Segmentation uses model tokens even with no fields.\n\nPrebuilt: `prebuilt-videoSearch` segments by topic or scene and returns transcripts and per-segment descriptions of people, places and actions; good for media asset search.\n\nLimits to remember: about **one frame per second** is sampled (very brief events can be missed) and frames are scaled to **512x512** (small or distant details can be lost).",
+      "terms": [
+        {
+          "t": "Key frame",
+          "d": "Representative still image taken from a shot for analysis."
+        },
+        {
+          "t": "enableSegment",
+          "d": "Analyzer setting: false = whole video, true = custom segments."
+        },
+        {
+          "t": "contentCategories",
+          "d": "Natural-language rules that define how a video is segmented."
+        },
+        {
+          "t": "prebuilt-videoSearch",
+          "d": "Prebuilt analyzer giving per-segment descriptions and transcripts."
+        }
+      ],
+      "trap": "Expect a question on why tiny on-screen text or a split-second event was missed: 1 frame per second sampling and 512x512 frames.",
+      "example": "A broadcaster enables segmentation with a news-story category so each story gets its own summary and topic label.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Video",
+          "Transcript+frames",
+          "Segments",
+          "Fields per segment",
+          "JSON"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.4.06",
+      "objective": "d2.4",
+      "seq": 6,
+      "title": "Content Understanding client app in Python",
+      "short": "Install azure-ai-contentunderstanding, create a ContentUnderstandingClient with your Foundry endpoint and a credential, call begin_analyze with an analyzer id and inputs, then poller.result() returns contents with markdown and fields.",
+      "deep": "Analysis is a **long-running operation (LRO)**: the service accepts the job, then you wait for it. The SDK does the polling for you.\n\n```\npip install azure-ai-contentunderstanding\n```\n\n```\nclient = ContentUnderstandingClient(\n    endpoint=\"https://<resource>.services.ai.azure.com/\",\n    credential=AzureKeyCredential(key))\npoller = client.begin_analyze(\n    analyzer_id=\"prebuilt-invoice\",\n    inputs=[{\"url\": doc_url}])\nresult = poller.result()\nfor content in result.contents:\n    print(content.markdown)\n    print(content.fields)\n```\n\n- **Endpoint**: your Foundry resource endpoint.\n- **Credential**: `AzureKeyCredential` (API key) or a Microsoft Entra ID credential from `azure-identity` such as `DefaultAzureCredential`.\n- **result.contents**: one item per input (or segment), each with `markdown` (text, transcript) and `fields`.\n- Each field has a `type`, a typed value (`valueString`, `valueNumber`, `valueDate`, `valueArray`, `valueObject`) and usually a `confidence`.\n\nThe same code works for audio or video: just change `analyzer_id` (e.g. `prebuilt-audioSearch`) and the input URL. Use confidence to decide what to automate and what to send for review.",
+      "terms": [
+        {
+          "t": "ContentUnderstandingClient",
+          "d": "Python SDK client for calling Content Understanding analyzers."
+        },
+        {
+          "t": "begin_analyze",
+          "d": "Starts an analysis LRO and returns a poller."
+        },
+        {
+          "t": "poller.result()",
+          "d": "Waits for the operation to finish and returns the analysis result."
+        },
+        {
+          "t": "result.contents",
+          "d": "List of analysed content items, each with markdown and fields."
+        }
+      ],
+      "trap": "The begin_ prefix signals a long-running operation; reading fields before calling result() is the bug the exam likes to show.",
+      "example": "An expenses app loops through result.contents, saves MerchantName and Total, and queues any field with confidence below 0.8 for a person to check.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Client",
+          "begin_analyze",
+          "Poller",
+          "result()",
+          "contents/fields"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.4.07",
+      "objective": "d2.4",
+      "seq": 7,
+      "title": "REST calls and custom analyzers",
+      "short": "Over REST you POST to /contentunderstanding/analyzers/{id}:analyze, receive 202 with an Operation-Location header, and poll it until status is Succeeded. Custom analyzers are created with a PUT that names a base analyzer, model deployments and a fieldSchema.",
+      "deep": "**Analyze over REST** (GA API `2025-11-01`):\n1. `POST {endpoint}/contentunderstanding/analyzers/prebuilt-invoice:analyze?api-version=2025-11-01` with header `Ocp-Apim-Subscription-Key` and body `{\"inputs\":[{\"url\":\"...\"}]}`.\n2. Response `202 Accepted` with an `Operation-Location` header pointing to `.../analyzerResults/{id}`.\n3. `GET` that URL every second or two until `status` is `Succeeded`, then read `result.contents`.\n\n**Custom analyzer**: `PUT {endpoint}/contentunderstanding/analyzers/{analyzerId}` with a JSON definition:\n- `baseAnalyzerId`: one of the four base analyzers `prebuilt-document`, `prebuilt-image`, `prebuilt-audio`, `prebuilt-video`\n- `models`: `completion` (e.g. a GPT deployment) and `embedding`\n- `config`: e.g. `returnDetails`, `estimateFieldSourceAndConfidence`\n- `fieldSchema.fields`: each with `type`, `method` and a `description` the model uses\n\nPrebuilt definitions can change between API versions, so for production you can GET a prebuilt analyzer and save a copy under your own id.\n\n**Content Understanding Studio** offers custom analyzer authoring and data labeling; the Foundry portal lets you try analyzers and view the JSON.",
+      "terms": [
+        {
+          "t": "Operation-Location",
+          "d": "Response header with the URL to poll for an async result."
+        },
+        {
+          "t": "baseAnalyzerId",
+          "d": "Parent for a custom analyzer: prebuilt-document, -image, -audio or -video."
+        },
+        {
+          "t": "Ocp-Apim-Subscription-Key",
+          "d": "HTTP header carrying the resource key."
+        }
+      ],
+      "trap": "The analyze call doesn't return results directly; it returns 202 and an Operation-Location you must poll. Domain analyzers like prebuilt-invoice can't be a baseAnalyzerId.",
+      "example": "A team PUTs a receipt analyzer based on prebuilt-document with VendorName and Items fields, then POSTs receipts to its :analyze endpoint.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "POST :analyze",
+          "202 + Op-Location",
+          "GET result",
+          "Succeeded"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "ai-901.d2b.q001",
+      "lesson": "ai-901.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You want users to upload a photo and ask questions about what it shows. Which kind of model should you deploy in Microsoft Foundry?",
+      "options": [
+        "A multimodal (vision-enabled) chat model such as gpt-4.1-mini",
+        "A text embedding model such as text-embedding-3-large",
+        "A speech-to-text model in Azure Speech in Foundry Tools",
+        "An image generation model such as GPT-image-1.5"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A multimodal model accepts an image and text in one prompt and answers in natural language. Embedding models return vectors, not answers. GPT-image models create or edit images rather than answer questions about them. Speech-to-text transcribes audio."
+    },
+    {
+      "id": "ai-901.d2b.q002",
+      "lesson": "ai-901.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A grocery chain wants store staff to photograph a shelf and ask questions such as \"Which products look out of stock?\" Management wants a working prototype this week, has no labelled training images, and wants answers in plain language.",
+      "stem": "What should the team do first?",
+      "options": [
+        "Deploy GPT-image-1 and ask it to regenerate the shelf with gaps highlighted",
+        "Deploy a vision-enabled model such as gpt-4.1-mini and test shelf photos in the chat playground",
+        "Deploy a text embedding model and compare vectors of shelf photo file names",
+        "Collect and label thousands of shelf photos to train a custom object detection model"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A pretrained multimodal model can reason about a new photo with no training, and the chat playground is the quickest way to test prompts. Training a custom detector needs labelled data and time. Image generation creates pictures instead of answering. Embedding file names ignores the image content."
+    },
+    {
+      "id": "ai-901.d2b.q003",
+      "lesson": "ai-901.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO tasks can a deployed vision-enabled model such as gpt-4.1 perform directly from an image in a prompt? Select TWO.",
+      "options": [
+        "Describe the contents of a photo in natural language",
+        "Render an MP4 video clip from the photo",
+        "Answer a question about the trend shown in a chart screenshot",
+        "Synthesize the description as spoken audio using SSML"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Vision-enabled chat models describe images and answer questions about objects, text and charts. Video creation needs a Sora model, and spoken audio with SSML is a job for Azure Speech text-to-speech."
+    },
+    {
+      "id": "ai-901.d2b.q004",
+      "lesson": "ai-901.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about using multimodal models in Microsoft Foundry, select Yes if true.",
+      "statements": [
+        {
+          "s": "In the chat playground you can attach a local image and add text to the same message.",
+          "a": true
+        },
+        {
+          "s": "A multimodal model must be fine-tuned on your own images before it can describe them.",
+          "a": false
+        },
+        {
+          "s": "Phi-4-multimodal-instruct is an example of a model that accepts image input.",
+          "a": true
+        }
+      ],
+      "explain": "The playground supports image uploads with text in one message. Pretrained multimodal models describe new images without fine-tuning. Microsoft's Phi-4-multimodal-instruct accepts images as well as text."
+    },
+    {
+      "id": "ai-901.d2b.q005",
+      "lesson": "ai-901.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "You want to try an image-based prompt in the Microsoft Foundry portal. Put the steps in order.",
+      "options": [
+        "Deploy a vision-enabled model from the model catalog",
+        "Open the deployment in the chat playground",
+        "Attach a local image file to the message",
+        "Type your question in the same message and send it",
+        "Review the model's natural-language response"
+      ],
+      "explain": "You need a deployed multimodal model before you can open it in the playground. The image and the text question go together in one multi-part message, and then you check the response."
+    },
+    {
+      "id": "ai-901.d2b.q006",
+      "lesson": "ai-901.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You deployed the base model gpt-4.1-mini with the deployment name \"site-inspector\". Which value should your Python code pass as the model parameter?",
+      "options": [
+        "gpt-4.1-mini",
+        "The name of your Foundry resource",
+        "site-inspector",
+        "The full project endpoint URL"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Calls to Foundry-deployed models use the deployment name you chose, which can differ from the base model name. The resource name and endpoint belong in the client configuration (base_url), not in the model parameter."
+    },
+    {
+      "id": "ai-901.d2b.q007",
+      "lesson": "ai-901.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An insurer wants claims adjusters to upload photos of vehicle damage, receive a short description of visible damage, and then ask follow-up questions such as \"Is the headlight cracked?\" in the same conversation.",
+      "stem": "Which approach best meets the requirement?",
+      "options": [
+        "Azure Content Understanding with the prebuilt-invoice analyzer",
+        "GPT-image-1.5 edits with a mask over the damaged area",
+        "Sora 2 image-to-video generation from the photo",
+        "Vision-enabled chat using a deployed multimodal model"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Conversational questions about an image are what vision-enabled chat does. prebuilt-invoice extracts invoice fields from documents. GPT-image edits change pictures rather than answer questions, and Sora generates video."
+    },
+    {
+      "id": "ai-901.d2b.q008",
+      "lesson": "ai-901.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "For most new image generation projects in Microsoft Foundry, which model family does Microsoft recommend starting with?",
+      "options": [
+        "The GPT-image-1 family, especially GPT-image-1.5",
+        "DALL-E 3",
+        "Phi-4-multimodal-instruct",
+        "Sora 2"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Microsoft recommends GPT-image-1.5 for quality, editing support and enterprise readiness. DALL-E 3 has been retired. Sora generates video, and Phi-4-multimodal-instruct reads images but doesn't generate them."
+    },
+    {
+      "id": "ai-901.d2b.q009",
+      "lesson": "ai-901.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "An internal tool must generate thousands of placeholder thumbnails a day. Low cost and low latency matter more than maximum visual fidelity. Which model should you deploy?",
+      "options": [
+        "Sora 1",
+        "GPT-image-1-mini",
+        "GPT-image-1.5",
+        "gpt-4.1-nano"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "GPT-image-1-mini is the lighter, cost-efficient member of the GPT-image family, made for high-volume work. GPT-image-1.5 targets top fidelity at higher cost. gpt-4.1-nano is a chat model that doesn't output images, and Sora makes video."
+    },
+    {
+      "id": "ai-901.d2b.q010",
+      "lesson": "ai-901.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about image generation in Microsoft Foundry, select Yes if true.",
+      "statements": [
+        {
+          "s": "DALL-E 3 is the recommended model for new image generation deployments.",
+          "a": false
+        },
+        {
+          "s": "FLUX is a family of third-party image generation models you can use in Foundry.",
+          "a": true
+        },
+        {
+          "s": "GPT-image models can edit an existing image as well as create one from text.",
+          "a": true
+        }
+      ],
+      "explain": "DALL-E 3 has been retired, so new work should use a GPT-image model. FLUX from Black Forest Labs is available as a third-party option. GPT-image models support text-to-image, image-to-image and editing."
+    },
+    {
+      "id": "ai-901.d2b.q011",
+      "lesson": "ai-901.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are setting the quality parameter for a GPT-image-1 series deployment. Which TWO of these values are valid? Select TWO.",
+      "options": [
+        "standard",
+        "hd",
+        "high",
+        "low",
+        "ultra"
+      ],
+      "answer": [
+        2,
+        3
+      ],
+      "explain": "The GPT-image-1 series accepts low, medium and high. The values standard and hd belonged to the retired DALL-E 3 model, and ultra isn't a valid value."
+    },
+    {
+      "id": "ai-901.d2b.q012",
+      "lesson": "ai-901.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You need a landscape-orientation banner from GPT-image-1.5. Which size value is supported?",
+      "options": [
+        "512x512",
+        "1792x1024",
+        "1536x1024",
+        "4096x2048"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The GPT-image-1 series supports 1024x1024, 1024x1536 (portrait) and 1536x1024 (landscape). 1792x1024 was a DALL-E 3 size, and 512x512 and 4096x2048 aren't supported for this model."
+    },
+    {
+      "id": "ai-901.d2b.q013",
+      "lesson": "ai-901.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An image generation request fails with error code contentFilter. What is the most likely cause?",
+      "options": [
+        "The deployment's per-minute image quota was exceeded",
+        "The model value doesn't match any deployment name",
+        "The requested size isn't supported by the model",
+        "The prompt or the generated image was flagged by the content moderation system"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "contentFilter means the safety system blocked the prompt or the output image. Exceeding quota gives a 429 rate-limit error, a wrong deployment name gives DeploymentNotFound, and an unsupported parameter gives an invalid payload error."
+    },
+    {
+      "id": "ai-901.d2b.q014",
+      "lesson": "ai-901.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What does text-to-image mean?",
+      "options": [
+        "Generating a new image that matches a written description",
+        "Writing a caption that describes an existing image",
+        "Reading printed text from a photo by using OCR",
+        "Converting written text into spoken audio"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Text-to-image is generative: text goes in, a new image comes out. OCR and captioning go from image to text, and converting text to audio is speech synthesis."
+    },
+    {
+      "id": "ai-901.d2b.q015",
+      "lesson": "ai-901.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Responses API call so that the model returns a generated image.",
+      "code": "response = client.responses.create(\n    model=os.environ[\"MODEL_NAME\"],\n    input=\"A flat illustration of a robot watering a plant\",\n    tools=[{\"type\": \"____\"}],\n)",
+      "options": [
+        "code_interpreter",
+        "image_generation",
+        "input_image",
+        "file_search"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Adding the image_generation tool lets the call produce an image, returned as an image_generation_call output item. input_image is a content type for sending an image in. code_interpreter and file_search are other tools that don't generate images."
+    },
+    {
+      "id": "ai-901.d2b.q016",
+      "lesson": "ai-901.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code that decodes an image returned by a GPT-image model through the Images API.",
+      "code": "result = client.images.generate(\n    model=\"gpt-image-1\",\n    prompt=\"A watercolor lighthouse at dawn\",\n    size=\"1024x1024\",\n)\nimage_bytes = base64.b64decode(result.data[0].____)",
+      "options": [
+        "url",
+        "content",
+        "b64_json",
+        "output_text"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "GPT-image models always return base64 data in b64_json, which you decode to bytes. They don't return a URL. output_text belongs to Responses API text replies, and content isn't the image field."
+    },
+    {
+      "id": "ai-901.d2b.q017",
+      "lesson": "ai-901.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A Python script generates an image with the Responses API and saves it to disk. Put the steps in order.",
+      "options": [
+        "Create an OpenAI client with the Foundry endpoint and credential",
+        "Call responses.create with the prompt and the image_generation tool",
+        "Find the output item whose type is image_generation_call",
+        "Base64-decode that item's result",
+        "Write the decoded bytes to a .png file"
+      ],
+      "explain": "You need a client before calling the model. The image arrives as base64 in the image_generation_call item, so you locate it, decode it, then save the bytes."
+    },
+    {
+      "id": "ai-901.d2b.q018",
+      "lesson": "ai-901.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You want to replace only the sky in a product photo by using the image edits operation. How do you limit the change to the sky?",
+      "options": [
+        "Set the detail parameter to high so the model focuses on the sky",
+        "Pass bounding-box coordinates for the sky in the size parameter",
+        "Set quality to high and n to 2, then pick the better result",
+        "Supply a PNG mask of the same size in which the sky area is fully transparent"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "For edits, a mask PNG matching the image dimensions marks the region to change with fully transparent pixels. detail is a vision-input setting, size sets output dimensions, and quality or n don't restrict the edited area."
+    },
+    {
+      "id": "ai-901.d2b.q019",
+      "lesson": "ai-901.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about generating images in code, select Yes if true.",
+      "statements": [
+        {
+          "s": "GPT-image models return generated images as base64-encoded data.",
+          "a": true
+        },
+        {
+          "s": "Base64 encoding lets binary image data be carried as text inside JSON.",
+          "a": true
+        },
+        {
+          "s": "Image generation in Foundry supports only Microsoft Entra ID authentication, not API keys.",
+          "a": false
+        }
+      ],
+      "explain": "GPT-image output is base64, which represents binary bytes as ASCII text so it fits in JSON. Both API keys and Microsoft Entra ID can authenticate image generation calls."
+    },
+    {
+      "id": "ai-901.d2b.q020",
+      "lesson": "ai-901.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which models provide native video generation directly in Microsoft Foundry?",
+      "options": [
+        "Sora models",
+        "GPT-image models",
+        "GPT-4.1 models",
+        "FLUX models"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Sora 1 and Sora 2 are the native video generation models in Foundry. GPT-image and FLUX generate still images, and GPT-4.1 models read images but don't output video."
+    },
+    {
+      "id": "ai-901.d2b.q021",
+      "lesson": "ai-901.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Your app uses the REST interface to create a Sora 2 video. Put the steps in order.",
+      "options": [
+        "POST to /openai/v1/videos with model, prompt, size and seconds",
+        "Store the video id returned in the response",
+        "Poll GET /openai/v1/videos/{video_id} until the status is completed",
+        "Download the MP4 from /openai/v1/videos/{video_id}/content"
+      ],
+      "explain": "Video generation is an asynchronous job: create it, keep the id, poll its status, and download the content only after it reports completed."
+    },
+    {
+      "id": "ai-901.d2b.q022",
+      "lesson": "ai-901.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE generation modes does Sora 2 support in Microsoft Foundry? Select THREE.",
+      "options": [
+        "Image-to-video",
+        "Text-to-video",
+        "Video-to-video remix",
+        "Video-to-text transcription with diarization",
+        "Audio-to-image"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Sora 2 accepts text, images or an existing video (remix) and can add audio. It doesn't turn audio into images, and transcription with diarization is what Content Understanding or Azure Speech provide."
+    },
+    {
+      "id": "ai-901.d2b.q023",
+      "lesson": "ai-901.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Why does a Sora video app poll a status endpoint instead of receiving the video in the response to its POST request?",
+      "options": [
+        "The POST response always contains the full video as base64, so polling only checks for errors",
+        "Rendering is resource-intensive and runs as an asynchronous job that takes minutes",
+        "Videos are only produced in nightly batch runs",
+        "Sora accepts requests only over a streaming WebSocket connection"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Video generation typically takes one to five minutes, so the POST creates a job and returns an id to poll. It isn't WebSocket-only or an overnight batch, and the POST doesn't contain the finished video."
+    },
+    {
+      "id": "ai-901.d2b.q024",
+      "lesson": "ai-901.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A marketing team has a short promotional clip produced with Sora. The director likes everything except the lighting in the final scene, and wants that changed without generating a completely new video.",
+      "stem": "Which capability should they use?",
+      "options": [
+        "GPT-image-1.5 edits applied to every frame with a mask",
+        "Sora 1 text-to-video with a new prompt",
+        "Sora 2 video-to-video remix",
+        "Content Understanding with prebuilt-videoSearch"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Sora 2 remix makes targeted changes to an existing video instead of regenerating it. A new text-to-video run starts from scratch. Editing every frame as images is impractical and loses motion consistency, and prebuilt-videoSearch analyses video rather than editing it."
+    },
+    {
+      "id": "ai-901.d2b.q025",
+      "lesson": "ai-901.d2.3.05",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the user message content for a Responses API call that includes an image.",
+      "code": "{\"role\": \"user\", \"content\": [\n    {\"type\": \"input_text\", \"text\": \"What is in this image?\"},\n    {\"type\": \"____\", \"image_url\": data_url}\n]}",
+      "options": [
+        "image_url",
+        "image",
+        "input_file",
+        "input_image"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The Responses API uses input_image with image_url as a string. image_url as the type is the Chat Completions format, image isn't a valid type, and input_file is for attaching files such as PDFs."
+    },
+    {
+      "id": "ai-901.d2b.q026",
+      "lesson": "ai-901.d2.3.05",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the line that builds a data URL from a local JPEG that has already been base64-encoded into image_data.",
+      "code": "data_url = f\"data:image/jpeg;____,{image_data}\"",
+      "options": [
+        "base64",
+        "binary",
+        "utf-8",
+        "charset=png"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A data URL has the form data:<mime type>;base64,<data>. The utf-8 step is used when decoding the encoded bytes to a string in Python, not inside the URL, and binary or charset=png aren't valid here."
+    },
+    {
+      "id": "ai-901.d2b.q027",
+      "lesson": "ai-901.d2.3.05",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code to print the model's reply from a Responses API call.",
+      "code": "response = client.responses.create(model=deployment, input=messages)\nprint(response.____)",
+      "options": [
+        "text_result",
+        "output_text",
+        "output_image",
+        "choices[0].message.content"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Responses API results expose the reply text as output_text. choices[0].message.content is how Chat Completions returns text. output_image and text_result aren't properties of the response."
+    },
+    {
+      "id": "ai-901.d2b.q028",
+      "lesson": "ai-901.d2.3.05",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your app must send a photo stored on the user's laptop, dragon-fruit.jpeg, to a vision model through the Responses API. What should the code do?",
+      "options": [
+        "Pass the local path, such as C:\\photos\\dragon-fruit.jpeg, as the image_url",
+        "Upload it to a storage account reachable only through a private endpoint and pass that URL",
+        "Read the file bytes, base64-encode them, and send a data URL in an input_image item",
+        "Run OCR on the photo and send only the extracted text"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Local images are sent inline as base64 data URLs. The service can't read a path on your machine, and it fetches URLs from Microsoft-managed infrastructure, so private-endpoint URLs fail. Sending only OCR text throws away the visual content."
+    },
+    {
+      "id": "ai-901.d2b.q029",
+      "lesson": "ai-901.d2.3.05",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO values can you use for image_url in an input_image item? Select TWO.",
+      "options": [
+        "The image's file name as uploaded to the Foundry project",
+        "A base64 data URL such as data:image/png;base64,...",
+        "A URL to a storage account restricted to a virtual network",
+        "A file path on the developer's computer",
+        "A publicly accessible HTTPS URL of the image"
+      ],
+      "answer": [
+        1,
+        4
+      ],
+      "explain": "The image can be a public URL or base64 data embedded as a data URL. Local paths aren't reachable, VNet-restricted URLs can't be fetched by the service, and a bare file name isn't a valid reference."
+    },
+    {
+      "id": "ai-901.d2b.q030",
+      "lesson": "ai-901.d2.3.05",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about building a vision chat client, select Yes if true.",
+      "statements": [
+        {
+          "s": "A vision-based user message is multi-part, with a text item and an image item.",
+          "a": true
+        },
+        {
+          "s": "Vision chat needs a completely different endpoint type from text chat with the same model.",
+          "a": false
+        },
+        {
+          "s": "The openai Python package can call a model deployed in Microsoft Foundry.",
+          "a": true
+        }
+      ],
+      "explain": "Vision chat uses the same techniques and endpoint as text chat; only the message content changes to include an image part. The OpenAI SDK works against a Foundry deployment by setting base_url and credentials."
+    },
+    {
+      "id": "ai-901.d2b.q031",
+      "lesson": "ai-901.d2.3.05",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A developer deployed gpt-4.1 in Foundry with the deployment name \"chef-vision\". The Python app creates an OpenAI client with base_url set to the resource's /openai/v1/ endpoint and calls client.responses.create(model=\"gpt-4.1\", ...). Every call fails with an error saying the deployment can't be found.",
+      "stem": "What should the developer change?",
+      "options": [
+        "Change base_url to the Content Understanding endpoint",
+        "Add \"detail\": \"high\" to the image item",
+        "Switch to the Chat Completions API",
+        "Set model to \"chef-vision\""
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The model parameter must be the deployment name, which here is chef-vision, not the base model name. The endpoint is correct for this model, Chat Completions would hit the same naming problem, and detail affects image processing, not deployment lookup."
+    },
+    {
+      "id": "ai-901.d2b.q032",
+      "lesson": "ai-901.d2.3.06",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Chat Completions message part that sends an image to Phi-4-multimodal-instruct.",
+      "code": "{\"type\": \"image_url\", \"image_url\": ____}",
+      "options": [
+        "{\"url\": data_url}",
+        "{\"detail\": data_url}",
+        "data_url",
+        "{\"input_image\": data_url}"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "In Chat Completions, image_url is an object containing url (and optionally detail). A bare string is the Responses API style. input_image is a Responses content type, and detail holds low, high or auto, not the image."
+    },
+    {
+      "id": "ai-901.d2b.q033",
+      "lesson": "ai-901.d2.3.06",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which detail setting processes a 512x512 version of the image for faster responses and lower token use?",
+      "options": [
+        "high",
+        "low",
+        "auto",
+        "standard"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "low skips high-res mode and uses a 512x512 version. high adds detailed 512x512 tiles at extra token cost, auto lets the model decide, and standard isn't a detail value."
+    },
+    {
+      "id": "ai-901.d2b.q034",
+      "lesson": "ai-901.d2.3.06",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "An app reads small serial numbers printed on equipment labels in large photos. You want the model to always use high-resolution processing. What should you set?",
+      "options": [
+        "detail to low",
+        "max_tokens to 4096",
+        "detail to high",
+        "detail to auto"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "high forces high-res mode, which examines detailed tiles and helps with fine text. low can miss small text, auto lets the model choose rather than guaranteeing high-res, and max_tokens limits output length, not image resolution."
+    },
+    {
+      "id": "ai-901.d2b.q035",
+      "lesson": "ai-901.d2.3.06",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements correctly describe differences between the Responses API and the Chat Completions API for image prompts? Select TWO.",
+      "options": [
+        "Chat Completions returns text in choices[0].message.content; Responses exposes output_text",
+        "Chat Completions can't accept base64 images, only web URLs",
+        "Chat Completions needs a separate vision endpoint for each model",
+        "The Responses API accepts images only from Azure Blob Storage",
+        "Chat Completions uses an image_url part with an object containing url; Responses uses input_image with a URL string"
+      ],
+      "answer": [
+        0,
+        4
+      ],
+      "explain": "The content-part shape and where you read the reply differ between the two APIs. Both accept web URLs or base64 data URLs, Responses isn't limited to Blob Storage, and there's no separate vision endpoint."
+    },
+    {
+      "id": "ai-901.d2b.q036",
+      "lesson": "ai-901.d2.3.06",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about sending images to Azure OpenAI vision models, select Yes if true.",
+      "statements": [
+        {
+          "s": "If you don't set detail, the default is auto.",
+          "a": true
+        },
+        {
+          "s": "Every frame of an animated GIF is analysed.",
+          "a": false
+        },
+        {
+          "s": "Images in a prompt consume input tokens.",
+          "a": true
+        }
+      ],
+      "explain": "auto is the default detail setting. For GIFs only the first frame is used. Image input is billed as tokens, and high detail uses more of them."
+    },
+    {
+      "id": "ai-901.d2b.q037",
+      "lesson": "ai-901.d2.3.06",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A team deployed Phi-4-multimodal-instruct to describe photos of produce. Their code, copied from a gpt-4.1 sample, calls client.responses.create with input_text and input_image items, but the call is rejected because the model doesn't support that API.",
+      "stem": "What should they do?",
+      "options": [
+        "Send the photo to Content Understanding prebuilt-read instead",
+        "Deploy GPT-image-1-mini and send the same request",
+        "Change the input_image item to an input_file item",
+        "Call chat.completions.create with a user message containing a text part and an image_url part"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "For models without Responses API support, use Chat Completions with text and image_url parts. input_file doesn't change API support, GPT-image models generate images rather than describe them, and prebuilt-read only performs OCR."
+    }
+  ]
+}

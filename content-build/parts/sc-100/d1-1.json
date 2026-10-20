@@ -1,0 +1,1095 @@
+{
+  "exam": "sc-100",
+  "domain": "d1",
+  "lessons": [
+    {
+      "id": "sc-100.d1.1.01",
+      "objective": "d1.1",
+      "seq": 1,
+      "title": "Resiliency strategy: prioritise critical assets",
+      "short": "A resiliency strategy assumes breach and asks: which business-critical assets would hurt most if lost, and how fast must they come back? Identify crown jewels first, then put the strongest protection, monitoring and recovery on them.",
+      "deep": "Security for **business resiliency** means the business keeps running (or recovers fast) even when an attack succeeds. Architects start with the business, not the tools:\n- **Identify business-critical assets**: map key business processes to the IT assets behind them (apps, databases, identity systems, domain controllers, backups).\n- **Rank threats by impact** on those assets: ransomware, data theft/extortion, insider misuse, outages.\n- **Set recovery targets**: recovery time objective (**RTO**, how long you can be down) and recovery point objective (**RPO**, how much data you can lose).\n- **Assume breach** (a Zero Trust principle): plan detection, containment and recovery, not only prevention.\n\nIn Microsoft tooling, **Microsoft Security Exposure Management** has **critical asset management**: predefined classifications (for example domain controllers, privileged roles, sensitive databases, Azure/AWS/GCP resources) plus custom ones, so attack paths and alerts touching crown jewels are flagged. Defender for Cloud **attack path analysis** and **Secure Score** help prioritise the fixes that reduce the most risk.\n\nIdentity systems (Microsoft Entra ID, AD DS) are always critical: whoever controls identity controls everything else.",
+      "terms": [
+        {
+          "t": "RTO",
+          "d": "Recovery time objective: maximum acceptable time a service can be unavailable."
+        },
+        {
+          "t": "RPO",
+          "d": "Recovery point objective: maximum acceptable data loss, measured in time."
+        },
+        {
+          "t": "Critical asset management",
+          "d": "Exposure Management feature that classifies crown-jewel devices, identities and cloud resources."
+        },
+        {
+          "t": "Assume breach",
+          "d": "Zero Trust principle: design as if attackers are already inside, limiting blast radius."
+        }
+      ],
+      "trap": "Exams reward starting from business impact (critical assets, RTO/RPO) rather than buying a tool first or protecting everything equally.",
+      "example": "A bank maps its payments platform to SQL servers, two domain controllers and a Key Vault, tags them as critical in Exposure Management, and gives them the tightest RTO.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Business process",
+          "Critical assets",
+          "Threats & impact",
+          "RTO / RPO",
+          "Controls"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.1.02",
+      "objective": "d1.1",
+      "seq": 2,
+      "title": "Secure backup: soft delete, immutability, MUA",
+      "short": "Ransomware operators delete backups first. Azure Backup defends vaults with soft delete (default 14 days, up to 180), immutable vaults (lockable, irreversible) and multi-user authorization (MUA) through a Resource Guard owned by a separate security admin.",
+      "deep": "Backups only help if attackers cannot destroy them. Azure Backup stores data in **Recovery Services vaults** or **Backup vaults** and adds layered protection:\n- **Soft delete**: deleted backup data stays recoverable. Default retention is **14 days** (no extra cost), configurable **14 to 180 days**. Under **secure by default** it is always on and cannot be disabled in supported regions.\n- **Immutable vault**: blocks operations that could lose recovery points (deleting recovery points before expiry, reducing retention). States: *Disabled*, *Enabled* (can be turned off), *Enabled and locked* (**irreversible**, WORM).\n- **Multi-user authorization (MUA)** with **Resource Guard**: critical operations (disable soft delete, remove MUA, reduce protection, disable immutability) need permission on a separate Resource Guard. The **security admin** owns it; the backup admin must not hold Contributor, **Backup MUA Admin** or **Backup MUA Operator** on it. The security admin grants **Backup MUA Operator** temporarily, ideally via **PIM**. Putting the Resource Guard in a **different tenant** gives maximum isolation.\n- Encryption with customer-managed keys and private endpoints add confidentiality.",
+      "terms": [
+        {
+          "t": "Soft delete",
+          "d": "Keeps deleted backup data recoverable for 14-180 days (default 14)."
+        },
+        {
+          "t": "Immutable vault",
+          "d": "Vault setting that blocks deleting recovery points or reducing retention; locking is irreversible."
+        },
+        {
+          "t": "Resource Guard",
+          "d": "Separate Azure resource that gates critical vault operations for multi-user authorization."
+        },
+        {
+          "t": "Backup MUA Operator",
+          "d": "Role on a Resource Guard allowing only protected critical operations, granted temporarily."
+        }
+      ],
+      "trap": "Immutability can be enabled and later disabled; only 'Enabled and locked' is irreversible. And MUA fails if the backup admin also has Contributor on the Resource Guard.",
+      "example": "Contoso places the Resource Guard in a separate security tenant, so a compromised backup admin cannot disable soft delete on the production vault.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Resource Guard (MUA)",
+          "Immutable vault (locked)",
+          "Soft delete 14-180 days",
+          "Encrypted vault storage"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.1.03",
+      "objective": "d1.1",
+      "seq": 3,
+      "title": "BCDR for hybrid and multicloud",
+      "short": "BCDR combines Azure Backup (keep data recoverable) with Azure Site Recovery (keep apps running by replicating and failing over). Both reach on-premises and other clouds, and recovery must be rehearsed with test failovers and restore drills.",
+      "deep": "**Business continuity and disaster recovery (BCDR)** has two halves:\n- **Azure Backup** keeps **data** safe and restorable. It protects Azure VMs, SQL/SAP in VMs, Azure Files, blobs, disks and more. For on-premises, the **MARS agent** backs up files/folders/system state, and **Microsoft Azure Backup Server (MABS)** or System Center DPM protects workloads such as Hyper-V, VMware and SQL Server, sending copies to Azure.\n- **Azure Site Recovery (ASR)** keeps **workloads running**. It replicates Azure VMs region-to-region, and on-premises VMware VMs, Hyper-V VMs and physical servers (plus AWS Windows instances) to Azure. **Recovery plans** sequence multi-tier failover and can run Automation runbooks. **Test failover** runs a DR drill without disrupting replication.\n\nDesign points the exam likes:\n- Match tools to **RTO/RPO**: backup alone means longer RTO; replication gives low RTO but replicates corruption too, so you still need point-in-time backups.\n- Keep backups **isolated**: separate subscription/credentials, immutability, MUA.\n- Protect and back up **identity** (AD DS domain controllers) and recovery documentation.\n- **Test restores regularly**; an untested backup is a hope, not a plan.",
+      "terms": [
+        {
+          "t": "Azure Site Recovery",
+          "d": "Replication and failover service for Azure, on-premises and AWS Windows machines."
+        },
+        {
+          "t": "MARS agent",
+          "d": "Microsoft Azure Recovery Services agent: backs up files, folders and system state to Azure."
+        },
+        {
+          "t": "MABS",
+          "d": "Microsoft Azure Backup Server: on-premises server that protects workloads like Hyper-V, VMware and SQL."
+        },
+        {
+          "t": "Test failover",
+          "d": "DR drill in an isolated network that does not affect ongoing replication."
+        }
+      ],
+      "trap": "Replication (ASR) is not a backup: ransomware-encrypted data replicates too. Questions about recovering from encryption want point-in-time, immutable backups.",
+      "example": "A retailer replicates its on-premises VMware order system to Azure with Site Recovery for a 1-hour RTO, and keeps daily immutable Azure Backup copies to roll back ransomware.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Need",
+          "Azure Backup",
+          "Site Recovery"
+        ],
+        "rows": [
+          [
+            "Goal",
+            "Recover data",
+            "Keep apps running"
+          ],
+          [
+            "Ransomware rollback",
+            "Yes (point-in-time)",
+            "Limited"
+          ],
+          [
+            "Low RTO",
+            "Hours",
+            "Minutes"
+          ],
+          [
+            "Drill",
+            "Restore test",
+            "Test failover"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.1.04",
+      "objective": "d1.1",
+      "seq": 4,
+      "title": "Ransomware protection: Microsoft's three steps",
+      "short": "Microsoft's ransomware guidance has three prioritised steps: 1) prepare a recovery plan so you never need to pay, 2) limit the scope of damage by protecting privileged roles, 3) make it hard to get in. Steps 1 and 2 come first.",
+      "deep": "**Human-operated ransomware** is an active, hands-on-keyboard attack: criminals get in, steal credentials, move laterally, escalate privilege, often **exfiltrate data for extortion**, then encrypt business-critical systems. Commodity ransomware is automated and usually just needs malware cleanup.\n\nMicrosoft's guidance orders work by **priority** (not technical dependency):\n1. **Prepare your ransomware recovery plan**: remove the attacker's leverage. Back up critical systems including AD DS; protect backups with MFA/PIN for changes, **immutable** or offline copies; protect recovery documents; test BC/DR so mean time to recover meets goals; move user data to OneDrive/SharePoint for versioning; use Controlled folder access.\n2. **Limit the scope of damage**: protect privileged roles so one compromise cannot reach everything (secure admin workstations, randomised local passwords, privilege escalation mitigations, Conditional Access for admin sessions).\n3. **Make it hard to get in**: harden entry points (remote access, email and collaboration, endpoints, accounts) with patching, MFA, Defender for Office 365, **attack surface reduction rules** (audit first, then block), Azure Bastion, Entra application proxy.\n\nStep 3 is long-running and must not delay Steps 1 and 2.",
+      "terms": [
+        {
+          "t": "Human-operated ransomware",
+          "d": "Hands-on attack using credential theft and lateral movement before encrypting critical data."
+        },
+        {
+          "t": "Double extortion",
+          "d": "Attackers both encrypt and steal data, threatening to leak it."
+        },
+        {
+          "t": "ASR rules",
+          "d": "Attack surface reduction rules in Defender for Endpoint that block risky behaviours like Office child processes."
+        }
+      ],
+      "trap": "Many candidates pick 'block entry points' as the first priority; Microsoft puts recovery readiness first and privileged access second.",
+      "example": "With limited budget, a CISO funds immutable backups and restore drills this month, then admin workstations, while the email-hardening project continues in parallel.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "1 Recovery plan",
+          "2 Limit damage",
+          "3 Hard to get in"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.1.05",
+      "objective": "d1.1",
+      "seq": 5,
+      "title": "Privileged access and the enterprise access model",
+      "short": "Ransomware spreads through privileged accounts. The enterprise access model replaces the old AD tier model with a control plane, management plane, data/workload plane, user access and app access, and protects privileged pathways with PAWs, PIM and Conditional Access.",
+      "deep": "Limiting ransomware damage is mostly about **privileged access**. Microsoft's **enterprise access model** organises access by function; each higher plane controls those below, so lower planes must never control higher ones:\n- **Control plane**: centralised identity and access control (Entra ID, AD DS, PKI). Expands old **Tier 0**.\n- **Management plane**: enterprise-wide IT management of workloads and infrastructure.\n- **Data/workload plane**: business apps and data. (Old **Tier 1** split into management + data/workload.)\n- **User access** and **app access**: user and API pathways (old **Tier 2** split).\n\nKey controls for the **privileged access strategy**:\n- **Privileged access workstations (PAW)** / secure devices for admins.\n- **Privileged Identity Management (PIM)** for just-in-time, approval-based role activation; no standing Global Administrator.\n- **Conditional Access** with phishing-resistant MFA and compliant devices for admin portals; **protected actions** for sensitive changes.\n- **Windows LAPS** to randomise local admin passwords and stop lateral traversal.\n- **Emergency access (break-glass) accounts**, excluded carefully and monitored.\n- Rapid response: Defender XDR detection, device isolation.",
+      "terms": [
+        {
+          "t": "Control plane",
+          "d": "Identity and access control systems; compromise means control of everything below."
+        },
+        {
+          "t": "PAW",
+          "d": "Privileged access workstation: hardened device used only for admin tasks."
+        },
+        {
+          "t": "Windows LAPS",
+          "d": "Local Administrator Password Solution: unique, rotated local admin passwords per device."
+        },
+        {
+          "t": "PIM",
+          "d": "Just-in-time, time-bound, approval-based activation of privileged roles."
+        }
+      ],
+      "trap": "Domain controllers and Entra ID belong to the control plane, not the management plane; and a shared local admin password is the classic lateral-movement enabler.",
+      "example": "After an audit finds 40 permanent Global Administrators, the architect moves them to PIM eligible assignments activated only from PAWs that pass a Conditional Access compliant-device check.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Control plane",
+          "Management plane",
+          "Data/workload plane",
+          "User & app access"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.1.06",
+      "objective": "d1.1",
+      "seq": 6,
+      "title": "Evaluating solutions for security updates",
+      "short": "Unpatched systems are a top entry point. Pick the update tool by asset: Azure Update Manager for Windows/Linux servers in Azure and via Azure Arc anywhere, Windows Autopatch and Intune for client devices and Microsoft 365 Apps, and Defender Vulnerability Management to prioritise.",
+      "deep": "A good update design covers **every asset type** with one view of compliance:\n- **Azure Update Manager**: native service for Windows and Linux **servers** in Azure and, through **Azure Arc**, on-premises, VMware, SCVMM and other clouds. No dependency on Log Analytics or Azure Automation. **Periodic assessment** checks every 24 hours; schedules run in customer-defined **maintenance windows**; **hotpatching** applies critical updates to supported Windows Server VMs without a reboot. Azure Policy can enforce assessment at scale; Azure Resource Graph (`patchassessmentresources`) reports results.\n- **Windows Autopatch**: cloud service that automates Windows quality and feature updates, drivers/firmware, **Microsoft 365 Apps, Edge and Teams** for client devices, using **Autopatch groups** and sequential deployment rings, managed in the **Intune** admin center.\n- **Microsoft Intune** update rings and policies for broader device control.\n- **Microsoft Defender Vulnerability Management** and **Defender for Cloud** (for example 'System updates should be installed' recommendations) to **prioritise** by exposure and exploitability.\n- Remove or isolate **unsupported/legacy systems** you cannot patch.\n\nPatch internet-facing VPNs and appliances fastest: ransomware crews exploit known vulnerabilities there.",
+      "terms": [
+        {
+          "t": "Azure Update Manager",
+          "d": "Unified update management for Azure VMs and Arc-enabled servers."
+        },
+        {
+          "t": "Azure Arc",
+          "d": "Projects on-premises and multicloud servers into Azure management."
+        },
+        {
+          "t": "Windows Autopatch",
+          "d": "Automated update service for Windows clients, M365 Apps, Edge and Teams via Intune."
+        },
+        {
+          "t": "Hotpatch",
+          "d": "Applies security updates without restarting the machine."
+        }
+      ],
+      "trap": "Autopatch is for client endpoints, not Linux servers; and Update Manager reaches AWS/GCP or on-premises servers only once they are Azure Arc-enabled.",
+      "example": "A firm patches 300 Azure VMs and 200 on-premises Linux servers (Arc-enabled) with Update Manager maintenance windows, while 5,000 laptops get Windows Autopatch.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Asset",
+          "Tool"
+        ],
+        "rows": [
+          [
+            "Azure VMs",
+            "Update Manager"
+          ],
+          [
+            "On-prem/AWS servers",
+            "Arc + Update Manager"
+          ],
+          [
+            "Windows clients",
+            "Windows Autopatch"
+          ],
+          [
+            "Prioritisation",
+            "Defender Vuln Mgmt"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.2.01",
+      "objective": "d1.2",
+      "seq": 1,
+      "title": "MCRA: the reference architectures",
+      "short": "The Microsoft Cybersecurity Reference Architectures (MCRA) are diagrams showing how Microsoft security capabilities fit together across a hybrid, multicloud estate, mapped to Zero Trust, SecOps and attack-chain coverage. Architects use them as a target-state template and gap-analysis reference.",
+      "deep": "The **MCRA** is a set of technical reference architectures (a slide deck) for end-to-end security based on **Zero Trust**. It covers the 'hybrid of everything': legacy IT, multicloud, IoT, operational technology (OT) and AI. It is part of Microsoft's **Security Adoption Framework (SAF)**.\n\nWhat's inside:\n- **Microsoft cybersecurity capabilities** across identity, endpoints, apps, data, infrastructure and SecOps.\n- **Zero Trust user access**, **security operations (SOC)**, **OT**, **multicloud and cross-platform** views.\n- **Attack chain coverage**: maps capabilities (Defender for Office 365, Defender for Endpoint, Defender for Identity, Defender for Cloud Apps, Entra ID Protection) to stages of an attack so gaps are visible.\n- Infrastructure and development security, security organisational functions, antipatterns and best practices.\n\nHow architects use it: as a **starting template** for a target-state architecture, to **compare** current tools against recommendations, to find **integration points** with third-party tools, and to explain capabilities to stakeholders. MCRA describes *what capabilities fit where*; the **MCSB** (next lesson) describes *what controls to configure*.",
+      "terms": [
+        {
+          "t": "MCRA",
+          "d": "Microsoft Cybersecurity Reference Architectures: capability diagrams for end-to-end Zero Trust security."
+        },
+        {
+          "t": "Attack chain coverage",
+          "d": "MCRA view mapping defensive capabilities to each attack stage."
+        },
+        {
+          "t": "SAF",
+          "d": "Security Adoption Framework: Microsoft's guidance set that includes the MCRA."
+        }
+      ],
+      "trap": "If the scenario asks for prescriptive, auditable control requirements, pick MCSB; if it asks for a capability map or target-state architecture template, pick MCRA.",
+      "example": "An architect overlays her company's current tools on the MCRA capabilities diagram and finds no coverage for OT networks or identity threat detection.",
+      "diagram": null
+    },
+    {
+      "id": "sc-100.d1.2.02",
+      "objective": "d1.2",
+      "seq": 2,
+      "title": "MCSB: controls and how to apply them",
+      "short": "The Microsoft cloud security benchmark (MCSB) is a set of prescriptive security controls grouped into domains such as NS, IM, PA, DP, LT, IR, PV, ES, BR and DS. It is Defender for Cloud's default standard for Azure, AWS and GCP.",
+      "deep": "The **Microsoft cloud security benchmark (MCSB)** gives concrete, cloud-agnostic security controls, each with Azure (and AWS/GCP) implementation guidance and mappings to frameworks such as **CIS**, **NIST SP 800-53** and **PCI DSS**. Control IDs combine a domain code and number, for example **NS-1** or **PA-2**.\n\nControl domains include:\n- **NS** Network security, **IM** Identity management, **PA** Privileged access\n- **DP** Data protection, **AM** Asset management\n- **LT** Logging and threat detection, **IR** Incident response\n- **PV** Posture and vulnerability management, **ES** Endpoint security\n- **BR** Backup and recovery, **DS** DevOps security\n- **AI** Artificial intelligence security (new in MCSB v2, in preview)\n\nHow it's used: **Microsoft Defender for Cloud** enables MCSB by default (Azure, AWS and GCP connectors), and its recommendations feed **Secure Score** and the **regulatory compliance dashboard**. Extra standards (ISO 27001, PCI DSS, NIST) can be assigned alongside. Mappings show a feature *helps* meet a requirement; they are not proof of full compliance.\n\nArchitects use MCSB to set the **security baseline** for landing zones and workloads.",
+      "terms": [
+        {
+          "t": "MCSB",
+          "d": "Microsoft cloud security benchmark: prescriptive, multicloud security control set."
+        },
+        {
+          "t": "Regulatory compliance dashboard",
+          "d": "Defender for Cloud view showing control status for assigned standards."
+        },
+        {
+          "t": "Secure Score",
+          "d": "Defender for Cloud posture measure driven by MCSB recommendations."
+        }
+      ],
+      "trap": "MCSB is the default initiative in Defender for Cloud and covers AWS and GCP, not just Azure; candidates wrongly pick CIS or NIST as the default.",
+      "example": "A company onboards its AWS accounts to Defender for Cloud and immediately sees MCSB recommendations for S3 encryption next to its Azure findings.",
+      "diagram": null
+    },
+    {
+      "id": "sc-100.d1.2.03",
+      "objective": "d1.2",
+      "seq": 3,
+      "title": "Insider, external and supply chain attacks",
+      "short": "Design separately for three attacker types: external attackers (phishing, exploits; use Defender XDR and Zero Trust), insiders (Purview Insider Risk Management, least privilege, DLP) and supply chain (vendor access, dependencies, SBOM, code scanning, signed artifacts).",
+      "deep": "**External attacks** come through phishing, credential attacks and exposed services. Controls: phishing-resistant MFA and Conditional Access, Defender for Office 365, Defender for Endpoint, **Microsoft Defender XDR** for correlated detection, Exposure Management to close attack paths.\n\n**Insider risk** comes from trusted people misusing access, maliciously or by accident (data leaks by departing employees, careless sharing). Controls:\n- **Microsoft Purview Insider Risk Management**: policy templates such as *data theft by departing users*, using HR connectors and activity signals; pseudonymised by default for privacy.\n- **Communication Compliance**, **Purview DLP**, sensitivity labels.\n- Least privilege, PIM, **access reviews**, separation of duties.\n\n**Supply chain attacks** compromise a trusted supplier: a software update, open-source package, build pipeline, or a managed service provider's privileged access. Controls:\n- Inventory dependencies with a **software bill of materials (SBOM)**; scan with **Dependabot** / GitHub Advanced Security and Defender for Cloud DevOps security.\n- Secure the pipeline: protected branches, least-privilege service connections, **workload identity federation** instead of secrets, signed artifacts.\n- Limit and monitor **third-party/partner access** (GDAP for partners, B2B with Conditional Access, access reviews).",
+      "terms": [
+        {
+          "t": "Insider Risk Management",
+          "d": "Purview solution that correlates user activity signals to detect risky insider behaviour."
+        },
+        {
+          "t": "Supply chain attack",
+          "d": "Compromise of a trusted vendor, component or pipeline to reach downstream customers."
+        },
+        {
+          "t": "SBOM",
+          "d": "Software bill of materials: inventory of components in a software build."
+        },
+        {
+          "t": "GDAP",
+          "d": "Granular delegated admin privileges: time-bound, least-privilege partner access to a tenant."
+        }
+      ],
+      "trap": "Insider scenarios want Purview Insider Risk Management (not Entra ID Protection, which scores sign-in/user compromise risk), and supply chain scenarios want dependency/pipeline controls, not perimeter firewalls.",
+      "example": "After a breach at a managed service provider, a firm replaces the partner's standing Global Admin rights with GDAP roles that expire after 90 days.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Threat",
+          "Key controls"
+        ],
+        "rows": [
+          [
+            "External",
+            "MFA, Defender XDR"
+          ],
+          [
+            "Insider",
+            "Purview IRM, DLP"
+          ],
+          [
+            "Supply chain",
+            "SBOM, pipeline security"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.2.04",
+      "objective": "d1.2",
+      "seq": 4,
+      "title": "AI security in the MCSB",
+      "short": "MCSB v2 adds an Artificial Intelligence Security (AI) domain with seven controls across three pillars: AI platform security, AI application security, and monitor and respond. Controls include approved models, multi-layered content filtering, safety meta-prompts, least-privilege agents, human-in-the-loop, monitoring and AI red teaming.",
+      "deep": "The MCSB **AI domain** groups controls into three pillars:\n- **AI platform security**: protect models, training data and infrastructure from theft and tampering.\n- **AI application security**: protect prompts, orchestration and plugins from prompt injection and data leakage.\n- **Monitor and respond**: detect misuse and respond to incidents.\n\nThe seven controls:\n- **AI-1 Ensure use of approved models**: only models that passed a formal verification and approval process reach production.\n- **AI-2 Implement multi-layered content filtering**: validate input, intermediate processing and output (for example Azure AI Content Safety, **Prompt Shields**).\n- **AI-3 Adopt safety meta-prompts**: system instructions that steer behaviour and resist jailbreaks.\n- **AI-4 Apply least privilege for agent functions**: each agent tool/plugin gets minimum permissions (managed identities, scoped RBAC).\n- **AI-5 Ensure human-in-the-loop**: humans approve critical actions, especially external or sensitive ones.\n- **AI-6 Establish monitoring and detection**: watch for jailbreaks, prompt injection, anomalies and exfiltration (Defender for Cloud **threat protection for AI services**, alerts flowing to Defender XDR).\n- **AI-7 Perform continuous AI red teaming**: adversarial testing with tools such as **PyRIT** and the AI Red Teaming Agent.",
+      "terms": [
+        {
+          "t": "Prompt injection",
+          "d": "Attack that hides instructions in input or data to override a model's intended behaviour."
+        },
+        {
+          "t": "Safety meta-prompt",
+          "d": "System-level prompt that sets rules and guards for model behaviour."
+        },
+        {
+          "t": "Human-in-the-loop",
+          "d": "A person must approve high-impact actions an AI system proposes."
+        },
+        {
+          "t": "PyRIT",
+          "d": "Python Risk Identification Tool: open-source framework for AI red teaming."
+        }
+      ],
+      "trap": "Content filtering alone is not enough: the exam expects layers (filtering plus meta-prompts plus least-privilege agents plus human approval) and continuous red teaming, not a one-off test.",
+      "example": "An agent that can issue refunds gets a managed identity scoped to one API, Prompt Shields on input, and a rule that refunds over $500 need human approval.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Monitor & respond (AI-6, AI-7)",
+          "AI application (AI-2..AI-5)",
+          "AI platform (AI-1)"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.2.05",
+      "objective": "d1.2",
+      "seq": 5,
+      "title": "Zero Trust adoption framework and RaMP",
+      "short": "Zero Trust means verify explicitly, use least privilege access, and assume breach. The Zero Trust adoption framework organises work into five business scenarios moving through a lifecycle (define strategy, plan, ready, adopt, govern, manage); RaMP gives a fast-track checklist for the highest-value initiatives.",
+      "deep": "**Zero Trust principles**: **verify explicitly** (authenticate and authorise on all signals: identity, device, location, risk), **use least privilege access** (JIT/JEA, risk-based policies, data protection), **assume breach** (segment, encrypt end to end, detect and respond).\n\nThe **Zero Trust adoption framework** gives business leaders and architects a business-led plan. **Business scenarios**:\n1. Rapidly modernize your security posture (usually the starting point)\n2. Secure remote and hybrid work\n3. Identify and protect sensitive business data\n4. Prevent or reduce business damage from a breach\n5. Meet regulatory and compliance requirements\n\nEach scenario moves through the **adoption lifecycle**: **Define strategy** (business case) > **Plan** > **Ready** > **Adopt** (implement incrementally) > **Govern** (track and measure) > **Manage** (monitor and mature). Technology **pillars**: identities, endpoints, data, apps, infrastructure, network, and SecOps.\n\nThe **Rapid Modernization Plan (RaMP)** is a prioritised, checklist-style plan for quick wins, with initiatives such as *explicitly validate trust for all access requests* (user access and productivity), *ransomware recovery readiness*, and *data protection* (data, compliance and governance).",
+      "terms": [
+        {
+          "t": "Verify explicitly",
+          "d": "Always authenticate and authorise using all available signals."
+        },
+        {
+          "t": "Adoption lifecycle",
+          "d": "Define strategy, Plan, Ready, Adopt, Govern, Manage."
+        },
+        {
+          "t": "RaMP",
+          "d": "Rapid Modernization Plan: prioritised Zero Trust checklists for fast risk reduction."
+        }
+      ],
+      "trap": "Business scenario names are tested: 'Prevent or reduce business damage from a breach' (not 'Prevent all breaches'). And 'Define strategy' (business case) comes before Plan.",
+      "example": "To win board funding, the CISO uses the 'Secure remote and hybrid work' scenario's business case in Define strategy, then plans quick wins from the RaMP user-access checklist.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Define strategy",
+          "Plan",
+          "Ready",
+          "Adopt",
+          "Govern",
+          "Manage"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.3.01",
+      "objective": "d1.3",
+      "seq": 1,
+      "title": "Strategy for secure AI adoption",
+      "short": "CAF's AI adoption guidance pairs strategy, plan, ready, govern, secure and manage. Securing AI means discovering AI risks (threat modelling plus MITRE ATLAS and OWASP), protecting AI resources and data (inventory, managed identities, private networking, Purview), and detecting threats (Defender for Cloud).",
+      "deep": "Secure AI adoption starts with **governance**: an **AI Center of Excellence** sets **Responsible AI** policies and approved tools, and users get sanctioned AI tools plus training so they don't turn to shadow AI.\n\nThe CAF AI **Secure** guidance has three steps:\n- **Discover AI security risks**: extend existing threat modelling (for example STRIDE) with **MITRE ATLAS** and **OWASP** generative AI risks; assess data risk with **Purview Insider Risk Management**; test for prompt injection, data leakage and model inversion; red team; reassess periodically.\n- **Protect AI resources and data**: inventory AI assets (Azure Resource Graph, **Defender for Cloud AI security posture management**, which needs **Defender CSPM** and covers Azure OpenAI, Azure AI Foundry, Azure ML, Amazon Bedrock, Google Vertex AI); use **managed identities** and private networking/**Private Link**; classify data with **Purview** and prevent leakage with **Purview DLP**; protect model artifacts.\n- **Detect AI security threats**: AI posture recommendations and attack paths, **threat protection for AI services** (alerts for jailbreak, data leakage, credential theft), AI-specific incident response plans.\n\nFor discovering unsanctioned AI apps, **Defender for Cloud Apps** catalogues generative AI apps; **Purview DSPM for AI** shows sensitive data in prompts. Agents get identities through **Microsoft Entra Agent ID**.",
+      "terms": [
+        {
+          "t": "MITRE ATLAS",
+          "d": "Knowledge base of adversary tactics and techniques against AI systems."
+        },
+        {
+          "t": "AI security posture management",
+          "d": "Defender CSPM capability that inventories AI workloads (AI BOM) and finds AI misconfigurations and attack paths."
+        },
+        {
+          "t": "Shadow AI",
+          "d": "Use of unsanctioned AI apps by employees, often leaking data."
+        },
+        {
+          "t": "AI Center of Excellence",
+          "d": "Central team that sets AI standards, Responsible AI policy and guardrails."
+        }
+      ],
+      "trap": "AI posture management needs Defender CSPM, while runtime alerts for jailbreaks come from the separate Defender for AI Services (threat protection) plan.",
+      "example": "A bank blocks unsanctioned chatbots through Defender for Cloud Apps, offers Microsoft 365 Copilot instead, and applies Purview DLP to stop card numbers being pasted into prompts.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Govern (AI CoE)",
+          "Discover risks",
+          "Protect resources",
+          "Detect threats"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.3.02",
+      "objective": "d1.3",
+      "seq": 2,
+      "title": "CAF security and governance strategy",
+      "short": "The Cloud Adoption Framework (CAF) gives the lifecycle for cloud adoption: Strategy, Plan, Ready, Adopt, Govern, Secure and Manage. The Secure methodology spans every phase; the Govern methodology defines cloud policies, enforces them and monitors compliance.",
+      "deep": "The **Microsoft Cloud Adoption Framework for Azure (CAF)** guides the whole cloud journey. Methodologies: **Strategy**, **Plan**, **Ready** (landing zones), **Adopt** (migrate/innovate), **Govern**, **Secure**, **Manage**.\n\n**CAF Secure** applies end to end, not as a late add-on. Its cloud security checklist walks through: understand security teams and roles; integrate security into the adoption strategy; plan secure adoption (including landing zones); ready, adopt, govern and manage the estate securely. Themes: **security posture modernization** (prioritise by measurable risk; automate with policy, IaC, Secure Score), **incident preparedness and response**, the **CIA triad** (confidentiality, integrity, availability) and **posture sustainment** (measure, improve, detect drift). It tells you to align with the **Zero Trust adoption framework**.\n\n**CAF Govern**: build a governance team, **assess cloud risks**, **document cloud governance policies**, **enforce** them (prefer automated enforcement: **Azure Policy**, management groups, RBAC), and **monitor** compliance. Security roles in CAF include security architecture, SecOps, GRC, and policy/education.\n\nWAF (next lesson) is the workload-level counterpart; CAF is estate- and organisation-level.",
+      "terms": [
+        {
+          "t": "CAF",
+          "d": "Cloud Adoption Framework: organisation-level guidance from strategy to operations."
+        },
+        {
+          "t": "CIA triad",
+          "d": "Confidentiality, integrity, availability: the core model of information protection."
+        },
+        {
+          "t": "Posture sustainment",
+          "d": "Ongoing cycle of measuring, improving and validating security controls."
+        }
+      ],
+      "trap": "CAF is estate/organisation scope and WAF is workload scope; exam options swap them. Also, governance should be enforced automatically (Azure Policy), not only documented.",
+      "example": "During CAF Plan, a manufacturer's GRC team documents a 'no public storage' policy, and during Ready the platform team enforces it with Azure Policy at the landing zones management group.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Strategy",
+          "Plan",
+          "Ready",
+          "Adopt",
+          "Govern / Manage"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.3.03",
+      "objective": "d1.3",
+      "seq": 3,
+      "title": "WAF Security pillar",
+      "short": "The Azure Well-Architected Framework (WAF) has five pillars: Reliability, Security, Cost Optimization, Operational Excellence and Performance Efficiency. Its Security pillar gives design principles and a checklist SE:01 to SE:12, from a security baseline to incident response.",
+      "deep": "The **Azure Well-Architected Framework (WAF)** helps teams design individual **workloads** well. Five pillars: **Reliability**, **Security**, **Cost Optimization**, **Operational Excellence**, **Performance Efficiency**. Architects must balance **trade-offs** between pillars (for example extra encryption or inspection can add cost and latency).\n\n**Security design principles**: plan your security readiness; design to protect **confidentiality**; design to protect **integrity**; design to protect **availability**; sustain and evolve your security posture.\n\n**Security checklist**:\n- **SE:01** Establish a security baseline\n- **SE:02** Secure development lifecycle (SDL)\n- **SE:03** Classify and label data\n- **SE:04** Intentional segmentation and perimeters\n- **SE:05** Strict identity and access management\n- **SE:06** Isolate, filter and control network traffic\n- **SE:07** Encrypt data with modern methods\n- **SE:08** Harden all workload components\n- **SE:09** Protect application secrets\n- **SE:10** Holistic monitoring strategy\n- **SE:11** Comprehensive testing regimen\n- **SE:12** Define and test incident response procedures\n\nTools: the **Azure Well-Architected Review** (assessment), **Azure Advisor** recommendations, and service guides that apply the pillars to specific Azure services.",
+      "terms": [
+        {
+          "t": "WAF",
+          "d": "Azure Well-Architected Framework: five-pillar guidance for workload design."
+        },
+        {
+          "t": "Trade-off",
+          "d": "Improving one pillar at a cost to another, documented as a design decision."
+        },
+        {
+          "t": "Well-Architected Review",
+          "d": "Self-assessment that scores a workload against the pillars."
+        }
+      ],
+      "trap": "Don't confuse the WAF Security pillar's 'SE' checklist with MCSB control IDs (NS-1, IM-1); and WAF here is the Well-Architected Framework, not Web Application Firewall.",
+      "example": "A team runs the Well-Architected Review on its payments API, scores low on SE:09, and moves connection strings from app settings into Key Vault referenced by managed identity.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Framework",
+          "Scope",
+          "Use for"
+        ],
+        "rows": [
+          [
+            "CAF",
+            "Estate / org",
+            "Adoption, governance"
+          ],
+          [
+            "WAF",
+            "Workload",
+            "Design quality"
+          ],
+          [
+            "MCSB",
+            "Controls",
+            "Baseline, compliance"
+          ],
+          [
+            "MCRA",
+            "Capabilities",
+            "Target architecture"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.3.04",
+      "objective": "d1.3",
+      "seq": 4,
+      "title": "Recommending security and governance solutions",
+      "short": "CAF and WAF guidance maps to concrete Azure services: management groups and Azure Policy for guardrails, Azure RBAC and PIM for access, Defender for Cloud for posture and compliance, Azure Advisor and the Well-Architected Review for workload recommendations, and Resource Graph for inventory.",
+      "deep": "Turning frameworks into solutions:\n- **Azure Policy**: evaluates resources against rules. Common effects: **deny** (block non-compliant create/update), **audit** (log non-compliance), **modify** (add or change properties such as tags), **deployIfNotExists** (deploy a related resource, such as diagnostic settings; needs a managed identity and `roleDefinitionIds`), **auditIfNotExists**. Group policies into **initiatives** and assign at **management group** scope so every subscription inherits them. **Remediation tasks** fix existing resources for modify/DINE.\n- **Management groups**: hierarchy for inheriting policy and RBAC.\n- **Azure RBAC** with least privilege plus **PIM** for privileged roles; **resource locks** against accidental deletion.\n- **Microsoft Defender for Cloud**: **Foundational CSPM** (free: MCSB recommendations, Secure Score), **Defender CSPM** (attack path analysis, cloud security explorer, agentless scanning), workload protection plans (servers, storage, SQL, containers, AI).\n- **Azure Advisor** and the **Well-Architected Review** for workload-level recommendations.\n- **Azure Resource Graph** to query inventory and compliance at scale.\n- **Cost Management** budgets and tagging support governance too.",
+      "terms": [
+        {
+          "t": "Azure Policy initiative",
+          "d": "A set of policy definitions assigned together (e.g. MCSB)."
+        },
+        {
+          "t": "deployIfNotExists",
+          "d": "Policy effect that deploys a related resource when missing, via a managed identity."
+        },
+        {
+          "t": "Defender CSPM",
+          "d": "Paid posture plan adding attack paths, security explorer, agentless scanning."
+        }
+      ],
+      "trap": "Azure Policy controls resource properties (what can be deployed), RBAC controls who can act; exam scenarios mixing them often want both. Deny doesn't fix existing resources; remediation needs modify or deployIfNotExists.",
+      "example": "To force diagnostic logs on every Key Vault, the architect assigns a deployIfNotExists policy at the intermediate root and runs a remediation task for existing vaults.",
+      "diagram": null
+    },
+    {
+      "id": "sc-100.d1.3.05",
+      "objective": "d1.3",
+      "seq": 5,
+      "title": "Azure landing zones for security and governance",
+      "short": "Azure landing zones are a pre-designed, policy-driven environment: a management group hierarchy (intermediate root, Platform, Landing zones with Corp and Online, Sandbox, Decommissioned), platform subscriptions for shared services, and application landing zones for workloads, delivered via subscription vending.",
+      "deep": "An **Azure landing zone** is the CAF Ready output: a scalable, secure foundation built across **design areas** (billing and tenant, identity and access management, resource organisation, network topology and connectivity, **security**, management, governance, platform automation and DevOps).\n\n**Management group hierarchy** (reference architecture):\n- **Intermediate root** (e.g. 'Contoso') under the Tenant Root Group; holds broad policies.\n- **Platform**: child groups such as **Identity**, **Management**, **Connectivity** (and Security) hosting shared services: domain controllers, Log Analytics/Sentinel, hub networking and firewall.\n- **Landing zones**: workload subscriptions, with children **Corp** (private, connected to the hub) and **Online** (internet-facing).\n- **Sandbox**: experimentation, isolated, relaxed policy.\n- **Decommissioned**: cancelled subscriptions awaiting deletion.\n\nRules: keep it flat (3-4 levels; maximum depth is six below the root); don't model dev/test/prod or regions as management groups, use subscriptions; set a default management group so new subscriptions don't land under root; assign workload RBAC at subscription/resource group scope.\n\n**Platform landing zones** are run by the central platform team; **application landing zones** belong to workload teams. **Subscription vending** automates new, pre-governed subscriptions. Policy-driven governance enforces security by default.",
+      "terms": [
+        {
+          "t": "Platform landing zone",
+          "d": "Subscriptions hosting shared services (identity, management, connectivity)."
+        },
+        {
+          "t": "Application landing zone",
+          "d": "Subscription for a workload, governed by inherited policy."
+        },
+        {
+          "t": "Subscription vending",
+          "d": "Automated, standardised creation of new governed subscriptions."
+        },
+        {
+          "t": "Corp vs Online",
+          "d": "Landing zone groups for private hub-connected vs internet-facing workloads."
+        }
+      ],
+      "trap": "Creating management groups for Dev, Test and Prod is an antipattern in the reference design; environments are separated by subscription.",
+      "example": "A new public website gets a vended subscription under Landing zones > Online, inheriting policies that require WAF-protected Application Gateway and Defender for Cloud plans.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Tenant Root Group",
+          "Intermediate root",
+          "Platform | Landing zones | Sandbox | Decommissioned",
+          "Identity, Mgmt, Connectivity | Corp, Online",
+          "Subscriptions"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d1.3.06",
+      "objective": "d1.3",
+      "seq": 6,
+      "title": "DevSecOps aligned with CAF",
+      "short": "DevSecOps builds security into every stage of the DevOps lifecycle: threat modelling in plan, secure coding and scanning in develop and build (SAST, secret, dependency, IaC scanning), protected pipelines and identities in deploy, and monitoring and response in operate.",
+      "deep": "**DevSecOps** means security is continuous and owned by developers too ('shift left'), while still **assuming breach** and measuring **mean time to detect/recover**. CAF and the Microsoft **Security Development Lifecycle (SDL)** shape it:\n- **Plan**: security requirements, **threat modelling** (e.g. STRIDE, Microsoft Threat Modeling Tool).\n- **Develop**: secure coding, IDE linting, pre-commit secret checks.\n- **Build**: **SAST** (e.g. CodeQL in **GitHub Advanced Security** / GitHub Advanced Security for Azure DevOps), **secret scanning** and push protection, **dependency scanning** (Dependabot, SBOM), **IaC scanning** (Bicep/Terraform), container image scanning; the **Microsoft Security DevOps** extension runs scanners in pipelines.\n- **Deploy**: protected branches, approvals and checks, least-privilege service connections, **workload identity federation (OIDC)** instead of stored secrets, secrets in **Azure Key Vault**, policy gates.\n- **Operate**: **DAST** and penetration testing, Defender for Cloud, Sentinel, incident response.\n\n**Defender for Cloud DevOps security** connects **Azure DevOps, GitHub and GitLab**. Foundational CSPM shows code, secret, IaC and open-source findings; **Defender CSPM** adds **pull request annotations**, **code-to-cloud mapping**, attack paths and SBOM queries.",
+      "terms": [
+        {
+          "t": "SAST",
+          "d": "Static application security testing: scans source code without running it."
+        },
+        {
+          "t": "DAST",
+          "d": "Dynamic application security testing: probes the running application."
+        },
+        {
+          "t": "Workload identity federation",
+          "d": "Pipeline authenticates to Entra ID with short-lived OIDC tokens instead of a stored secret."
+        },
+        {
+          "t": "Code-to-cloud mapping",
+          "d": "Defender CSPM link from a cloud resource back to the repo and pipeline that built it."
+        }
+      ],
+      "trap": "SAST runs on code at build time; DAST needs a running app. And PR annotations/code-to-cloud mapping need Defender CSPM, not just Foundational CSPM.",
+      "example": "A team enables GitHub secret scanning push protection, replaces its pipeline's client secret with OIDC federation, and uses Defender CSPM code-to-cloud mapping to trace a vulnerable container to its repo.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Plan: threat model",
+          "Develop",
+          "Build: SAST/SCA",
+          "Deploy: gates",
+          "Operate: monitor"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-100.d1.q001",
+      "lesson": "sc-100.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which metric defines the maximum amount of data, measured in time, that a business can afford to lose after an incident?",
+      "options": [
+        "Recovery time objective (RTO)",
+        "Recovery point objective (RPO)",
+        "Mean time to detect (MTTD)",
+        "Service level agreement (SLA)"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "RPO measures tolerable data loss (for example, last 15 minutes). RTO is how long the service may be down. MTTD measures detection speed, and an SLA is a contracted availability commitment, not a data-loss target."
+    },
+    {
+      "id": "sc-100.d1.q002",
+      "lesson": "sc-100.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need the Microsoft Defender portal to automatically flag domain controllers and accounts holding the Privileged Role Administrator role as crown jewels, so attack paths and incidents involving them are prioritised. What should you use?",
+      "options": [
+        "Defender for Cloud regulatory compliance dashboard",
+        "Microsoft Entra ID Protection risk policies",
+        "Microsoft Security Exposure Management critical asset management",
+        "Microsoft Purview Data Map classifications"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Critical asset management in Exposure Management ships predefined classifications (domain controllers, privileged roles, sensitive databases, cloud resources) and surfaces criticality in attack paths and incidents. ID Protection scores identity risk, the compliance dashboard tracks standards, and Purview Data Map classifies data, not assets."
+    },
+    {
+      "id": "sc-100.d1.q003",
+      "lesson": "sc-100.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam's CISO has a limited budget for next year. A risk workshop showed that an outage of the order-to-cash process costs $2M per day, while most internal tools could be offline for a week without material loss. The board asks for a resiliency strategy that reduces business impact from attacks as quickly as possible.",
+      "stem": "What should the architect do first?",
+      "options": [
+        "Deploy the same controls to every system to avoid gaps",
+        "Run an organisation-wide phishing simulation to measure user awareness",
+        "Purchase a SIEM so all logs are centralised before any other work",
+        "Map order-to-cash to its supporting IT assets and set RTO/RPO targets for them"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Resiliency strategy starts from business impact: identify the critical process's assets (apps, data, identity, backups) and set recovery targets, then prioritise controls. Uniform controls waste limited budget; a SIEM or phishing test may help later but don't prioritise the critical assets."
+    },
+    {
+      "id": "sc-100.d1.q004",
+      "lesson": "sc-100.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about a resiliency strategy, select Yes if true.",
+      "statements": [
+        {
+          "s": "Identity systems such as Microsoft Entra ID and AD DS should be treated as business-critical assets.",
+          "a": true
+        },
+        {
+          "s": "Under the assume breach principle, the strategy can focus only on preventing initial access.",
+          "a": false
+        },
+        {
+          "s": "A lower RTO generally requires more investment, such as replication instead of restore-from-backup only.",
+          "a": true
+        }
+      ],
+      "explain": "Identity controls everything, so it is critical. Assume breach requires planning detection, containment and recovery, not just prevention. Lower RTO usually means costlier designs like Site Recovery replication."
+    },
+    {
+      "id": "sc-100.d1.q005",
+      "lesson": "sc-100.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "By default, how long does Azure Backup keep soft-deleted backup data recoverable at no extra cost?",
+      "options": [
+        "7 days",
+        "14 days",
+        "30 days",
+        "180 days"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Soft delete defaults to 14 days, with no cost within that window. It can be configured from 14 up to 180 days, with extra days billed. 7 and 30 days are not the default."
+    },
+    {
+      "id": "sc-100.d1.q006",
+      "lesson": "sc-100.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You must ensure no one, including a compromised Global Administrator, can ever turn off the protection that stops recovery points in a Recovery Services vault being deleted early. Which configuration meets the requirement?",
+      "options": [
+        "Enable soft delete with 180-day retention",
+        "Apply a CanNotDelete resource lock to the vault",
+        "Enable immutability on the vault and lock it",
+        "Enable immutability on the vault without locking it"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Only an immutable vault in the 'Enabled and locked' state is irreversible. Unlocked immutability can be disabled. A resource lock can be removed by an owner, and soft delete protects deleted data but doesn't stop someone reducing retention."
+    },
+    {
+      "id": "sc-100.d1.q007",
+      "lesson": "sc-100.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailspin's backup administrators hold Backup Contributor on all Recovery Services vaults. A red team showed that a stolen backup admin account could disable security features and then delete backups. Tailspin wants a second person to approve critical vault operations, with the strongest isolation possible.",
+      "stem": "Which design should you recommend?",
+      "options": [
+        "Enable MUA with a Resource Guard in the same subscription, and give backup admins Contributor on it",
+        "Enable MUA with a Resource Guard in a separate security tenant; grant Backup MUA Operator just in time",
+        "Require a backup security PIN for all operations and store it in Key Vault",
+        "Assign backup admins the Backup Operator role instead of Backup Contributor"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A Resource Guard in a different tenant gives maximum isolation; the security admin grants Backup MUA Operator temporarily (for example via PIM). Giving backup admins Contributor on the guard defeats MUA. A PIN or role downgrade doesn't add a second approver."
+    },
+    {
+      "id": "sc-100.d1.q008",
+      "lesson": "sc-100.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO operations are mandatory protected operations (cannot be excluded) when a vault is associated with a Resource Guard for multi-user authorization? Select TWO.",
+      "options": [
+        "Disable soft delete or security features",
+        "Restore a backup item",
+        "Remove MUA protection",
+        "Modify a backup policy",
+        "Get backup security PIN"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Disabling soft delete/security features and removing MUA protection are mandatory. Modify policy and get security PIN are optional (enabled by default), and Restore is optional and disabled by default."
+    },
+    {
+      "id": "sc-100.d1.q009",
+      "lesson": "sc-100.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Backup immutable vaults, select Yes if true.",
+      "statements": [
+        {
+          "s": "An immutable vault blocks reducing the retention in a backup policy.",
+          "a": true
+        },
+        {
+          "s": "An immutable vault blocks increasing the retention in a backup policy.",
+          "a": false
+        },
+        {
+          "s": "Immutable vault is available for both Recovery Services vaults and Backup vaults.",
+          "a": true
+        }
+      ],
+      "explain": "Immutability prevents actions that could lose recovery points, such as reducing retention; increasing retention is allowed. Both vault types support immutability (time-based immutability is Recovery Services vault only)."
+    },
+    {
+      "id": "sc-100.d1.q010",
+      "lesson": "sc-100.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Azure service replicates on-premises VMware VMs to Azure and orchestrates failover using recovery plans?",
+      "options": [
+        "Azure Backup with the MARS agent",
+        "Azure Migrate",
+        "Azure Site Recovery",
+        "Azure Business Continuity Center"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Azure Site Recovery replicates VMware, Hyper-V and physical machines to Azure and sequences failover with recovery plans. MARS backs up files/folders; Azure Migrate is for one-time migration; Business Continuity Center is a management view, not a replication engine."
+    },
+    {
+      "id": "sc-100.d1.q011",
+      "lesson": "sc-100.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An architect proposes Azure Site Recovery as the only protection against ransomware for a file server, arguing it gives a 5-minute RTO. What is the main flaw?",
+      "options": [
+        "Site Recovery cannot replicate Windows file servers",
+        "Site Recovery has no support for test failover",
+        "Site Recovery replicates only between Azure regions, not from on-premises",
+        "Encrypted data replicates to the target, so point-in-time immutable backups are still needed"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Replication faithfully copies corruption and encryption, so ransomware recovery needs point-in-time backups that attackers can't alter. Site Recovery supports Windows servers, on-premises sources, and non-disruptive test failover, so the other options are false."
+    },
+    {
+      "id": "sc-100.d1.q012",
+      "lesson": "sc-100.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Northwind runs SQL Server and Hyper-V VMs in two on-premises datacentres and is moving some workloads to Azure. Requirements: back up on-premises SQL Server and Hyper-V workloads to Azure; back up selected file shares on branch servers with no local backup server; prove recovery works every quarter without impacting production.",
+      "stem": "Which THREE components should you include? Select THREE.",
+      "options": [
+        "Microsoft Azure Backup Server (MABS)",
+        "MARS agent on the branch servers",
+        "Site Recovery test failovers and scheduled restore drills",
+        "Azure Migrate replication appliance",
+        "Azure Files sync to replace backups"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "MABS protects on-premises workloads such as SQL Server and Hyper-V; the MARS agent backs up files and folders directly to Azure without a backup server; test failovers and restore drills validate recovery non-disruptively. Azure Migrate is for migration, and file sync isn't a backup."
+    },
+    {
+      "id": "sc-100.d1.q013",
+      "lesson": "sc-100.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order to design a BCDR solution for a critical workload.",
+      "options": [
+        "Identify the business process and its dependent IT assets",
+        "Agree RTO and RPO targets with the business owner",
+        "Select backup and replication services that meet the targets",
+        "Protect backups with isolation, immutability and MUA",
+        "Run test failovers and restore drills and measure recovery time"
+      ],
+      "explain": "BCDR design flows from business impact to targets, then technology choice, then hardening the recovery copies, then validating that recovery actually meets the targets."
+    },
+    {
+      "id": "sc-100.d1.q014",
+      "lesson": "sc-100.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put Microsoft's ransomware protection steps in priority order.",
+      "options": [
+        "Prepare your ransomware recovery plan",
+        "Limit the scope of ransomware damage",
+        "Make it hard for cybercriminals to get in"
+      ],
+      "explain": "Microsoft prioritises recovery readiness (remove the reason to pay), then protecting privileged roles (limit blast radius), then hardening entry points, which takes longest and must not delay the first two."
+    },
+    {
+      "id": "sc-100.d1.q015",
+      "lesson": "sc-100.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You plan to deploy Defender for Endpoint attack surface reduction (ASR) rules to block Office macros from launching child processes across 20,000 devices. What should you do first?",
+      "options": [
+        "Enable the rules in block mode for all devices immediately",
+        "Enable the rules in audit mode and assess the impact",
+        "Disable tamper protection so the rules can be applied",
+        "Deploy the rules only to domain controllers"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Microsoft's guidance is to run ASR rules in audit mode first, review the impact on business apps, then switch to block. Immediate block risks outages; disabling tamper protection weakens defences; ASR rules targeting Office belong on user endpoints."
+    },
+    {
+      "id": "sc-100.d1.q016",
+      "lesson": "sc-100.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Adatum suffered a human-operated ransomware attack. Attackers stole data, then encrypted file servers. Backups existed but were on a domain-joined server and were deleted using a compromised domain admin account. Restore procedures were stored on the encrypted file share.",
+      "stem": "Which recommendation BEST addresses the root causes of the failed recovery?",
+      "options": [
+        "Add more email filtering rules in Defender for Office 365",
+        "Replace the file servers with Azure Files",
+        "Increase the number of domain admin accounts so recovery can proceed if one is locked",
+        "Keep backups in immutable, separately administered storage and protect recovery documents off-site"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Recovery failed because backups were reachable by the compromised identity and procedures were encrypted. Immutable, isolated backups and protected recovery documentation fix that. Email filtering addresses entry, not recovery; more domain admins increases risk; Azure Files alone doesn't protect backups."
+    },
+    {
+      "id": "sc-100.d1.q017",
+      "lesson": "sc-100.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about human-operated ransomware, select Yes if true.",
+      "statements": [
+        {
+          "s": "Attackers commonly steal credentials and move laterally before deploying ransomware.",
+          "a": true
+        },
+        {
+          "s": "Paying the ransom guarantees that a working decryption key will be provided.",
+          "a": false
+        },
+        {
+          "s": "Attackers often exfiltrate data before encryption to add extortion pressure.",
+          "a": true
+        }
+      ],
+      "explain": "Human-operated attacks rely on credential theft and lateral movement and often steal data for extortion. Payment never guarantees recovery, which is why Microsoft prioritises recovery readiness."
+    },
+    {
+      "id": "sc-100.d1.q018",
+      "lesson": "sc-100.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In the enterprise access model, which plane contains Microsoft Entra ID and AD DS domain controllers?",
+      "options": [
+        "Management plane",
+        "Data/workload plane",
+        "User access",
+        "Control plane"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The control plane holds centralised identity and access control systems, expanding the legacy Tier 0. The management plane covers enterprise IT management, the data/workload plane holds business apps and data, and user access covers user pathways."
+    },
+    {
+      "id": "sc-100.d1.q019",
+      "lesson": "sc-100.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Incident analysis shows attackers moved from one compromised workstation to 300 others using the same local Administrator password. Which control BEST prevents this lateral traversal?",
+      "options": [
+        "Windows LAPS",
+        "Microsoft Entra Password Protection",
+        "BitLocker Drive Encryption",
+        "Defender SmartScreen"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Windows LAPS gives every device a unique, rotated local admin password, so one stolen password doesn't unlock others. Password Protection blocks weak passwords for accounts, BitLocker protects data at rest, and SmartScreen warns about malicious sites and files."
+    },
+    {
+      "id": "sc-100.d1.q020",
+      "lesson": "sc-100.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Litware has 25 users with permanent Global Administrator. Admins read email and browse the web from the same laptops they use for the Entra admin center. Leadership wants to reduce ransomware blast radius within 90 days without blocking emergency access.",
+      "stem": "Which THREE actions should you recommend? Select THREE.",
+      "options": [
+        "Convert permanent Global Administrator assignments to PIM eligible assignments with approval",
+        "Require privileged access workstations for administrative sessions, enforced with Conditional Access",
+        "Keep two monitored emergency access accounts with phishing-resistant credentials",
+        "Grant all admins Global Administrator permanently so incidents can be handled faster",
+        "Disable MFA for admins on trusted networks to reduce friction"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "PIM removes standing privilege, PAWs enforced by Conditional Access separate admin work from risky activity, and monitored break-glass accounts preserve emergency access. Permanent Global Admin and disabling MFA increase blast radius."
+    },
+    {
+      "id": "sc-100.d1.q021",
+      "lesson": "sc-100.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need one native Azure solution to assess and install OS updates for Azure VMs and for Linux servers running in AWS, using maintenance windows and no Log Analytics dependency. What should you recommend?",
+      "options": [
+        "Windows Autopatch",
+        "Azure Update Manager with the AWS servers onboarded to Azure Arc",
+        "Azure Automation Update Management",
+        "Microsoft Intune update rings"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Azure Update Manager manages Windows and Linux servers in Azure and, via Azure Arc, in other clouds and on-premises, with maintenance windows and no Log Analytics dependency. Autopatch and Intune update rings target client devices; Automation Update Management depended on Log Analytics and has been superseded."
+    },
+    {
+      "id": "sc-100.d1.q022",
+      "lesson": "sc-100.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure Resource Graph query that lists the latest patch assessment results for virtual machines.",
+      "code": "____\n| where type =~ \"microsoft.compute/virtualmachines/patchassessmentresults\"\n| project id, properties.status, properties.lastModifiedDateTime",
+      "options": [
+        "securityresources",
+        "patchassessmentresources",
+        "advisorresources",
+        "policyresources"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Azure Update Manager writes assessment results to the patchassessmentresources table in Resource Graph. securityresources holds Defender for Cloud data, advisorresources holds Advisor recommendations, and policyresources holds Azure Policy states."
+    }
+  ]
+}

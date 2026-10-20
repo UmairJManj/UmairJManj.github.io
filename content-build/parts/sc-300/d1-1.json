@@ -1,0 +1,1464 @@
+{
+  "exam": "sc-300",
+  "domain": "d1",
+  "lessons": [
+    {
+      "id": "sc-300.d1.1.01",
+      "objective": "d1.1",
+      "seq": 1,
+      "title": "Built-in Microsoft Entra roles",
+      "short": "Microsoft Entra built-in roles are Microsoft-managed bundles of directory permissions such as User Administrator, Helpdesk Administrator and Global Reader. Assign the least-privileged role that covers the task, and use role-assignable groups to assign roles to many admins at once.",
+      "deep": "A **role assignment** has three parts: a **role definition** (the permissions), a **security principal** (user, role-assignable group or service principal) and a **scope** (tenant, administrative unit or a single resource).\n\nBuilt-in roles can't be edited. Common ones:\n- **Global Administrator**: everything; keep to a few accounts plus emergency access accounts.\n- **Privileged Role Administrator**: manages role assignments and PIM.\n- **User Administrator**: creates and manages users and groups, resets passwords for many users.\n- **Helpdesk Administrator**: resets passwords and invalidates refresh tokens for non-admins and some limited admins.\n- **Groups Administrator**, **License Administrator**, **Global Reader** (read-only everywhere).\n\n**Role-assignable groups** let you assign a role to a group. The setting *Microsoft Entra roles can be assigned to the group* (`isAssignableToRole`) can only be set when the group is created, membership must be **Assigned** (no dynamic rules), a group can't be nested inside one, and a tenant can have up to **500**. They need Microsoft Entra ID P1. Creating one requires at least Privileged Role Administrator.",
+      "terms": [
+        {
+          "t": "Role definition",
+          "d": "The collection of permissions a role grants."
+        },
+        {
+          "t": "Scope",
+          "d": "Where a role applies: tenant, administrative unit or a single resource."
+        },
+        {
+          "t": "Role-assignable group",
+          "d": "A group created with isAssignableToRole = true so it can hold Entra role assignments."
+        },
+        {
+          "t": "Least privilege",
+          "d": "Grant only the permissions needed for the task."
+        }
+      ],
+      "trap": "Exams pick Global Administrator or User Administrator when a narrower role (Helpdesk, Groups, License Administrator) is enough, and assume an existing group can be made role-assignable later.",
+      "example": "Contoso creates a role-assignable group 'Tier1-Helpdesk' and assigns it Helpdesk Administrator, so new support staff get rights just by joining the group.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Role definition",
+          "Security principal",
+          "Scope",
+          "Role assignment"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.1.02",
+      "objective": "d1.1",
+      "seq": 2,
+      "title": "Custom Microsoft Entra roles",
+      "short": "When no built-in role fits, build a custom role from a preset list of permissions (for example microsoft.directory/applications/credentials/update). Each user assigned a custom role needs Microsoft Entra ID P1, and you need at least Privileged Role Administrator to create them.",
+      "deep": "A **custom role** is a role definition your organisation creates by picking permissions from a preset list. These are the same permission strings built-in roles use, and only permissions enabled for custom roles are offered. They cover app registrations, enterprise applications, consent, devices, users and groups. Permission strings follow the pattern `microsoft.directory/<resource>/<property>/<action>`, for example `microsoft.directory/applications/credentials/update` to rotate app secrets.\n\nYou create custom roles in **Roles & admins > New custom role**, or with Microsoft Graph PowerShell (`New-MgRoleManagementDirectoryRoleDefinition`, then assign with `New-MgRoleManagementDirectoryRoleAssignment`).\n\nKey facts:\n- Licensing: built-in roles are free, but custom role assignees need **Microsoft Entra ID P1**.\n- Creating custom roles needs at least **Privileged Role Administrator**.\n- Assignments can target the tenant, an administrative unit or a specific resource such as one app registration.\n- Built-in roles can't be copied and edited in place; you build a new definition.\n- Custom Entra roles are separate from **Azure RBAC** custom roles, which control Azure resources such as subscriptions.",
+      "terms": [
+        {
+          "t": "Custom role",
+          "d": "An organisation-defined Entra role built from preset permissions."
+        },
+        {
+          "t": "allowedResourceActions",
+          "d": "The list of permission strings inside a role definition's rolePermissions."
+        },
+        {
+          "t": "Azure RBAC",
+          "d": "Separate role system for Azure resources (subscriptions, VMs), not directory objects."
+        }
+      ],
+      "trap": "Don't confuse Entra custom roles with Azure RBAC custom roles, and remember custom roles cost P1 per assignee while built-in roles are free.",
+      "example": "A team that only rotates app secrets gets a custom 'App Secret Rotator' role with the applications/credentials/update permission instead of Application Administrator.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.1.03",
+      "objective": "d1.1",
+      "seq": 3,
+      "title": "When to use administrative units",
+      "short": "Administrative units (AUs) are containers that limit an admin's role to a subset of users, groups or devices, such as one region, faculty or subsidiary. Recommend them when you need delegated, scoped administration inside a single tenant.",
+      "deep": "Without AUs, a Helpdesk Administrator can reset passwords for every non-admin user in the tenant. An **administrative unit** restricts a role assignment to the members of that unit, so a regional helpdesk only manages its own region.\n\nRecommend AUs when:\n- A university wants each school's IT staff to manage only that school's students.\n- A multinational wants country teams to manage local users and devices.\n- A subsidiary's admins should manage their own staff without tenant-wide rights.\n\nThey are **not** the answer when:\n- You need to hide objects: AUs scope **management** only, and users can still browse the directory with default permissions.\n- You need full isolation (separate policies, separate admins for everything): that is a separate tenant.\n- You need just-in-time elevation: that is PIM, which can be combined with AU-scoped roles.\n- You want to protect sensitive accounts even from tenant-wide admins: that is a **restricted management** AU.\n\nRoles that can be scoped to an AU include User Administrator, Helpdesk Administrator, Groups Administrator, Authentication Administrator, License Administrator and Password Administrator. Global Administrator can't be AU-scoped.",
+      "terms": [
+        {
+          "t": "Administrative unit",
+          "d": "A container of users, groups or devices used to scope role assignments."
+        },
+        {
+          "t": "Delegated administration",
+          "d": "Giving local admins rights over only part of the directory."
+        },
+        {
+          "t": "Scoped role assignment",
+          "d": "A role assignment whose scope is an AU instead of the tenant."
+        }
+      ],
+      "trap": "AUs don't hide users or create separate policies; the wrong answers are 'create another tenant' or 'use group owners' when scoped admin rights are all that's needed.",
+      "example": "Fabrikam University creates AUs for Arts and Engineering and assigns each faculty's IT staff Helpdesk Administrator scoped to their AU.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Need",
+          "Use"
+        ],
+        "rows": [
+          [
+            "Scoped admin rights",
+            "Administrative unit"
+          ],
+          [
+            "Protect VIP accounts",
+            "Restricted mgmt AU"
+          ],
+          [
+            "Time-bound elevation",
+            "PIM"
+          ],
+          [
+            "Full isolation",
+            "Separate tenant"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.1.04",
+      "objective": "d1.1",
+      "seq": 4,
+      "title": "Configure and manage administrative units",
+      "short": "Create AUs in Roles & admins > Admin units, add users, groups or devices manually or by dynamic rules (users and devices only), then assign scoped roles. Creating AUs is free; each AU-scoped admin needs Microsoft Entra ID P1.",
+      "deep": "**Creating** an AU works in the Microsoft Entra admin center, Microsoft Graph or PowerShell. Then:\n1. Add members: users, groups and devices can be added manually or by CSV.\n2. Optionally set **dynamic membership** so users or devices join automatically by rule (for example `user.department -eq \"Sales\"`). Groups can't be added by dynamic rule, and an AU's membership is either assigned or dynamic.\n3. Assign roles scoped to the AU under the AU's **Roles and administrators** page. With Graph the scope is `/administrativeUnits/<AU-id>`.\n\nRules and limits:\n- AUs **can't be nested**.\n- Adding a group to an AU lets scoped admins manage the **group** (name, membership), not automatically the users inside it. Add the users too if they should be managed.\n- A role assigned to an AU applies to its members, not to the AU object itself.\n- Licensing: AU members need Free; each **admin with an AU-scoped role needs P1**; dynamic AU membership needs P1 for members.\n- Privileged Role Administrator (or Global Administrator) assigns AU-scoped roles.\n- Intune device management isn't scoped by Entra AUs.",
+      "terms": [
+        {
+          "t": "Dynamic AU membership",
+          "d": "Rule-based automatic membership for users or devices in an AU."
+        },
+        {
+          "t": "DirectoryScopeId",
+          "d": "The scope value in a Graph role assignment, e.g. /administrativeUnits/{id}."
+        },
+        {
+          "t": "AU-scoped role",
+          "d": "A role assignment that applies only to members of an AU."
+        }
+      ],
+      "trap": "Exams claim AUs can be nested or that groups can be added dynamically; both are false.",
+      "example": "An AU 'Germany' uses the rule user.country -eq \"DE\" so new German hires automatically fall under the German helpdesk.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Create AU",
+          "Add members",
+          "Assign scoped role",
+          "Admin manages AU"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.1.05",
+      "objective": "d1.1",
+      "seq": 5,
+      "title": "Restricted management administrative units",
+      "short": "A restricted management AU protects its members (users, devices, security groups) from changes by anyone without a role assigned at that AU's scope, even tenant-wide admins and Global Administrators. The setting is chosen at creation and can't be changed later.",
+      "deep": "Normal AUs **add** scoped admins. **Restricted management administrative units** also **block** tenant-level admins from modifying members, which is ideal for executive accounts or sensitive security groups.\n\nHow it works:\n- Only admins explicitly assigned a role scoped to the restricted AU can modify its objects' Entra properties.\n- Tenant-scoped User, Helpdesk and Groups Administrators are blocked, and so are group/device owners.\n- **Global Administrators and Privileged Role Administrators** can't modify the objects either, but they can manage the AU itself (create/delete it, add/remove members, assign scoped roles), so a Global Administrator could assign themselves a scoped role, which is audited.\n- Supported members: **users, devices and security groups**. Microsoft 365 groups, mail-enabled security groups and distribution groups aren't supported.\n- **Restricted management** must be set when the AU is created; it can't be switched on or off later.\n- Members can't be managed by Entra ID Governance features such as PIM, entitlement management, lifecycle workflows or access reviews.\n- Licensing matches normal AUs: P1 for scoped admins. Maximum 100 restricted AUs per tenant.",
+      "terms": [
+        {
+          "t": "Restricted management AU",
+          "d": "An AU whose members can only be changed by admins scoped to it."
+        },
+        {
+          "t": "Tenant-scoped admin",
+          "d": "An admin whose role applies across the whole tenant."
+        }
+      ],
+      "trap": "A normal AU never removes tenant-wide admins' rights; only a restricted management AU does, and it must be chosen at creation.",
+      "example": "Contoso places its CEO and CFO accounts in a restricted management AU so only the executive-support team, assigned User Administrator on that AU, can change them.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.1.06",
+      "objective": "d1.1",
+      "seq": 6,
+      "title": "Evaluate effective permissions for Entra roles",
+      "short": "A user's effective permissions are the combination of every active role assignment they hold, directly or through role-assignable groups, each limited by its scope. Check a user's Assigned roles page to see roles, scopes and whether each came directly or from a group.",
+      "deep": "To work out what someone can actually do:\n1. **List all assignments**: Users > select user > **Assigned roles**. It shows each role, its scope and whether it was assigned directly or inherited through a group. With P2/PIM it also shows **eligible**, **active** and expired assignments.\n2. **Apply scope**: a tenant-scoped role applies everywhere; an AU-scoped role only to AU members; a resource-scoped role (for example one app registration) only to that resource. A role scoped to a container applies to the objects inside it, not the container object itself.\n3. **Combine**: permissions from all active roles add together. There are no deny assignments in Entra roles (restricted management AUs are the exception that blocks tenant admins).\n4. **Eligible isn't effective**: a PIM-eligible role grants nothing until activated.\n5. Remember **default user permissions** and object ownership (for example, owners of a group can manage its membership).\n\nTools: **Roles & admins > All roles > Download assignments** exports a CSV of active assignments. In PowerShell, `Get-MgRoleManagementDirectoryRoleAssignment -Filter \"principalId eq '<id>'\"` lists direct assignments.",
+      "terms": [
+        {
+          "t": "Effective permissions",
+          "d": "Everything a principal can do once all active assignments and scopes are combined."
+        },
+        {
+          "t": "Eligible assignment",
+          "d": "PIM assignment that must be activated before it grants permissions."
+        },
+        {
+          "t": "Assigned roles",
+          "d": "Per-user/per-group page showing roles, scope and assignment path."
+        }
+      ],
+      "trap": "Candidates forget that AU-scoped rights stop at AU members and that an eligible PIM role gives no rights until activation.",
+      "example": "Ana has Helpdesk Administrator at tenant scope and User Administrator on the Sales AU: she can reset any non-admin's password, but can only create or delete users in Sales.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.1.07",
+      "objective": "d1.1",
+      "seq": 7,
+      "title": "Custom domain names in Entra ID and Microsoft 365",
+      "short": "Every tenant starts with a permanent initial domain (contoso.onmicrosoft.com). Add custom domains, prove ownership with a TXT or MX DNS record, then set one as primary for new users. A domain can be verified in only one tenant at a time.",
+      "deep": "**Initial domain**: `<name>.onmicrosoft.com`, created with the tenant; it **can't be changed or deleted**.\n\n**Adding a custom domain** (at least **Domain Name Administrator**):\n1. Entra ID > Domain names > **Add custom domain** and type the full name including the top-level suffix (for example `contoso.com`).\n2. Copy the DNS values shown and create a **TXT** (or **MX**) record at the registrar; TTL is typically 3600 seconds.\n3. Select **Verify**. Propagation can take minutes to days; if you made a mistake, wait for the TTL to expire.\n4. Optionally **Make primary**, so new users default to `@contoso.com`, and update existing users' UPNs.\n\nRules worth knowing:\n- A domain can be verified in **only one directory**. To move it, remove it from the old tenant first, which means removing references to it (user UPNs, email addresses, groups, apps).\n- The Microsoft 365 admin center offers the same flow and adds service records (MX, CNAME for Autodiscover, SPF) for Exchange and Teams.\n- A domain can be **managed** (cloud auth) or **federated** (for example with AD FS); federation is changed with Entra Connect or `Update-MgDomain`.\n- An unmanaged (self-service sign-up) tenant holding the domain can block verification until an admin takeover.",
+      "terms": [
+        {
+          "t": "Initial domain",
+          "d": "The permanent onmicrosoft.com domain created with the tenant."
+        },
+        {
+          "t": "Primary domain",
+          "d": "The default domain suffix for newly created users."
+        },
+        {
+          "t": "TXT verification record",
+          "d": "DNS record proving you own the domain."
+        },
+        {
+          "t": "Federated domain",
+          "d": "A domain whose authentication is redirected to an external IdP like AD FS."
+        }
+      ],
+      "trap": "CNAME is a common wrong answer for verification, and the initial onmicrosoft.com domain can't be removed.",
+      "example": "After acquiring Tailspin, Contoso removes tailspin.com from Tailspin's old tenant, then adds and verifies it in Contoso's tenant with a TXT record.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Add domain",
+          "Create TXT record",
+          "Verify",
+          "Make primary"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.1.08",
+      "objective": "d1.1",
+      "seq": 8,
+      "title": "Company branding",
+      "short": "Company branding customises the Microsoft sign-in page with your logos, background, colours, sign-in text and SSPR link. Configure a default experience and optional browser-language versions; it needs Entra ID P1/P2 (or certain Microsoft 365 plans) and at least Organizational Branding Administrator.",
+      "deep": "Company branding lives in **Entra ID > Custom branding**. You edit the **default sign-in experience** and can **Add browser language** versions that override the default for users whose browser uses that language; unchanged elements fall back to the default.\n\nWhat you can set:\n- Favicon (32x32 px), background image (1920x1080 px, max 300 KB), banner logo (245x36 px), square logos for light and dark themes (240x240 px). PNG preferred.\n- Page background colour, header and footer, privacy and terms links.\n- **Sign-in page text** up to 1,024 Unicode characters; it's public, so no secrets.\n- **Show self-service password reset (SSPR)** and username hint text.\n\nWhen branding appears:\n- On multitenant Microsoft sites (myapps, outlook.com), branding shows **after** the user types their username and selects Next, because only then is the tenant known.\n- Add a home realm hint such as `?whr=contoso.com` to an app URL to show branding on the very first screen.\n- **B2B guests** see their **home tenant's** branding.\n\nLicensing: Microsoft Entra ID P1 or P2, Microsoft 365 Business Standard or SharePoint (Plan 1). Minimum role: **Organizational Branding Administrator**. Custom CSS is being restricted for newer tenants, so rely on the standard settings.",
+      "terms": [
+        {
+          "t": "Default sign-in experience",
+          "d": "Branding applied to all sign-ins to the tenant."
+        },
+        {
+          "t": "Browser language customization",
+          "d": "Language-specific branding overriding the default."
+        },
+        {
+          "t": "whr parameter",
+          "d": "Home realm hint in a URL that lets branding appear before username entry."
+        }
+      ],
+      "trap": "Exams suggest branding is missing because of a licence issue, when it's simply that the tenant isn't known until the username is entered (fix with whr=).",
+      "example": "Contoso shares https://myapps.microsoft.com/?whr=contoso.com so staff see the Contoso logo and helpdesk text immediately.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.1.09",
+      "objective": "d1.1",
+      "seq": 9,
+      "title": "Tenant properties and user settings",
+      "short": "Tenant properties hold the organisation name, country/region, technical contact, privacy contact and privacy statement URL, plus the Global Administrator toggle 'Access management for Azure resources'. User settings control what members can do by default, such as registering apps or creating tenants.",
+      "deep": "**Tenant properties** (Entra ID > Overview > Properties):\n- Name, **country or region** (set at creation; determines data location and can't be changed later), tenant ID.\n- **Technical contact**, **Global privacy contact** and **Privacy statement URL**. Privacy information is shown to guests and is needed before external users can be allowed to remove themselves.\n- **Access management for Azure resources**: when a Global Administrator sets it to Yes, they get **User Access Administrator** at the Azure root scope (all subscriptions and management groups). Use it to regain access, then set it back to No.\n\n**User settings** (Entra ID > Users > User settings):\n- **Users can register applications** (default Yes).\n- **Restrict non-admin users from creating tenants** (Yes limits this to the Tenant Creator role).\n- **Users can create security groups** and Microsoft 365 group creation.\n- **Restrict access to Microsoft Entra admin center**: hides common admin pages from non-admins, but isn't a security control: Graph and PowerShell still work. Use Conditional Access on the Windows Azure Service Management API to really block it.\n- **LinkedIn account connections**.\n- **Guest user access** and invite settings are in External collaboration settings.",
+      "terms": [
+        {
+          "t": "Access management for Azure resources",
+          "d": "Toggle that grants a Global Administrator User Access Administrator at Azure root scope."
+        },
+        {
+          "t": "Global privacy contact",
+          "d": "Person contacted about data privacy; required for some external user features."
+        },
+        {
+          "t": "Tenant Creator",
+          "d": "Role allowed to create tenants when non-admin creation is restricted."
+        }
+      ],
+      "trap": "'Restrict access to Microsoft Entra admin center' is often chosen as a security control; it doesn't block Graph or PowerShell.",
+      "example": "A Global Administrator who lost access to an orphaned Azure subscription flips Access management for Azure resources to Yes, fixes RBAC, then turns it off.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.1.10",
+      "objective": "d1.1",
+      "seq": 10,
+      "title": "Group and device settings",
+      "short": "Group settings control self-service group management, who can create security and Microsoft 365 groups, expiration and naming policies. Device settings control who may join or register devices, MFA for joining, device limits, extra local administrators, LAPS and BitLocker key self-recovery.",
+      "deep": "**Group settings** (Entra ID > Groups > General):\n- **Owners can manage group membership requests in My Groups** and restrict access to groups features in My Groups.\n- **Users can create security groups** / **Microsoft 365 groups** in portals, API or PowerShell.\n- **Expiration**: a lifetime (for example 180 or 365 days, or custom) for **Microsoft 365 groups**; owners get renewal emails and active groups renew automatically. Deleted Microsoft 365 groups can be restored for 30 days.\n- **Naming policy**: prefix/suffix and blocked words for Microsoft 365 groups. Expiration and naming policies need Entra ID P1.\n\n**Device settings** (Entra ID > Devices > Device settings, Cloud Device Administrator can change):\n- **Users may join devices to Microsoft Entra ID**: default All.\n- **Users may register their devices**: needed for BYOD and Intune enrolment of personal devices.\n- **Require MFA to register or join devices**: default No; Microsoft recommends the Conditional Access user action **Register or join devices** instead (leave this setting at No when you do).\n- **Maximum number of devices per user**: default **50**, up to 100; doesn't apply to hybrid joined devices.\n- **Additional local administrators** on Entra joined devices, and whether the registering user becomes local admin.\n- **Enable Microsoft Entra LAPS** and **Restrict non-admin users from recovering BitLocker keys**.",
+      "terms": [
+        {
+          "t": "Group expiration policy",
+          "d": "Lifetime after which unused Microsoft 365 groups are deleted unless renewed."
+        },
+        {
+          "t": "Register or join devices",
+          "d": "Conditional Access user action to require MFA when joining/registering devices."
+        },
+        {
+          "t": "Microsoft Entra LAPS",
+          "d": "Rotates and stores the local admin password of Entra joined devices."
+        }
+      ],
+      "trap": "For MFA on device join, the recommended answer is the Conditional Access user action, not the legacy device setting.",
+      "example": "Contoso sets a 365-day expiration on Microsoft 365 groups and limits device joins to the 'Corp-Device-Joiners' group.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.2.01",
+      "objective": "d1.2",
+      "seq": 1,
+      "title": "Create, configure and manage users",
+      "short": "Create cloud users or invite guests in Entra ID > Users, set UPN, usage location and profile properties, and reset passwords or revoke sessions. Deleted users stay soft-deleted for 30 days and can be restored; synced users are managed in on-premises AD.",
+      "deep": "**User types**: **Member** (internal staff) or **Guest** (external). The **source** is either cloud-only or synced from on-premises AD by Entra Connect / Cloud Sync.\n\n**Creating a user** (at least **User Administrator**): set display name, **user principal name (UPN)** using a verified domain, an initial password, and properties like job title, department, manager and **usage location** (required before licences with location-restricted services can be assigned). In Graph PowerShell: `New-MgUser` with `-DisplayName`, `-UserPrincipalName`, `-MailNickname`, `-AccountEnabled` and `-PasswordProfile`.\n\n**Managing users**: reset password, require re-registration of MFA, **Revoke sessions** (invalidates refresh tokens), block sign-in (`accountEnabled = false`), edit properties.\n\n**Synced users**: attributes that come from AD (name, department, UPN) are changed in AD, not in the cloud; the next sync would overwrite them.\n\n**Deleting and restoring**: deleted users are **soft-deleted for 30 days** (Users > Deleted users). Restoring brings back the account with its properties and licences, even if no licences are free. After 30 days, or after **Delete permanently**, the account can't be recovered, even by Microsoft support.",
+      "terms": [
+        {
+          "t": "UPN",
+          "d": "User principal name, the sign-in name like user@contoso.com."
+        },
+        {
+          "t": "Usage location",
+          "d": "Country of use, required before many licences can be assigned."
+        },
+        {
+          "t": "Soft delete",
+          "d": "30-day recoverable state after a user is deleted."
+        },
+        {
+          "t": "Revoke sessions",
+          "d": "Invalidates refresh tokens so the user must sign in again."
+        }
+      ],
+      "trap": "Exams offer 'edit the department in Entra ID' for a synced user; the change must be made in on-premises AD.",
+      "example": "A user deleted by mistake 12 days ago is restored from Deleted users with her licences and properties intact.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.2.02",
+      "objective": "d1.2",
+      "seq": 2,
+      "title": "Create, configure and manage groups",
+      "short": "Entra ID has security groups (access to resources, can hold users, devices, service principals and other groups) and Microsoft 365 groups (collaboration: shared mailbox, calendar, SharePoint site; users only). Membership is Assigned, Dynamic user or Dynamic device.",
+      "deep": "**Group types**\n- **Security group**: grants access to apps, resources and licences. Members can be users, devices, service principals and other groups.\n- **Microsoft 365 group**: collaboration group that provisions a shared mailbox, calendar, SharePoint site and Planner; members are **users only** (members and guests).\n- Mail-enabled security groups and distribution lists are managed mostly from Exchange.\n\n**Membership types**\n- **Assigned**: owners or admins add members.\n- **Dynamic user** / **Dynamic device**: a rule adds and removes members automatically; you can't add or remove members manually. A group can't mix users and devices.\n\n**Owners** can manage membership (and approve join requests if self-service is enabled in My Groups). **Groups Administrator** manages all groups; **User Administrator** can too.\n\n**Lifecycle**: Microsoft 365 groups support **expiration** and **naming policies** (P1) and can be restored for 30 days after deletion.\n\nGroups power **group-based licensing**, app assignment, Conditional Access targeting, access reviews and role assignment (role-assignable groups only).",
+      "terms": [
+        {
+          "t": "Security group",
+          "d": "Group used for access control; can contain users, devices, groups and service principals."
+        },
+        {
+          "t": "Microsoft 365 group",
+          "d": "Collaboration group with shared mailbox, calendar and SharePoint; users only."
+        },
+        {
+          "t": "Assigned membership",
+          "d": "Members are added manually."
+        }
+      ],
+      "trap": "Microsoft 365 groups can't contain devices or other groups; a device-based dynamic group must be a security group.",
+      "example": "Contoso uses a Microsoft 365 group for the Marketing team's shared mailbox and a security group to grant the team access to a SaaS app.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Security",
+          "Microsoft 365"
+        ],
+        "rows": [
+          [
+            "Devices",
+            "Yes",
+            "No"
+          ],
+          [
+            "Nested groups",
+            "Yes",
+            "No"
+          ],
+          [
+            "Mailbox/site",
+            "No",
+            "Yes"
+          ],
+          [
+            "Expiration policy",
+            "No",
+            "Yes"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.2.03",
+      "objective": "d1.2",
+      "seq": 3,
+      "title": "Dynamic membership rules",
+      "short": "Dynamic membership groups use rules like user.department -eq \"Sales\" to add and remove members automatically. Each unique user in a dynamic group needs Microsoft Entra ID P1 coverage; device-only groups need no licence.",
+      "deep": "A rule has the form `<property> <operator> <value>`, for example `user.department -eq \"Sales\"` or `device.deviceOSType -eq \"Windows\"`.\n\n**Operators**: `-eq`, `-ne`, `-startsWith`, `-notStartsWith`, `-endsWith`, `-contains`, `-notContains`, `-match`, `-notMatch` (regex), `-in`, `-notIn`. Combine expressions with `-and`, `-or`, `-not` and brackets: `(user.department -eq \"Sales\") -or (user.department -eq \"Marketing\")`.\n\n**Special rules**\n- All members only (exclude guests): `(user.objectId -ne null) -and (user.userType -eq \"Member\")`. Without the second clause, guests are included.\n- **Direct reports**: `Direct Reports for \"<manager objectId>\"` (direct reports only, can't be combined with other rules).\n\n**Rule builder vs text box**: the builder handles up to five expressions for user rules; device rules, `-contains` or complex rules need the text editor. Rule body max 3,072 characters; up to 15,000 dynamic groups per tenant.\n\n**Licensing**: the tenant needs enough **P1** licences for every unique user who is a member of any dynamic group (no need to assign them to those users). Device-based groups need none.\n\nUse **Validate rules** to test users against a rule before saving.",
+      "terms": [
+        {
+          "t": "Dynamic membership rule",
+          "d": "Expression that determines group membership automatically."
+        },
+        {
+          "t": "-match",
+          "d": "Regular-expression operator; use sparingly for performance."
+        },
+        {
+          "t": "Direct Reports rule",
+          "d": "Special rule that adds a manager's direct reports."
+        }
+      ],
+      "trap": "user.objectId -ne null includes guests; to get only employees add user.userType -eq \"Member\".",
+      "example": "The rule user.jobTitle -startsWith \"Engineer\" keeps the Engineering group current as people change roles.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.2.04",
+      "objective": "d1.2",
+      "seq": 4,
+      "title": "Custom security attributes",
+      "short": "Custom security attributes are business-specific key-value attributes (grouped into attribute sets) that you add to users and service principals for sensitive data and attribute-based access control. Even Global Administrators can't read or assign them by default; dedicated Attribute roles are required.",
+      "deep": "**Structure**: an **attribute set** (for example `Engineering`) contains **attribute definitions** (for example `Project`, data type String). Data types are **String, Integer and Boolean**; strings and integers can be multi-valued, and you can require **predefined values only**.\n\n**Roles** (assignable at tenant or attribute-set scope):\n- **Attribute Definition Administrator**: create and manage sets and definitions.\n- **Attribute Assignment Administrator**: assign values to users and service principals.\n- **Attribute Definition Reader** / **Attribute Assignment Reader**: read only.\n- **Attribute Log Reader / Administrator**: read audit logs for attribute changes, configure diagnostic settings.\nBy default, **Global Administrator and other admin roles can't read, define or assign** them, which keeps sensitive values (like a security clearance) separate from general admins.\n\n**Rules**: names (32 chars, no spaces) **can't be renamed**; descriptions can change. Definitions can be deactivated, not deleted. 'Only allow predefined values' can change from Yes to No but not back. Limits: 500 active definitions and 500 sets per tenant, 50 values per object.\n\nUses: filtering apps, Azure ABAC role conditions on storage, and scoping. Available in all Entra ID editions.",
+      "terms": [
+        {
+          "t": "Attribute set",
+          "d": "A container that groups related custom security attributes."
+        },
+        {
+          "t": "Attribute Assignment Administrator",
+          "d": "Role that assigns attribute values to users and apps."
+        },
+        {
+          "t": "ABAC",
+          "d": "Attribute-based access control using attributes in authorisation decisions."
+        }
+      ],
+      "trap": "Global Administrator isn't enough to manage custom security attributes; assign the specific Attribute role.",
+      "example": "HR uses an attribute set 'Compliance' with attribute 'Clearance' (predefined values Confidential, Secret) assigned by the security office only.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Attribute set",
+          "Attribute definition",
+          "Value on user/app"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.2.05",
+      "objective": "d1.2",
+      "seq": 5,
+      "title": "Bulk operations in the Entra admin center",
+      "short": "The Entra admin center supports CSV-based bulk create, bulk invite, bulk delete, bulk restore and download of users, plus bulk member import/removal for groups. Download the template, fill it in, upload it, and check Bulk operation results.",
+      "deep": "**Bulk operations** live on the Users (and Groups) pages under **Bulk operations**:\n- **Bulk create**: creates internal **member** accounts. Required template columns: **Name [displayName]**, **User name [userPrincipalName]** and **Initial password [passwordProfile]**. No invitation emails are sent; passwords must meet policy.\n- **Bulk invite**: creates **guest** accounts and sends B2B invitations. Requires email address to invite and redirection URL.\n- **Bulk delete** (by UPN) and **Bulk restore** (by object ID) for soft-deleted users.\n- **Download users** to CSV, and for groups **Import members**, **Remove members** and **Download members**.\n\nProcess:\n1. Download the latest CSV template (keep the version and header rows, delete the sample row).\n2. Fill one row per object.\n3. Upload; the file is validated before submission.\n4. Check **Bulk operation results** for status and download error details.\n\nLimits: a bulk job that doesn't finish within about **one hour** can fail, so split large files. Minimum role for bulk user create is **User Administrator**. For very large or repeatable jobs, use Microsoft Graph PowerShell instead.",
+      "terms": [
+        {
+          "t": "Bulk create",
+          "d": "CSV upload that creates member user accounts."
+        },
+        {
+          "t": "Bulk invite",
+          "d": "CSV upload that creates guest accounts and sends invitations."
+        },
+        {
+          "t": "Bulk operation results",
+          "d": "Page that tracks bulk job status and errors."
+        }
+      ],
+      "trap": "Bulk create can't create guests or send invitations; that's Bulk invite.",
+      "example": "Before term starts, a school bulk-creates 800 student accounts from a CSV exported from its student system.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Download template",
+          "Fill CSV",
+          "Upload & validate",
+          "Check results"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.2.06",
+      "objective": "d1.2",
+      "seq": 6,
+      "title": "Automating with Microsoft Graph PowerShell",
+      "short": "Microsoft Graph PowerShell (Microsoft.Graph module) replaces the retired MSOnline and AzureAD modules. Connect with Connect-MgGraph and the scopes you need, then use cmdlets like Get-MgUser, New-MgUser, Update-MgUser, New-MgGroup and Set-MgUserLicense in scripts.",
+      "deep": "**Connecting**: `Connect-MgGraph -Scopes \"User.ReadWrite.All\",\"Group.ReadWrite.All\"` signs in with delegated permissions; consent to the requested scopes is required. Unattended scripts use an app registration with a certificate or a managed identity and **application permissions**.\n\n**Common cmdlets** (verb-Mg-noun pattern):\n- `Get-MgUser -All -Filter \"department eq 'Sales'\"` and `-Property` to request specific fields.\n- `New-MgUser`, `Update-MgUser`, `Remove-MgUser`.\n- `New-MgGroup`, `New-MgGroupMember`, `Get-MgGroupMember`.\n- `Set-MgUserLicense -UserId $id -AddLicenses @(@{SkuId=$sku}) -RemoveLicenses @()` and `Get-MgSubscribedSku`.\n- `Invoke-MgGraphRequest` for any Graph REST call.\n\n**Bulk pattern**: `Import-Csv users.csv | ForEach-Object { New-MgUser ... }`.\n\nAdvanced queries (some filters, `$count`, `-Search`) need `-ConsistencyLevel eventual`.\n\nWhy it matters: the MSOnline and AzureAD PowerShell modules are **retired**, so exam answers should use Microsoft Graph PowerShell cmdlets (Mg prefix) or the Microsoft Graph API.",
+      "terms": [
+        {
+          "t": "Connect-MgGraph",
+          "d": "Signs in to Microsoft Graph PowerShell with chosen scopes."
+        },
+        {
+          "t": "Scope (Graph permission)",
+          "d": "A permission such as User.ReadWrite.All requested at sign-in."
+        },
+        {
+          "t": "Application permission",
+          "d": "App-only permission used by unattended scripts."
+        }
+      ],
+      "trap": "Answers using MSOnline (Set-MsolUser) or AzureAD (New-AzureADUser) cmdlets are outdated; prefer Mg cmdlets.",
+      "example": "A nightly script connects with a certificate-based app registration and sets usage location for all users missing it.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.2.07",
+      "objective": "d1.2",
+      "seq": 7,
+      "title": "Device identity: registered, joined, hybrid joined",
+      "short": "Microsoft Entra registered suits personal (BYOD) and mobile devices; Microsoft Entra joined suits organisation-owned Windows devices signing in with work accounts; Microsoft Entra hybrid joined is for devices joined to on-premises AD and also registered in Entra ID.",
+      "deep": "A device identity lets Conditional Access, Intune and SSO recognise the device.\n\n- **Microsoft Entra registered**: personal Windows, iOS/iPadOS, Android and macOS devices. The user signs in to the device with a personal account and adds a work account. Typical for BYOD with Intune app or MDM enrolment.\n- **Microsoft Entra joined**: organisation-owned Windows 10/11 devices (and Windows Server 2019+ VMs in Azure). Users sign in with their Entra work account; no on-premises AD join needed. Provisioned by OOBE, Windows Autopilot or bulk enrolment. Gives SSO to cloud and, with line of sight, on-premises resources.\n- **Microsoft Entra hybrid joined**: Windows devices joined to on-premises **AD DS** and registered in Entra ID. Needs Entra Connect (or Cloud Sync device sync) to sync computer objects in scoped OUs and a **service connection point (SCP)** configured via *Configure device options* in Entra Connect. Microsoft calls it an interim step towards Entra join.\n\nCheck a Windows device's state with `dsregcmd /status`: hybrid joined shows **AzureAdJoined: YES** and **DomainJoined: YES**.",
+      "terms": [
+        {
+          "t": "Microsoft Entra registered",
+          "d": "BYOD/personal device with a work account added."
+        },
+        {
+          "t": "Microsoft Entra joined",
+          "d": "Corporate Windows device joined directly to Entra ID."
+        },
+        {
+          "t": "Microsoft Entra hybrid joined",
+          "d": "AD DS-joined device also registered in Entra ID."
+        },
+        {
+          "t": "SCP",
+          "d": "Service connection point in AD that tells devices which tenant to register with."
+        }
+      ],
+      "trap": "Personal phones are registered, not joined; hybrid join requires on-premises AD, so cloud-only orgs choose Entra join.",
+      "example": "Contoso ships new Windows laptops with Autopilot (Entra joined) while staff phones are Entra registered via Intune.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Registered",
+          "Joined",
+          "Hybrid joined"
+        ],
+        "rows": [
+          [
+            "Owner",
+            "Personal",
+            "Org",
+            "Org"
+          ],
+          [
+            "Sign-in",
+            "Local/personal",
+            "Entra account",
+            "AD account"
+          ],
+          [
+            "Needs AD DS",
+            "No",
+            "No",
+            "Yes"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.2.08",
+      "objective": "d1.2",
+      "seq": 8,
+      "title": "Managing device join, registration and devices",
+      "short": "Control who can join or register devices, cap devices per user, require MFA through Conditional Access, and manage device objects by enabling, disabling or deleting them. Disabling a device blocks Entra authentication and revokes its tokens; deleting can't be undone.",
+      "deep": "**Controlling join and registration** (Device settings):\n- Limit **Users may join devices** to a group (default All).\n- Turn off **Users may register their devices** to block BYOD registration (this also blocks Intune personal enrolment).\n- Require MFA using a Conditional Access policy with the user action **Register or join devices**.\n- **Maximum number of devices** per user: default 50.\n\n**Managing device objects** (Devices > All devices):\n- **Disable** (Cloud Device Administrator or Intune Administrator): blocks Entra authentication from the device, revokes its Primary Refresh Token and refresh tokens, stops device-based Conditional Access and Windows Hello for Business on it. Reversible.\n- **Delete**: removes the object and its details such as **BitLocker recovery keys**; it can't be undone. For Intune-managed devices, wipe or retire in Intune first; Autopilot devices are deleted from Intune first.\n- View **BitLocker recovery keys** and **LAPS** passwords (both audited).\n\n**Stale devices**: use the activity timestamp to find inactive devices, disable first, then delete after a grace period.",
+      "terms": [
+        {
+          "t": "Primary Refresh Token (PRT)",
+          "d": "Device-bound token that gives SSO; revoked when a device is disabled."
+        },
+        {
+          "t": "Stale device",
+          "d": "Device object with no recent activity."
+        },
+        {
+          "t": "Cloud Device Administrator",
+          "d": "Role that manages device objects and device settings."
+        }
+      ],
+      "trap": "Deleting a device removes its BitLocker keys permanently; the safer first step for a lost or stale device is to disable it.",
+      "example": "A laptop is reported lost: the admin disables its device object so it can't get tokens, then retires it in Intune.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Find stale device",
+          "Disable",
+          "Grace period",
+          "Delete"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.2.09",
+      "objective": "d1.2",
+      "seq": 9,
+      "title": "Assign, modify and report on licences",
+      "short": "Assign licences directly or through group-based licensing, turn off individual service plans, and fix errors such as not enough licences, conflicting service plans or missing usage location. Report on licences in the admin center or with Graph PowerShell.",
+      "deep": "**Direct vs inherited**: a direct licence is assigned to the user; an inherited one comes from **group-based licensing**. Group-based licensing works with security, mail-enabled and Microsoft 365 groups, including dynamic groups, so joiners automatically get licences. It needs a paid licence such as Entra ID P1 (or an Office/Microsoft 365 plan that includes the feature).\n\n**Assigning** (at least **License Administrator**): Billing > Licenses > select product > **Assign**, choose users or groups, and use **Turn apps and services on or off** to disable service plans.\n\n**Rules and errors**\n- **Usage location** must be set before licences with location-restricted services apply.\n- **Nested groups** aren't supported: only direct members of the licensed group receive licences.\n- Errors: **Not enough licences**, **Conflicting service plans** (for example Exchange Online Plan 1 and Plan 2), **Other products depend on this licence**, **Usage location isn't allowed**, **Duplicate proxy addresses**. Fix the cause, then **Reprocess**.\n- A direct licence can't be removed while the same licence is inherited; remove the user from the group instead.\n- When moving a user between licensed groups, add to the new group first, confirm the licence, then remove from the old one.\n\n**Reporting/automation**: `Get-MgSubscribedSku` (SKUs and consumed units), `Get-MgUser -Property AssignedLicenses,LicenseAssignmentStates`, `Set-MgUserLicense`, `Set-MgGroupLicense`.",
+      "terms": [
+        {
+          "t": "Group-based licensing",
+          "d": "Licences assigned to a group and inherited by its direct members."
+        },
+        {
+          "t": "Service plan",
+          "d": "An individual service inside a licence that can be turned off."
+        },
+        {
+          "t": "Reprocess",
+          "d": "Retries licence assignment after an error is fixed."
+        },
+        {
+          "t": "SkuId",
+          "d": "GUID identifying a licence product."
+        }
+      ],
+      "trap": "Licences on a parent group don't flow to nested groups, and a missing usage location is the classic cause of assignment errors.",
+      "example": "Contoso assigns Microsoft 365 E5 to the dynamic group 'All Employees' with Viva Engage turned off.",
+      "diagram": null
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-300.d1.q001",
+      "lesson": "sc-300.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Tier-1 support staff must reset passwords for non-administrator users and invalidate their refresh tokens. They must not create users, manage groups or assign licences. Which built-in role should you assign?",
+      "options": [
+        "User Administrator",
+        "License Administrator",
+        "Helpdesk Administrator",
+        "Privileged Role Administrator"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Helpdesk Administrator resets passwords and invalidates refresh tokens for non-admins without user-creation rights. User Administrator also creates users and manages groups (too broad). License Administrator only manages licences. Privileged Role Administrator manages role assignments."
+    },
+    {
+      "id": "sc-300.d1.q002",
+      "lesson": "sc-300.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You try to assign the Groups Administrator role to an existing assigned security group named IT-Ops, but the group isn't offered in the role assignment pane. What should you do?",
+      "options": [
+        "Create a new security group with 'Microsoft Entra roles can be assigned to the group' set to Yes",
+        "Edit IT-Ops and turn on 'Microsoft Entra roles can be assigned to the group'",
+        "Convert IT-Ops to a Microsoft 365 group",
+        "Change IT-Ops to Dynamic user membership"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "isAssignableToRole can only be set when a group is created, so a new role-assignable group is required. It can't be enabled on an existing group. Group type conversion doesn't help, and role-assignable groups can't use dynamic membership."
+    },
+    {
+      "id": "sc-300.d1.q003",
+      "lesson": "sc-300.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about role-assignable groups, select Yes if true.",
+      "statements": [
+        {
+          "s": "A role-assignable group can use a dynamic membership rule.",
+          "a": false
+        },
+        {
+          "s": "You can add another group as a member of a role-assignable group.",
+          "a": false
+        },
+        {
+          "s": "A tenant can have up to 500 role-assignable groups.",
+          "a": true
+        }
+      ],
+      "explain": "Role-assignable groups must use Assigned membership to prevent unintended elevation, and nesting a group inside one isn't supported. The documented limit is 500 role-assignable groups per tenant."
+    },
+    {
+      "id": "sc-300.d1.q004",
+      "lesson": "sc-300.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the minimum licence required for each user who is assigned a custom Microsoft Entra role?",
+      "options": [
+        "Microsoft Entra ID Free",
+        "Microsoft Entra ID P1",
+        "Microsoft Entra ID Governance",
+        "Microsoft Entra Suite"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Custom roles require Microsoft Entra ID P1 for every assignee; built-in roles are available with Free. Entra ID Governance and Entra Suite include more features, but they aren't the minimum."
+    },
+    {
+      "id": "sc-300.d1.q005",
+      "lesson": "sc-300.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You need a custom Microsoft Entra role that only lets holders update app registration credentials. Complete the Microsoft Graph PowerShell command.",
+      "code": "$params = @{\n  DisplayName = \"App Secret Rotator\"\n  IsEnabled = $true\n  RolePermissions = @(@{ AllowedResourceActions = @(\"microsoft.directory/applications/credentials/update\") })\n}\n____ -BodyParameter $params",
+      "options": [
+        "New-MgRoleManagementDirectoryRoleDefinition",
+        "New-MgRoleManagementDirectoryRoleAssignment",
+        "New-MgDirectoryRole",
+        "New-MgApplication"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "New-MgRoleManagementDirectoryRoleDefinition creates the custom role definition from rolePermissions. ...RoleAssignment assigns an existing role to a principal. New-MgDirectoryRole activates a built-in role template (legacy API), and New-MgApplication creates an app registration."
+    },
+    {
+      "id": "sc-300.d1.q006",
+      "lesson": "sc-300.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about custom Microsoft Entra roles are true? Select TWO.",
+      "options": [
+        "Permissions are chosen from a preset list, the same permissions used by built-in roles",
+        "Any Microsoft Graph API permission can be added to a custom role",
+        "You can edit a built-in role to add the permissions you need",
+        "Creating custom roles requires at least the Privileged Role Administrator role",
+        "Custom roles can be assigned without any paid licence"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "Custom roles are built from preset directory permissions that built-in roles also use, and creating them needs at least Privileged Role Administrator. Graph API permissions are an app consent concept, built-in roles can't be edited, and custom role assignees need P1."
+    },
+    {
+      "id": "sc-300.d1.q007",
+      "lesson": "sc-300.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Northwind University has one Microsoft Entra tenant with users for the Faculty of Arts and the Faculty of Science. Each faculty has its own IT team. Each team must reset passwords only for its own faculty's students and staff. Administrative effort should be minimal and the tenant must stay single.",
+      "stem": "What should you implement?",
+      "options": [
+        "Dynamic groups for each faculty with the IT team members as group owners",
+        "A custom role for each faculty that includes password reset permissions",
+        "PIM for Groups with an approval workflow per faculty",
+        "An administrative unit per faculty with Helpdesk Administrator assigned at the administrative unit scope"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Administrative units scope a role to a subset of users, so each team only manages its faculty. Group owners manage membership, not passwords. A custom role still needs a scope; on its own it is tenant-wide. PIM controls when a role is active, not which users it covers."
+    },
+    {
+      "id": "sc-300.d1.q008",
+      "lesson": "sc-300.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about administrative units, select Yes if true.",
+      "statements": [
+        {
+          "s": "An administrative unit can be nested inside another administrative unit.",
+          "a": false
+        },
+        {
+          "s": "A user with a role scoped to an administrative unit can still browse users outside it using default user permissions.",
+          "a": true
+        },
+        {
+          "s": "The Global Administrator role can be assigned at administrative unit scope.",
+          "a": false
+        }
+      ],
+      "explain": "Administrative units can't be nested. They limit management permissions only, so default read access to the directory remains. Global Administrator is tenant-wide and can't be scoped to an administrative unit."
+    },
+    {
+      "id": "sc-300.d1.q009",
+      "lesson": "sc-300.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You want an administrative unit's membership to update automatically by rule. Which object types can be added to an administrative unit by a dynamic membership rule?",
+      "options": [
+        "Users only",
+        "Users and devices",
+        "Users, groups and devices",
+        "Groups only"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Dynamic membership for administrative units supports users and devices. Groups can be added to an administrative unit manually but not by dynamic rule."
+    },
+    {
+      "id": "sc-300.d1.q010",
+      "lesson": "sc-300.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You must assign the User Administrator role to a user, scoped only to the administrative unit stored in $auId. Complete the command.",
+      "code": "New-MgRoleManagementDirectoryRoleAssignment -PrincipalId $userId `\n  -RoleDefinitionId $roleId `\n  -DirectoryScopeId ____",
+      "options": [
+        "\"/administrativeUnits/$auId\"",
+        "\"/\"",
+        "\"/groups/$auId\"",
+        "\"/tenants/$auId\""
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "An administrative unit scope is expressed as /administrativeUnits/{id}. \"/\" means tenant-wide. /groups/... is not how AU scopes are written, and /tenants/ isn't a valid directory scope here."
+    },
+    {
+      "id": "sc-300.d1.q011",
+      "lesson": "sc-300.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso has 12 tenant-wide User Administrators. Security requires that the accounts of the CEO, CFO and board members can be modified only by a three-person Executive Support team. The tenant-wide administrators must keep their current role assignments for all other users.",
+      "stem": "What should you do?",
+      "options": [
+        "Create a standard administrative unit for the executives and assign the Executive Support team User Administrator on it",
+        "Add the executives to a role-assignable group owned by the Executive Support team",
+        "Create a restricted management administrative unit for the executives and assign the Executive Support team User Administrator scoped to it",
+        "Require PIM approval from the Executive Support team for all User Administrator activations"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A restricted management administrative unit blocks tenant-scoped admins from changing its members, so only admins assigned at its scope can. A standard AU adds the team but doesn't block the other 12 admins. Group ownership and PIM approval don't restrict which users tenant admins can modify."
+    },
+    {
+      "id": "sc-300.d1.q012",
+      "lesson": "sc-300.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about restricted management administrative units, select Yes if true.",
+      "statements": [
+        {
+          "s": "You can turn on restricted management for an existing administrative unit.",
+          "a": false
+        },
+        {
+          "s": "A Global Administrator without a role at the unit's scope can change the properties of users in the unit.",
+          "a": false
+        },
+        {
+          "s": "Security groups can be members, but Microsoft 365 groups can't.",
+          "a": true
+        }
+      ],
+      "explain": "Restricted management is set at creation and can't be changed later. Global Administrators can manage the unit itself, but can't modify its members unless they assign themselves a scoped role. Users, devices and security groups are supported; Microsoft 365 groups aren't."
+    },
+    {
+      "id": "sc-300.d1.q013",
+      "lesson": "sc-300.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "Ana has Helpdesk Administrator at tenant scope and User Administrator scoped to the Sales administrative unit. Raj is a non-admin Marketing user who isn't in any administrative unit. Which action can Ana perform on Raj?",
+      "options": [
+        "Reset Raj's password",
+        "Delete Raj's account",
+        "Assign Raj a Microsoft 365 licence",
+        "Change Raj's user principal name"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Permissions combine, but each is limited by scope. Tenant-scoped Helpdesk Administrator lets Ana reset Raj's password. Deleting, licensing and changing the UPN need User Administrator rights, and Ana has those only for Sales AU members."
+    },
+    {
+      "id": "sc-300.d1.q014",
+      "lesson": "sc-300.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You need to see every Microsoft Entra role a user holds, the scope of each, and whether it was assigned directly or through a group. Where should you look?",
+      "options": [
+        "The user's sign-in logs",
+        "The user's Assigned roles page",
+        "Identity Secure Score",
+        "The user's Licenses page"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Assigned roles page lists each role, its scope and the assignment path (direct or group), plus eligible assignments with PIM. Sign-in logs show authentication events, Secure Score shows recommendations, and Licenses shows products."
+    },
+    {
+      "id": "sc-300.d1.q015",
+      "lesson": "sc-300.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about evaluating effective Microsoft Entra role permissions are true? Select TWO.",
+      "options": [
+        "Permissions from all of a user's active role assignments are combined",
+        "A PIM-eligible assignment grants no permissions until it is activated",
+        "A role scoped to an administrative unit lets the holder rename or delete that administrative unit",
+        "A role assigned to a group gives the group's members rights over the group's other members only"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Active assignments add together, and eligible PIM roles grant nothing until activated. A container-scoped role applies to the objects inside the unit, not the unit object. A role assigned to a role-assignable group grants its members that role at the assignment's scope, not just over each other."
+    },
+    {
+      "id": "sc-300.d1.q016",
+      "lesson": "sc-300.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You add contoso.com as a custom domain in Microsoft Entra ID. Which DNS record type can you create at the registrar to verify ownership?",
+      "options": [
+        "CNAME",
+        "SRV",
+        "TXT",
+        "PTR"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Domain verification uses a TXT record (or an MX record) with the value Microsoft Entra ID provides. CNAME and SRV records are used for service discovery after verification, and PTR records are reverse lookups."
+    },
+    {
+      "id": "sc-300.d1.q017",
+      "lesson": "sc-300.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Contoso acquired Tailspin. tailspin.com is verified in Tailspin's old Microsoft Entra tenant, and you need it verified in Contoso's tenant. What must happen first?",
+      "options": [
+        "Add a second TXT record so both tenants can verify the domain",
+        "Federate tailspin.com with Contoso's tenant",
+        "Set tailspin.com as the primary domain in Contoso's tenant",
+        "Remove tailspin.com, and all references to it, from Tailspin's tenant"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A domain can be verified in only one directory, so it must be removed from the old tenant (after removing UPNs, addresses and other references) before it can be verified in Contoso. Extra TXT records or federation don't bypass that, and an unverified domain can't be made primary."
+    },
+    {
+      "id": "sc-300.d1.q018",
+      "lesson": "sc-300.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "You want new users to sign in as name@fabrikam.com. Put the steps in order.",
+      "options": [
+        "Add fabrikam.com under Domain names in the Microsoft Entra admin center",
+        "Create the TXT record shown by Microsoft Entra ID at the DNS registrar",
+        "Select Verify for fabrikam.com",
+        "Set fabrikam.com as the primary domain"
+      ],
+      "explain": "You add the domain to get the verification values, publish the TXT record, then verify. Only a verified domain can be made primary so new users default to it."
+    },
+    {
+      "id": "sc-300.d1.q019",
+      "lesson": "sc-300.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Users who open https://myapps.microsoft.com see the default Microsoft sign-in page until they enter their username. You want Contoso branding on the first screen. What should you do?",
+      "options": [
+        "Add a browser language customization for English",
+        "Share the URL with the parameter whr=contoso.com",
+        "Upload a larger banner logo",
+        "Assign users Microsoft Entra ID P2 licences"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Multitenant Microsoft sites don't know the tenant until the username is entered. A home realm hint (whr=contoso.com) identifies the tenant up front so branding shows immediately. Language variants, logos and licences don't change when the tenant is identified."
+    },
+    {
+      "id": "sc-300.d1.q020",
+      "lesson": "sc-300.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about company branding, select Yes if true.",
+      "statements": [
+        {
+          "s": "Organizational Branding Administrator is the least-privileged role that can configure company branding.",
+          "a": true
+        },
+        {
+          "s": "Sign-in page text can contain up to 1,024 characters.",
+          "a": true
+        },
+        {
+          "s": "B2B guests signing in to your tenant see your tenant's branding instead of their home tenant's branding.",
+          "a": false
+        }
+      ],
+      "explain": "Organizational Branding Administrator is the minimum role, and sign-in page text allows 1,024 characters. B2B guests from other Entra tenants see their home tenant's branding."
+    },
+    {
+      "id": "sc-300.d1.q021",
+      "lesson": "sc-300.d1.1.09",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A Global Administrator has no access to an Azure subscription whose only Owner left the company. Which tenant setting lets the Global Administrator regain access?",
+      "options": [
+        "Access management for Azure resources in the tenant properties",
+        "Restrict access to Microsoft Entra admin center in user settings",
+        "Security defaults",
+        "Technical contact in the tenant properties"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Setting Access management for Azure resources to Yes grants the Global Administrator User Access Administrator at Azure root scope, so they can fix role assignments. The other settings don't grant any Azure RBAC rights."
+    },
+    {
+      "id": "sc-300.d1.q022",
+      "lesson": "sc-300.d1.1.10",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": null,
+      "stem": "You must stop non-admin users from creating app registrations and security groups. Users with admin roles must keep these abilities. Which TWO settings should you change? Select TWO.",
+      "options": [
+        "Set 'Users can register applications' to No",
+        "Set 'Users can create security groups in Azure portals, API or PowerShell' to No",
+        "Set 'Restrict access to Microsoft Entra admin center' to Yes",
+        "Set guest user access to the most restrictive level",
+        "Enable security defaults"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "These two user and group settings block non-admins while admins keep the rights through their roles. Restricting admin center access doesn't block Graph or PowerShell. Guest access settings affect guests only, and security defaults enforce MFA, not creation rights."
+    },
+    {
+      "id": "sc-300.d1.q023",
+      "lesson": "sc-300.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A cloud-only user was deleted by mistake. For how long can you restore the account from Deleted users?",
+      "options": [
+        "7 days",
+        "14 days",
+        "30 days",
+        "90 days"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Deleted users remain soft-deleted for 30 days, during which they can be restored with their properties. After that they are permanently deleted."
+    },
+    {
+      "id": "sc-300.d1.q024",
+      "lesson": "sc-300.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about managing users, select Yes if true.",
+      "statements": [
+        {
+          "s": "To change the department of a user synced from on-premises AD, change it in AD rather than in Microsoft Entra ID.",
+          "a": true
+        },
+        {
+          "s": "Microsoft support can recover a user that was permanently deleted.",
+          "a": false
+        },
+        {
+          "s": "A restored user gets back the licences they had, even if no licences are currently available.",
+          "a": true
+        }
+      ],
+      "explain": "Synced attributes are mastered on-premises and the next sync would overwrite cloud edits. Permanently deleted users can't be recovered by anyone. Restoring brings back licences, which can temporarily push the tenant over its purchased count."
+    },
+    {
+      "id": "sc-300.d1.q025",
+      "lesson": "sc-300.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Microsoft Graph PowerShell command that creates a cloud user who must change the password at first sign-in.",
+      "code": "$pw = @{ Password = \"Temp-Pa55word!2026\"; ForceChangePasswordNextSignIn = $true }\nNew-MgUser -DisplayName \"Ravi Patel\" -UserPrincipalName \"ravi@contoso.com\" `\n  -MailNickname \"ravi\" -AccountEnabled -____ $pw",
+      "options": [
+        "PasswordProfile",
+        "PasswordPolicies",
+        "Password",
+        "InitialPassword"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "New-MgUser takes the password in the PasswordProfile parameter, a hashtable with Password and ForceChangePasswordNextSignIn. PasswordPolicies is a string such as DisablePasswordExpiration. Password and InitialPassword aren't New-MgUser parameters."
+    },
+    {
+      "id": "sc-300.d1.q026",
+      "lesson": "sc-300.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A project team needs a shared mailbox, a shared calendar and a SharePoint site created together. Which group type should you create?",
+      "options": [
+        "Security group",
+        "Mail-enabled security group",
+        "Microsoft 365 group",
+        "Distribution list"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Microsoft 365 groups provision a shared mailbox, calendar and SharePoint site. Security groups control access. Mail-enabled security groups and distribution lists deliver email but don't create a shared site or calendar."
+    },
+    {
+      "id": "sc-300.d1.q027",
+      "lesson": "sc-300.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Entra groups, select Yes if true.",
+      "statements": [
+        {
+          "s": "A Microsoft 365 group can contain device objects.",
+          "a": false
+        },
+        {
+          "s": "A group expiration policy applies to Microsoft 365 groups.",
+          "a": true
+        },
+        {
+          "s": "An owner can manually add a member to a dynamic membership group.",
+          "a": false
+        }
+      ],
+      "explain": "Microsoft 365 groups hold users only; devices need a security group. Expiration policies apply to Microsoft 365 groups. Dynamic group membership is controlled by the rule only, so manual additions aren't possible."
+    },
+    {
+      "id": "sc-300.d1.q028",
+      "lesson": "sc-300.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A dynamic group must include every user whose department is Sales or Marketing. Complete the membership rule.",
+      "code": "(user.department -eq \"Sales\") ____ (user.department -eq \"Marketing\")",
+      "options": [
+        "-and",
+        "-or",
+        "-contains",
+        "-match"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "-or matches users who satisfy either expression. -and would require both departments at once (no user matches). -contains and -match are comparison operators used inside a single expression, not to join two expressions."
+    },
+    {
+      "id": "sc-300.d1.q029",
+      "lesson": "sc-300.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need a dynamic group containing all internal users but no guest users. Which rule should you use?",
+      "options": [
+        "user.objectId -ne null",
+        "(user.objectId -ne null) -and (user.userType -eq \"Guest\")",
+        "user.accountEnabled -eq true",
+        "(user.objectId -ne null) -and (user.userType -eq \"Member\")"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Adding userType -eq \"Member\" removes guests. user.objectId -ne null alone includes guests, the Guest clause selects only guests, and accountEnabled includes enabled guests and excludes disabled members."
+    },
+    {
+      "id": "sc-300.d1.q030",
+      "lesson": "sc-300.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam has three dynamic user groups. Together they contain 1,500 memberships, but some users are in more than one group, so there are 1,200 unique users. Fabrikam also has a dynamic device group containing 300 Windows devices.",
+      "stem": "What is the minimum number of Microsoft Entra ID P1 licences Fabrikam needs for these dynamic groups?",
+      "options": [
+        "300",
+        "1,200",
+        "1,500",
+        "1,800"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "P1 coverage is needed per unique user who is a member of any dynamic group, so 1,200. Overlapping memberships aren't counted twice, and device-based dynamic groups don't need licences."
+    },
+    {
+      "id": "sc-300.d1.q031",
+      "lesson": "sc-300.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A Global Administrator tries to create an attribute set for custom security attributes and is denied. Which role is the least-privileged role that can create attribute sets and attribute definitions?",
+      "options": [
+        "Attribute Assignment Administrator",
+        "Attribute Definition Administrator",
+        "Directory Writers",
+        "Privileged Role Administrator"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Attribute Definition Administrator manages attribute sets and definitions. Attribute Assignment Administrator only assigns values. Directory Writers and Privileged Role Administrator, like Global Administrator, don't get custom security attribute rights by default."
+    },
+    {
+      "id": "sc-300.d1.q032",
+      "lesson": "sc-300.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about custom security attributes, select Yes if true.",
+      "statements": [
+        {
+          "s": "By default, a Global Administrator can read custom security attribute values on users.",
+          "a": false
+        },
+        {
+          "s": "An attribute definition can be renamed after it is created.",
+          "a": false
+        },
+        {
+          "s": "'Only allow predefined values' can be changed from Yes to No.",
+          "a": true
+        }
+      ],
+      "explain": "Admin roles, including Global Administrator, can't read custom security attributes without an Attribute role. Attribute set and attribute names are fixed once created. Predefined-only can be relaxed from Yes to No, but not tightened from No to Yes."
+    },
+    {
+      "id": "sc-300.d1.q033",
+      "lesson": "sc-300.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "You need to create 400 internal user accounts with the Bulk create feature. Put the steps in order.",
+      "options": [
+        "Download the latest CSV template from Bulk create",
+        "Enter Name, User name and Initial password for each user, and remove the sample row",
+        "Upload the file and submit it after validation",
+        "Review status and errors on the Bulk operation results page"
+      ],
+      "explain": "Start from the current template, fill in the required columns (displayName, userPrincipalName, passwordProfile), upload so the file is validated, then check Bulk operation results and download any error details."
+    },
+    {
+      "id": "sc-300.d1.q034",
+      "lesson": "sc-300.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You have a CSV of 200 partner contacts from other companies. Each needs a guest account and an email invitation. Which Entra admin center feature should you use?",
+      "options": [
+        "Bulk invite",
+        "Bulk create",
+        "Download users",
+        "Bulk restore"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Bulk invite creates guest (B2B) accounts and sends invitation emails. Bulk create makes internal member accounts without invitations, Download users exports a list, and Bulk restore recovers deleted users."
+    },
+    {
+      "id": "sc-300.d1.q035",
+      "lesson": "sc-300.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A script creates users from a CSV file using New-MgUser with delegated permissions. Complete the connection command with the least-privileged permission that allows creating users.",
+      "code": "Connect-MgGraph -Scopes \"____\"\nImport-Csv .\\newhires.csv | ForEach-Object {\n  New-MgUser -DisplayName $_.Name -UserPrincipalName $_.UPN -MailNickname $_.Alias `\n    -AccountEnabled -PasswordProfile @{ Password = $_.Password }\n}",
+      "options": [
+        "User.Read.All",
+        "Directory.Read.All",
+        "User.ReadWrite.All",
+        "Group.ReadWrite.All"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Creating users needs write permission on users, so User.ReadWrite.All. The two Read scopes only allow reading, and Group.ReadWrite.All covers groups, not users."
+    },
+    {
+      "id": "sc-300.d1.q036",
+      "lesson": "sc-300.d1.2.07",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Employees want to read work email on personal iPhones and Android phones that the company doesn't own. Which device identity fits?",
+      "options": [
+        "Microsoft Entra joined",
+        "Microsoft Entra hybrid joined",
+        "Microsoft Entra registered",
+        "Windows Autopilot self-deploying"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Personal (BYOD) and mobile devices are Microsoft Entra registered. Entra join is for organisation-owned Windows devices, hybrid join needs on-premises AD domain join, and Autopilot provisions corporate Windows devices."
+    },
+    {
+      "id": "sc-300.d1.q037",
+      "lesson": "sc-300.d1.2.07",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are configuring Microsoft Entra hybrid join for domain-joined Windows 11 devices in a managed (PHS) domain by using Microsoft Entra Connect. Which TWO actions are required? Select TWO.",
+      "options": [
+        "Configure the service connection point (SCP) with Configure device options in Microsoft Entra Connect",
+        "Enrol every device in Microsoft Intune first",
+        "Make sure the OUs containing the computer objects are in the sync scope",
+        "Assign every user a Microsoft Entra ID P2 licence",
+        "Install the Microsoft Entra private network connector on each device"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Hybrid join needs the SCP so devices find the tenant, and the computer objects must be synced. Intune enrolment is optional, hybrid join doesn't need P2, and the private network connector belongs to Application Proxy/Private Access."
+    },
+    {
+      "id": "sc-300.d1.q038",
+      "lesson": "sc-300.d1.2.08",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You must require multifactor authentication whenever a user joins or registers a device with Microsoft Entra ID. What does Microsoft recommend?",
+      "options": [
+        "Set 'Require multifactor authentication to register or join devices' to Yes",
+        "Turn on security defaults",
+        "Create an Intune enrolment restriction",
+        "Create a Conditional Access policy that targets the user action 'Register or join devices' and requires MFA"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Microsoft recommends the Conditional Access user action Register or join devices with a grant control requiring MFA, leaving the legacy device setting at No. Security defaults are tenant-wide, and Intune restrictions control enrolment platforms, not MFA."
+    },
+    {
+      "id": "sc-300.d1.q039",
+      "lesson": "sc-300.d1.2.08",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the default value of the 'Maximum number of devices per user' device setting?",
+      "options": [
+        "10",
+        "50",
+        "20",
+        "Unlimited"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The default is 50 Entra joined or registered devices per user, and it can be raised to 100. The limit doesn't apply to hybrid joined devices."
+    },
+    {
+      "id": "sc-300.d1.q040",
+      "lesson": "sc-300.d1.2.09",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A new user is added to a group that has group-based licensing for Microsoft 365 E5. The licence shows the error 'Usage location isn't allowed'. What should you do?",
+      "options": [
+        "Assign the licence directly to the user",
+        "Remove the Exchange Online service plan from the group assignment",
+        "Set the user's usage location, then reprocess the licence",
+        "Add the user to a nested group under the licensed group"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "This error means the usage location is missing or unsupported. Set it and reprocess. A direct assignment needs a usage location too, removing a service plan doesn't fix it, and nested group members don't inherit licences."
+    },
+    {
+      "id": "sc-300.d1.q041",
+      "lesson": "sc-300.d1.2.09",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "order",
+      "case": "Maya is moving from Sales to Finance. Each department's group has group-based licensing with different service plans enabled. Maya must not lose access to any service during the move.",
+      "stem": "Put the steps in order.",
+      "options": [
+        "Add Maya to the Finance licensed group",
+        "Confirm on Maya's Licenses page that the Finance assignment applied without errors",
+        "Remove Maya from the Sales licensed group"
+      ],
+      "explain": "Adding the new group first means Maya never has a gap. Check that the inherited licence applied correctly before removing her from the original group."
+    },
+    {
+      "id": "sc-300.d1.q042",
+      "lesson": "sc-300.d1.2.09",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about group-based licensing are true? Select TWO.",
+      "options": [
+        "Licences assigned to a parent group flow to members of nested groups",
+        "Only direct members of the licensed group receive the licence",
+        "A user can't hold the same product both directly and through a group",
+        "You can turn off individual service plans in a group licence assignment",
+        "Group-based licensing can't be used with dynamic groups"
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "explain": "Nested groups aren't supported, so only direct members get licences, and service plans can be disabled per assignment. A user can have both a direct and an inherited assignment, and dynamic groups work with group-based licensing."
+    }
+  ]
+}

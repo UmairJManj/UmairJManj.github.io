@@ -1,0 +1,1251 @@
+{
+  "exam": "sc-300",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "sc-300.d3.3.01",
+      "objective": "d3.3",
+      "seq": 1,
+      "title": "Planning app registrations",
+      "short": "An app registration creates an application object, the global definition of an app in its home tenant. Each tenant that uses the app gets a service principal, its local instance. When you plan, pick the supported account types (single tenant or multitenant), who may register apps, which credential type to use, and the permission model.",
+      "deep": "**Application object vs service principal**\n- The **application object** (App registrations blade) exists only in the **home tenant**. It works like a template: name, redirect URIs, credentials, the APIs it exposes, app roles and requested permissions.\n- A **service principal** (Enterprise apps blade) is created in **every tenant** that uses the app, at registration in the home tenant or at consent in other tenants. Assignments, consent grants and Conditional Access apply to it.\n- The relationship is one-to-many: one application object and many service principals. Managed identity service principals have no application object.\n**Supported account types** (`signInAudience`):\n- **Single tenant** (AzureADMyOrg): recommended for most line-of-business apps.\n- **Multitenant** (AzureADMultipleOrgs): SaaS for any Entra tenant.\n- **Multitenant + personal Microsoft accounts** (AzureADandPersonalMicrosoftAccount).\n- **Personal accounts only** (PersonalMicrosoftAccount).\n**Planning decisions**: who can register (the tenant setting plus the Application Developer role), naming and ownership standards (at least two owners), **credential type** (federated credential > certificate > secret), **delegated vs application** permissions, whether to define **app roles**, and whether to require assignment. Also plan **publisher verification** for multitenant apps so users can consent under verified-publisher policies.",
+      "terms": [
+        {
+          "t": "Application object",
+          "d": "The global definition of an app, stored only in its home tenant (App registrations)."
+        },
+        {
+          "t": "signInAudience",
+          "d": "The manifest property for supported account types, such as AzureADMyOrg or AzureADMultipleOrgs."
+        },
+        {
+          "t": "Home tenant",
+          "d": "The tenant where the app was registered and where its application object lives."
+        }
+      ],
+      "trap": "Candidates think a multitenant app copies its application object into each customer tenant. Only a service principal is created there.",
+      "example": "Adatum registers a multitenant HR app in its own tenant. When Contoso's admin consents, a service principal for the app appears in Contoso's Enterprise apps.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "App object (home)",
+          "Consent",
+          "Service principal",
+          "Assign + CA"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.3.02",
+      "objective": "d3.3",
+      "seq": 2,
+      "title": "Creating app registrations",
+      "short": "Create a registration in Entra ID > App registrations > New registration. Enter a name, choose the supported account types and optionally a redirect URI. Record the Application (client) ID and the Directory (tenant) ID. You can automate the same thing with New-MgApplication, az ad app create, or Graph POST /applications.",
+      "deep": "**Portal**: Microsoft Entra admin center > **Entra ID** > **App registrations** > **New registration**.\n1. **Name**: the display name users see on consent prompts.\n2. **Supported account types**.\n3. **Redirect URI** (optional now): choose a platform and URI.\n4. **Register**.\nThe **Overview** page shows:\n- **Application (client) ID** (`appId`): identifies the app in code and token requests.\n- **Object ID**: the ID of the application object itself. It's different from the service principal's object ID.\n- **Directory (tenant) ID**.\n**Automation**\n- Microsoft Graph PowerShell: `New-MgApplication -DisplayName 'Orders API' -SignInAudience AzureADMyOrg`, then `New-MgServicePrincipal -AppId <appId>` if needed.\n- Azure CLI: `az ad app create --display-name 'Orders API'` and `az ad sp create --id <appId>`.\n- Graph API: `POST https://graph.microsoft.com/v1.0/applications`.\nRegistering in the portal also creates the home tenant's service principal automatically. **Prerequisite**: the 'Users can register applications' setting must allow it, or you need Application Developer or a higher role. The creator becomes an **owner**. After creation, configure authentication, credentials, API permissions, an exposed API (Application ID URI `api://<client-id>`) and app roles.",
+      "terms": [
+        {
+          "t": "Application (client) ID",
+          "d": "The appId GUID that identifies an app in token requests; the same in every tenant."
+        },
+        {
+          "t": "Object ID",
+          "d": "The directory object's own ID; the application object and each service principal have different object IDs."
+        },
+        {
+          "t": "New-MgApplication",
+          "d": "Microsoft Graph PowerShell cmdlet that creates an application object."
+        }
+      ],
+      "trap": "The application object's Object ID is offered where the client ID is needed, such as in MSAL configuration. Code uses the Application (client) ID.",
+      "example": "A DevOps engineer runs New-MgApplication in a pipeline to create 'Orders API' as single tenant, then adds a federated credential for GitHub.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.3.03",
+      "objective": "d3.3",
+      "seq": 3,
+      "title": "Configuring app authentication: platforms and redirect URIs",
+      "short": "On the Authentication blade, add a platform (Web, Single-page application, iOS/macOS, Android, or Mobile and desktop) with its redirect URIs, where Entra ID sends tokens. You can also set a front-channel logout URL. Avoid the implicit grant and use authorization code flow with PKCE. Enable public client flows only when needed.",
+      "deep": "**Redirect URI (reply URL)**: after sign-in, Entra ID sends the authorization code or tokens **only** to a URI registered on the app. This stops tokens being sent to an attacker's site. URIs must use HTTPS, except `http://localhost`.\n**Platforms**\n- **Web**: server-side apps (ASP.NET, Node) that are confidential clients with a secret or certificate.\n- **Single-page application (SPA)**: browser JavaScript apps (React, Angular). Uses **authorization code flow with PKCE**, with no secret.\n- **iOS / macOS** and **Android**: the redirect URI is generated from the bundle ID or the package name plus signature hash.\n- **Mobile and desktop applications**: native clients, such as `https://login.microsoftonline.com/common/oauth2/nativeclient`.\n**Other settings**\n- **Front-channel logout URL**: where Entra ID sends sign-out so the app clears its session.\n- **Implicit grant and hybrid flows**: check boxes for **ID tokens** and **Access tokens**. Leave them off for new apps. Implicit flow is no longer recommended because browsers are removing third-party cookies, so use auth code flow.\n- **Allow public client flows**: enables device code flow and ROPC (resource owner password credentials) for public clients.\n- Supported account types can also be changed here.",
+      "terms": [
+        {
+          "t": "Redirect URI",
+          "d": "A registered endpoint where the identity platform sends codes or tokens after authentication."
+        },
+        {
+          "t": "PKCE",
+          "d": "Proof Key for Code Exchange: protects authorization code flow for public clients like SPAs and mobile apps."
+        },
+        {
+          "t": "Implicit grant",
+          "d": "A legacy flow returning tokens directly from /authorize; discouraged in favor of auth code flow."
+        }
+      ],
+      "trap": "For a new SPA, enabling the implicit grant check boxes is offered. The right answer is the SPA platform with authorization code flow and PKCE.",
+      "example": "A React app registered under the Single-page application platform with https://app.contoso.com/auth uses MSAL.js and PKCE, with implicit grant left unchecked.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Platform",
+          "Client type",
+          "Flow"
+        ],
+        "rows": [
+          [
+            "Web",
+            "Confidential",
+            "Auth code + secret"
+          ],
+          [
+            "SPA",
+            "Public",
+            "Auth code + PKCE"
+          ],
+          [
+            "Mobile/desktop",
+            "Public",
+            "Auth code + PKCE"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.3.04",
+      "objective": "d3.3",
+      "seq": 4,
+      "title": "App credentials: certificates, secrets and federated credentials",
+      "short": "Confidential apps prove their identity with a credential. Federated credentials (workload identity federation) need no secret at all. Certificates are the recommended stored credential. Client secrets are the weakest and last at most 24 months. Microsoft recommends under 12 months. Manage them under Certificates & secrets.",
+      "deep": "**Certificates & secrets** blade on the app registration:\n- **Certificates**: upload the public key (`.cer`, `.pem` or `.crt`). The app signs a client assertion with the private key. Recommended over secrets. In production, use a CA-signed certificate managed in **Azure Key Vault**.\n- **Client secrets**: a generated string (an application password). The value is **shown only once**. The maximum lifetime is **24 months**, and Microsoft recommends less than 12 months and not using secrets in production.\n- **Federated credentials**: **workload identity federation**. The app (or a **user-assigned managed identity**) trusts tokens from an external OIDC identity provider and swaps them for Entra tokens with no stored secret. Scenarios include **GitHub Actions**, **Kubernetes** service accounts, Google Cloud, AWS and other issuers.\n  - The trust matches the external token's **issuer**, **subject** and **audience** (default `api://AzureADTokenExchange`) **exactly and case-sensitively**.\n  - Up to **20** federated credentials per app or user-assigned managed identity.\n  - Tokens issued by Microsoft Entra ID itself can't be used as the external token.\nGovernance tips: track expiry with Entra recommendations and workload identity sign-in logs, and use app management policies to restrict secrets or their lifetimes. Workload ID Premium licensing adds Conditional Access and ID Protection for service principals.",
+      "terms": [
+        {
+          "t": "Workload identity federation",
+          "d": "Trusting an external IdP's tokens so a workload gets Entra tokens without a secret."
+        },
+        {
+          "t": "Federated identity credential",
+          "d": "The trust object (issuer, subject, audiences) on an app or user-assigned managed identity."
+        },
+        {
+          "t": "Client secret",
+          "d": "A password-like string for an app; maximum 24 months, shown only once."
+        }
+      ],
+      "trap": "For GitHub Actions deploying to Azure, the 'secure' answer is not a certificate stored in GitHub secrets. It's a federated credential with no stored secret.",
+      "example": "A GitHub workflow on the main branch of contoso/web uses a federated credential with subject repo:contoso/web:ref:refs/heads/main, so it deploys with no secrets stored.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "GitHub token",
+          "Entra validates",
+          "iss/sub/aud match",
+          "Entra access token",
+          "Azure deploy"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.3.05",
+      "objective": "d3.3",
+      "seq": 5,
+      "title": "Configuring API permissions",
+      "short": "On the API permissions blade, add the delegated or application permissions your app needs from Microsoft Graph, other Microsoft APIs or your own APIs. Delegated permissions act for a signed-in user. Application permissions act as the app itself and always need admin consent. To publish your own scopes, use Expose an API.",
+      "deep": "**Requesting permissions**: App registration > **API permissions** > **Add a permission** > Microsoft APIs (Graph), **APIs my organization uses**, or **My APIs**.\n- **Delegated permissions (scopes)**: the app acts **on behalf of a signed-in user**. Effective access is the overlap of the permission and the user's own rights. Some delegated permissions need admin consent (for example `Directory.Read.All`).\n- **Application permissions (app roles)**: the app acts **as itself**, with no user, as in daemons and the client credentials flow. They **always require admin consent** and often grant tenant-wide access, such as `Mail.Read` for every mailbox.\n- **Grant admin consent for <tenant>**: a button that consents tenant-wide. The Status column shows 'Granted for <tenant>'. CLI: `az ad app permission admin-consent --id <appId>`.\n- Listing permissions on the registration is a request. The actual grants live on the service principal (Enterprise apps > Permissions).\n**Exposing your own API**: on **Expose an API**, set the **Application ID URI** (default `api://<client-id>`), add **scopes** (delegated permissions such as `Orders.Read`, with 'Who can consent'), and optionally list **authorized client applications** that skip consent prompts. Application permissions for your API are defined as **app roles** with allowed member type Applications.\n**Least privilege**: request the narrowest permission, such as `User.Read` rather than `User.Read.All`, and remove unused ones. In the client credentials flow, apps request `https://graph.microsoft.com/.default`.",
+      "terms": [
+        {
+          "t": "Scope",
+          "d": "A delegated permission exposed by an API, such as Orders.Read."
+        },
+        {
+          "t": "Application ID URI",
+          "d": "The identifier of an exposed API, by default api://<client-id>."
+        },
+        {
+          "t": ".default",
+          "d": "A scope that requests all statically configured permissions of the app for a resource."
+        }
+      ],
+      "trap": "For a background daemon with no signed-in user, delegated permissions are wrong. It needs application permissions plus admin consent.",
+      "example": "A nightly export daemon gets the Graph application permission User.Read.All, and a Privileged Role Administrator grants admin consent for the tenant.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Delegated",
+          "Application"
+        ],
+        "rows": [
+          [
+            "Signed-in user",
+            "Yes",
+            "No"
+          ],
+          [
+            "Consent",
+            "User or admin",
+            "Admin only"
+          ],
+          [
+            "Token claim",
+            "scp",
+            "roles"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.3.06",
+      "objective": "d3.3",
+      "seq": 6,
+      "title": "Creating app roles",
+      "short": "App roles are custom roles you define on an app registration, such as Survey.Create. Assign them to users, groups or applications, and they appear in the token's roles claim. Each role has a display name, a value, a description, allowed member types (Users/Groups, Applications or both) and an enabled flag.",
+      "deep": "**Create**: App registration > **App roles** > **Create app role**:\n- **Display name**: shown in assignment and consent screens, for example 'Survey Writer'.\n- **Allowed member types**: **Users/Groups** (`User` in the manifest), **Applications** (`Application`), or **Both**.\n- **Value**: the string in the `roles` claim, for example `Survey.Create`. It can't contain spaces and must match your code exactly.\n- **Description**.\n- **Do you want to enable this app role?** (`isEnabled`). You must disable a role before deleting it, and disabled roles still appear in existing tokens until assignments are removed.\n**Assign**\n- Users and groups: Enterprise apps > [app] > **Users and groups** > select a role.\n- Applications: in the client app's **API permissions** > **My APIs** > choose the API > **Application permissions**, then **grant admin consent**. The role then appears in the client's access token.\n**Tokens**: sign-in scenarios put roles in the **ID token**. App-calls-API scenarios put them in the **access token** issued for the API.\n**App roles vs groups**: app roles are defined per app, travel with it across tenants, and are deleted with it. Groups are tenant objects and appear in the `groups` claim. Roles and exposed scopes share a default limit of 700 definitions per app.",
+      "terms": [
+        {
+          "t": "allowedMemberTypes",
+          "d": "The manifest property defining whether a role is assignable to User, Application, or both."
+        },
+        {
+          "t": "roles claim",
+          "d": "A token claim listing the values of app roles assigned to the user or service principal."
+        },
+        {
+          "t": "isEnabled",
+          "d": "Whether an app role can still be assigned; it must be false before you delete the role."
+        }
+      ],
+      "trap": "If a role is created with Users/Groups only, it won't appear under Application permissions for a daemon client. You need Applications or Both.",
+      "example": "The Orders API defines Orders.Process with allowedMemberTypes Application. The warehouse daemon is granted it as an application permission with admin consent.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.4.01",
+      "objective": "d3.4",
+      "seq": 1,
+      "title": "Cloud discovery in Defender for Cloud Apps",
+      "short": "Cloud discovery analyzes traffic logs from firewalls and proxies, or endpoint data from Defender for Endpoint, to find shadow IT: the cloud apps people really use. Snapshot reports come from manual uploads. Continuous reports come from a log collector, Defender for Endpoint, or secure web gateway integrations.",
+      "deep": "**Microsoft Defender for Cloud Apps** is Microsoft's cloud access security broker (CASB). **Cloud discovery** compares traffic against the **cloud app catalog** (over 31,000 apps) and gives each app a risk score.\n**Data sources**\n- **Snapshot reports**: manually upload a firewall or proxy log for a one-time view.\n- **Continuous reports**:\n  - **Microsoft Defender for Endpoint integration**: built in. It covers devices on and off the corporate network and lets you investigate per machine.\n  - **Log collector** (a Docker container) receives logs over Syslog or FTP from network appliances.\n  - **Secure web gateway** integrations: Zscaler, iboss, Corrata, Menlo Security.\n- The **Cloud Discovery API** automates log upload.\nData is analyzed several times a day. You can **anonymize** usernames in discovery data.\n**Analyze**: the Cloud discovery dashboard shows top apps, users and IPs, app categories, risk levels and app headquarters locations. The **Discovered apps** tab supports filters (risk score, compliance, users, traffic).\n**Govern**: tag apps **Sanctioned**, **Unsanctioned** or **Monitored**. With Defender for Endpoint and **Enforce app access** enabled, Unsanctioned apps are **blocked** and Monitored apps show a **warning** that users can bypass. Enforcement uses Defender Antivirus network protection in block mode. You can also generate **block scripts** for firewalls and proxies. **App discovery policies** alert on new risky apps or tag them automatically.",
+      "terms": [
+        {
+          "t": "Shadow IT",
+          "d": "Cloud apps used without IT's knowledge or approval."
+        },
+        {
+          "t": "Log collector",
+          "d": "A Docker-based component that receives firewall/proxy logs over Syslog or FTP for continuous reports."
+        },
+        {
+          "t": "Unsanctioned tag",
+          "d": "Marks an app as not approved; with Defender for Endpoint it blocks access on devices."
+        }
+      ],
+      "trap": "Snapshot reports are offered for ongoing monitoring with automatic anomaly detection. That needs continuous reports.",
+      "example": "Contoso enables the Defender for Endpoint integration, finds 400 discovered apps, and tags a risky file-sharing site Unsanctioned. Defender for Endpoint then blocks it on laptops at home and in the office.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Logs / MDE",
+          "Parse",
+          "Match catalog",
+          "Risk score",
+          "Tag & block"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.4.02",
+      "objective": "d3.4",
+      "seq": 2,
+      "title": "Connected apps (app connectors)",
+      "short": "App connectors use a cloud provider's APIs to give Defender for Cloud Apps deep visibility into sanctioned apps such as Microsoft 365, Salesforce, Google Workspace, Box and AWS. They provide activities, files, accounts, OAuth app permissions and governance actions such as suspending users or quarantining files.",
+      "deep": "Cloud discovery shows which apps are used. **App connectors** go inside a sanctioned app through the vendor's **API**.\n**Connect**: Microsoft Defender portal > **Settings** > **Cloud Apps** > **Connected apps** > **App Connectors** > **Connect an app**. Choose the app (for example Microsoft 365, Azure, AWS, GCP, Google Workspace, Salesforce, Box, Dropbox, Okta, ServiceNow, Slack, GitHub, Workday or Zendesk) and authorize with an **admin account** of that app (or OAuth or an API token).\n**What a connector can provide** (it varies by app):\n- **Account information**: users, groups, privileges.\n- **Audit trail**: user, admin and sign-in activities for activity policies and anomaly detection.\n- **Account governance**: suspend users, revoke sessions or passwords.\n- **App permissions**: OAuth tokens granted by users (the basis for OAuth app policies).\n- **Data scan and governance**: scan files and apply actions such as quarantine, removing sharing or applying labels.\nConnectors work **after the fact, through APIs** (API-based CASB). **Conditional Access app control** works in **real time, inline**. They complement each other. Initial scans can take a long time because providers throttle API calls. Check connector status and fix errors on the Connected apps page.",
+      "terms": [
+        {
+          "t": "App connector",
+          "d": "An API integration that gives Defender for Cloud Apps visibility and governance in a connected app."
+        },
+        {
+          "t": "API-based CASB",
+          "d": "Out-of-band inspection of activities and data through the app's APIs."
+        },
+        {
+          "t": "Governance action",
+          "d": "An automated response such as suspend user, quarantine file or remove external sharing."
+        }
+      ],
+      "trap": "When the requirement is to scan files already stored in Box and quarantine them, Conditional Access app control is wrong. That needs an app connector.",
+      "example": "After connecting Salesforce, the SOC sees admin activities and creates a policy that suspends any user who mass-exports reports.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.4.03",
+      "objective": "d3.4",
+      "seq": 3,
+      "title": "Application-enforced restrictions",
+      "short": "The 'Use app enforced restrictions' session control in Conditional Access passes device state to SharePoint Online, OneDrive and Exchange Online. Those apps then give unmanaged devices a limited, browser-only experience: no download, print or sync. You configure SharePoint with its unmanaged device access setting or Set-SPOTenant.",
+      "deep": "**What it is**: a **session control** in a Microsoft Entra Conditional Access policy. Entra ID sends device information (compliant or hybrid joined) to the cloud app, and the **app enforces** a full or limited experience. It's simpler than Conditional Access app control and needs no proxy, but only some Microsoft 365 apps support it.\n**SharePoint Online and OneDrive**\n- SharePoint admin center > **Policies** > **Access control** > **Unmanaged devices** > **Allow limited, web-only access**, or\n- PowerShell: `Set-SPOTenant -ConditionalAccessPolicy AllowLimitedAccess` (other values: AllowFullAccess, BlockAccess). You can also set it per site with `Set-SPOSite`.\n- This automatically creates Entra Conditional Access policies that use **Use app enforced restrictions**. Users on unmanaged devices can view files in the browser but can't download, print or sync them.\n**Exchange Online**: Outlook on the web with `Set-OwaMailboxPolicy -ConditionalAccessPolicy ReadOnly` (attachments viewable in the browser, not downloadable), plus a CA policy that uses app enforced restrictions.\n**Compare**: app-enforced restrictions mean full or limited, decided by the app. **Conditional Access app control** (Defender for Cloud Apps) gives fine-grained, content-aware session policies for many SaaS apps, such as blocking only downloads labeled Highly Confidential.",
+      "terms": [
+        {
+          "t": "Use app enforced restrictions",
+          "d": "A Conditional Access session control that lets supported apps limit the experience on unmanaged devices."
+        },
+        {
+          "t": "AllowLimitedAccess",
+          "d": "The SharePoint tenant setting that gives web-only, no-download access from unmanaged devices."
+        },
+        {
+          "t": "Unmanaged device",
+          "d": "A device that is neither compliant (Intune) nor Microsoft Entra hybrid joined."
+        }
+      ],
+      "trap": "App enforced restrictions work only for apps that support them, such as SharePoint, OneDrive and Exchange Online. For Salesforce or Box, use Conditional Access app control.",
+      "example": "Contractors on personal laptops open SharePoint documents in the browser but see no Download or Sync buttons because AllowLimitedAccess is set.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.4.04",
+      "objective": "d3.4",
+      "seq": 4,
+      "title": "Conditional Access app control",
+      "short": "Conditional Access app control routes browser sessions through Defender for Cloud Apps so access and session policies run in real time. You enable it with the 'Use Conditional Access App Control' session control in an Entra Conditional Access policy. Edge gets in-browser protection, and other browsers are reverse-proxied with a .mcas.ms suffix.",
+      "deep": "**How it works**\n1. Create a Microsoft Entra **Conditional Access** policy that targets users and apps. Under **Session**, select **Use Conditional Access App Control**.\n2. When a user signs in, the session goes to Defender for Cloud Apps. **Microsoft Edge for Business** enforces policies **in the browser** (shown by a lock icon). Other browsers go through a **reverse proxy**, and URLs gain a suffix such as `contoso.my.salesforce.com.mcas.ms`.\n3. Defender for Cloud Apps **access policies** and **session policies** decide what happens.\n**Onboarding**: apps that use Entra ID for SAML or OIDC SSO onboard **automatically** after the first sign-in through a CA app control policy. Apps on non-Microsoft IdPs need manual onboarding. App Proxy apps are supported too, and they need Entra pre-authentication.\n**Requirements**: Defender for Cloud Apps licence plus **Microsoft Entra ID P1**. It needs no agent on the device, so it suits unmanaged and BYOD devices.\n**Limits**: session controls cover **browser** sessions. Native apps with non-interactive sign-in can't be proxied, so block them with an access policy that filters on Client app = Mobile and desktop. The Teams desktop app doesn't support session controls.\n**Device identification**: Intune compliance, Entra hybrid join, or client certificates.",
+      "terms": [
+        {
+          "t": "Reverse proxy",
+          "d": "Defender for Cloud Apps sits inline and rewrites app URLs (.mcas.ms) to inspect sessions."
+        },
+        {
+          "t": "In-browser protection",
+          "d": "Microsoft Edge for Business enforces session policies natively without URL redirection."
+        },
+        {
+          "t": "Use Conditional Access App Control",
+          "d": "The Entra Conditional Access session control that hands sessions to Defender for Cloud Apps."
+        }
+      ],
+      "trap": "Conditional Access app control is not set up only in the Defender portal. It starts with an Entra Conditional Access policy that uses the session control.",
+      "example": "A CA policy for the Salesforce app selects Use Conditional Access App Control. Unmanaged-device users browsing Salesforce get the .mcas.ms suffix in Chrome and are monitored.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User sign-in",
+          "Entra CA policy",
+          "App control session",
+          "MDA policies",
+          "SaaS app"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.4.05",
+      "objective": "d3.4",
+      "seq": 5,
+      "title": "Access policies and session policies",
+      "short": "With Conditional Access app control, an access policy decides at sign-in whether a session is allowed (Audit) or blocked (Block). A session policy lets the session continue and controls activity in it: Monitor only, Block activities, Control file download or Control file upload. Download control can Protect files by applying a sensitivity label.",
+      "deep": "Create both in the Defender portal > **Cloud Apps** > **Policies** > **Policy management** > **Conditional Access** > **Create policy**.\n**Access policy**\n- Filters: app, **client app** (browser or mobile and desktop), **device tags** (Intune compliant, Entra hybrid joined, valid client certificate), IP address, location, ISP, user and user agent.\n- Actions: **Audit** (allow and log) or **Block** (with a custom user message).\n- Example: block native desktop and mobile clients so users must use the browser, where session control applies.\n**Session policy**: choose a **session control type**:\n- **Monitor only**: logs sign-in activity.\n- **Block activities**: for example block copy, cut, print, or sending a message that contains sensitive content.\n- **Control file download (with inspection)**: actions **Audit**, **Block**, or **Protect** (applies a Microsoft Purview sensitivity label with encryption on download).\n- **Control file upload (with inspection)**: for example block uploads of unlabeled files or malware.\n- File filters include sensitivity label, name, extension and size. Content inspection can use Purview DLP.\n- **Require step-up authentication** (authentication context) re-runs Conditional Access before a sensitive action.\nWhen session policies conflict, the **more restrictive** action wins. Test with a test user and the Activity log (Source = Access control).",
+      "terms": [
+        {
+          "t": "Access policy",
+          "d": "A Defender for Cloud Apps policy that allows (audit) or blocks a session at sign-in based on conditions."
+        },
+        {
+          "t": "Session policy",
+          "d": "A real-time policy controlling actions inside an allowed session, like downloads or uploads."
+        },
+        {
+          "t": "Protect action",
+          "d": "Applies a sensitivity label (with encryption) to files as they are downloaded."
+        }
+      ],
+      "trap": "When users on unmanaged devices must keep browsing but not download confidential files, an access policy is wrong because it blocks everything. Use a session policy with Control file download.",
+      "example": "A session policy blocks downloads of files labeled Highly Confidential from SharePoint on unmanaged devices, while still allowing viewing in the browser.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Access policy",
+          "Session policy"
+        ],
+        "rows": [
+          [
+            "When",
+            "At sign-in",
+            "During session"
+          ],
+          [
+            "Actions",
+            "Audit, Block",
+            "Monitor, Block, Protect"
+          ],
+          [
+            "Granularity",
+            "Whole session",
+            "Per activity/file"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d3.4.06",
+      "objective": "d3.4",
+      "seq": 6,
+      "title": "OAuth app policies and app governance",
+      "short": "Users can authorize third-party OAuth apps to read their mail, files or calendars. With app connectors in place, Defender for Cloud Apps lists these OAuth apps for Microsoft 365, Google Workspace and Salesforce, with permission level and community use. OAuth app policies alert on risky apps and can revoke them. App governance adds deeper policies and detections.",
+      "deep": "**OAuth apps page** (Cloud Apps > OAuth apps; moved to **App governance** when that is enabled):\n- Columns and filters: **permission level** (High, Medium, Low), **community use** (Common, Uncommon, Rare), number of authorizing users, publisher and publisher verification, last authorized.\n- Actions per app: **Approve** (marks it as reviewed, with no effect on users) or **Ban**, which disables the app. For Microsoft 365, banning disables the related enterprise app, and you can notify users who granted access.\n**OAuth app policies** (Policy management > Create policy > OAuth app policy):\n- Filters such as permission level = High, community use = Rare, or authorized by more than X users. Scope by the groups of the authorizing users.\n- Governance actions include **revoke app** and **notify**. Built-in anomaly detections cover misleading publisher names and malicious OAuth apps.\n**App governance** is included with a Defender for Cloud Apps licence and turned on in Settings > Cloud Apps > App governance. It provides insights, **app policies** (predefined and custom), threat detections and remediation for apps registered in Entra ID, Google and Salesforce. Its alerts show in Microsoft Defender XDR with detection source App Governance.\nPrevention lives in Entra (user consent settings, admin consent workflow). Defender for Cloud Apps provides detection and response.",
+      "terms": [
+        {
+          "t": "OAuth app",
+          "d": "A third-party app users authorize (via consent) to access their data through APIs."
+        },
+        {
+          "t": "Community use",
+          "d": "How common an app is across Defender for Cloud Apps customers: common, uncommon or rare."
+        },
+        {
+          "t": "App governance",
+          "d": "A Defender for Cloud Apps add-on capability for policies, insights and detections on OAuth apps."
+        }
+      ],
+      "trap": "Banning an OAuth app in Defender for Cloud Apps isn't the same as the Entra user consent setting. Ban responds to existing grants, and consent settings prevent new ones.",
+      "example": "An OAuth app policy alerts when a rare app requesting high permissions is authorized by more than 50 users, and revokes it automatically if an admin authorized it.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d3.4.07",
+      "objective": "d3.4",
+      "seq": 7,
+      "title": "The cloud app catalog and risk scores",
+      "short": "The cloud app catalog rates more than 31,000 cloud apps on over 90 risk factors in four categories: General, Security, Compliance and Legal. Scores run from 0 to 10, and higher is safer. You can adjust score weights, tag apps, request a score update, or suggest a missing app.",
+      "deep": "**Cloud app catalog** (Defender portal > **Cloud Apps** > **Cloud app catalog**):\n- Holds **31,000+** apps, assessed by Microsoft analysts and automation.\n- **90+ risk factors** in four categories:\n  - **General**: company information such as founding year, domain age, popularity and headquarters.\n  - **Security**: MFA support, encryption at rest, TLS version, admin audit trail, penetration testing.\n  - **Compliance**: certifications such as ISO 27001, SOC 2, HIPAA and PCI DSS.\n  - **Legal**: data ownership, data retention, GDPR readiness, DMCA.\n- The **risk score** (0 to 10) is a weighted average of the category scores. A **higher score means lower risk**.\n**Customizing**: Settings > Cloud Discovery > **Score metrics** lets you change the weight of categories and fields, or ignore some, so scores reflect your priorities.\n**Using the catalog**\n- Filter by category, risk score or compliance, and compare apps before sanctioning one.\n- Tag apps **Sanctioned**, **Unsanctioned**, **Monitored** or a custom tag directly from the catalog, even before they're discovered.\n- **Request score update** (the 'Suggest an improvement' dialog) when an attribute is wrong.\n- **Suggest new app** from Discovered apps when an app isn't in the catalog. You can also add custom apps.",
+      "terms": [
+        {
+          "t": "Cloud app catalog",
+          "d": "Microsoft's database of 31,000+ cloud apps with risk assessments."
+        },
+        {
+          "t": "Risk score",
+          "d": "A 0–10 rating of an app (higher is safer), a weighted average of General, Security, Compliance and Legal."
+        },
+        {
+          "t": "Score metrics",
+          "d": "Settings that let you change risk factor weights to fit your organization."
+        }
+      ],
+      "trap": "A score of 9 isn't 'high risk'. In Defender for Cloud Apps, higher scores mean safer apps.",
+      "example": "Before approving a new diagramming tool, an admin compares three catalog entries. They choose the one with a score of 9, SOC 2 and data-at-rest encryption, and tag it Sanctioned.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Risk score 0-10",
+          "General",
+          "Security",
+          "Compliance",
+          "Legal"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-300.d3.q037",
+      "lesson": "sc-300.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Adatum registers a multitenant app in its own tenant. Contoso's administrator consents to it. What is created in Contoso's tenant?",
+      "options": [
+        "A service principal that references Adatum's application object",
+        "A copy of the application object",
+        "A guest user account for the app",
+        "A user-assigned managed identity"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The application object exists only in the home tenant (Adatum). Consent creates a service principal, the local instance, in Contoso's tenant. No copy of the application object, guest user or managed identity is created."
+    },
+    {
+      "id": "sc-300.d3.q038",
+      "lesson": "sc-300.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which supported account type should you choose for an internal line-of-business app that only your organization's users and guests will use?",
+      "options": [
+        "Multiple Entra ID tenants",
+        "Any Entra ID tenant + personal Microsoft accounts",
+        "Personal accounts only",
+        "Single tenant only"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Single tenant (AzureADMyOrg) limits sign-in to your own tenant, including its guests, and is Microsoft's recommendation for most apps. The multitenant options let users from other organizations or with personal accounts sign in. Personal accounts only excludes your work accounts."
+    },
+    {
+      "id": "sc-300.d3.q039",
+      "lesson": "sc-300.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "Registering an app in the portal also creates a service principal in the home tenant.",
+          "a": true
+        },
+        {
+          "s": "A managed identity's service principal has an associated application object you can edit in App registrations.",
+          "a": false
+        },
+        {
+          "s": "Conditional Access policies and user assignments apply to the service principal, not the application object.",
+          "a": true
+        }
+      ],
+      "explain": "Portal registration creates the home tenant's service principal automatically. Managed identity service principals have no editable application object. Assignments, consent grants and Conditional Access act on the service principal (the enterprise app) in each tenant."
+    },
+    {
+      "id": "sc-300.d3.q040",
+      "lesson": "sc-300.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A developer configures MSAL in a web app and needs the value that identifies the app in token requests. Which value from the app registration's Overview page should they use?",
+      "options": [
+        "Object ID",
+        "Application (client) ID",
+        "Directory (tenant) ID",
+        "Application ID URI"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Application (client) ID identifies the app in authentication requests and is the same in every tenant. The Object ID is the directory object's own identifier. The tenant ID identifies the directory. The Application ID URI identifies an API the app exposes."
+    },
+    {
+      "id": "sc-300.d3.q041",
+      "lesson": "sc-300.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Microsoft Graph PowerShell command to create a single-tenant app registration.",
+      "code": "New-MgApplication -DisplayName 'Orders API' -SignInAudience ____",
+      "options": [
+        "AzureADMultipleOrgs",
+        "SingleTenant",
+        "AzureADMyOrg",
+        "PersonalMicrosoftAccount"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "signInAudience 'AzureADMyOrg' means single tenant. 'AzureADMultipleOrgs' is multitenant, and 'PersonalMicrosoftAccount' allows personal accounts only. 'SingleTenant' isn't a valid signInAudience value."
+    },
+    {
+      "id": "sc-300.d3.q042",
+      "lesson": "sc-300.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A GitHub Actions workflow uses workload identity federation to deploy to Azure. Put the steps of the token exchange in order.",
+      "options": [
+        "The workflow requests an OIDC token from GitHub's identity provider",
+        "The workflow sends the GitHub token to the Microsoft identity platform and requests an access token",
+        "Microsoft Entra ID checks the token's issuer, subject and audience against the federated credential",
+        "Microsoft Entra ID issues an access token for the app",
+        "The workflow calls Azure Resource Manager with the access token"
+      ],
+      "explain": "The workload first gets a token from the external IdP and presents it to Microsoft Entra ID. Entra ID validates the token against the trust (issuer, subject, audience) and issues its own access token, which the workload uses to call the Azure resource."
+    },
+    {
+      "id": "sc-300.d3.q043",
+      "lesson": "sc-300.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You're registering a new React single-page application that signs users in with MSAL.js. How should you configure Authentication?",
+      "options": [
+        "Add the Single-page application platform with the redirect URI and leave implicit grant disabled",
+        "Add the Web platform and enable ID tokens and access tokens under implicit grant",
+        "Add the Mobile and desktop applications platform and enable public client flows",
+        "Add the Web platform and create a client secret for the browser app"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The SPA platform uses authorization code flow with PKCE, which Microsoft recommends instead of the implicit grant. Implicit flow is discouraged. The Mobile and desktop platform is for native apps. A browser app can't keep a client secret safe."
+    },
+    {
+      "id": "sc-300.d3.q044",
+      "lesson": "sc-300.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO settings are configured on an app registration's Authentication blade? Select TWO.",
+      "options": [
+        "Front-channel logout URL",
+        "Application ID URI",
+        "Allow public client flows",
+        "Client secret expiration",
+        "App role value"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "The Authentication blade holds platforms, redirect URIs, the front-channel logout URL, implicit grant check boxes and 'Allow public client flows'. The Application ID URI is on Expose an API, secrets are under Certificates & secrets, and app roles have their own blade."
+    },
+    {
+      "id": "sc-300.d3.q045",
+      "lesson": "sc-300.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A command-line tool used by engineers on headless Linux servers must sign users in with the device code flow. Users get an error saying the app must be configured as a public client. The registration has a Web platform and a client secret.",
+      "stem": "What should you change?",
+      "options": [
+        "Enable ID tokens under Implicit grant and hybrid flows",
+        "Add a front-channel logout URL",
+        "Change the supported account type to multitenant",
+        "Set Allow public client flows to Yes"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The device code flow is a public client flow, enabled with 'Allow public client flows'. The implicit grant applies to browser token issuance, not device code. Front-channel logout handles sign-out. The account type controls which tenants can sign in, not the flow type."
+    },
+    {
+      "id": "sc-300.d3.q046",
+      "lesson": "sc-300.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the maximum lifetime you can set for a client secret on an app registration?",
+      "options": [
+        "6 months",
+        "12 months",
+        "24 months",
+        "36 months"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Client secret lifetime is limited to 24 months, and custom lifetimes can't exceed it. Microsoft recommends setting less than 12 months and preferring certificates or federated credentials in production."
+    },
+    {
+      "id": "sc-300.d3.q047",
+      "lesson": "sc-300.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A GitHub Actions workflow deploys infrastructure to Azure. Security requires that no long-lived credentials are stored in GitHub. What should you configure on the app registration?",
+      "options": [
+        "A client secret stored as an encrypted GitHub secret",
+        "A federated credential that trusts the repository and branch",
+        "A self-signed certificate uploaded to GitHub",
+        "A system-assigned managed identity on the GitHub runner"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Workload identity federation lets the workflow exchange its GitHub OIDC token for an Entra token, so nothing is stored. Secrets and certificates are long-lived credentials kept in GitHub. GitHub-hosted runners aren't Azure resources, so they can't have a system-assigned managed identity."
+    },
+    {
+      "id": "sc-300.d3.q048",
+      "lesson": "sc-300.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "complete",
+      "case": "You add a federated credential to an app so that a Kubernetes workload can exchange its service account token for an Entra token. The issuer and subject already match the cluster's tokens.",
+      "stem": "Complete the credential with the recommended audience value for Microsoft Entra ID.",
+      "code": "{\n  \"name\": \"aks-orders\",\n  \"issuer\": \"https://oidc.prod-aks.azure.com/<tenant>/<guid>/\",\n  \"subject\": \"system:serviceaccount:orders:orders-sa\",\n  \"audiences\": [\"____\"]\n}",
+      "options": [
+        "https://graph.microsoft.com",
+        "https://login.microsoftonline.com",
+        "urn:ietf:params:oauth:grant-type:jwt-bearer",
+        "api://AzureADTokenExchange"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The recommended audience for federated credentials in Microsoft Entra ID is api://AzureADTokenExchange. The external token's aud claim must match it exactly. Graph and login URLs are resource and authority endpoints. The jwt-bearer URN is an OAuth assertion type, not an audience."
+    },
+    {
+      "id": "sc-300.d3.q049",
+      "lesson": "sc-300.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about app credentials, select Yes if true.",
+      "statements": [
+        {
+          "s": "Microsoft recommends certificates over client secrets for production confidential clients.",
+          "a": true
+        },
+        {
+          "s": "A federated credential can be added to a user-assigned managed identity.",
+          "a": true
+        },
+        {
+          "s": "Matching of issuer, subject and audience in a federated credential is case-insensitive.",
+          "a": false
+        }
+      ],
+      "explain": "Certificates are the recommended stored credential, while secrets suit testing at most. Workload identity federation can be configured on app registrations and on user-assigned managed identities. Claim matching is exact and case-sensitive, so a difference in case breaks authentication."
+    },
+    {
+      "id": "sc-300.d3.q050",
+      "lesson": "sc-300.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A background service runs nightly with no signed-in user and must read all users' profiles through Microsoft Graph. Which permission type does it need?",
+      "options": [
+        "Application permission User.Read.All with admin consent",
+        "Delegated permission User.Read with user consent",
+        "Delegated permission User.Read.All with user consent",
+        "An exposed API scope named User.Read.All"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "With no signed-in user, the app acts as itself through the client credentials flow, which requires an application permission and admin consent. Delegated permissions need a user. Exposing a scope publishes your own API and doesn't grant Graph access."
+    },
+    {
+      "id": "sc-300.d3.q051",
+      "lesson": "sc-300.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You need to grant tenant-wide admin consent for the permissions configured on an app registration by using Azure CLI. Complete the command.",
+      "code": "az ad app permission ____ --id 00001111-aaaa-2222-bbbb-3333cccc4444",
+      "options": [
+        "grant",
+        "add",
+        "admin-consent",
+        "approve"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "`az ad app permission admin-consent` grants admin consent for all permissions configured on the app. `add` only requests a permission on the registration. `grant` creates a delegated grant for a specific scope rather than full admin consent. `approve` isn't a valid subcommand."
+    },
+    {
+      "id": "sc-300.d3.q052",
+      "lesson": "sc-300.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Developers built the Orders API and need client apps to request a delegated permission named Orders.Read. Which TWO actions should you take on the Orders API registration? Select TWO.",
+      "options": [
+        "Set the Application ID URI on Expose an API",
+        "Add a scope named Orders.Read on Expose an API",
+        "Create an app role named Orders.Read with Applications member type",
+        "Add Orders.Read under the API's own API permissions",
+        "Enable ID tokens under implicit grant"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Delegated permissions are published as scopes under an Application ID URI on Expose an API. An app role with the Applications member type creates an application permission, not a delegated one. The API's own API permissions list what it consumes, not what it exposes. Implicit grant is unrelated."
+    },
+    {
+      "id": "sc-300.d3.q053",
+      "lesson": "sc-300.d3.3.06",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A daemon must be granted an app role named Orders.Process as an application permission. Complete the manifest entry for the role.",
+      "code": "{\n  \"allowedMemberTypes\": [____],\n  \"displayName\": \"Order Processor\",\n  \"value\": \"Orders.Process\",\n  \"isEnabled\": true\n}",
+      "options": [
+        "\"User\"",
+        "\"Application\"",
+        "\"ServicePrincipal\"",
+        "\"Daemon\""
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "allowedMemberTypes \"Application\" makes the role show up as an application permission that client apps can request. \"User\" covers users and groups only. \"ServicePrincipal\" and \"Daemon\" aren't valid values."
+    },
+    {
+      "id": "sc-300.d3.q054",
+      "lesson": "sc-300.d3.3.06",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In which token claim does Microsoft Entra ID put the app roles assigned to a user?",
+      "options": [
+        "scp",
+        "groups",
+        "wids",
+        "roles"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Assigned app roles appear in the roles claim using each role's Value. scp holds delegated scopes, groups holds group object IDs, and wids lists Entra directory role template IDs."
+    },
+    {
+      "id": "sc-300.d3.q055",
+      "lesson": "sc-300.d3.3.06",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": "The Survey app registration defines an app role with display name 'Survey Writer', value 'Survey.Create' and allowed member types 'Users/Groups'. A developer also wants a reporting daemon to receive this role.",
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "The daemon can be granted the role under API permissions > My APIs > Application permissions as currently configured.",
+          "a": false
+        },
+        {
+          "s": "The app's code should check the roles claim for the string 'Survey.Create', not 'Survey Writer'.",
+          "a": true
+        },
+        {
+          "s": "Disabling the role prevents new assignments, but existing assignments still appear in tokens until you remove them.",
+          "a": true
+        }
+      ],
+      "explain": "With Users/Groups only, the role doesn't appear as an application permission. Change it to Applications or Both. The roles claim carries the Value, not the display name. A disabled role can't be assigned again, but existing assignments still appear in tokens until you remove them."
+    },
+    {
+      "id": "sc-300.d3.q056",
+      "lesson": "sc-300.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You want ongoing cloud discovery of apps used on corporate laptops, both on and off the corporate network, without deploying a log collector. What should you use?",
+      "options": [
+        "The Microsoft Defender for Endpoint integration",
+        "Snapshot reports uploaded weekly",
+        "A Docker-based log collector on the corporate network",
+        "The Microsoft 365 app connector"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The Defender for Endpoint integration feeds continuous discovery from the devices themselves, wherever they are. Snapshot reports are manual, one-off uploads. A log collector sees only traffic through corporate appliances. App connectors show activity inside connected apps, not discovery."
+    },
+    {
+      "id": "sc-300.d3.q057",
+      "lesson": "sc-300.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "With the Defender for Endpoint integration and Enforce app access enabled, you want users who visit a file-sharing app to see a warning they can bypass, without being fully blocked. Which tag should you apply to the app?",
+      "options": [
+        "Sanctioned",
+        "Unsanctioned",
+        "Monitored",
+        "Custom tag named Warn"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Apps tagged Monitored produce a warning with a bypass option on Defender for Endpoint devices. Unsanctioned apps are blocked. Sanctioned apps are approved and not restricted. A custom tag has no enforcement behavior."
+    },
+    {
+      "id": "sc-300.d3.q058",
+      "lesson": "sc-300.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are valid ways to feed continuous cloud discovery reports in Defender for Cloud Apps? Select TWO.",
+      "options": [
+        "A log collector receiving firewall logs over Syslog or FTP",
+        "Manually uploading a proxy log as a snapshot report",
+        "Microsoft Entra sign-in logs exported to a storage account",
+        "Integration with a supported secure web gateway such as Zscaler",
+        "The Microsoft Purview audit log"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "Continuous reports come from a log collector, Defender for Endpoint, or secure web gateway integrations such as Zscaler, iboss, Corrata and Menlo Security. Manual uploads create snapshot reports. Entra sign-in logs and the Purview audit log aren't cloud discovery traffic sources."
+    },
+    {
+      "id": "sc-300.d3.q059",
+      "lesson": "sc-300.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "You must block an unsanctioned cloud storage app on managed Windows devices by using Defender for Cloud Apps and Defender for Endpoint. Put the steps in order.",
+      "options": [
+        "Enable Enforce app access and custom network indicators for the integration",
+        "Tag the discovered app as Unsanctioned",
+        "Defender for Cloud Apps syncs the app's domains to Defender for Endpoint as custom URL indicators",
+        "Network protection in block mode blocks the domain on devices"
+      ],
+      "explain": "The integration settings must be on before tags have any effect. Tagging the app Unsanctioned triggers the sync of its domains as custom URL indicators, and Defender Antivirus network protection in block mode then enforces them on devices."
+    },
+    {
+      "id": "sc-300.d3.q060",
+      "lesson": "sc-300.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your company sanctioned Box. You need to scan files already stored in Box for sensitive data and quarantine matches automatically. What should you configure first?",
+      "options": [
+        "A Conditional Access app control session policy for Box",
+        "Box tagged as Monitored in the cloud app catalog",
+        "A Box app connector in Defender for Cloud Apps",
+        "App-enforced restrictions in a Conditional Access policy"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Scanning data at rest and governance actions such as quarantine need API access through an app connector. Session policies act only on live browser sessions. Tags affect discovery enforcement. App-enforced restrictions work only for supported Microsoft 365 apps."
+    },
+    {
+      "id": "sc-300.d3.q061",
+      "lesson": "sc-300.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about app connectors, select Yes if true.",
+      "statements": [
+        {
+          "s": "App connectors use the connected app provider's APIs.",
+          "a": true
+        },
+        {
+          "s": "App connectors control downloads in real time during a browser session.",
+          "a": false
+        },
+        {
+          "s": "Connecting Microsoft 365 provides visibility into OAuth apps that users have authorized.",
+          "a": true
+        }
+      ],
+      "explain": "Connectors are API-based and work out of band, so real-time session control comes from Conditional Access app control. The Microsoft 365 connector supplies app permission data, which drives the OAuth apps page and OAuth app policies."
+    },
+    {
+      "id": "sc-300.d3.q062",
+      "lesson": "sc-300.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which Defender for Cloud Apps capability lets you automatically suspend a Salesforce user account when a policy detects mass report exports?",
+      "options": [
+        "A cloud discovery anomaly detection policy",
+        "A Salesforce app connector with a governance action",
+        "An access policy with the Block action",
+        "An app discovery policy that tags Salesforce Unsanctioned"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Account governance actions, such as suspending a user, depend on an app connector that has API access to the app. Cloud discovery policies work only on traffic logs. Access policies block sign-in sessions but don't suspend accounts. Tagging Salesforce Unsanctioned would block the whole app."
+    },
+    {
+      "id": "sc-300.d3.q063",
+      "lesson": "sc-300.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Users on unmanaged devices must be able to view SharePoint Online documents in the browser but not download, print or sync them. You want the simplest solution with no reverse proxy. What should you use?",
+      "options": [
+        "A Conditional Access policy that requires a compliant device",
+        "A Defender for Cloud Apps access policy with the Block action",
+        "A Conditional Access policy with the sign-in frequency session control",
+        "SharePoint limited web-only access for unmanaged devices with the 'Use app enforced restrictions' session control"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "App-enforced restrictions let SharePoint itself give unmanaged devices a web-only, no-download experience. Requiring a compliant device blocks access entirely. An access policy blocks the whole session. Sign-in frequency only controls how often users reauthenticate."
+    },
+    {
+      "id": "sc-300.d3.q064",
+      "lesson": "sc-300.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the SharePoint Online PowerShell command so that unmanaged devices get browser-only access with no downloads.",
+      "code": "Set-SPOTenant -ConditionalAccessPolicy ____",
+      "options": [
+        "BlockAccess",
+        "AllowFullAccess",
+        "AllowLimitedAccess",
+        "ReadOnly"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "AllowLimitedAccess gives limited, web-only access from unmanaged devices and works with app-enforced restrictions. AllowFullAccess removes the restriction and BlockAccess blocks unmanaged devices completely. ReadOnly is a value for Set-OwaMailboxPolicy in Exchange Online, not for SharePoint."
+    },
+    {
+      "id": "sc-300.d3.q065",
+      "lesson": "sc-300.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam uses app-enforced restrictions to limit SharePoint Online on unmanaged devices. Management now wants the same 'view but don't download' behavior for Salesforce and for a third-party HR SaaS app, both federated with Microsoft Entra ID through SAML.",
+      "stem": "What should you implement for those two apps?",
+      "options": [
+        "Conditional Access app control with a session policy that blocks downloads on unmanaged devices",
+        "Add both apps to the existing Conditional Access policy that uses app enforced restrictions",
+        "Tag both apps as Monitored in cloud discovery",
+        "Set 'Visible to users?' to No on both enterprise apps"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "App-enforced restrictions work only in apps that support them, mainly SharePoint, OneDrive and Exchange Online. For other SAML apps, Conditional Access app control with a download-control session policy is needed. Monitored tags affect endpoint discovery warnings, and visibility only hides tiles."
+    },
+    {
+      "id": "sc-300.d3.q066",
+      "lesson": "sc-300.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Where do you enable routing of a user's session to Microsoft Defender for Cloud Apps for real-time session control?",
+      "options": [
+        "In a Microsoft Entra Conditional Access policy, under Session > Use Conditional Access App Control",
+        "On the enterprise app's Properties page, by setting Assignment required to Yes",
+        "In the Defender for Cloud Apps cloud app catalog, by tagging the app Sanctioned",
+        "In Microsoft Intune, with an app protection policy"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Conditional Access app control starts with the Entra Conditional Access session control 'Use Conditional Access App Control'. Assignment settings, catalog tags and Intune app protection policies don't route sessions to Defender for Cloud Apps."
+    },
+    {
+      "id": "sc-300.d3.q067",
+      "lesson": "sc-300.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Conditional Access app control, select Yes if true.",
+      "statements": [
+        {
+          "s": "In browsers other than Microsoft Edge, protected app URLs get a .mcas.ms suffix.",
+          "a": true
+        },
+        {
+          "s": "It requires an agent to be installed on each user's device.",
+          "a": false
+        },
+        {
+          "s": "Apps that use Microsoft Entra ID for SAML or OIDC single sign-on are onboarded automatically.",
+          "a": true
+        }
+      ],
+      "explain": "Other browsers are reverse-proxied with the .mcas.ms suffix, while Edge for Business uses in-browser protection. No device agent is needed, which suits BYOD devices. Entra ID apps onboard automatically, and apps on non-Microsoft IdPs need manual onboarding."
+    },
+    {
+      "id": "sc-300.d3.q068",
+      "lesson": "sc-300.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso applies session policies to Salesforce through Conditional Access app control. Auditors find that users bypass the download controls by signing in with the Salesforce mobile app, which session controls don't cover.",
+      "stem": "What should you do?",
+      "options": [
+        "Create a session policy with Control file upload set to Block",
+        "Create a Defender for Cloud Apps access policy that blocks the Mobile and desktop client app type for Salesforce",
+        "Tag Salesforce as Unsanctioned in cloud discovery",
+        "Enable app-enforced restrictions for Salesforce"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Session controls apply to browser sessions, so the fix is an access policy that blocks native mobile and desktop clients and forces browser access. An upload control doesn't address downloads. Unsanctioning blocks the whole app. Salesforce doesn't support app-enforced restrictions."
+    },
+    {
+      "id": "sc-300.d3.q069",
+      "lesson": "sc-300.d3.4.05",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Users on unmanaged devices may keep working in SharePoint through the browser. When they download a file labeled Confidential, it must be encrypted automatically. Which session policy configuration meets this?",
+      "options": [
+        "Session control type Monitor only",
+        "Session control type Block activities with an activity filter for Print",
+        "An access policy with the Audit action",
+        "Session control type Control file download (with inspection) with the Protect action"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The Protect action on a download-control session policy applies a sensitivity label with encryption as the file downloads. Monitor only logs sign-ins. Block activities stops activities instead of protecting files. An access policy decides only whether a session is allowed."
+    },
+    {
+      "id": "sc-300.d3.q070",
+      "lesson": "sc-300.d3.4.05",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO session control types can you choose when creating a Defender for Cloud Apps session policy? Select TWO.",
+      "options": [
+        "Block activities",
+        "Require password change",
+        "Control file upload (with inspection)",
+        "Require compliant device",
+        "Revoke OAuth app"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Session control types are Monitor only, Block activities, Control file download (with inspection) and Control file upload (with inspection). Require password change and Require compliant device are Entra Conditional Access grant controls. Revoking OAuth apps is an OAuth app policy action."
+    },
+    {
+      "id": "sc-300.d3.q071",
+      "lesson": "sc-300.d3.4.05",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Woodgrove Bank requires that users on devices that aren't Intune compliant can't use Workday at all. Users on compliant devices can use Workday, but downloads of files containing credit card numbers must be blocked. Workday is federated with Microsoft Entra ID and routed through Conditional Access app control.",
+      "stem": "Which TWO Defender for Cloud Apps policies should you create? Select TWO.",
+      "options": [
+        "An access policy that blocks sessions from devices without the Intune compliant tag",
+        "A session policy that controls file download with content inspection and the Block action",
+        "An OAuth app policy that revokes Workday",
+        "An app discovery policy that tags Workday as Unsanctioned",
+        "A session policy with Monitor only"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "The access policy blocks noncompliant devices at sign-in. A download-control session policy with inspection blocks files containing card numbers for allowed users. OAuth and discovery policies would disrupt all Workday use. Monitor only doesn't block anything."
+    },
+    {
+      "id": "sc-300.d3.q072",
+      "lesson": "sc-300.d3.4.06",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You want an alert, and automatic revocation, when a rarely used third-party app that requests high permissions is authorized by users in your Microsoft 365 tenant. What should you create in Defender for Cloud Apps?",
+      "options": [
+        "An OAuth app policy filtered on permission level High and community use Rare",
+        "An app discovery policy filtered on risk score",
+        "A session policy with Block activities",
+        "A file policy on SharePoint Online"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "OAuth app policies evaluate authorized apps by permission level, community use and the number of authorizing users, and they can revoke apps. Discovery policies look at traffic logs. Session policies act on live sessions. File policies scan content."
+    },
+    {
+      "id": "sc-300.d3.q073",
+      "lesson": "sc-300.d3.4.06",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about OAuth apps in Defender for Cloud Apps, select Yes if true.",
+      "statements": [
+        {
+          "s": "Marking an OAuth app as Approved changes what end users can do with it.",
+          "a": false
+        },
+        {
+          "s": "OAuth app governance covers apps authorized in Microsoft 365, Google Workspace and Salesforce.",
+          "a": true
+        },
+        {
+          "s": "App governance is included with a Microsoft Defender for Cloud Apps license.",
+          "a": true
+        }
+      ],
+      "explain": "Approve is only a review marker with no effect on users, while Ban disables the app. OAuth app visibility covers Microsoft 365, Google Workspace and Salesforce. App governance comes with a Defender for Cloud Apps license and is turned on in Cloud Apps settings."
+    },
+    {
+      "id": "sc-300.d3.q074",
+      "lesson": "sc-300.d3.4.06",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "An investigation finds that 120 users consented to a malicious OAuth app that reads their mailboxes. You must stop the app's current access, and you must stop users from consenting to unverified apps in the future.",
+      "stem": "Which TWO actions should you take? Select TWO.",
+      "options": [
+        "Ban the app on the OAuth apps page in Defender for Cloud Apps",
+        "Tag the app as Unsanctioned in the cloud app catalog",
+        "Set Entra user consent to allow only verified publishers with low-impact permissions",
+        "Create a session policy that blocks Outlook downloads",
+        "Add the app to a My Apps collection"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Banning the OAuth app disables the enterprise app and cuts its API access. Restricting user consent in Entra prevents future consent to unverified apps. Unsanctioning is a discovery control for traffic and doesn't affect OAuth API access. Session policies don't touch app-only API calls, and collections are cosmetic."
+    },
+    {
+      "id": "sc-300.d3.q075",
+      "lesson": "sc-300.d3.4.07",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In the Defender for Cloud Apps cloud app catalog, which four categories make up an app's risk score?",
+      "options": [
+        "Identity, Device, Network, Data",
+        "General, Security, Compliance, Legal",
+        "Availability, Integrity, Confidentiality, Privacy",
+        "Popularity, Usage, Traffic, Location"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The catalog scores apps on more than 90 risk factors grouped into General, Security, Compliance and Legal, and the total is a weighted average of those categories. The other groupings sound plausible but aren't the catalog's categories."
+    },
+    {
+      "id": "sc-300.d3.q076",
+      "lesson": "sc-300.d3.4.07",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your compliance team cares more about legal data-ownership terms than about company age when evaluating apps. How can you make discovered apps' risk scores reflect this?",
+      "options": [
+        "Request a score update for every app in the catalog",
+        "Create a custom app tag named Legal-Priority",
+        "Adjust the category and field weights in Cloud Discovery Score metrics",
+        "Generate a new snapshot report"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Score metrics let you change the weight of risk categories and fields, or ignore some, so scores match your priorities. A score update request fixes wrong app data. Custom tags only label apps. A new snapshot report reuses the same scoring."
+    }
+  ]
+}

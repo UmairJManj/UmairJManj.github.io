@@ -190,49 +190,14 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== Home: profile left, hoops right ===== */
 .page-wide { max-width: 72rem; }
-.home-grid { display: grid; grid-template-columns: minmax(0, 44rem) minmax(17rem, 21rem); gap: 0 3rem; align-items: start; }
+.home-grid { display: grid; grid-template-columns: minmax(0, 43rem) minmax(20rem, 26rem); gap: 0 2.6rem; align-items: start; }
 .home-left { min-width: 0; }
 .home-right { position: sticky; top: 4.4rem; }
 .home-grid .footer { grid-column: 1 / -1; }
-.hoops-card { position: relative; border: 1px solid var(--line); border-radius: 0.9rem; background: var(--card); }
-
-/* A new card pops out to the side of the panel, over the column beside it. */
-.hoops-pop {
-  position: absolute; right: calc(100% + 0.9rem); top: 3.4rem; width: 18rem; z-index: 40;
-  background: var(--card); border: 1px solid var(--accent); border-radius: 0.9rem;
-  padding: 0.75rem 0.9rem 0.85rem; box-shadow: 0 20px 44px rgba(0, 0, 0, 0.38);
-}
-.hoops-pop h4 { margin: 0.35rem 0 0.25rem; font-size: 0.95rem; font-weight: 600; line-height: 1.3; }
-.hoops-pop p { margin: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.5; }
-.hoops-pop-x {
-  position: absolute; top: 0.3rem; right: 0.45rem; background: none; border: 0; cursor: pointer;
-  color: var(--faint); font-size: 1.1rem; line-height: 1; padding: 0.2rem;
-}
-.hoops-pop-x:hover { color: var(--accent); }
-@media (max-width: 900px) {
-  /* No column to the side, so it sits over the lower part of the court. */
-  .hoops-pop { right: 0.7rem; left: 0.7rem; width: auto; top: auto; bottom: 9.5rem; }
-}
-.hoops-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem; padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--line); }
-.hoops-score { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
-.hoops-score b { color: var(--ink); font-size: 0.9rem; }
-.hoops-canvas { display: block; margin: 0 auto; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; background: #14161b; }
-.hoops-learn { border-top: 1px solid var(--line); padding: 0.7rem 0.85rem 0.85rem; }
-.hoops-learn-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
-.hoops-sect { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
-.hoops-prog { font-family: var(--font-mono); font-size: 0.66rem; color: var(--faint); white-space: nowrap; }
-.hoops-learn h4 { margin: 0.35rem 0 0.25rem; font-size: 0.95rem; font-weight: 600; line-height: 1.3; }
-.hoops-learn p { margin: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.5; }
-.hoops-learn-empty { min-height: 4.6em; }
-.hoops-next { margin-top: 0.45rem !important; color: var(--faint) !important; font-size: 0.74rem !important; }
-.hoops-pitch { margin-top: 0.5rem !important; font-size: 0.8rem !important; color: var(--ink) !important; }
-.hoops-pitch a { color: var(--accent); border-bottom: 1px solid var(--accent); }
-.hoops-canvas:active { cursor: grabbing; }
-.hoops-canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 @media (max-width: 900px) {
   .page-wide { max-width: var(--maxw); }
   .home-grid { grid-template-columns: 1fr; }
-  .home-right { position: static; margin-top: 1.6rem; max-width: 24rem; }
+  .home-right { position: static; margin-top: 1.6rem; max-width: 30rem; }
 }
 
 /* footer */

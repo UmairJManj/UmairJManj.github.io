@@ -1,0 +1,787 @@
+{
+  "exam": "secai-plus",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "secai-plus.d3.3.01",
+      "objective": "d3.3",
+      "seq": 1,
+      "title": "Low-code and no-code scripting tools",
+      "short": "Low-code tools let users build automations from visual blocks plus a little code. No-code tools need no code at all. With AI, a user can describe a workflow in plain language and get it built. This speeds up security automation, but it needs governance: approved platforms, least-privilege connectors, review and version control.",
+      "deep": "**Low-code** platforms provide drag-and-drop workflow designers, prebuilt **connectors** (to email, ticketing, SIEM, identity) and optional script steps. **No-code** platforms remove the script step entirely, so they suit non-developers. Many SOAR (security orchestration, automation and response) and workflow tools work this way, and AI copilots can now generate a whole flow from a prompt such as \"when a phishing report arrives, extract URLs, check reputation and open a ticket\".\n\n**Benefits:** faster automation, less dependence on scarce developers, and consistent repeatable steps.\n\n**Risks:**\n- **Citizen developers** create flows outside IT oversight (shadow automation).\n- Connectors often run with broad stored credentials.\n- AI-generated logic may be wrong.\n- Flows can move data to unapproved destinations.\n\n**Controls:** an approved platform list, data loss prevention policies on connectors, least-privilege service accounts, peer review before production, version control and change records, and testing in a non-production environment. Generated scripts get the same review as human-written ones.",
+      "terms": [
+        {
+          "t": "Low-code",
+          "d": "Visual development with prebuilt components plus optional custom code."
+        },
+        {
+          "t": "No-code",
+          "d": "Building workflows entirely through visual configuration with no coding."
+        },
+        {
+          "t": "Connector",
+          "d": "Prebuilt integration that links a workflow to another service, often using stored credentials."
+        },
+        {
+          "t": "SOAR",
+          "d": "Security orchestration, automation and response: platforms that automate security playbooks."
+        }
+      ],
+      "trap": "Low-code still allows custom code and no-code doesn't. When a non-developer builds a flow, the expected control is governance (review, least-privilege connectors, DLP), not banning the tool.",
+      "example": "An analyst asks a no-code platform's AI to build a phishing-triage flow. Before go-live, the flow's mail connector is switched to a read-only account and a peer reviews it.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Plain-language request",
+          "AI builds flow",
+          "Peer review",
+          "Test",
+          "Production"
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.3.02",
+      "objective": "d3.3",
+      "seq": 2,
+      "title": "Document synthesis and summarization",
+      "short": "Document synthesis combines several sources, such as logs, tickets, threat intelligence and policies, into one new document like an incident report or audit evidence pack. Summarization condenses a single long input. Both save hours, but outputs must cite sources, avoid leaking sensitive data and be verified by a human.",
+      "deep": "**Summarization** condenses one input: a long log extract, a vendor advisory or a meeting transcript. **Synthesis** combines many inputs into something new: a post-incident report built from the timeline, chat logs and ticket notes, a draft policy built from a framework and current practice, or a compliance evidence summary built from many control records.\n\nAutomating these tasks typically uses **retrieval-augmented generation (RAG)**, so the model drafts from your actual documents, and a **prompt template** that fixes the structure: executive summary, timeline, root cause, actions.\n\n**Good practice:**\n- **Ground and cite:** require references back to source records, so reviewers can check facts.\n- **Respect permissions:** the AI should only retrieve documents the requester is allowed to see.\n- **Redact** secrets and personal data before sending content to the model, and before sharing the output.\n- **Human review:** a named owner approves the document. Hallucinated dates, systems or root causes in an official report are a serious compliance risk.\n- Keep the generated document versioned and retained like any other record.",
+      "terms": [
+        {
+          "t": "Document synthesis",
+          "d": "Producing a new document by combining information from multiple sources."
+        },
+        {
+          "t": "Grounding",
+          "d": "Constraining model output to supplied source material, often via RAG."
+        },
+        {
+          "t": "Prompt template",
+          "d": "Predefined prompt structure that standardizes inputs and output format."
+        }
+      ],
+      "trap": "Exam scenarios about AI-written reports usually point to two controls: citation or grounding plus human approval, and permission-aware retrieval so the AI doesn't expose documents the user can't access.",
+      "example": "After an outage, an AI drafts the post-incident report from the ticket timeline and chat export using a fixed template, with each statement linked to its source. The incident manager corrects one root-cause line before approving it.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d3.3.03",
+      "objective": "d3.3",
+      "seq": 3,
+      "title": "Incident response ticket management",
+      "short": "AI can automate the incident ticket lifecycle: create tickets from alerts, deduplicate and merge related ones, classify and set priority, route to the right team, enrich with context, suggest playbook steps, and draft updates and closure notes. Humans keep authority over severity disputes and containment decisions.",
+      "deep": "Ticket queues are a SOC bottleneck. AI automation helps at each stage:\n- **Creation and deduplication:** alerts become tickets automatically, and duplicates or related alerts are merged into one incident, reducing **alert fatigue**.\n- **Classification and prioritization:** the model assigns category (phishing, malware, account compromise) and priority from impact and urgency, and asset criticality, and flags likely false positives.\n- **Routing:** it assigns tickets to the right queue or on-call responder.\n- **Enrichment:** it adds user, device, indicator reputation and recent related activity.\n- **Guidance:** it suggests next steps from the matching playbook and links similar past incidents.\n- **Communication and closure:** it drafts stakeholder updates, keeps timelines current, writes closure summaries and proposes lessons learned.\n\n**Measure it:** mean time to acknowledge (**MTTA**), mean time to respond or resolve (**MTTR**), false-positive rate and misrouting rate.\n\n**Controls:** confidence thresholds, with low-confidence classifications going to a human. Don't auto-close high-severity tickets. Keep an audit trail of AI actions, and periodically review AI decisions against analyst outcomes.",
+      "terms": [
+        {
+          "t": "Alert fatigue",
+          "d": "Analyst overload from high volumes of alerts, leading to missed real threats."
+        },
+        {
+          "t": "MTTR",
+          "d": "Mean time to respond or resolve: average time from detection to resolution."
+        },
+        {
+          "t": "Triage",
+          "d": "Initial assessment to classify and prioritize incidents."
+        }
+      ],
+      "trap": "A typical wrong answer lets AI auto-close or downgrade high-severity incidents. The right design routes low-confidence or high-impact decisions to humans and logs every AI action.",
+      "example": "Two hundred alerts from one compromised account are merged into a single high-priority ticket, enriched with sign-in history and routed to the identity team with the account-compromise playbook attached.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Alert",
+          "Dedupe/merge",
+          "Classify/prioritize",
+          "Route + enrich",
+          "Human action",
+          "AI closure notes"
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.3.04",
+      "objective": "d3.3",
+      "seq": 4,
+      "title": "Change management: AI-assisted approvals and automated deployment/rollback",
+      "short": "AI-assisted change management scores the risk of each change request, checks it for completeness and conflicts, and recommends approval or escalation. Low-risk standard changes can be approved automatically. Automated deployment uses health checks, and automated rollback reverts a change when monitoring detects failure, shrinking outage time.",
+      "deep": "**Change management** controls modifications to production so that they are reviewed, approved, scheduled and documented.\n\n**AI-assisted approvals:** the AI reads the request, then:\n- Checks it for missing fields: backout plan, test evidence, window.\n- Compares it with past changes and incidents, and detects conflicts with other scheduled work.\n- Produces a **risk score**.\n\nOrganizations commonly let pre-authorized **standard changes** (low risk, well-tested) be approved automatically. **Normal** changes go to the change advisory board (CAB) with the AI's analysis, and **emergency** changes follow an expedited human path. Keep **separation of duties**: the requester can't be the approver, and an AI recommendation isn't accountable approval for high-risk work.\n\n**Automated deployment and rollback:**\n- Pipelines deploy gradually (**canary** or **blue-green**).\n- They watch health metrics: error rate, latency, security alerts.\n- If metrics breach thresholds, they **automatically roll back** to the last known-good version.\n\nThis needs a tested rollback plan and versioned artifacts. Every automated action is logged for audit.",
+      "terms": [
+        {
+          "t": "Standard change",
+          "d": "Pre-authorized, low-risk, repeatable change that can follow a streamlined approval."
+        },
+        {
+          "t": "CAB",
+          "d": "Change advisory board that reviews and approves normal changes."
+        },
+        {
+          "t": "Automated rollback",
+          "d": "Reverting to the last known-good version automatically when health checks fail."
+        },
+        {
+          "t": "Canary deployment",
+          "d": "Releasing to a small subset first and expanding only if healthy."
+        }
+      ],
+      "trap": "AI may recommend, and may auto-approve standard low-risk changes, but high-risk changes still need accountable human approval. Rollback triggers should be objective health thresholds.",
+      "example": "A firewall rule update is scored low risk and auto-approved as a standard change. A canary release then shows an error spike, and the pipeline rolls back in two minutes.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Change request",
+          "AI risk score",
+          "Approve/escalate",
+          "Canary deploy",
+          "Health check",
+          "Promote or roll back"
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.3.05",
+      "objective": "d3.3",
+      "seq": 5,
+      "title": "AI agents in security automation",
+      "short": "An AI agent is a model that plans, takes actions with tools, observes the results and iterates toward a goal with limited human input. In security, agents can triage alerts, investigate and run containment steps. Because they act, they need least privilege, scoped tools, human approval for high-impact actions, and full logging.",
+      "deep": "A chatbot answers. An **AI agent** acts. Given a goal (\"investigate this alert\"), the agent works in a loop:\n1. **Plans** steps.\n2. **Calls tools**: SIEM queries, EDR lookups, ticket updates, sometimes through MCP servers.\n3. **Observes** the results.\n4. Repeats until done.\n\n**Multi-agent** setups divide roles, for example one agent for triage and another for enrichment.\n\n**Security uses:** autonomous alert triage, phishing investigation, gathering evidence for a ticket, vulnerability validation, and drafting containment recommendations.\n\n**Risks:** **excessive agency** (too many permissions or autonomous actions), prompt injection through data the agent reads (an email or log can contain instructions), cascading errors, and unclear accountability.\n\n**Controls:**\n- **Least privilege:** a dedicated agent identity and only the tools needed, read-only by default.\n- **Human-in-the-loop:** approval before high-impact actions such as isolating a server, disabling an executive's account or deleting data.\n- **Guardrails:** allowlisted actions, rate limits, sandboxed execution.\n- **Observability:** log each plan, tool call and result, so actions can be audited and reversed.\n- A **kill switch** to stop the agent.",
+      "terms": [
+        {
+          "t": "AI agent",
+          "d": "AI system that autonomously plans and executes actions with tools toward a goal."
+        },
+        {
+          "t": "Excessive agency",
+          "d": "Giving an AI system more permissions, functions or autonomy than it needs."
+        },
+        {
+          "t": "Human-in-the-loop",
+          "d": "Requiring human review or approval at defined points in an automated process."
+        },
+        {
+          "t": "Kill switch",
+          "d": "Mechanism to immediately halt an autonomous system."
+        }
+      ],
+      "trap": "The best answer limits what the agent can do (least privilege plus approval gates). Simply \"monitoring the agent\" while it holds admin rights is the trap.",
+      "example": "A triage agent may query logs and enrich tickets automatically, but its request to isolate a production database server waits for an on-call analyst's approval.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Plan",
+          "Call tool",
+          "Observe result",
+          "Decide next step"
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.3.06",
+      "objective": "d3.3",
+      "seq": 6,
+      "title": "CI/CD security: code scanning and software composition analysis",
+      "short": "In a CI/CD pipeline, code scanning (SAST, secret scanning, infrastructure-as-code checks) inspects your own code, while software composition analysis (SCA) inspects third-party dependencies for known vulnerabilities and licence issues. AI helps by reducing false positives, explaining findings and proposing fixes. Gates block builds on serious findings.",
+      "deep": "**CI/CD** (continuous integration and continuous delivery or deployment) automatically builds, tests and releases code on every change. That makes it the ideal place to automate security.\n- **Code scanning:**\n  - **SAST** (static application security testing) analyzes source code without running it.\n  - **Secret scanning** finds keys and passwords in commits.\n  - **IaC scanning** checks cloud templates for misconfigurations.\n  - **DAST** tests the running application from outside.\n- **Software composition analysis (SCA):** identifies open-source and third-party components, including transitive dependencies, checks them against vulnerability databases (CVEs) and licence policies, and supports a **software bill of materials (SBOM)**. For AI projects, the same idea extends to models and data sets: an **AI-BOM** or model provenance checks.\n\n**AI enhancements:** triaging and deduplicating findings, explaining them in developer terms, generating suggested fixes or upgrade pull requests, and prioritizing by reachability (is the vulnerable function actually called?).\n\n**Pipeline gates** fail the build on critical findings or exposed secrets. AI-proposed fixes still go through code review and tests.",
+      "terms": [
+        {
+          "t": "SAST",
+          "d": "Static application security testing: analyzes source code without executing it."
+        },
+        {
+          "t": "SCA",
+          "d": "Software composition analysis: finds third-party components and their known vulnerabilities and licences."
+        },
+        {
+          "t": "SBOM",
+          "d": "Software bill of materials: inventory of components in a software product."
+        },
+        {
+          "t": "Security gate",
+          "d": "Pipeline check that blocks progression when policy thresholds are breached."
+        }
+      ],
+      "trap": "Vulnerable open-source libraries call for SCA, not SAST. Flaws in your own source code call for SAST, and a running app's behavior calls for DAST.",
+      "example": "A pull request adds a logging library with a known critical CVE. SCA fails the build, and an AI assistant opens a pull request upgrading to the patched version for review.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Commit",
+          "SAST + secrets",
+          "SCA",
+          "Build",
+          "Tests",
+          "Deploy"
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.3.07",
+      "objective": "d3.3",
+      "seq": 7,
+      "title": "CI/CD testing: unit, regression and model testing with automated deployment/rollback",
+      "short": "Unit tests check individual functions, regression tests confirm that existing behavior still works after a change, and model testing evaluates AI models for accuracy, robustness, bias and safety before release. AI can generate tests. Pipelines deploy automatically only when all tests pass, and roll back when production health checks fail.",
+      "deep": "**Unit testing** verifies the smallest pieces, such as functions and classes, in isolation. AI can generate unit tests from code, including security cases such as malformed input. Humans must make sure the tests assert meaningful behavior.\n\n**Regression testing** re-runs existing test suites after a change, to catch anything that used to work and now breaks, including previously fixed security bugs.\n\n**Model testing** covers ML and LLM components:\n- **Accuracy and performance** against a held-out validation set.\n- **Robustness** against adversarial and edge-case inputs.\n- **Bias and fairness** across groups.\n- **Safety and guardrail tests**, for example a suite of known prompt-injection and jailbreak attempts that must be refused.\n- **Drift checks** that compare against the current production model.\n\nIf a retrained model scores worse than the baseline, the pipeline blocks promotion.\n\n**Automated deployment/rollback** in the pipeline promotes builds that pass every gate, often through staged rollout, and automatically reverts to the previous version or model when production monitoring shows errors, degraded accuracy or a spike in unsafe outputs. Version every artifact (code, model weights, prompts, data set snapshot), so rollback restores a known-good state.",
+      "terms": [
+        {
+          "t": "Unit test",
+          "d": "Test of a single function or component in isolation."
+        },
+        {
+          "t": "Regression test",
+          "d": "Re-running tests after changes to make sure existing behavior still works."
+        },
+        {
+          "t": "Model testing",
+          "d": "Evaluating an ML model's accuracy, robustness, bias and safety before and after release."
+        },
+        {
+          "t": "Model versioning",
+          "d": "Tracking model artifacts so a known-good model can be restored."
+        }
+      ],
+      "trap": "If a change re-breaks something that used to work, the missing test type is regression testing. If a retrained model's accuracy drops, model testing gates should block promotion, and rollback restores the previous model version.",
+      "example": "A retrained phishing classifier passes unit tests but fails the model-testing gate because recall dropped 6% from the baseline, so the pipeline keeps the current model in production.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Deploy + monitor + auto-rollback",
+          "Model testing",
+          "Regression tests",
+          "Unit tests",
+          "Code/SCA scans"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "secai-plus.d3.q051",
+      "lesson": "secai-plus.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement BEST distinguishes low-code from no-code platforms?",
+      "options": [
+        "Low-code allows optional custom code alongside visual components, while no-code requires none",
+        "No-code platforms can't use connectors",
+        "Low-code platforms are always open source",
+        "No-code platforms run only on premises"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Low-code combines visual building with optional scripting, and no-code is purely visual configuration. Both commonly use connectors, and neither is defined by licensing or hosting model."
+    },
+    {
+      "id": "secai-plus.d3.q052",
+      "lesson": "secai-plus.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A SOC analyst used a no-code platform's AI to build a workflow that reads the shared phishing mailbox. The workflow's connector uses a global administrator account. What should be changed before production?",
+      "options": [
+        "Nothing, because the platform is approved",
+        "Use a dedicated least-privilege account scoped to the mailbox, and review the flow",
+        "Share the admin credentials with the whole SOC for support",
+        "Convert the flow to a personal assistant"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Connectors should use least-privilege, dedicated credentials, and flows need review before go-live. An approved platform doesn't make broad credentials safe, sharing admin credentials worsens the risk, and switching to a personal assistant doesn't fix the access issue."
+    },
+    {
+      "id": "secai-plus.d3.q053",
+      "lesson": "secai-plus.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which governance controls are appropriate for citizen-developed, AI-generated low-code automations? Select THREE.",
+      "options": [
+        "DLP policies restricting which connectors can share data",
+        "Peer review and testing in non-production before deployment",
+        "Version control and change records for flows",
+        "Allowing any personal account connector to production data",
+        "Skipping review because AI generated the logic"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "DLP on connectors, peer review with testing, and versioning bring automations under control. Personal connectors to production data and skipping review on AI-generated logic increase risk."
+    },
+    {
+      "id": "secai-plus.d3.q054",
+      "lesson": "secai-plus.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A low-code workflow has a script step that redacts email addresses from alert text before sending it to an external LLM. Complete the code.",
+      "code": "import re\n\ndef redact(text):\n    pattern = r\"[\\w.+-]+@[\\w-]+\\.[\\w.]+\"\n    return re.____(pattern, \"[REDACTED]\", text)",
+      "options": [
+        "sub",
+        "match",
+        "findall",
+        "compile"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "re.sub(pattern, repl, string) replaces every match with the replacement text, which redacts the addresses. re.match only tests the start of the string, findall returns the matches without replacing them, and compile doesn't take these arguments this way."
+    },
+    {
+      "id": "secai-plus.d3.q055",
+      "lesson": "secai-plus.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An AI combines the incident timeline, chat transcripts and ticket notes into a new post-incident report. Which task is this?",
+      "options": [
+        "Data augmentation",
+        "Tokenization",
+        "Document synthesis",
+        "Signature matching"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Combining several sources into a new document is synthesis. Augmentation expands training data, tokenization splits text or substitutes values, and signature matching is detection."
+    },
+    {
+      "id": "secai-plus.d3.q056",
+      "lesson": "secai-plus.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A company deploys a RAG assistant that writes audit summaries from internal documents. A junior employee's summary includes figures from an HR investigation file they can't normally open. What is the MOST likely design flaw?",
+      "options": [
+        "The model's temperature is too low",
+        "Retrieval doesn't enforce the requesting user's document permissions",
+        "The prompt template is too short",
+        "The summaries aren't translated"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "RAG retrieval must be permission-aware, so it only returns documents the requester is allowed to see. Temperature, template length and translation don't cause unauthorized data exposure."
+    },
+    {
+      "id": "secai-plus.d3.q057",
+      "lesson": "secai-plus.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about automating document synthesis, select Yes if true.",
+      "statements": [
+        {
+          "s": "Requiring the AI to cite source records makes it easier for reviewers to check facts.",
+          "a": true
+        },
+        {
+          "s": "An AI-generated regulatory report can be filed without human review if it uses a prompt template.",
+          "a": false
+        },
+        {
+          "s": "Secrets and personal data should be redacted before content is sent to an external model.",
+          "a": true
+        }
+      ],
+      "explain": "Citations help verification, and redaction prevents leakage. A template standardizes format but doesn't prevent hallucinations, so a human must still approve official reports."
+    },
+    {
+      "id": "secai-plus.d3.q058",
+      "lesson": "secai-plus.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which technique standardizes the structure of AI-generated incident reports, such as an executive summary, timeline, root cause and actions?",
+      "options": [
+        "Model pruning",
+        "Quantization",
+        "Rate limiting",
+        "A prompt template"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A prompt template fixes the input structure and the expected output format. Pruning and quantization shrink models, and rate limiting controls request volume."
+    },
+    {
+      "id": "secai-plus.d3.q059",
+      "lesson": "secai-plus.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A SOC receives 300 alerts in ten minutes, all tied to the same compromised account. Which AI ticket automation MOST directly reduces analyst workload?",
+      "options": [
+        "Deduplicating and merging related alerts into one incident ticket",
+        "Creating a separate ticket for each alert",
+        "Automatically closing all alerts from that account",
+        "Emailing every alert to the CISO"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Correlating and merging related alerts into one incident cuts noise and alert fatigue. A ticket per alert adds noise, auto-closing hides a real compromise, and mass email overloads leadership."
+    },
+    {
+      "id": "secai-plus.d3.q060",
+      "lesson": "secai-plus.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An AI ticketing system classifies an alert as a false positive with 55% confidence. The alert involves a domain controller. What should the system do?",
+      "options": [
+        "Auto-close the ticket",
+        "Route it to a human analyst for review",
+        "Downgrade it to the lowest priority and archive it",
+        "Delete the associated logs"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Low-confidence decisions on critical assets belong with a human. Auto-closing or archiving risks missing a real attack, and deleting logs destroys evidence."
+    },
+    {
+      "id": "secai-plus.d3.q061",
+      "lesson": "secai-plus.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the AI-assisted incident ticket workflow steps in order.",
+      "options": [
+        "Create ticket from alert and merge duplicates",
+        "Classify and prioritize the incident",
+        "Enrich with context and route to the right team",
+        "Analyst performs containment and resolution",
+        "AI drafts closure summary and lessons learned"
+      ],
+      "explain": "Tickets are created and deduplicated, then classified, enriched and routed. A human handles containment, and AI drafts the closure documentation at the end."
+    },
+    {
+      "id": "secai-plus.d3.q062",
+      "lesson": "secai-plus.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A SOC manager wants to show that AI ticket automation shortened the time from detection to resolution. Which metric should be tracked?",
+      "options": [
+        "Recovery point objective (RPO)",
+        "Mean time between failures (MTBF)",
+        "Mean time to respond/resolve (MTTR)",
+        "Annualized loss expectancy (ALE)"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "MTTR measures the average time to respond to or resolve incidents. RPO is about acceptable data loss, MTBF is about reliability, and ALE is a risk cost estimate."
+    },
+    {
+      "id": "secai-plus.d3.q063",
+      "lesson": "secai-plus.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "An organization wants AI to speed up change approvals without weakening control. Which design is MOST appropriate?",
+      "options": [
+        "AI auto-approves all changes it scores as low risk, including emergency database schema changes",
+        "AI approves changes submitted by senior engineers without review",
+        "AI replaces the CAB for all change types",
+        "AI auto-approves only pre-authorized standard changes and gives risk analysis to human approvers for normal changes"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Standard changes are pre-authorized and suitable for automation, while normal and high-risk changes keep accountable human approval informed by AI analysis. The other options remove oversight or bypass separation of duties."
+    },
+    {
+      "id": "secai-plus.d3.q064",
+      "lesson": "secai-plus.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "During a canary deployment, error rates on the new version jump above the agreed threshold. What should an automated pipeline do?",
+      "options": [
+        "Automatically roll back to the last known-good version and alert the team",
+        "Promote the release to all users to dilute the errors",
+        "Disable monitoring until the release completes",
+        "Wait for the next CAB meeting"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Objective health-check failure should trigger automated rollback and notification. Promoting spreads the failure, disabling monitoring hides it, and waiting prolongs the impact."
+    },
+    {
+      "id": "secai-plus.d3.q065",
+      "lesson": "secai-plus.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which prerequisites make automated rollback reliable? Select TWO.",
+      "options": [
+        "Versioned, retained deployment artifacts",
+        "A tested rollback plan with defined health thresholds",
+        "Deleting previous releases after each deployment",
+        "Manual-only monitoring checked weekly"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "You can only roll back to a version you kept, and a tested plan with objective thresholds lets the rollback trigger automatically. Deleting old releases prevents rollback, and weekly manual checks are too slow."
+    },
+    {
+      "id": "secai-plus.d3.q066",
+      "lesson": "secai-plus.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An engineer submits a change to modify production firewall rules. The AI change assistant notes the request has no backout plan, conflicts with a scheduled network maintenance window, and resembles a past change that caused an outage. The engineer asks to approve it personally to save time.",
+      "stem": "What is the BEST outcome?",
+      "options": [
+        "Let the engineer approve their own change because AI already reviewed it",
+        "Auto-approve the change since firewall changes are routine",
+        "Return the change for a backout plan and reschedule, then escalate for human approval with the AI risk findings",
+        "Deploy immediately and rely on monitoring"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The AI found missing information, a conflict and historical risk, so the change needs completion and accountable human approval. Self-approval breaks separation of duties, and auto-approval or immediate deployment ignores the identified risk."
+    },
+    {
+      "id": "secai-plus.d3.q067",
+      "lesson": "secai-plus.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What MOST distinguishes an AI agent from a basic chatbot?",
+      "options": [
+        "It uses a larger context window",
+        "It autonomously plans and takes actions through tools toward a goal",
+        "It only answers questions from a knowledge base",
+        "It never connects to external systems"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Agents act: they plan, call tools, observe the results and iterate. Context size doesn't define an agent, answering from a knowledge base is chatbot behavior, and agents usually do connect to external systems."
+    },
+    {
+      "id": "secai-plus.d3.q068",
+      "lesson": "secai-plus.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A SOC deploys an AI triage agent. Which configuration BEST balances automation with safety?",
+      "options": [
+        "Domain admin rights so the agent never fails",
+        "Full autonomy to delete suspicious accounts",
+        "No logging to protect performance",
+        "Read-only tool access by default, with human approval required before containment actions"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Least privilege plus human-in-the-loop for high-impact actions limits excessive agency. Admin rights and autonomous deletion are excessive, and removing logs prevents audit."
+    },
+    {
+      "id": "secai-plus.d3.q069",
+      "lesson": "secai-plus.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An AI agent summarizes reported phishing emails and can create firewall block rules. After processing one reported email, the agent tried to add an allow rule for an unknown external IP. The email body contained hidden text telling the agent to allow that address.",
+      "stem": "Which control would have BEST prevented the agent from acting on this?",
+      "options": [
+        "Restrict the agent to an allowlist of actions (block only) and require approval for firewall changes",
+        "Increase the agent's context window",
+        "Let the agent process emails faster",
+        "Switch to a larger model"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "This is indirect prompt injection that exploits excessive agency. Allowlisted actions and approval gates stop injected instructions from taking effect. A bigger context window, more speed or a larger model doesn't remove the permission problem."
+    },
+    {
+      "id": "secai-plus.d3.q070",
+      "lesson": "secai-plus.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about AI agents in security operations, select Yes if true.",
+      "statements": [
+        {
+          "s": "Each plan step, tool call and result an agent makes should be logged for audit.",
+          "a": true
+        },
+        {
+          "s": "Data an agent reads, such as emails or logs, can contain instructions that manipulate it.",
+          "a": true
+        },
+        {
+          "s": "Giving an agent broad permissions reduces the risk of excessive agency.",
+          "a": false
+        }
+      ],
+      "explain": "Logging gives accountability, and indirect prompt injection arrives through processed data. Broad permissions are the cause of excessive agency, not a fix for it."
+    },
+    {
+      "id": "secai-plus.d3.q071",
+      "lesson": "secai-plus.d3.3.06",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which pipeline check identifies known vulnerabilities in open-source libraries that an application depends on?",
+      "options": [
+        "SAST",
+        "Software composition analysis (SCA)",
+        "DAST",
+        "Unit testing"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "SCA inventories third-party components and matches them to known CVEs and licences. SAST checks your own source code, DAST tests the running app, and unit tests verify functions."
+    },
+    {
+      "id": "secai-plus.d3.q072",
+      "lesson": "secai-plus.d3.3.06",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which are appropriate uses of AI in CI/CD code scanning? Select TWO.",
+      "options": [
+        "Explaining findings to developers and proposing fixes for review",
+        "Prioritizing findings by whether the vulnerable code is reachable",
+        "Automatically merging AI fixes to production without tests or review",
+        "Disabling security gates when the backlog grows"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "AI adds value by explaining, suggesting fixes and prioritizing by reachability. Fixes still need review and tests, and disabling gates removes the control."
+    },
+    {
+      "id": "secai-plus.d3.q073",
+      "lesson": "secai-plus.d3.3.06",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A developer accidentally commits a cloud access key. Which pipeline control should catch this before merge?",
+      "options": [
+        "Regression testing",
+        "Model testing",
+        "Canary deployment",
+        "Secret scanning"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Secret scanning detects credentials in commits and can block the merge. Regression and model tests verify behavior, and canary deployment happens after merge, at release."
+    },
+    {
+      "id": "secai-plus.d3.q074",
+      "lesson": "secai-plus.d3.3.07",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A bug fixed last quarter reappears after a new feature is merged. Which test type was designed to catch this?",
+      "options": [
+        "Regression testing",
+        "Unit testing of the new feature only",
+        "Penetration testing",
+        "Load testing"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Regression tests re-run existing checks to confirm earlier behavior and fixes still hold. Testing only the new feature misses old paths, and pentests and load tests target other concerns."
+    },
+    {
+      "id": "secai-plus.d3.q075",
+      "lesson": "secai-plus.d3.3.07",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Before promoting a retrained LLM-based classifier to production, which model tests should the pipeline run? Select THREE.",
+      "options": [
+        "Accuracy against a held-out validation set compared with the current baseline",
+        "A suite of known prompt-injection and jailbreak attempts",
+        "Bias and fairness checks across user groups",
+        "Checking that the model file name follows naming standards only",
+        "Measuring the developer's typing speed"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Model testing covers performance against a baseline, robustness and guardrail safety, and fairness. File naming and developer metrics don't evaluate the model."
+    },
+    {
+      "id": "secai-plus.d3.q076",
+      "lesson": "secai-plus.d3.3.07",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A retrained spam-detection model passes all unit and regression tests and is deployed automatically. Within an hour, production monitoring shows recall falling sharply and user reports of missed phishing rising. The previous model version, its prompts and its data set snapshot are stored in the model registry.",
+      "stem": "What is the BEST immediate action, and what should be improved?",
+      "options": [
+        "Keep the new model and retrain overnight; add more unit tests",
+        "Disable spam filtering; skip testing next time",
+        "Roll back to the previous model version, then add a model-testing gate that compares recall against the baseline",
+        "Lower the alert threshold on monitoring; remove the registry"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Rolling back to the versioned known-good model restores protection at once, and a baseline-comparison model test would have blocked the release. Keeping a degraded model or disabling filtering exposes users, and removing the registry prevents future rollbacks."
+    },
+    {
+      "id": "secai-plus.d3.q077",
+      "lesson": "secai-plus.d3.3.07",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the secure CI/CD pipeline stages for an AI-enabled application in order.",
+      "options": [
+        "Run code scanning and SCA on the commit",
+        "Build and run unit and regression tests",
+        "Run model testing against baseline and guardrail suites",
+        "Deploy to a canary group with health monitoring",
+        "Promote, or automatically roll back if health checks fail"
+      ],
+      "explain": "Scans run first on the commit, then build and functional tests, then model evaluation, then a staged deployment with monitoring, ending in promotion or automated rollback."
+    }
+  ]
+}

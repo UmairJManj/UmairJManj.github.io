@@ -1,0 +1,968 @@
+{
+  "exam": "sc-100",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "sc-100.d3.1.01",
+      "objective": "d3.1",
+      "seq": 1,
+      "title": "Defender for Cloud and the MCSB",
+      "short": "Microsoft Defender for Cloud is a cloud-native application protection platform (CNAPP). Its posture assessments are driven by the Microsoft Cloud Security Benchmark (MCSB), which is assigned by default and turned into security recommendations across Azure, AWS and GCP.",
+      "deep": "Defender for Cloud combines three things: **cloud security posture management (CSPM)**, **cloud workload protection (CWPP)** and **DevOps security**. As an architect you use it to answer \"how well configured are we?\" across every cloud.\n\nThe yardstick is the **Microsoft Cloud Security Benchmark (MCSB)**. It is Microsoft's own set of security controls, grouped into domains such as Network Security (NS), Identity Management (IM), Privileged Access (PA), Data Protection (DP), Logging and Threat Detection (LT) and Posture and Vulnerability Management (PV). Each control maps to industry frameworks such as **CIS Controls, NIST and PCI-DSS**, and MCSB covers Azure plus AWS and GCP guidance. Version 2 (preview) adds an AI security domain.\n\nWhen you enable Defender for Cloud on a subscription, MCSB is the **default standard**: its Azure Policy definitions evaluate resources and produce **recommendations**, which feed **secure score**. The **regulatory compliance dashboard** shows MCSB status, and you can add further standards (for example PCI DSS or ISO 27001), which needs a paid plan such as Defender CSPM.\n\nMicrosoft also publishes a **security baseline** for each Azure service, which applies the MCSB controls to that one service (for example, the baseline for Azure Key Vault).",
+      "terms": [
+        {
+          "t": "MCSB",
+          "d": "Microsoft Cloud Security Benchmark: Microsoft's multicloud set of security controls, the default standard in Defender for Cloud."
+        },
+        {
+          "t": "CNAPP",
+          "d": "Cloud-native application protection platform: CSPM, CWPP and DevOps security in one product."
+        },
+        {
+          "t": "Regulatory compliance dashboard",
+          "d": "Defender for Cloud view showing pass/fail of controls for MCSB and any added standards."
+        },
+        {
+          "t": "Service security baseline",
+          "d": "MCSB guidance applied to one specific Azure service."
+        }
+      ],
+      "trap": "Candidates pick CIS or NIST as the default standard; in Defender for Cloud the default is always MCSB, and other standards are added on top.",
+      "example": "An auditor asks for PCI DSS evidence across Azure and AWS: the architect enables Defender CSPM, adds the PCI DSS standard, and exports the regulatory compliance report.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "MCSB controls",
+          "Azure Policy",
+          "Assessments",
+          "Recommendations",
+          "Secure score"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.1.02",
+      "objective": "d3.1",
+      "seq": 2,
+      "title": "Microsoft Secure Score and cloud secure score",
+      "short": "Microsoft Secure Score measures Microsoft 365, identity, endpoint and SaaS posture in the Defender portal. Defender for Cloud has its own secure score for cloud resources: a classic control-based score and a risk-based Cloud Secure Score. The scores are calculated differently and are not comparable.",
+      "deep": "**Microsoft Secure Score** lives in the Microsoft Defender portal (under Exposure Management). It covers products such as Microsoft Entra ID, Defender for Endpoint, Defender for Identity, Defender for Office 365, Exchange Online, Teams, SharePoint and connected SaaS apps through Defender for Cloud Apps. Each **recommended action** is worth 10 points or less; most are all-or-nothing, but some give **partial points** by coverage (50 of 100 users with MFA on a 10-point action = 5 points).\n\nStatuses: **To address**, **Planned**, **Risk accepted** (no points), **Resolved through third party** and **Resolved through alternate mitigation** (both award points, unverified by Microsoft), and **Completed** (set by Microsoft when it detects the control).\n\n**Defender for Cloud secure score (classic)** is built from MCSB recommendations grouped into **security controls**. You only earn a control's points when **all** its recommendations are remediated for a resource; **preview recommendations are excluded**. It is viewable per subscription, connector or management group.\n\nThe newer **Cloud Secure Score** (Defender portal, Exposure Management) is **risk-based**, 0-100, weighting recommendations by risk level, **asset risk factors** (internet exposure, data sensitivity) and **asset criticality**.",
+      "terms": [
+        {
+          "t": "Recommended action",
+          "d": "A Secure Score item worth up to 10 points, some with partial credit."
+        },
+        {
+          "t": "Risk accepted",
+          "d": "Secure Score status recording a decision not to act; it earns no points."
+        },
+        {
+          "t": "Security control",
+          "d": "Group of related Defender for Cloud recommendations; points are earned only when all are fixed."
+        },
+        {
+          "t": "Cloud Secure Score",
+          "d": "Risk-based 0-100 cloud score that factors in asset risk and criticality."
+        }
+      ],
+      "trap": "Expect a question on statuses: 'Risk accepted' gives no points, while 'Resolved through third party' does; and partial remediation of a Defender for Cloud control earns nothing.",
+      "example": "A company uses a non-Microsoft mail gateway that already covers a recommended action, so the admin marks it 'Resolved through third party' and the points are added.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Microsoft Secure Score",
+          "Defender for Cloud score"
+        ],
+        "rows": [
+          [
+            "Scope",
+            "M365, identity, SaaS",
+            "Azure, AWS, GCP, Arc"
+          ],
+          [
+            "Unit",
+            "Recommended actions",
+            "Security controls"
+          ],
+          [
+            "Partial credit",
+            "Some actions",
+            "No (classic)"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.1.03",
+      "objective": "d3.1",
+      "seq": 3,
+      "title": "Integrated hybrid and multicloud posture",
+      "short": "Defender for Cloud gives one posture view across Azure, AWS, GCP, on-premises (through Azure Arc) and DevOps platforms. Foundational CSPM is free; Defender CSPM adds attack paths, cloud security explorer, governance rules, agentless scanning, data and AI posture.",
+      "deep": "An integrated design brings every environment into one Defender for Cloud tenant view:\n- **AWS**: an environment connector, deployed with a CloudFormation template or Terraform that creates IAM roles trusted by Microsoft Entra ID (no stored long-lived keys). Connecting the **management account** auto-provisions connectors for existing and new member accounts.\n- **GCP**: a connector at project or organization level.\n- **On-premises and other clouds' servers**: **Azure Arc**.\n- **DevOps**: GitHub, Azure DevOps and GitLab connectors for code and IaC findings.\n\n**Foundational CSPM (free)**: asset inventory, MCSB recommendations, secure score, remediation tools, workflow automation, workbooks and data export.\n\n**Defender CSPM (paid)** adds: attack path analysis, cloud security explorer, risk prioritization, governance rules, regulatory compliance standards, agentless VM vulnerability and secrets scanning, data security posture (sensitive data discovery), EASM insights, AI security posture, API posture and **code-to-cloud** mapping.\n\nDesign tips: enable at **management group** scope so new subscriptions inherit plans, use **governance rules** to assign owners and due dates, and pipe recommendations to the Defender portal or Sentinel for one operations view.",
+      "terms": [
+        {
+          "t": "Environment connector",
+          "d": "Defender for Cloud object linking an AWS account, GCP project or DevOps org."
+        },
+        {
+          "t": "Foundational CSPM",
+          "d": "Free posture tier: inventory, MCSB recommendations, secure score."
+        },
+        {
+          "t": "Defender CSPM",
+          "d": "Paid posture plan with attack paths, explorer, agentless scanning, DSPM and AI-SPM."
+        },
+        {
+          "t": "Governance rules",
+          "d": "Defender CSPM feature that assigns owners and due dates to recommendations at scale."
+        }
+      ],
+      "trap": "Exam scenarios that need attack paths, code-to-cloud or sensitive-data context require Defender CSPM, not the free Foundational CSPM.",
+      "example": "A retailer with 140 AWS accounts connects the AWS management account once, and new member accounts appear in Defender for Cloud automatically.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Azure subs",
+          "AWS/GCP connectors",
+          "Arc servers",
+          "DevOps repos",
+          "Defender for Cloud"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.1.04",
+      "objective": "d3.1",
+      "seq": 4,
+      "title": "CWPP: Defender for Servers Plan 1 vs Plan 2",
+      "short": "Defender for Servers protects Windows and Linux machines in Azure, AWS, GCP and on-premises. Plan 1 centres on Defender for Endpoint EDR; Plan 2 adds agentless scanning, premium vulnerability management, file integrity monitoring, just-in-time VM access and a 500 MB per node per day data allowance.",
+      "deep": "Cloud workload protection (CWPP) plans add threat protection on top of posture. For servers you choose:\n\n**Plan 1**: integrates **Microsoft Defender for Endpoint** (EDR, next-generation antivirus) and basic vulnerability findings. It can be enabled on a whole subscription **or on individual resources**.\n\n**Plan 2**: everything in Plan 1 plus:\n- **Agentless scanning** of disks for vulnerabilities, malware and secrets\n- **Premium Defender Vulnerability Management**\n- **File integrity monitoring (FIM)** of files and registry\n- **Just-in-time (JIT) VM access** to keep management ports closed until requested\n- **OS configuration assessment** against MCSB compute baselines and OS update assessment\n- **Free data ingestion of 500 MB per node per day** (pooled across machines) for security tables such as SecurityEvent\n- Network map and, for new subscriptions, Defender for DNS coverage\n\nPlan 2 is enabled at subscription level (it cannot be switched on per resource, only off). Non-Azure servers are covered through **Azure Arc**, which the AWS and GCP connectors can auto-provision.",
+      "terms": [
+        {
+          "t": "JIT VM access",
+          "d": "Opens RDP/SSH ports only for an approved user, source IP and time window."
+        },
+        {
+          "t": "FIM",
+          "d": "File integrity monitoring: tracks changes to OS files and registry keys."
+        },
+        {
+          "t": "Agentless scanning",
+          "d": "Snapshot-based disk scanning for vulnerabilities, malware and secrets without an agent."
+        },
+        {
+          "t": "Data ingestion benefit",
+          "d": "Plan 2 allowance of 500 MB/node/day free ingestion for listed security tables."
+        }
+      ],
+      "trap": "JIT, FIM and the 500 MB ingestion benefit are Plan 2 only; scenarios asking for EDR alone at lowest cost point to Plan 1.",
+      "example": "Production VMs need FIM for PCI DSS, so production gets Plan 2 while a lab subscription needing only EDR gets Plan 1.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Feature",
+          "Plan 1",
+          "Plan 2"
+        ],
+        "rows": [
+          [
+            "Defender for Endpoint",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Agentless scanning",
+            "No",
+            "Yes"
+          ],
+          [
+            "FIM and JIT",
+            "No",
+            "Yes"
+          ],
+          [
+            "500 MB/day ingestion",
+            "No",
+            "Yes"
+          ],
+          [
+            "Per-resource enable",
+            "Yes",
+            "No"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.1.05",
+      "objective": "d3.1",
+      "seq": 5,
+      "title": "CWPP: choosing the other Defender plans",
+      "short": "Beyond servers, Defender for Cloud has workload plans for Storage, databases (Azure SQL, SQL servers on machines, open-source relational, Cosmos DB), Containers, App Service, Key Vault, Resource Manager, APIs and AI services. Pick the plan that matches the resource you must protect.",
+      "deep": "Choosing CWPP is a mapping exercise: workload type to plan.\n- **Defender for Storage**: detects suspicious access, malware uploads (malware scanning), sensitive data threat detection and SAS token misuse on storage accounts.\n- **Defender for Databases**: separate plans for **Azure SQL Databases**, **SQL servers on machines** (SQL Server on Azure VMs, or on-premises and other clouds through Azure Arc), **open-source relational databases** (PostgreSQL, MySQL, MariaDB) and **Azure Cosmos DB**. They give vulnerability assessment (SQL) and threat detection such as SQL injection.\n- **Defender for Containers**: Kubernetes and container protection in Azure, AWS and GCP.\n- **Defender for App Service**: attacks against web apps on App Service.\n- **Defender for Key Vault**: unusual or harmful access to vaults.\n- **Defender for Resource Manager**: suspicious management operations (control-plane activity) through Azure Resource Manager.\n- **Defender for APIs**: posture and threat detection for APIs published in Azure API Management.\n- **Defender for AI Services**: runtime threats to generative AI applications.\n\nAlerts from all plans flow to Defender XDR incidents and can be streamed to Microsoft Sentinel.",
+      "terms": [
+        {
+          "t": "Defender for Resource Manager",
+          "d": "Detects suspicious control-plane operations against Azure Resource Manager."
+        },
+        {
+          "t": "Malware scanning",
+          "d": "Defender for Storage feature that scans uploaded blobs for malware."
+        },
+        {
+          "t": "SQL servers on machines",
+          "d": "Defender plan for SQL Server on VMs, including on-premises via Azure Arc."
+        }
+      ],
+      "trap": "SQL Server running on a VM or on-premises needs 'SQL servers on machines', not 'Azure SQL Databases'; ARM-level abuse is Resource Manager, not Key Vault.",
+      "example": "A partner portal lets customers upload documents to Blob Storage, so the architect enables Defender for Storage malware scanning on that account.",
+      "diagram": null
+    },
+    {
+      "id": "sc-100.d3.1.06",
+      "objective": "d3.1",
+      "seq": 6,
+      "title": "Hybrid and multicloud integration with Azure Arc",
+      "short": "Azure Arc projects servers, Kubernetes clusters and SQL Server instances outside Azure into Azure Resource Manager. Once Arc-enabled, they can be governed with Azure Policy, protected by Defender for Cloud, patched with Azure Update Manager and monitored like native resources.",
+      "deep": "**Azure Arc-enabled servers** use the **Azure Connected Machine agent** on Windows or Linux machines on-premises or in another cloud. The machine gets an **Azure resource ID**, sits in a resource group, and can be tagged and controlled with Azure RBAC. It also receives a system-assigned **managed identity**.\n\nWhat Arc unlocks for security:\n- **Defender for Servers** (and Defender for Endpoint) protection and secure score recommendations\n- **Azure Policy machine configuration** to audit or apply OS settings\n- **Azure Update Manager** for patching, **Azure Monitor Agent** for logs into Sentinel\n- Defender for SQL on Arc-enabled SQL Server\n\nArc is only for machines **outside Azure**; Azure VMs do not need it. The AWS and GCP connectors in Defender for Cloud can **auto-provision the Arc agent** on EC2 and Compute Engine instances.\n\nConnectivity is outbound HTTPS; for private connectivity use an **Azure Arc Private Link Scope** with private endpoints over ExpressRoute or VPN. The agent sends a heartbeat every five minutes; a machine disconnected for 45 days can expire and must be reconnected.\n\n**Arc-enabled Kubernetes** lets Defender for Containers and Azure Policy reach non-AKS clusters.",
+      "terms": [
+        {
+          "t": "Connected Machine agent",
+          "d": "Agent that registers a non-Azure server as an Arc resource."
+        },
+        {
+          "t": "Azure Arc Private Link Scope",
+          "d": "Resource that lets Arc agents reach Azure over private endpoints."
+        },
+        {
+          "t": "Machine configuration",
+          "d": "Azure Policy feature that audits/configures settings inside the OS."
+        }
+      ],
+      "trap": "Arc is the answer when non-Azure servers need Azure Policy or Defender for Servers; it is never used for Azure VMs.",
+      "example": "A bank's VMware servers are Arc-enabled so Defender for Servers Plan 2 and machine configuration baselines apply exactly as they do to Azure VMs.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "On-prem/AWS/GCP",
+          "Connected agent",
+          "Azure Resource Mgr",
+          "Policy/Defender"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.1.07",
+      "objective": "d3.1",
+      "seq": 7,
+      "title": "Defender External Attack Surface Management",
+      "short": "Microsoft Defender External Attack Surface Management (EASM) discovers your internet-facing assets from the outside, starting from discovery seeds, and keeps an inventory of domains, IP blocks, hosts, ASNs, email contacts and Whois organizations so you can find unknown and unmanaged exposure.",
+      "deep": "Attackers see you from the internet, not from your CMDB. **Defender EASM** recreates that view.\n\n**How it works**: you provide **discovery seeds** (known domains, IP blocks, hosts, ASNs, Whois organizations). Microsoft's discovery engine recursively follows connections from those seeds to infer related infrastructure, including shadow IT and forgotten sites.\n\n**Inventory states** label each asset:\n- **Approved Inventory**: owned by you, your responsibility\n- **Candidate**: related to seeds but not confirmed; needs review\n- **Dependency**: third-party infrastructure your assets rely on\n- **Monitor Only**: relevant but not controlled (for example, a franchisee)\n- **Requires Investigation**: confidence scores suggest a link that needs manual validation\n\n**Dashboards** surface vulnerabilities (CVEs on exposed hosts), expiring certificates, compliance (for example, OWASP-type findings) and hygiene issues.\n\nDesign points: Defender EASM is an Azure resource with Owner/Contributor/Reader access; **cross-tenant access, including Azure Lighthouse, is not supported**. Its findings also enrich **Defender CSPM** (internet exposure) and **Microsoft Security Exposure Management**.",
+      "terms": [
+        {
+          "t": "Discovery seed",
+          "d": "Known asset used as the starting point for external discovery."
+        },
+        {
+          "t": "Approved Inventory",
+          "d": "EASM state for assets you own and must secure."
+        },
+        {
+          "t": "Candidate",
+          "d": "EASM state for related assets whose ownership is not yet confirmed."
+        },
+        {
+          "t": "Dependency",
+          "d": "Third-party infrastructure that supports your owned assets."
+        }
+      ],
+      "trap": "Don't confuse EASM (outside-in discovery of unknown internet assets) with attack path analysis (inside-out graph of known cloud resources).",
+      "example": "After an acquisition, the architect seeds EASM with the acquired company's domains and finds an unpatched VPN portal nobody had listed.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Seeds",
+          "Discovery",
+          "Inventory states",
+          "Dashboards",
+          "Remediate"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.1.08",
+      "objective": "d3.1",
+      "seq": 8,
+      "title": "Attack paths and cloud security explorer",
+      "short": "Defender CSPM builds a cloud security graph of assets, identities, network exposure and vulnerabilities. Attack path analysis finds exploitable routes from an internet-facing entry point to critical assets; cloud security explorer lets you query the same graph for custom risks.",
+      "deep": "Isolated recommendations do not show how weaknesses chain together. The **cloud security graph** in Defender CSPM links resources, permissions, network connections, internet exposure, vulnerabilities and sensitive data.\n\n**Attack path analysis** scans that graph for:\n1. an **entry point** (for example an internet-exposed VM with an exploitable vulnerability)\n2. **lateral movement** steps (an attached managed identity with rights on another resource)\n3. a **target** (a critical asset such as a storage account holding sensitive data)\n\nPaths are ranked by risk factors such as internet exposure, permissions and lateral movement, and come with remediation that **breaks the path**. Coverage includes VMs, containers, storage, serverless, APIs, repositories and AI resources.\n\n**Cloud security explorer** is the query builder for proactive risk hunting: you build graph queries such as \"internet-exposed VMs with high-severity vulnerabilities that can authenticate to a key vault\".\n\nRequirements: **Defender CSPM**, plus either **agentless scanning for VMs** or the Defender for Servers vulnerability assessment. Microsoft Security Exposure Management extends attack paths across hybrid identity and endpoints and highlights **choke points** where many paths converge.",
+      "terms": [
+        {
+          "t": "Cloud security graph",
+          "d": "Context graph of assets, identities, exposure and vulnerabilities in Defender CSPM."
+        },
+        {
+          "t": "Entry point",
+          "d": "Externally reachable, exploitable weakness where an attack path begins."
+        },
+        {
+          "t": "Choke point",
+          "d": "Node where many attack paths converge; fixing it breaks many paths."
+        },
+        {
+          "t": "Cloud security explorer",
+          "d": "Query builder for custom graph-based risk hunting."
+        }
+      ],
+      "trap": "Attack path analysis is automatic and prebuilt; for an ad hoc question about your own risk combination, the answer is cloud security explorer.",
+      "example": "An attack path shows an internet-facing VM with a critical CVE whose managed identity can read a customer-data storage account; removing the role assignment breaks the path.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Entry point",
+          "Vulnerable VM",
+          "Managed identity",
+          "Sensitive storage"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.1.09",
+      "objective": "d3.1",
+      "seq": 9,
+      "title": "Exposure Management initiatives, insights and attack surface reduction",
+      "short": "Microsoft Security Exposure Management unifies posture across endpoints, identities, cloud, SaaS and external surface. Security initiatives track scored programmes such as Ransomware Protection or Zero Trust; exposure insights, the attack surface map and critical asset management help prioritise. Attack surface reduction rules shrink endpoint exposure.",
+      "deep": "Posture work must be a repeatable **process**, not a one-off scan. **Microsoft Security Exposure Management** (in the Defender portal) supports a continuous threat exposure management cycle:\n- **Security initiatives**: scored programmes for a domain or threat, for example **Cloud Security**, **SaaS Security**, **Identity Security**, **Ransomware Protection**, **Business Email Compromise** and **Zero Trust**. Each has **metrics** and **recommendations** so leaders can track progress over time.\n- **Exposure insights**: aggregated posture data and context about assets.\n- **Attack surface map** and **attack paths** across on-premises, hybrid and cloud, with **choke points**.\n- **Critical asset management**: predefined and custom classifications of crown-jewel devices, identities and cloud resources, used to prioritise.\n- Third-party data connectors (for example ServiceNow CMDB, Tenable, Qualys, Rapid7).\n\n**Attack surface reduction (ASR) rules** in Defender for Endpoint block risky behaviours such as Office apps creating child processes or credential stealing from LSASS. Roll them out in **Audit** mode first, then **Block** (or **Warn** where users may override).\n\nExposure Management is available in the public cloud only, not in US Gov or China sovereign clouds.",
+      "terms": [
+        {
+          "t": "Security initiative",
+          "d": "Scored programme in Exposure Management with metrics and recommendations."
+        },
+        {
+          "t": "Critical asset management",
+          "d": "Classifying crown-jewel assets so exposures on them are prioritised."
+        },
+        {
+          "t": "ASR rules",
+          "d": "Defender for Endpoint rules blocking risky behaviours; modes Audit, Block, Warn."
+        },
+        {
+          "t": "CTEM",
+          "d": "Continuous threat exposure management: scope, discover, prioritise, validate, mobilise."
+        }
+      ],
+      "trap": "Leadership-level 'track our readiness against ransomware over time' maps to an Exposure Management security initiative, not a compliance dashboard.",
+      "example": "The CISO reviews the Ransomware Protection initiative score monthly while the endpoint team moves ASR rules from Audit to Block.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Scope",
+          "Discover",
+          "Prioritise",
+          "Validate",
+          "Mobilise"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-100.d3.q001",
+      "lesson": "sc-100.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You enable Microsoft Defender for Cloud on a new Azure subscription. Which standard is assigned by default and drives the security recommendations and secure score?",
+      "options": [
+        "Microsoft Cloud Security Benchmark (MCSB)",
+        "CIS Microsoft Azure Foundations Benchmark",
+        "NIST SP 800-53 Rev. 5",
+        "ISO/IEC 27001"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "MCSB is the default standard in Defender for Cloud; its policies generate recommendations and secure score. CIS, NIST and ISO standards can be added to the regulatory compliance dashboard but are not the default."
+    },
+    {
+      "id": "sc-100.d3.q002",
+      "lesson": "sc-100.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Auditors need PCI DSS compliance evidence for resources in Azure and in connected AWS accounts, in addition to MCSB. What should you recommend?",
+      "options": [
+        "Assign the MCSB initiative a second time with PCI DSS parameters",
+        "Enable Defender CSPM and add the PCI DSS standard in the regulatory compliance dashboard",
+        "Create a custom Microsoft Secure Score recommended action for PCI DSS",
+        "Enable Defender for Servers Plan 1 on the AWS connector"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Additional regulatory standards such as PCI DSS are added in the regulatory compliance dashboard, which needs a paid plan such as Defender CSPM and works for connected AWS accounts. MCSB cannot be re-parameterised into PCI DSS, Secure Score has no custom PCI action, and Servers Plan 1 adds EDR, not compliance standards."
+    },
+    {
+      "id": "sc-100.d3.q003",
+      "lesson": "sc-100.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the Microsoft Cloud Security Benchmark, select Yes if true.",
+      "statements": [
+        {
+          "s": "MCSB includes security guidance for AWS and GCP as well as Azure.",
+          "a": true
+        },
+        {
+          "s": "An Azure service security baseline applies MCSB controls to one specific Azure service.",
+          "a": true
+        },
+        {
+          "s": "MCSB is a regulatory standard published by NIST.",
+          "a": false
+        }
+      ],
+      "explain": "MCSB is Microsoft-authored, multicloud, and mapped to frameworks such as CIS, NIST and PCI-DSS; it is not a NIST publication. Per-service security baselines apply MCSB controls to individual Azure services."
+    },
+    {
+      "id": "sc-100.d3.q004",
+      "lesson": "sc-100.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Your organization uses a non-Microsoft email security gateway that fully implements a Microsoft Secure Score recommended action. Which status should you set so the action's points are counted?",
+      "options": [
+        "Risk accepted",
+        "Planned",
+        "Resolved through third party",
+        "To address"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "'Resolved through third party' (like 'Resolved through alternate mitigation') awards the action's points. 'Risk accepted' gives no points, 'Planned' only affects the projected planned score, and 'To address' means work is still outstanding."
+    },
+    {
+      "id": "sc-100.d3.q005",
+      "lesson": "sc-100.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A Microsoft Secure Score recommended action that awards partial points by coverage is worth 9 points. 300 of your 900 users currently meet the requirement. How many points do you earn for this action?",
+      "options": [
+        "0",
+        "4.5",
+        "9",
+        "3"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Coverage-based actions award points in proportion to coverage: 300/900 x 9 = 3. Zero would apply only to binary actions not yet complete, and 9 needs full coverage."
+    },
+    {
+      "id": "sc-100.d3.q006",
+      "lesson": "sc-100.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the classic secure score in Microsoft Defender for Cloud, select Yes if true.",
+      "statements": [
+        {
+          "s": "You must remediate every recommendation in a security control for a resource to earn that control's points.",
+          "a": true
+        },
+        {
+          "s": "Preview recommendations are included in the secure score calculation.",
+          "a": false
+        },
+        {
+          "s": "The classic secure score and the risk-based Cloud Secure Score produce directly comparable values.",
+          "a": false
+        }
+      ],
+      "explain": "Classic secure score awards a control's points only when all its recommendations are fixed, and excludes preview recommendations until GA. The risk-based Cloud Secure Score uses a different calculation, so the two scores are not comparable."
+    },
+    {
+      "id": "sc-100.d3.q007",
+      "lesson": "sc-100.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso runs workloads in Azure and AWS. The CISO complains that the current posture number treats a misconfigured test VM the same as an internet-facing database containing customer data. She wants a 0-100 cloud posture score that weights findings by internet exposure, data sensitivity and how critical each asset is to the business.",
+      "stem": "Which score should you recommend that the CISO track?",
+      "options": [
+        "Cloud Secure Score in Microsoft Security Exposure Management",
+        "Classic secure score in Defender for Cloud",
+        "The Identity category of Microsoft Secure Score",
+        "Compliance score in Microsoft Purview Compliance Manager"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The risk-based Cloud Secure Score weights recommendations by risk level, asset risk factors such as internet exposure and data sensitivity, and asset criticality. The classic score ignores risk factors, the Identity category covers Entra settings, and Compliance Manager measures regulatory control progress."
+    },
+    {
+      "id": "sc-100.d3.q008",
+      "lesson": "sc-100.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company has 140 AWS accounts in AWS Organizations and creates new accounts every month. You must bring all of them into Defender for Cloud with the least ongoing administrative effort. What should you do?",
+      "options": [
+        "Create a single-account connector for each AWS account by using Terraform",
+        "Create a connector for the AWS management account so member and new accounts are provisioned automatically",
+        "Create a connector for an AWS delegated administrator account",
+        "Install the Azure Arc agent on every EC2 instance instead of using connectors"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A management account connector auto-provisions connectors for existing and newly created member accounts. Per-account connectors require ongoing work, delegated administrator accounts are not supported for this, and Arc alone covers servers but not AWS service posture."
+    },
+    {
+      "id": "sc-100.d3.q009",
+      "lesson": "sc-100.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO capabilities are included in the free Foundational CSPM tier of Defender for Cloud? Select TWO.",
+      "options": [
+        "Secure score",
+        "Security recommendations based on MCSB",
+        "Attack path analysis",
+        "Agentless VM vulnerability scanning",
+        "Governance rules"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Foundational CSPM includes asset inventory, MCSB recommendations, secure score and remediation tools. Attack path analysis, agentless VM scanning and governance rules are Defender CSPM (paid) features."
+    },
+    {
+      "id": "sc-100.d3.q010",
+      "lesson": "sc-100.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam deploys infrastructure from Terraform stored in GitHub to Azure and GCP. Security wants a misconfiguration found in a running cloud resource to be traced back to the exact IaC file and repository that created it, and wants to see whether that resource lies on an exploitable path to sensitive data.",
+      "stem": "Which Defender for Cloud plan meets both requirements?",
+      "options": [
+        "Foundational CSPM with a GitHub connector",
+        "Defender for Servers Plan 2",
+        "Defender CSPM",
+        "Defender for Containers"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Code-to-cloud contextualization and attack path analysis both require Defender CSPM. Foundational CSPM with a DevOps connector gives only basic DevOps recommendations, and the Servers and Containers plans protect workloads rather than map code to cloud."
+    },
+    {
+      "id": "sc-100.d3.q011",
+      "lesson": "sc-100.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are connecting an AWS account to Defender for Cloud. Put the steps in order.",
+      "options": [
+        "In Defender for Cloud environment settings, add an AWS environment and enter the account details",
+        "Select the Defender plans to enable on the connector",
+        "Choose the deployment method and obtain the CloudFormation template",
+        "Run the template in AWS to create the IAM roles trusted by Defender for Cloud",
+        "Review AWS recommendations once assessments arrive"
+      ],
+      "explain": "The connector wizard collects account details, then plan selection, then generates the CloudFormation (or Terraform) template. Running it in AWS creates the federated IAM roles; only after that do assessments and recommendations appear."
+    },
+    {
+      "id": "sc-100.d3.q012",
+      "lesson": "sc-100.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Azure VMs that process card payments need file integrity monitoring and just-in-time VM access. Which plan provides both?",
+      "options": [
+        "Defender for Servers Plan 1",
+        "Foundational CSPM",
+        "Defender CSPM",
+        "Defender for Servers Plan 2"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "FIM and JIT VM access are Defender for Servers Plan 2 features. Plan 1 focuses on Defender for Endpoint EDR, and the CSPM tiers provide posture rather than these workload controls."
+    },
+    {
+      "id": "sc-100.d3.q013",
+      "lesson": "sc-100.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Production servers are in subscription Prod and need FIM and agentless malware scanning. Lab servers are in subscription Lab and need only EDR at the lowest cost. What should you configure?",
+      "options": [
+        "Plan 2 on Prod and Plan 1 on Lab",
+        "Plan 2 on both subscriptions and disable FIM on Lab",
+        "Plan 1 on both subscriptions and add FIM through Azure Policy",
+        "Defender CSPM on Prod and Foundational CSPM on Lab"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Plan 2 adds FIM and agentless scanning for Prod, while Plan 1 delivers Defender for Endpoint EDR at lower cost for Lab. Plan 2 everywhere overspends, Plan 1 lacks FIM, and CSPM plans do not provide EDR."
+    },
+    {
+      "id": "sc-100.d3.q014",
+      "lesson": "sc-100.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Defender for Servers, select Yes if true.",
+      "statements": [
+        {
+          "s": "Plan 1 can be enabled on individual machines rather than the whole subscription.",
+          "a": true
+        },
+        {
+          "s": "Plan 2 can be enabled on individual machines rather than the whole subscription.",
+          "a": false
+        },
+        {
+          "s": "Plan 2 includes a free allowance of 500 MB per node per day for specific security tables in Log Analytics.",
+          "a": true
+        }
+      ],
+      "explain": "Plan 1 supports per-resource enablement; Plan 2 can be enabled at subscription level and only disabled per resource. Plan 2 includes a pooled 500 MB/node/day ingestion benefit for tables such as SecurityEvent."
+    },
+    {
+      "id": "sc-100.d3.q015",
+      "lesson": "sc-100.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You must detect malware uploaded to blob containers and alert on unusual access attempts against secrets in vaults. Which TWO Defender plans should you enable? Select TWO.",
+      "options": [
+        "Defender for Storage",
+        "Defender for Key Vault",
+        "Defender for Resource Manager",
+        "Defender for App Service",
+        "Defender CSPM"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Defender for Storage provides malware scanning and storage threat detection; Defender for Key Vault alerts on unusual vault access. Resource Manager covers control-plane operations, App Service covers web apps, and Defender CSPM is posture only."
+    },
+    {
+      "id": "sc-100.d3.q016",
+      "lesson": "sc-100.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "SQL Server 2019 runs on on-premises Hyper-V VMs. You need vulnerability assessment and threat detection for those databases in Defender for Cloud. What should you recommend?",
+      "options": [
+        "Enable Defender for Azure SQL Databases",
+        "Arc-enable the servers and enable Defender for SQL servers on machines",
+        "Enable Defender for open-source relational databases",
+        "Enable Defender for Storage on the database backup account"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "SQL Server outside Azure is protected by the SQL servers on machines plan once the hosts are Arc-enabled. The Azure SQL plan covers PaaS databases, the open-source plan covers PostgreSQL and MySQL, and Defender for Storage protects storage accounts."
+    },
+    {
+      "id": "sc-100.d3.q017",
+      "lesson": "sc-100.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Defender plan alerts when an unusual IP address performs a burst of resource deletions through Azure Resource Manager?",
+      "options": [
+        "Defender for Key Vault",
+        "Defender for DNS",
+        "Defender for Resource Manager",
+        "Defender CSPM"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Defender for Resource Manager monitors management (control-plane) operations for suspicious activity. Key Vault covers vault access, DNS covers anomalous DNS queries, and Defender CSPM provides posture rather than activity alerts."
+    },
+    {
+      "id": "sc-100.d3.q018",
+      "lesson": "sc-100.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which component must be installed on an on-premises Linux server so it appears as an Azure resource that Azure Policy and Defender for Cloud can manage?",
+      "options": [
+        "Azure Monitor Agent",
+        "Log Analytics agent",
+        "Azure VM Guest Agent",
+        "Azure Connected Machine agent"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The Connected Machine agent registers the machine as an Azure Arc-enabled server with a resource ID. Azure Monitor Agent only collects telemetry, the Log Analytics agent is retired, and the VM Guest Agent exists only on Azure VMs."
+    },
+    {
+      "id": "sc-100.d3.q019",
+      "lesson": "sc-100.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Servers in a colocation datacenter will be Azure Arc-enabled. Which THREE capabilities does this make available for them? Select THREE.",
+      "options": [
+        "Auditing OS settings with Azure Policy machine configuration",
+        "Protection by Defender for Servers",
+        "Patching through Azure Update Manager",
+        "Automatic live migration of the servers into Azure",
+        "Access through Azure DNS private resolver without network connectivity"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Arc projects the servers into Azure Resource Manager so machine configuration, Defender for Servers and Update Manager can manage them. Arc does not migrate servers, and it does not provide network or DNS connectivity."
+    },
+    {
+      "id": "sc-100.d3.q020",
+      "lesson": "sc-100.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You need an Azure Resource Graph query that lists all Azure Arc-enabled servers with their location and operating system. Complete the query.",
+      "code": "____\n| where type == \"microsoft.hybridcompute/machines\"\n| project name, location, osName = tostring(properties.osName)",
+      "options": [
+        "resources",
+        "securityresources",
+        "Heartbeat",
+        "advisorresources"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Arc-enabled servers are ARM resources of type microsoft.hybridcompute/machines in the Resource Graph resources table. securityresources holds Defender for Cloud data, Heartbeat is a Log Analytics table, and advisorresources holds Advisor recommendations."
+    },
+    {
+      "id": "sc-100.d3.q021",
+      "lesson": "sc-100.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Woodgrove Bank has 600 servers on-premises and 200 EC2 instances in AWS. All servers must be covered by Defender for Servers Plan 2 and audited with Azure Policy machine configuration. The security policy forbids the on-premises servers from sending management traffic over the public internet; an ExpressRoute circuit to Azure exists.",
+      "stem": "What should you include in the design for the on-premises servers?",
+      "options": [
+        "Azure Arc-enabled servers with virtual network service endpoints for Microsoft.HybridCompute",
+        "Azure Arc-enabled servers connecting through an Azure Arc Private Link Scope over ExpressRoute",
+        "Defender for Endpoint installed directly with no Arc agent, reporting through Azure Bastion",
+        "Azure Monitor Agent with a data collection endpoint and no Arc registration"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Arc is required for machine configuration and full Defender for Servers coverage, and an Arc Private Link Scope lets agents use private endpoints over ExpressRoute. Service endpoints apply only to Azure VNet traffic, Bastion is a remote-access service, and AMA alone does not create an Azure resource for Policy."
+    },
+    {
+      "id": "sc-100.d3.q022",
+      "lesson": "sc-100.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In Microsoft Defender External Attack Surface Management, what do you supply so the service can start discovering your internet-facing infrastructure?",
+      "options": [
+        "An Azure Arc agent on each public web server",
+        "A Defender for Cloud AWS connector",
+        "Discovery seeds such as known domains and IP blocks",
+        "A Log Analytics data connection"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Defender EASM recursively discovers related assets starting from discovery seeds. It is agentless and outside-in, so Arc agents and cloud connectors are not needed, and data connections only export findings."
+    },
+    {
+      "id": "sc-100.d3.q023",
+      "lesson": "sc-100.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Defender EASM discovers a host that has some relationship to your seeds but not a strong enough connection to confirm ownership. In which inventory state does it appear for manual review?",
+      "options": [
+        "Approved Inventory",
+        "Dependency",
+        "Monitor Only",
+        "Candidate"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Candidate assets are related to seeds but need manual review to confirm ownership. Approved Inventory is confirmed as owned, Dependency is third-party infrastructure you rely on, and Monitor Only is relevant but not under your control."
+    },
+    {
+      "id": "sc-100.d3.q024",
+      "lesson": "sc-100.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Defender EASM, select Yes if true.",
+      "statements": [
+        {
+          "s": "Websites run by franchisees that matter to your brand but are not under your control are best labelled Monitor Only.",
+          "a": true
+        },
+        {
+          "s": "A managed service provider can operate a customer's Defender EASM resource through Azure Lighthouse.",
+          "a": false
+        },
+        {
+          "s": "Discovered asset types include domains, IP address blocks, hosts, ASNs and Whois organizations.",
+          "a": true
+        }
+      ],
+      "explain": "Monitor Only suits related but uncontrolled assets. Defender EASM does not support cross-tenant access, including Azure Lighthouse, so users must authenticate to the resource's tenant. The listed asset types are all discovered."
+    },
+    {
+      "id": "sc-100.d3.q025",
+      "lesson": "sc-100.d3.1.08",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Attack path analysis shows no results for your Azure VMs. Which configuration is required for VM-based attack paths?",
+      "options": [
+        "Defender CSPM plus agentless scanning for VMs or Defender for Servers vulnerability assessment",
+        "Foundational CSPM plus Azure Arc on every VM",
+        "Defender for Servers Plan 1 only",
+        "Microsoft Sentinel with UEBA enabled"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Attack path analysis requires Defender CSPM together with vulnerability data from agentless VM scanning or Defender for Servers. Foundational CSPM does not include attack paths, Arc is not needed for Azure VMs, and Sentinel UEBA is unrelated."
+    },
+    {
+      "id": "sc-100.d3.q026",
+      "lesson": "sc-100.d3.1.08",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A threat analyst wants to run an ad hoc query to find internet-exposed VMs that have high-severity vulnerabilities and whose managed identities can access a key vault. Which tool should the analyst use?",
+      "options": [
+        "Attack path analysis",
+        "Cloud security explorer",
+        "The regulatory compliance dashboard",
+        "Workflow automation"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Cloud security explorer builds custom graph queries across exposure, vulnerabilities and permissions. Attack path analysis shows prebuilt paths that Microsoft computes, the compliance dashboard tracks standards, and workflow automation triggers Logic Apps."
+    },
+    {
+      "id": "sc-100.d3.q027",
+      "lesson": "sc-100.d3.1.08",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the elements of a typical Defender CSPM attack path in order, from where the attacker starts to what they reach.",
+      "options": [
+        "Internet-exposed VM with an exploitable vulnerability",
+        "Managed identity attached to the VM",
+        "Role assignment granting that identity data access",
+        "Storage account containing sensitive data"
+      ],
+      "explain": "Attack paths begin at an exploitable entry point, move laterally through identities and permissions, and end at a critical target such as sensitive data. Breaking any link, for example the role assignment, breaks the path."
+    },
+    {
+      "id": "sc-100.d3.q028",
+      "lesson": "sc-100.d3.1.09",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Leadership wants one scored programme that tracks readiness against ransomware across endpoints, identities and cloud, with metrics and prioritised recommendations, reviewed monthly. What should you use?",
+      "options": [
+        "Microsoft Secure Score history for the Apps category",
+        "A Microsoft Purview Compliance Manager assessment",
+        "The Ransomware Protection security initiative in Microsoft Security Exposure Management",
+        "The Defender for Cloud regulatory compliance dashboard"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Exposure Management security initiatives such as Ransomware Protection give scored, cross-domain metrics and recommendations for a threat. Secure Score categories are not threat-specific, Compliance Manager tracks regulations, and the compliance dashboard tracks cloud standards."
+    },
+    {
+      "id": "sc-100.d3.q029",
+      "lesson": "sc-100.d3.1.09",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "You are planning the rollout of attack surface reduction rules in Microsoft Defender for Endpoint. Which THREE modes can a rule be set to? Select THREE.",
+      "options": [
+        "Audit",
+        "Block",
+        "Warn",
+        "Quarantine",
+        "Learn"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "ASR rules can be set to Audit, Block or Warn (or left not configured/disabled). Quarantine is an antivirus remediation action and Learn is not an ASR mode. Best practice is to start in Audit before moving to Block."
+    },
+    {
+      "id": "sc-100.d3.q030",
+      "lesson": "sc-100.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "You need an Azure Resource Graph query that returns the Defender for Cloud secure score percentage for each subscription. Complete the query.",
+      "code": "securityresources\n| where type == \"____\"\n| extend percentage = properties.score.percentage\n| project subscriptionId, percentage",
+      "options": [
+        "microsoft.security/assessments",
+        "microsoft.security/pricings",
+        "microsoft.security/regulatorycompliancestandards",
+        "microsoft.security/securescores"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Secure score records are of type microsoft.security/securescores and expose properties.score.percentage. Assessments are individual recommendation results, pricings are the plan settings, and regulatorycompliancestandards hold compliance state."
+    }
+  ]
+}

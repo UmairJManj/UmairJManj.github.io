@@ -1,0 +1,487 @@
+{
+  "exam": "sc-900",
+  "domain": "d2",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-900.d2.q023",
+      "lesson": "sc-900.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which authentication method can be used for multifactor authentication and self-service password reset, but NOT as a primary sign-in method in Microsoft Entra ID?",
+      "options": [
+        "Password",
+        "Voice call",
+        "Windows Hello for Business",
+        "Passkey (FIDO2)"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Voice call works as a second factor and for SSPR only. A password is a primary method only. Windows Hello for Business and passkeys are primary, passwordless methods."
+    },
+    {
+      "id": "sc-900.d2.q024",
+      "lesson": "sc-900.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Users approve Microsoft Authenticator push notifications. To reduce accidental approvals of prompts started by attackers, users must type the two-digit number shown on the sign-in screen into the app. What is this feature called?",
+      "options": [
+        "Authentication strength",
+        "Number matching",
+        "Temporary Access Pass",
+        "Smart lockout"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Number matching requires the user to enter the number displayed at sign-in, defeating blind approvals and MFA fatigue. Authentication strength defines which methods a policy accepts, TAP is a time-limited passcode, and smart lockout blocks password guessing."
+    },
+    {
+      "id": "sc-900.d2.q025",
+      "lesson": "sc-900.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A user carries a small hardware device that displays a new six-digit code every 30 seconds for signing in. Which authentication method is this?",
+      "options": [
+        "Certificate-based authentication",
+        "Email one-time passcode",
+        "Hardware OATH token",
+        "Passkey (FIDO2) security key"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A hardware OATH token shows time-based one-time passcodes (TOTP). A FIDO2 security key uses public-key cryptography and doesn't display codes. Certificate-based authentication uses X.509 certificates, and email OTP sends a code by email."
+    },
+    {
+      "id": "sc-900.d2.q026",
+      "lesson": "sc-900.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about authentication methods in Microsoft Entra ID, select Yes if true.",
+      "statements": [
+        {
+          "s": "Administrators enable methods such as Microsoft Authenticator and SMS for users and groups in the Authentication methods policy.",
+          "a": true
+        },
+        {
+          "s": "SMS is considered stronger than Microsoft Authenticator because it doesn't need an app.",
+          "a": false
+        },
+        {
+          "s": "A software OATH token generates time-based codes in an authenticator app.",
+          "a": true
+        }
+      ],
+      "explain": "The Authentication methods policy is where methods are enabled and targeted. SMS is among the weakest methods because messages can be intercepted or redirected through SIM swapping. Software OATH tokens are TOTP codes generated in an app."
+    },
+    {
+      "id": "sc-900.d2.q027",
+      "lesson": "sc-900.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO authentication methods can a user verify with as a second factor during Microsoft Entra multifactor authentication? Select TWO.",
+      "options": [
+        "Microsoft Authenticator push notification",
+        "Security questions",
+        "Voice call",
+        "Password",
+        "Username"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Authenticator push and voice call are supported MFA methods. Security questions can be used only for SSPR, not MFA. A password is a first factor, and a username is just an identifier, not a factor."
+    },
+    {
+      "id": "sc-900.d2.q028",
+      "lesson": "sc-900.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Windows sign-in method uses a PIN or biometric gesture that unlocks a credential bound to the device, so the PIN is never sent to a server?",
+      "options": [
+        "Windows Hello for Business",
+        "Password hash synchronization",
+        "Temporary Access Pass",
+        "Seamless single sign-on"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Windows Hello for Business stores a key pair on the device and unlocks it with a PIN or biometrics that stay local. PHS is a hybrid sync method, TAP is an onboarding passcode, and seamless SSO signs in domain-joined users automatically."
+    },
+    {
+      "id": "sc-900.d2.q029",
+      "lesson": "sc-900.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE methods are considered phishing-resistant in Microsoft Entra ID? Select THREE.",
+      "options": [
+        "Passkeys (FIDO2)",
+        "SMS sign-in",
+        "Windows Hello for Business",
+        "Certificate-based authentication (multifactor)",
+        "Microsoft Authenticator push notifications"
+      ],
+      "answer": [
+        0,
+        2,
+        3
+      ],
+      "explain": "The built-in Phishing-resistant MFA strength includes passkeys (FIDO2), Windows Hello for Business and multifactor certificate-based authentication. SMS codes and Authenticator push approvals can still be relayed or approved on an attacker's fake page."
+    },
+    {
+      "id": "sc-900.d2.q030",
+      "lesson": "sc-900.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailwind Traders is going passwordless. New employees will receive a laptop on their first day and must register a passkey in Microsoft Authenticator. They have no password and haven't registered any authentication method yet. The helpdesk needs a way to let them sign in once, securely, to complete registration.",
+      "stem": "What should the helpdesk provide?",
+      "options": [
+        "A security question answer set during onboarding",
+        "A custom banned password list entry",
+        "A Temporary Access Pass",
+        "An SSPR registration reminder"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A Temporary Access Pass is a time-limited passcode designed for onboarding and recovering passwordless methods. Security questions only work for SSPR. A banned password list blocks weak passwords, and SSPR reminders don't let a user without methods sign in."
+    },
+    {
+      "id": "sc-900.d2.q031",
+      "lesson": "sc-900.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A government agency wants employees to sign in to Microsoft Entra ID with their existing smart cards, validated directly by Microsoft Entra ID without deploying AD FS. Which method should it enable?",
+      "options": [
+        "Federation with a third-party identity provider",
+        "Microsoft Authenticator passwordless phone sign-in",
+        "Software OATH tokens",
+        "Microsoft Entra certificate-based authentication"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Microsoft Entra certificate-based authentication validates X.509 certificates such as smart cards natively, without federation. Federation would need an external IdP. Authenticator and OATH tokens don't use the smart cards."
+    },
+    {
+      "id": "sc-900.d2.q032",
+      "lesson": "sc-900.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A new employee is onboarded to passwordless sign-in. Put the steps in order.",
+      "options": [
+        "An Authentication Administrator creates a Temporary Access Pass for the user",
+        "The user signs in to Microsoft Entra ID with the Temporary Access Pass",
+        "The user registers a passkey in their security info",
+        "The user signs in with the passkey from then on"
+      ],
+      "explain": "The admin issues the TAP first. The user uses it to sign in once, registers a strong passwordless method such as a passkey, and then signs in with that method. The TAP expires according to its configured lifetime."
+    },
+    {
+      "id": "sc-900.d2.q033",
+      "lesson": "sc-900.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which combination is an example of multifactor authentication?",
+      "options": [
+        "A password and a PIN",
+        "A password and an answer to a security question",
+        "A password and a code from Microsoft Authenticator on the user's phone",
+        "A username and a password"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "MFA requires different factor types: the password is something you know and the phone is something you have. A password plus a PIN or security question are both things you know, and a username isn't a factor at all."
+    },
+    {
+      "id": "sc-900.d2.q034",
+      "lesson": "sc-900.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In multifactor authentication, a fingerprint scan is an example of which factor type?",
+      "options": [
+        "Something you know",
+        "Something you have",
+        "Something you are",
+        "Somewhere you are"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Biometrics such as fingerprints and faces are something you are. Passwords and PINs are something you know, and phones or security keys are something you have. Location is a Conditional Access signal, not one of the three authentication factor types."
+    },
+    {
+      "id": "sc-900.d2.q035",
+      "lesson": "sc-900.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An administrator wants a Conditional Access policy to accept only passkeys, Windows Hello for Business or multifactor certificate-based authentication for admin portals. What should the policy require?",
+      "options": [
+        "The built-in Phishing-resistant MFA authentication strength",
+        "The Require multifactor authentication grant control",
+        "The Require app protection policy grant control",
+        "A sign-in frequency session control of one hour"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Authentication strengths limit which method combinations satisfy a policy; the Phishing-resistant MFA strength allows only those methods. Plain Require MFA accepts any MFA method, including SMS. App protection policy and sign-in frequency don't restrict the authentication method type."
+    },
+    {
+      "id": "sc-900.d2.q036",
+      "lesson": "sc-900.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about multifactor authentication, select Yes if true.",
+      "statements": [
+        {
+          "s": "An MFA fatigue attack floods a user with push prompts hoping the user approves one.",
+          "a": true
+        },
+        {
+          "s": "Microsoft Entra ID provides the built-in authentication strengths MFA, Passwordless MFA and Phishing-resistant MFA.",
+          "a": true
+        },
+        {
+          "s": "Administrators can't create custom authentication strengths in Microsoft Entra ID.",
+          "a": false
+        }
+      ],
+      "explain": "MFA fatigue relies on repeated push prompts, which number matching helps defeat. Entra ID has three built-in strengths and also lets Conditional Access administrators create custom authentication strengths."
+    },
+    {
+      "id": "sc-900.d2.q037",
+      "lesson": "sc-900.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A small organization has only Microsoft Entra ID Free licences and wants a baseline that requires users to register for MFA and blocks legacy authentication. What should it use?",
+      "options": [
+        "Conditional Access policies",
+        "Microsoft Entra ID Protection risk policies",
+        "Privileged Identity Management",
+        "Security defaults"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Security defaults are free and enforce MFA registration, MFA for admins and blocking of legacy authentication. Conditional Access needs P1, while ID Protection risk policies and PIM need P2 or ID Governance."
+    },
+    {
+      "id": "sc-900.d2.q038",
+      "lesson": "sc-900.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about security defaults, select Yes if true.",
+      "statements": [
+        {
+          "s": "Security defaults block authentication requests that use legacy authentication protocols.",
+          "a": true
+        },
+        {
+          "s": "You can keep security defaults enabled and add Conditional Access policies to exclude specific users.",
+          "a": false
+        },
+        {
+          "s": "Security defaults require MFA when administrators access the Azure portal and Azure CLI.",
+          "a": true
+        }
+      ],
+      "explain": "Security defaults block legacy authentication and protect privileged activities such as the Azure portal, Azure PowerShell and Azure CLI. They can't be combined with Conditional Access and have no exclusions; to customise you must disable them and use Conditional Access."
+    },
+    {
+      "id": "sc-900.d2.q039",
+      "lesson": "sc-900.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Northwind has security defaults enabled. It has just bought Microsoft Entra ID P1 licences. The security team wants to require MFA only when users sign in from outside two office IP ranges, and to exclude two emergency access accounts from MFA prompts.",
+      "stem": "What should the team do?",
+      "options": [
+        "Add the office IP ranges as exclusions in security defaults",
+        "Disable security defaults and create Conditional Access policies using named locations",
+        "Keep security defaults and create an ID Protection sign-in risk policy",
+        "Enable per-user MFA on top of security defaults for the excluded accounts"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Security defaults can't be customised with locations or exclusions and can't run alongside Conditional Access. Northwind must turn them off and build Conditional Access policies with named locations and excluded accounts. Risk policies need P2 and don't meet the location need."
+    },
+    {
+      "id": "sc-900.d2.q040",
+      "lesson": "sc-900.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Entra feature lets users who forgot their password reset it themselves after verifying their identity with registered methods?",
+      "options": [
+        "Password hash synchronization",
+        "Self-service password reset (SSPR)",
+        "Microsoft Entra Password Protection",
+        "Smart lockout"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "SSPR lets users reset or unlock their own accounts after verifying with one or two methods. PHS syncs password hashes to the cloud, Password Protection blocks weak passwords, and smart lockout locks out attackers guessing passwords."
+    },
+    {
+      "id": "sc-900.d2.q041",
+      "lesson": "sc-900.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Users are synchronized from AD DS. After enabling SSPR, a user resets her password in the cloud, but the new password doesn't work when she signs in to her domain-joined PC. What must be enabled?",
+      "options": [
+        "Seamless single sign-on",
+        "Custom banned password list",
+        "Password writeback",
+        "Combined security info registration"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Password writeback sends passwords reset in the cloud back to on-premises AD DS so hybrid users can use them everywhere. Seamless SSO reduces prompts but doesn't sync passwords. Banned lists and combined registration don't write passwords back."
+    },
+    {
+      "id": "sc-900.d2.q042",
+      "lesson": "sc-900.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about self-service password reset are correct? Select TWO.",
+      "options": [
+        "Administrators can require users to verify with either one or two methods to reset a password",
+        "SSPR password reset for cloud users is included with Microsoft Entra ID Free",
+        "Accounts in administrator roles are subject to a stronger two-gate reset policy",
+        "SSPR lets users reset passwords without registering any authentication methods",
+        "SSPR replaces the need for multifactor authentication"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Admins choose one or two required methods, and admin accounts get a stricter two-gate policy. Password reset needs P1/P2 or eligible Microsoft 365 plans (Free covers only password change). Users must register methods first, and SSPR doesn't replace MFA."
+    },
+    {
+      "id": "sc-900.d2.q043",
+      "lesson": "sc-900.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Contoso wants to stop users from choosing passwords that contain the word 'contoso' or its product names. What should it configure?",
+      "options": [
+        "A custom banned password list in Microsoft Entra Password Protection",
+        "The global banned password list",
+        "Smart lockout threshold",
+        "A Conditional Access require password change control"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The custom banned password list holds organization-specific terms such as brand and product names. The global list is maintained by Microsoft and can't be edited. Smart lockout limits guessing, and the password change control doesn't check password content."
+    },
+    {
+      "id": "sc-900.d2.q044",
+      "lesson": "sc-900.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Entra Password Protection and smart lockout, select Yes if true.",
+      "statements": [
+        {
+          "s": "Administrators can remove entries from the global banned password list.",
+          "a": false
+        },
+        {
+          "s": "The custom banned password list can contain up to 1,000 terms.",
+          "a": true
+        },
+        {
+          "s": "Smart lockout tries to lock out attackers while letting the genuine user keep signing in from familiar locations.",
+          "a": true
+        }
+      ],
+      "explain": "The global banned password list is maintained by Microsoft and can't be changed or disabled. The custom list holds up to 1,000 base terms. Smart lockout distinguishes familiar from unfamiliar sign-in locations to avoid locking out the real user."
+    },
+    {
+      "id": "sc-900.d2.q045",
+      "lesson": "sc-900.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Adatum uses Microsoft Entra ID P1 and synchronizes users from AD DS. It already enforces a custom banned password list in the cloud. Auditors found users still set weak passwords such as 'Adatum2026!' when they press Ctrl+Alt+Del on domain-joined PCs to change passwords in AD DS.",
+      "stem": "What should Adatum deploy to apply the same banned password rules to AD DS password changes?",
+      "options": [
+        "Password writeback in Microsoft Entra Connect",
+        "Microsoft Entra Password Protection DC agent and proxy service on-premises",
+        "A Conditional Access policy requiring a password change",
+        "Self-service password reset for all users"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The on-premises Password Protection DC agent, with the proxy service, enforces the global and custom banned lists for AD DS password changes. Writeback only sends cloud resets on-premises. A password change control or SSPR doesn't check passwords changed directly in AD DS."
+    },
+    {
+      "id": "sc-900.d2.q046",
+      "lesson": "sc-900.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An attacker repeatedly tries passwords against a user account from an unfamiliar IP address. Which always-on Microsoft Entra ID feature temporarily locks the attacker out?",
+      "options": [
+        "Continuous access evaluation",
+        "Microsoft Entra ID Protection user risk policy",
+        "Number matching",
+        "Smart lockout"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Smart lockout is always on and locks accounts temporarily after repeated failed sign-ins, aiming at the attacker. Continuous access evaluation revokes existing sessions on critical events. A user risk policy needs P2 and configuration, and number matching applies to Authenticator push."
+    }
+  ]
+}

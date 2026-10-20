@@ -1,0 +1,1216 @@
+{
+ "exam": "governance",
+ "domain": "d6",
+ "lessons": [
+  {
+   "id": "governance.d6.1.01",
+   "objective": "d6.1",
+   "seq": 1,
+   "title": "Privacy Act 2020 scope",
+   "short": "New Zealand's Privacy Act 2020 came into force on 1 December 2020, replacing the Privacy Act 1993. It applies to almost every 'agency', public or private, and also to overseas agencies for actions taken while carrying on business in New Zealand.",
+   "deep": "The **Privacy Act 2020** regulates how **agencies** collect, store, use, disclose and give access to **personal information** (information about an identifiable individual). It replaced the **Privacy Act 1993** on **1 December 2020**.\n\n**Agency** is defined very broadly: government departments, councils, companies, sole traders, charities, clubs, Maori trusts and individuals acting in a business capacity are all agencies. Size does not matter; there is no small-business exemption. A few bodies are carved out for certain activities, for example courts and tribunals acting judicially, news media gathering news, and MPs acting in their official capacity.\n\n**Extraterritorial reach (s 4):** the Act applies to an **overseas agency** in relation to actions taken in the course of **carrying on business in New Zealand**. An agency can be treated as carrying on business here even without a physical place of business, a commercial purpose or receiving payment. A global social media platform with New Zealand users is the classic example.\n\nThe Act sets out **13 Information Privacy Principles (IPPs)** in s 22 (plus **IPP3A**, added in 2025), the notifiable privacy breach regime, cross-border rules and the Privacy Commissioner's powers. The Privacy Amendment Act 2025 updated it again, most notably adding IPP3A from 1 May 2026.",
+   "terms": [
+    {
+     "t": "Agency",
+     "d": "Any person or body, public or private, that handles personal information; few exclusions and no size threshold."
+    },
+    {
+     "t": "Personal information",
+     "d": "Information about an identifiable individual."
+    },
+    {
+     "t": "Overseas agency",
+     "d": "A non-NZ agency; covered for actions taken while carrying on business in New Zealand."
+    },
+    {
+     "t": "Information Privacy Principles (IPPs)",
+     "d": "The core rules in s 22 of the Act governing the information life cycle."
+    }
+   ],
+   "trap": "Exams suggest a foreign company with no NZ office is outside the Act; it is covered if it carries on business in New Zealand, even without a local office or payment.",
+   "example": "A US-based app with no NZ office markets to New Zealanders and collects their location data, so it must comply with the Privacy Act 2020 for those activities.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.1.02",
+   "objective": "d6.1",
+   "seq": 2,
+   "title": "IPP1-IPP3: purpose, source, notice",
+   "short": "IPP1: only collect personal information needed for a lawful purpose connected with your functions. IPP2: collect it directly from the individual unless an exception applies. IPP3: when collecting directly, tell the person what you are collecting, why, who gets it and their rights.",
+   "deep": "The first three principles govern **collection**.\n\n**IPP1 Purpose of collection:** collect personal information only for a **lawful purpose connected with a function or activity** of the agency, and only if collection is **necessary** for that purpose. If you don't need identifying information (for example a name) for the purpose, don't collect it. This is the NZ version of data minimisation.\n\n**IPP2 Source:** collect from the **individual concerned** unless an exception applies, such as the person authorising collection from someone else, the information being **publicly available**, non-compliance not prejudicing the person's interests, or it being necessary for maintenance of the law.\n\n**IPP3 What to tell the individual (direct collection):** take reasonable steps, before or as soon as practicable after collecting, to make the person aware of:\n- the fact of collection and its **purpose**\n- intended **recipients**\n- name and address of the collecting and holding agency\n- any law authorising or requiring it, and whether supply is **voluntary or mandatory** and the consequences of not providing it\n- their **rights of access and correction**\n\nA privacy statement at the point of collection is the usual way to meet IPP3. IPP3 has its own exceptions (e.g., already aware, not reasonably practicable).",
+   "terms": [
+    {
+     "t": "IPP1",
+     "d": "Collect only what is necessary for a lawful purpose connected with the agency's functions."
+    },
+    {
+     "t": "IPP2",
+     "d": "Collect personal information from the individual concerned, subject to exceptions."
+    },
+    {
+     "t": "IPP3",
+     "d": "Tell the individual about collection, purpose, recipients, agency details, law, and access/correction rights."
+    }
+   ],
+   "trap": "IPP3 is about collection directly from the person; notice for information obtained from third parties is now IPP3A, not IPP3.",
+   "example": "An online store's sign-up form links a short privacy statement explaining that email and address are used to ship orders, shared with the courier, and can be accessed or corrected.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "IPP1 Need it?",
+     "IPP2 From person",
+     "IPP3 Tell them"
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.1.03",
+   "objective": "d6.1",
+   "seq": 3,
+   "title": "IPP3A indirect collection notice",
+   "short": "IPP3A, added by the Privacy Amendment Act 2025 and in force from 1 May 2026, requires an agency that collects personal information from someone other than the individual to take reasonable steps to tell the individual, as soon as reasonably practicable, unless an exception applies.",
+   "deep": "**IPP3A** closes a gap: before 2026, IPP3 notice only applied to direct collection. Now the **indirect collector** (the agency receiving information about a person from a third party, another agency or a list) must take **reasonable steps** to make the individual aware of:\n- the fact of collection and the **purpose**\n- intended **recipients**\n- the name and address of the collecting and holding agency\n- any law authorising or requiring the collection\n- their **rights to access and correct** the information\n\n**Timing:** as soon as reasonably practicable **after** collection, unless steps were taken earlier. It does not apply to information collected before **1 May 2026**.\n\n**Exceptions** (agency must believe on reasonable grounds) include:\n- the person is **already aware** of the matters (evidence, not assumption)\n- information is **publicly available** (not access-controlled social media)\n- non-compliance would **not prejudice** the individual's interests\n- necessary for **maintenance of the law**, protecting public revenue, or court proceedings\n- notice would **prejudice the purpose** of collection (e.g., fraud investigation)\n- **not reasonably practicable** (cost or inconvenience alone is not enough)\n- would cause a **serious threat** to health or safety\n- used in a **non-identifying** form, or for research/statistics with non-identifying results\n- prejudice to security, defence or international relations, or revealing a **trade secret**\n\nOPC suggests documenting the reasoning for any delay or exception.",
+   "terms": [
+    {
+     "t": "IPP3A",
+     "d": "Notification duty when personal information is collected indirectly; in force 1 May 2026."
+    },
+    {
+     "t": "Indirect collector",
+     "d": "The agency that receives information about a person from someone else; it owns the notification duty."
+    },
+    {
+     "t": "Privacy Amendment Act 2025",
+     "d": "The amending Act that inserted IPP3A into the Privacy Act 2020."
+    }
+   ],
+   "trap": "Exams claim the source agency must notify, or that inconvenience or cost alone makes notice 'not reasonably practicable'; the collector is responsible and inconvenience alone is not an exception.",
+   "example": "A recruiter receives a referee's comments about a candidate; under IPP3A it tells the candidate it holds the reference, why, and how to request access.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Third party",
+     "Agency collects",
+     "Exception?",
+     "Notify person"
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.1.04",
+   "objective": "d6.1",
+   "seq": 4,
+   "title": "IPP4 manner and IPP5 security",
+   "short": "IPP4: collect by lawful means that are fair and not unreasonably intrusive, taking particular care with children and young people. IPP5: protect personal information with reasonable security safeguards against loss, unauthorised access, use, modification or disclosure.",
+   "deep": "**IPP4 Manner of collection** asks *how* you collect:\n- by **lawful** means\n- by means that are **fair** in the circumstances\n- that do not **intrude to an unreasonable extent** on the person's personal affairs\n- with **particular care** when collecting from **children and young people** (added in the 2020 Act). Methods that are fair for adults (e.g., a long online consent form or a stranger phoning) may be unfair for a child.\n\nCovert recording, pretexting or deceptive collection usually breach IPP4.\n\n**IPP5 Storage and security** requires the agency holding information to ensure it is protected by **security safeguards that are reasonable in the circumstances** against **loss, access, use, modification or disclosure** not authorised by the agency, and other misuse. If the agency gives the information to someone providing it a service (e.g., a processor), it must do everything reasonably within its power to prevent unauthorised use or disclosure.\n\n'Reasonable' scales with sensitivity and the harm misuse would cause: think encryption, access control, MFA, staff training, physical security and secure disposal. A failure of IPP5 controls is often what leads to a **notifiable privacy breach**.",
+   "terms": [
+    {
+     "t": "IPP4",
+     "d": "Collect lawfully, fairly and not unreasonably intrusively; take particular care with children and young people."
+    },
+    {
+     "t": "IPP5",
+     "d": "Reasonable security safeguards against loss and unauthorised access, use, modification or disclosure."
+    },
+    {
+     "t": "Reasonable safeguards",
+     "d": "Security proportionate to sensitivity and potential harm, not absolute security."
+    }
+   ],
+   "trap": "IPP5 is not a guarantee of zero breaches; it requires reasonable safeguards, so a breach can occur without an IPP5 breach and vice versa.",
+   "example": "A school app designed for 12-year-olds uses plain-language prompts and avoids collecting precise location, reflecting IPP4's particular care for young people.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.1.05",
+   "objective": "d6.1",
+   "seq": 5,
+   "title": "IPP6-IPP8: access, correction, accuracy",
+   "short": "IPP6 gives individuals the right to confirm whether an agency holds their information and to access it. IPP7 lets them request correction, or have a statement of correction attached. IPP8 requires agencies to check information is accurate before using or disclosing it.",
+   "deep": "**IPP6 Access:** an individual is entitled to receive confirmation of whether an agency holds readily retrievable personal information about them, and to access it. Agencies must respond **as soon as reasonably practicable and no later than 20 working days** after receiving the request (extensions are possible in limited cases). Refusal is only allowed on grounds in the Act (e.g., would endanger someone's safety, unwarranted disclosure of another person's affairs, legal professional privilege, evaluative material).\n\n**IPP7 Correction:** an individual can **request correction**. If the agency declines, the person can ask it to **attach a statement of the correction sought but not made**, so anyone reading the record sees it. Where practicable the agency should tell people it disclosed the information to about the correction or statement.\n\n**IPP8 Accuracy:** before **using or disclosing** personal information, an agency must take reasonable steps to ensure it is **accurate, up to date, complete, relevant and not misleading**, having regard to the purpose.\n\nAn unjustified refusal of access or correction is an interference with privacy without the person needing to show harm.",
+   "terms": [
+    {
+     "t": "IPP6",
+     "d": "Right to confirmation and access to one's own personal information."
+    },
+    {
+     "t": "IPP7",
+     "d": "Right to request correction, or attachment of a statement of correction."
+    },
+    {
+     "t": "IPP8",
+     "d": "Check accuracy, currency, completeness and relevance before use or disclosure."
+    },
+    {
+     "t": "20 working days",
+     "d": "Maximum time to decide on an access request, unless extended."
+    }
+   ],
+   "trap": "Exams say an agency that refuses correction can simply ignore the request; it must offer to attach a statement of correction sought.",
+   "example": "A bank refuses to delete a disputed late-payment note but attaches the customer's statement explaining the dispute to the record.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.1.06",
+   "objective": "d6.1",
+   "seq": 6,
+   "title": "IPP9-IPP11: retention, use, disclosure",
+   "short": "IPP9: don't keep personal information longer than needed for the purposes it can lawfully be used for. IPP10: use it only for the purpose it was collected for, unless an exception applies. IPP11: don't disclose it unless an exception applies.",
+   "deep": "**IPP9 Retention:** an agency must not keep personal information **longer than is required** for the purposes for which it may lawfully be used. Other laws can set minimum retention (e.g., tax records, health records), but once no lawful purpose remains, securely destroy or de-identify it. There is no single fixed period in the Act.\n\n**IPP10 Limits on use:** information obtained for one purpose must not be used for **another purpose** unless the agency believes on reasonable grounds an exception applies, such as:\n- the new purpose is **directly related** to the original\n- the individual **authorised** it\n- the source is **publicly available** and use isn't unfair\n- used in a form that does **not identify** the person, or for statistics/research\n- necessary for **maintenance of the law** or to prevent a **serious threat** to health or safety\n\n**IPP11 Limits on disclosure:** an agency must not disclose personal information to another agency or person unless an exception applies, for example disclosure is one of the **purposes of collection** (or directly related), the individual **authorised** it, the information is publicly available, it is necessary to avoid prejudice to maintenance of the law or to prevent a **serious threat**, or it is for the sale of a business.\n\nCross-border disclosures must satisfy **both** IPP11 and IPP12.",
+   "terms": [
+    {
+     "t": "IPP9",
+     "d": "Keep personal information no longer than required for lawful purposes."
+    },
+    {
+     "t": "IPP10",
+     "d": "Use only for the collection purpose unless an exception (e.g., directly related purpose, authorisation) applies."
+    },
+    {
+     "t": "IPP11",
+     "d": "Disclose only when an exception applies, such as authorisation or a purpose of collection."
+    },
+    {
+     "t": "Directly related purpose",
+     "d": "A secondary purpose closely linked to the original, allowed under IPP10/IPP11."
+    }
+   ],
+   "trap": "Exams invent a fixed retention period in the Act (e.g., 7 years); IPP9 sets no number, only 'no longer than required'.",
+   "example": "A gym wants to use member attendance data to train a marketing model for a partner brand; that is a new, unrelated purpose, so it needs authorisation under IPP10.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "IPP9 Retain only as needed",
+     "IPP10 Use limits",
+     "IPP11 Disclosure limits",
+     "IPP12 Overseas limits"
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.1.07",
+   "objective": "d6.1",
+   "seq": 7,
+   "title": "IPP12 and IPP13 overview",
+   "short": "IPP12 controls disclosing personal information to a foreign person or entity: it is allowed only on listed grounds giving comparable safeguards or informed authorisation. IPP13 limits assigning and using unique identifiers such as customer or client numbers.",
+   "deep": "**IPP12 Disclosure outside New Zealand** was new in the 2020 Act. When an agency discloses personal information to a **foreign person or entity** (someone not subject to the NZ Act), it can do so only if a ground applies, such as the person's informed authorisation, comparable overseas privacy law, a prescribed binding scheme or country, or contractual safeguards such as the OPC's **model contract clauses**. It is covered in depth in objective d6.2.\n\n**IPP13 Unique identifiers** governs identifiers assigned to people (customer numbers, member IDs, health and tax numbers):\n- assign a unique identifier only if it is **necessary** for the agency to carry out its functions efficiently\n- don't assign an identifier that, to your knowledge, **another agency already assigned** to the person (e.g., don't reuse an IRD number as your customer number), unless an exception applies\n- take reasonable steps so the identifier is assigned only to people whose **identity is clearly established**, and to reduce misuse risk (e.g., truncating it on printed correspondence)\n- don't **require** an individual to disclose their identifier unless it is for, or directly related to, the purpose it was assigned for\n\nNames are not unique identifiers under IPP13.",
+   "terms": [
+    {
+     "t": "IPP12",
+     "d": "Limits on disclosing personal information to foreign persons or entities."
+    },
+    {
+     "t": "IPP13",
+     "d": "Limits on assigning, reusing and requiring disclosure of unique identifiers."
+    },
+    {
+     "t": "Unique identifier",
+     "d": "An identifier (other than a name) assigned to an individual for an agency's operations."
+    }
+   ],
+   "trap": "Exams suggest an agency can adopt another agency's identifier (e.g., passport or tax number) as its own customer ID for convenience; IPP13 restricts that.",
+   "example": "An insurer wanted to use customers' driver licence numbers as policy IDs; its privacy officer advised assigning its own policy numbers under IPP13 instead.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.1.08",
+   "objective": "d6.1",
+   "seq": 8,
+   "title": "Enforceability and complaints",
+   "short": "Under s 31, the IPPs generally give no rights enforceable in court. The exception is the IPP6(1) access entitlement for information held by a public sector agency, which is a legal right enforceable in court. Otherwise people complain to the Privacy Commissioner, then the Human Rights Review Tribunal.",
+   "deep": "Section **31** of the Act says the IPPs do **not** confer legal rights enforceable in a court of law, with one exception: the **IPP6(1) access entitlements** relating to personal information held by a **public sector agency** are legal rights enforceable in court.\n\nFor everything else the route is the Act's complaints system:\n1. The individual raises the issue with the agency (often its **privacy officer**).\n2. They complain to the **Privacy Commissioner**, who can investigate and try to settle (conciliate) the complaint.\n3. For an **interference with privacy**, the person generally must show a breach plus harm (loss, adverse effect, significant humiliation, loss of dignity or injury to feelings). For access and correction refusals without proper basis, harm is not required.\n4. The Commissioner may refer a matter to the **Director of Human Rights Proceedings**, who can bring proceedings, or the individual can take their own case to the **Human Rights Review Tribunal (HRRT)**, which can award **damages** and other remedies.\n\nFor access complaints, the Commissioner can also issue a binding **access direction**.",
+   "terms": [
+    {
+     "t": "Section 31",
+     "d": "IPPs not court-enforceable, except IPP6(1) access against public sector agencies."
+    },
+    {
+     "t": "Interference with privacy",
+     "d": "A breach of an IPP or code rule that causes harm, or an unjustified refusal of access/correction."
+    },
+    {
+     "t": "Human Rights Review Tribunal",
+     "d": "Tribunal that hears privacy proceedings and can award damages."
+    }
+   ],
+   "trap": "Exams say anyone can sue a private company in court for breaching an IPP; private-sector IPP breaches go through the Commissioner and HRRT, not ordinary court actions.",
+   "example": "A citizen refused access to their own file by a government ministry can enforce the IPP6 right in court, while a retail customer's complaint goes to the Commissioner.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Agency",
+     "Privacy Commissioner",
+     "Director HRP",
+     "HRRT"
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.2.01",
+   "objective": "d6.2",
+   "seq": 1,
+   "title": "IPP12 disclosure grounds",
+   "short": "An agency may disclose personal information to a foreign person or entity only if a ground applies: informed authorisation, recipient carrying on business in NZ, comparable overseas laws, a prescribed binding scheme or country, or other safeguards such as a contract giving comparable protection.",
+   "deep": "IPP12 applies when an agency (A) relies on certain IPP11 exceptions to disclose personal information to a **foreign person or entity** (B): an individual neither present nor ordinarily resident in NZ, an entity not established under NZ law and not centrally controlled in NZ, or a foreign government. A may disclose only if:\n- **(a)** the individual **authorises** it after being **expressly informed** that B may not be required to protect the information in a way that gives comparable safeguards to the NZ Act\n- **(b)** B is **carrying on business in New Zealand** and A reasonably believes B is subject to the Act\n- **(c)** A reasonably believes B is subject to **privacy laws with comparable safeguards**\n- **(d)** B participates in a **prescribed binding scheme**\n- **(e)** B is subject to the privacy laws of a **prescribed country**\n- **(f)** A otherwise reasonably believes B is required to protect the information with comparable safeguards, e.g., under an **agreement** between A and B\n\nOPC notes no binding schemes or countries have been prescribed by regulation yet, so (c), (f) and (a) are the practical routes. Comparable does not mean identical. A narrow exception (IPP12(2)) applies when disclosure is needed for maintenance of the law or to prevent a serious threat and compliance isn't reasonably practicable.",
+   "terms": [
+    {
+     "t": "Foreign person or entity",
+     "d": "A recipient not subject to the NZ Privacy Act, e.g., non-resident individual or overseas-controlled entity."
+    },
+    {
+     "t": "Comparable safeguards",
+     "d": "Protection overall comparable (not identical) to the NZ Act."
+    },
+    {
+     "t": "Expressly informed",
+     "d": "Clear, specific warning that the recipient may not protect information comparably, required for authorisation."
+    }
+   ],
+   "trap": "Exams say consent alone suffices; under IPP12(1)(a) the person must be expressly told the recipient may not offer comparable protection, not just tick a generic consent.",
+   "example": "A NZ marketing firm sends customer lists to a partner in a country without comparable law; it signs the OPC model clauses so ground (f) applies.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Ground",
+     "Basis"
+    ],
+    "rows": [
+     [
+      "(a)",
+      "Informed authorisation"
+     ],
+     [
+      "(b)",
+      "Recipient in NZ business"
+     ],
+     [
+      "(c)",
+      "Comparable law"
+     ],
+     [
+      "(d)/(e)",
+      "Prescribed scheme/state"
+     ],
+     [
+      "(f)",
+      "Contract safeguards"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.2.02",
+   "objective": "d6.2",
+   "seq": 2,
+   "title": "Cloud and agents are not disclosures",
+   "short": "Under s 11, if an overseas provider holds or processes personal information solely on an agency's behalf (for example as a cloud host) and doesn't use it for its own purposes, it is not a disclosure and IPP12 doesn't apply. The NZ agency stays responsible.",
+   "deep": "Section **11** deals with information held by one agency **on behalf of** another. If agency A (e.g., a cloud service) holds personal information **as an agent** for agency B, solely for safe custody or processing, the information is **treated as held by B, not A**, and giving it to A is **not a disclosure**.\n\nConsequences:\n- Moving data to an **offshore cloud** or outsourced processor that only uses it on your instructions does **not** trigger IPP12.\n- **You remain responsible** for compliance: IPP5 security, IPP6 access requests, breach notification, and so on. A breach at your cloud provider is your breach to assess and notify.\n- If the provider **uses or discloses the information for its own purposes** (e.g., training its own products or selling insights), s 11(3) treats it as also holding the information itself, it is no longer merely an agent, and IPP11/IPP12 apply.\n\nDue diligence still matters: choose providers with strong security, contract for confidentiality, location transparency and breach reporting.",
+   "terms": [
+    {
+     "t": "Section 11",
+     "d": "Information held by an agent on another agency's behalf is treated as held by the principal agency."
+    },
+    {
+     "t": "Agent",
+     "d": "A provider that holds or processes information only on the principal's behalf and instructions."
+    },
+    {
+     "t": "Own purposes",
+     "d": "If the provider uses data for itself, it stops being a mere agent and disclosure rules apply."
+    }
+   ],
+   "trap": "Exams claim storing data in an Australian or US cloud automatically requires IPP12 compliance; pure agency storage/processing is not a disclosure.",
+   "example": "A NZ accounting firm stores client files in a Sydney data centre run by a cloud vendor that cannot access them for its own use; IPP12 isn't triggered, but the firm keeps IPP5 duties.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "NZ agency",
+     "Cloud (agent only)",
+     "Still held by agency"
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.2.03",
+   "objective": "d6.2",
+   "seq": 3,
+   "title": "Model contract clauses",
+   "short": "The Privacy Commissioner publishes model contract clauses that agencies can put into agreements with overseas recipients so the recipient must protect information with comparable safeguards, supporting IPP12(1)(f).",
+   "deep": "Because no countries or binding schemes have yet been **prescribed**, the most practical IPP12 route for many agencies is a **contract** that requires the overseas recipient to protect the information in a way comparable to the NZ Act (ground **(f)**).\n\nThe **Office of the Privacy Commissioner (OPC)** published **model contract clauses** for this purpose, with an online agreement builder and example agreements. The clauses cover things like:\n- limits on use and onward disclosure\n- security safeguards\n- access and correction support\n- retention and disposal\n- breach notification back to the NZ agency\n\nAgencies can **adapt** the clauses, but must still check they suit the specific situation (sensitivity, recipient, laws in the recipient's country). Using the clauses is **voluntary**: they are one way to show reasonable grounds for comparable protection, not a mandatory form. Overseas laws that let authorities access the data may still need to be considered in the risk assessment.",
+   "terms": [
+    {
+     "t": "Model contract clauses",
+     "d": "OPC-published template clauses giving an overseas recipient comparable privacy obligations."
+    },
+    {
+     "t": "IPP12(1)(f)",
+     "d": "Ground relying on the recipient being otherwise required (e.g., by agreement) to provide comparable safeguards."
+    }
+   ],
+   "trap": "Exams describe model clauses as mandatory or as automatically making a country 'prescribed'; they are voluntary contractual tools under ground (f).",
+   "example": "A NZ charity outsources donor analytics to a Philippines firm that will use data only per contract; it adopts the OPC model clauses in the services agreement.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.2.04",
+   "objective": "d6.2",
+   "seq": 4,
+   "title": "Transfer prohibition notices (s 193)",
+   "short": "Under s 193 the Privacy Commissioner can issue a transfer prohibition notice stopping personal information that came into NZ from another country being sent on to a third country that lacks comparable safeguards, where the transfer would likely breach OECD basic principles.",
+   "deep": "**Transfer prohibition notices** address **onward transfers** that would use New Zealand as a pass-through.\n\nUnder **s 193** the Commissioner may prohibit a transfer of personal information from New Zealand to another State if satisfied on reasonable grounds that:\n- the information has been, or will be, received in New Zealand **from another State** and is likely to be transferred to a **third State** where it will not be subject to a law providing **comparable safeguards** to the Act, **and**\n- the transfer would be likely to breach the **basic principles of national application** in Part Two of the **OECD Guidelines** (set out in a schedule to the Act).\n\nIn deciding, the Commissioner considers effects on individuals, the general desirability of free flow of information between NZ and other countries, and international guidelines such as the OECD Guidelines and the EU **GDPR**. Transfers **required or authorised by an enactment** or by a binding international convention are excluded.\n\nIgnoring a transfer prohibition notice without reasonable excuse is an offence. The mechanism helps NZ maintain its **EU adequacy** status.",
+   "terms": [
+    {
+     "t": "Transfer prohibition notice",
+     "d": "Commissioner's notice under s 193 prohibiting an onward transfer of personal information from NZ."
+    },
+    {
+     "t": "Onward transfer",
+     "d": "Sending information received from one country on to a third country."
+    },
+    {
+     "t": "OECD Guidelines",
+     "d": "International privacy principles the Commissioner considers when issuing a s 193 notice."
+    }
+   ],
+   "trap": "Exams confuse s 193 notices with IPP12; IPP12 governs an agency's own disclosures, while s 193 is a Commissioner power aimed at onward transfers of information received from overseas.",
+   "example": "EU customer data processed by a NZ firm is about to be sent to a jurisdiction with no privacy law; the Commissioner can block that onward transfer with a s 193 notice.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Country A",
+     "New Zealand",
+     "Third country",
+     "s 193 blocks"
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.3.01",
+   "objective": "d6.3",
+   "seq": 1,
+   "title": "What is a privacy breach",
+   "short": "A privacy breach is unauthorised or accidental access to, or disclosure, alteration, loss or destruction of, personal information, or an action that prevents the agency accessing the information temporarily or permanently. Breaches can be accidental or malicious.",
+   "deep": "Part 6 of the Act defines a **privacy breach** for personal information held by an agency as:\n- **unauthorised or accidental access** to, or **disclosure, alteration, loss or destruction** of, the information; or\n- an action that **prevents the agency from accessing** the information on a **temporary or permanent** basis.\n\nThe second limb matters for **ransomware** and availability incidents: even if data is not exfiltrated, encrypting it so the agency cannot access it is a privacy breach.\n\nThe definition covers breaches by the agency itself, by its employees, and by its agents (such as a cloud or IT provider holding information on its behalf). Examples:\n- an email with client details sent to the wrong person\n- a lost unencrypted laptop\n- an employee browsing records without a business reason\n- a misconfigured storage bucket left public\n- ransomware locking a client database\n\nNot every privacy breach must be reported: only a **notifiable privacy breach** (one causing or likely to cause **serious harm**) must be notified. Agencies should still record and learn from all breaches.",
+   "terms": [
+    {
+     "t": "Privacy breach",
+     "d": "Unauthorised/accidental access, disclosure, alteration, loss or destruction, or loss of access to personal information."
+    },
+    {
+     "t": "Notifiable privacy breach",
+     "d": "A privacy breach that has caused or is likely to cause serious harm."
+    },
+    {
+     "t": "Loss of access",
+     "d": "Temporary or permanent inability to access information, e.g., ransomware encryption."
+    }
+   ],
+   "trap": "Exams suggest ransomware without data theft isn't a privacy breach; preventing the agency's access to information is itself within the definition.",
+   "example": "A medical centre's files are encrypted by ransomware with no evidence of exfiltration; it is still a privacy breach that must be assessed for serious harm.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.3.02",
+   "objective": "d6.3",
+   "seq": 2,
+   "title": "Serious harm assessment",
+   "short": "A privacy breach is notifiable if it has caused or is likely to cause serious harm. Agencies weigh factors such as actions taken to reduce harm, sensitivity of the information, the nature of the harm, who has obtained the information, and whether security measures like encryption protect it.",
+   "deep": "The threshold is **serious harm**, assessed for the affected people. The Act and OPC guidance list factors to consider:\n- **mitigation**: actions taken to reduce the risk of harm, and how quickly\n- **sensitivity** of the information (health, biometric, financial, and context can make ordinary data sensitive)\n- the **nature of the harm** that may be caused\n- the **person or body that has obtained or may obtain** the information (trusted recipient vs criminal)\n- whether the information is protected by a **security measure** such as encryption\n- any other relevant matters, including scale and the **vulnerability** of the people affected (e.g., family violence victims)\n\nTypes of serious harm include **physical harm or intimidation**, **financial fraud**, **identity theft**, **psychological or emotional harm**, employment harm, and **blackmail**.\n\nThe agency should **document** its assessment and reasoning, whatever the outcome. OPC's NotifyUs tool includes a self-assessment that walks through these factors.",
+   "terms": [
+    {
+     "t": "Serious harm",
+     "d": "The threshold for notification: harm such as fraud, identity theft, physical, emotional or reputational harm."
+    },
+    {
+     "t": "Mitigation",
+     "d": "Steps taken to contain the breach and reduce harm, which can lower the likelihood of serious harm."
+    },
+    {
+     "t": "Sensitivity",
+     "d": "How harmful exposure of the information could be in its context."
+    }
+   ],
+   "trap": "Exams make notification depend on the number of records affected; a single record can be notifiable if serious harm is likely, and large counts aren't required.",
+   "example": "A misdirected email exposes one family-violence client's new address to her ex-partner; despite only one record, serious harm is likely and it's notifiable.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.3.03",
+   "objective": "d6.3",
+   "seq": 3,
+   "title": "Notification timing",
+   "short": "An agency must notify the Privacy Commissioner as soon as practicable after becoming aware of a notifiable privacy breach; OPC expects this ideally within 72 hours. Affected individuals must also be notified as soon as practicable, unless an exception applies.",
+   "deep": "Once an agency is **aware** that a notifiable privacy breach has occurred, it must:\n- notify the **Privacy Commissioner** **as soon as practicable**\n- notify **affected individuals** (or give **public notice**) as soon as practicable, unless an exception or delay applies\n\nThe Act does not fix a number of hours, but OPC guidance says it expects notification to the Commissioner **ideally within 72 hours** of becoming aware, **even if the investigation is still going on**. Notifications can be **incremental**: send what you know and update later. Knowledge held by an employee or agent counts as the agency's knowledge.\n\nA notification should describe the breach, the number of affected people (if known), the cause, steps taken or planned, whether individuals have been notified (and if not, why), and contact details. Notifications to individuals should explain what happened, what the agency is doing, what they can do to reduce harm, that the Commissioner has been notified, and their right to complain.\n\nIf imminent harm is suspected (e.g., threats to safety), contact **Police** first.",
+   "terms": [
+    {
+     "t": "As soon as practicable",
+     "d": "The statutory timing standard for notifying the Commissioner and individuals."
+    },
+    {
+     "t": "72 hours",
+     "d": "OPC's expectation for notifying the Commissioner after becoming aware of a notifiable breach."
+    },
+    {
+     "t": "Incremental notification",
+     "d": "Giving initial details promptly and updating as the investigation progresses."
+    }
+   ],
+   "trap": "Exams state the Act sets a hard 72-hour legal deadline or that you should wait until the investigation is complete; the law says 'as soon as practicable' and OPC expects ideally 72 hours, even mid-investigation.",
+   "example": "On Monday a firm confirms a breach likely to cause serious harm; it lodges a NotifyUs report on Tuesday with partial details and updates the following week.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Aware",
+     "Assess harm",
+     "Notify OPC",
+     "Notify people"
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.3.04",
+   "objective": "d6.3",
+   "seq": 4,
+   "title": "Exceptions, delay and public notice",
+   "short": "Agencies may skip or delay notifying individuals in limited cases: security or defence, maintenance of the law, endangering safety, revealing a trade secret, or for a particular person, under-16 interests or health prejudice. Delay is allowed only for security risks. Public notice is used when direct notice isn't reasonably practicable.",
+   "deep": "Section **116** sets out when an agency need **not notify affected individuals or give public notice** (the Commissioner must still be notified):\n- notification would likely **prejudice security or defence** of NZ or international relations\n- prejudice the **maintenance of the law** by a public sector agency\n- **endanger the safety** of any person\n- **reveal a trade secret**\n\nFor a **particular individual**: if they are **under 16** and notice would be contrary to their interests, or (after consulting their health practitioner where practicable) it would likely **prejudice their health**. Then the agency must consider notifying a **representative** instead.\n\n**Delay:** individual notice (not Commissioner notice) may be **delayed** only where notification may create **risks for the security of personal information** that outweigh the benefits, and only while that remains true (e.g., an unpatched vulnerability).\n\nThe agency must **believe on reasonable grounds** an exception applies, and must notify if the exception stops applying.\n\n**Public notice:** used if it is **not reasonably practicable** to notify individuals directly (e.g., contact details unknown). OPC expects it on the agency's website and at least one other medium, describing the breach without identifying anyone.",
+   "terms": [
+    {
+     "t": "Section 116",
+     "d": "Exceptions to, and delay of, notifying affected individuals."
+    },
+    {
+     "t": "Public notice",
+     "d": "Publicly available notice used when direct notification isn't reasonably practicable."
+    },
+    {
+     "t": "Representative",
+     "d": "A parent/guardian (under 16) or person lawfully acting for the individual, who may be notified instead."
+    }
+   ],
+   "trap": "Exams say an exception lets you skip notifying the Commissioner or that reputational damage justifies delay; exceptions only cover individuals, and delay is only for information-security risk.",
+   "example": "An agency delays telling customers for two days while it patches the exploited flaw, because announcing it earlier would invite more attackers, but notifies the Commissioner immediately.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.3.05",
+   "objective": "d6.3",
+   "seq": 5,
+   "title": "Offence for failing to notify",
+   "short": "Failing to notify the Privacy Commissioner of a notifiable privacy breach without reasonable excuse is an offence, punishable by a fine of up to NZD 10,000. The Commissioner can also issue compliance notices for breach-notification failures.",
+   "deep": "Mandatory breach notification was one of the major changes in the 2020 Act (the 1993 Act had only voluntary notification).\n\nUnder **s 118**, an agency that, **without reasonable excuse**, fails to notify the Commissioner of a notifiable privacy breach commits an **offence** and is liable on conviction to a **fine not exceeding $10,000**.\n\nPoints to note:\n- The offence relates to **not notifying the Commissioner**. Separately, the Commissioner can use a **compliance notice** to require an agency to notify affected individuals or fix its processes.\n- The fine is modest compared with GDPR, but enforcement includes **naming**, compliance notices and HRRT proceedings, and reputational impact is significant.\n- Recording the reasons for a 'not notifiable' decision helps show a **reasonable excuse** if challenged.\n\nOther Privacy Act offences (such as destroying requested information or impersonation) carry the same maximum fine.",
+   "terms": [
+    {
+     "t": "Section 118",
+     "d": "Offence of failing, without reasonable excuse, to notify the Commissioner of a notifiable breach."
+    },
+    {
+     "t": "NZD 10,000",
+     "d": "Maximum fine for most Privacy Act offences, including failure to notify."
+    },
+    {
+     "t": "Reasonable excuse",
+     "d": "A defence to the failure-to-notify offence."
+    }
+   ],
+   "trap": "Exams import GDPR-style penalties (percentage of turnover); the NZ maximum fine for failing to notify is NZD 10,000.",
+   "example": "An agency that knowingly hides a serious breach from the Commissioner for months risks prosecution and a fine of up to $10,000, plus a compliance notice.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.3.06",
+   "objective": "d6.3",
+   "seq": 6,
+   "title": "NotifyUs and breach response",
+   "short": "NotifyUs is the Office of the Privacy Commissioner's online tool for assessing and reporting privacy breaches. A good breach response follows four steps: contain, assess, notify, prevent.",
+   "deep": "**NotifyUs** is OPC's online breach reporting tool. It:\n- guides the agency through a **self-assessment** of whether a breach is likely to cause serious harm\n- collects the notification details (what happened, dates, information types, people affected, harm, mitigation, whether individuals have been notified, any exception relied on)\n- lets agencies notify early and **update** later\n\nOPC's breach management guidance follows four steps:\n1. **Contain**: act immediately to stop or limit the breach (recall emails, disable accounts, remote-wipe devices, change passwords); assemble a response team.\n2. **Assess**: work out scope, sensitivity, who has the information and the likelihood of serious harm; document reasoning.\n3. **Notify**: the Commissioner via NotifyUs and affected people where required; consider others such as Police, the National Cyber Security Centre (which absorbed CERT NZ), banks or insurers.\n4. **Prevent**: root-cause analysis, fix systems and processes, train staff.\n\nNotification should not wait for the whole response to finish.",
+   "terms": [
+    {
+     "t": "NotifyUs",
+     "d": "OPC's online tool for self-assessing and notifying privacy breaches."
+    },
+    {
+     "t": "Contain",
+     "d": "First response step: limit the breach and stop further exposure."
+    },
+    {
+     "t": "Root cause analysis",
+     "d": "Investigating why a breach occurred to prevent recurrence."
+    }
+   ],
+   "trap": "Exams put 'notify' before 'contain', or suggest notification waits until prevention work is finished; contain first, then assess and notify promptly.",
+   "example": "After a staff member emails a spreadsheet to the wrong client, the agency recalls it, gets the recipient's deletion confirmation, assesses harm and uses NotifyUs.",
+   "diagram": {
+    "kind": "cycle",
+    "items": [
+     "Contain",
+     "Assess",
+     "Notify",
+     "Prevent"
+    ]
+   }
+  }
+ ],
+ "questions": [
+  {
+   "id": "governance.d6.q001",
+   "lesson": "governance.d6.1.01",
+   "objective": "d6.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "On what date did New Zealand's Privacy Act 2020 come into force, replacing the Privacy Act 1993?",
+   "options": [
+    "1 December 2020",
+    "1 July 2020",
+    "25 May 2018",
+    "1 May 2026"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "The Privacy Act 2020 commenced on 1 December 2020. 25 May 2018 is the GDPR date, 1 July 2020 is a plausible but wrong date, and 1 May 2026 is when IPP3A (from the Privacy Amendment Act 2025) took effect."
+  },
+  {
+   "id": "governance.d6.q002",
+   "lesson": "governance.d6.1.01",
+   "objective": "d6.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A Singapore-based e-commerce company has no office or staff in New Zealand but runs a website targeting NZ shoppers and collects their personal information. How does the Privacy Act 2020 apply?",
+   "options": [
+    "It doesn't apply because the company has no place of business in New Zealand",
+    "It applies only once the company earns revenue from New Zealand customers",
+    "It applies to actions taken in the course of carrying on business in New Zealand",
+    "It applies only if the information is stored on servers located in New Zealand"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Section 4 applies the Act to overseas agencies for actions in the course of carrying on business in NZ, which doesn't require a place of business, commercial purpose or payment. Server location is irrelevant to this test."
+  },
+  {
+   "id": "governance.d6.q003",
+   "lesson": "governance.d6.1.02",
+   "objective": "d6.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "A council wants to add date of birth and gender fields to a dog-registration form, although neither is needed to register a dog. Which principle is most directly engaged?",
+   "options": [
+    "IPP5 storage and security",
+    "IPP1 purpose of collection",
+    "IPP8 accuracy",
+    "IPP13 unique identifiers"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "IPP1 allows collection only when necessary for a lawful purpose connected with the agency's functions, so unnecessary fields shouldn't be collected. IPP5 concerns security, IPP8 accuracy before use, and IPP13 identifiers."
+  },
+  {
+   "id": "governance.d6.q004",
+   "lesson": "governance.d6.1.02",
+   "objective": "d6.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "When collecting personal information directly from an individual, which matters must an agency take reasonable steps to make them aware of under IPP3? Select THREE.",
+   "options": [
+    "The purpose for which the information is being collected",
+    "The intended recipients of the information",
+    "The agency's annual privacy budget",
+    "The individual's rights of access to and correction of the information",
+    "The names of the staff members who will view the information"
+   ],
+   "answer": [
+    0,
+    1,
+    3
+   ],
+   "explain": "IPP3 requires notice of the fact and purpose of collection, intended recipients, agency name and address, relevant law, whether supply is voluntary, and access/correction rights. Budgets and individual staff names aren't required."
+  },
+  {
+   "id": "governance.d6.q005",
+   "lesson": "governance.d6.1.03",
+   "objective": "d6.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which change did the Privacy Amendment Act 2025 make to the Information Privacy Principles from 1 May 2026?",
+   "options": [
+    "It added IPP3A, requiring notice when personal information is collected indirectly",
+    "It added a GDPR-style right to erasure as IPP14",
+    "It replaced IPP12 with an adequacy-decision regime",
+    "It made all IPPs enforceable in court against private agencies"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "The Privacy Amendment Act 2025 inserted IPP3A (notification for indirect collection), in force 1 May 2026. It didn't add an erasure principle, replace IPP12, or change s 31 enforceability."
+  },
+  {
+   "id": "governance.d6.q006",
+   "lesson": "governance.d6.1.03",
+   "objective": "d6.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "In June 2026 a debt collection agency buys a portfolio of overdue accounts from a retailer, including debtor contact details. Under IPP3A, who is responsible for notifying the debtors?",
+   "options": [
+    "The retailer, because it originally collected the information",
+    "Nobody, because the information was originally collected directly",
+    "The Privacy Commissioner, on the agencies' behalf",
+    "The debt collection agency, as the indirect collector"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "IPP3A places the duty on the agency that collects information from someone other than the individual, here the debt collector, unless an exception (such as already aware) applies. The source agency's earlier IPP3 notice doesn't automatically satisfy it."
+  },
+  {
+   "id": "governance.d6.q007",
+   "lesson": "governance.d6.1.03",
+   "objective": "d6.1",
+   "difficulty": 3,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about IPP3A exceptions, select Yes if true.",
+   "statements": [
+    {
+     "s": "Information on a private, access-controlled social media profile counts as publicly available for IPP3A.",
+     "a": false
+    },
+    {
+     "s": "An agency investigating suspected fraud may rely on the exception that notice would prejudice the purpose of collection.",
+     "a": true
+    },
+    {
+     "s": "The fact that notifying would be inconvenient or require system changes is, on its own, enough to make notice not reasonably practicable.",
+     "a": false
+    }
+   ],
+   "explain": "OPC guidance says access-controlled content isn't publicly available, and inconvenience or incompatible systems alone don't make notice impracticable. Prejudicing the purpose of collection, such as a fraud investigation, is a recognised exception."
+  },
+  {
+   "id": "governance.d6.q008",
+   "lesson": "governance.d6.1.04",
+   "objective": "d6.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A youth sports club plans to collect home addresses from 11-year-old members through an online form with dense legal wording and no parental involvement. Which principle most directly requires the club to reconsider its approach?",
+   "options": [
+    "IPP4 manner of collection",
+    "IPP9 retention",
+    "IPP11 limits on disclosure",
+    "IPP2 source of information"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "IPP4 requires collection to be lawful, fair and not unreasonably intrusive, taking particular care with children and young people. Retention, disclosure and source principles don't address how fairly the information is gathered from a child."
+  },
+  {
+   "id": "governance.d6.q009",
+   "lesson": "governance.d6.1.04",
+   "objective": "d6.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which statement best describes IPP5?",
+   "options": [
+    "Agencies must guarantee personal information will never be accessed without authorisation",
+    "Agencies must store personal information only on servers in New Zealand",
+    "Agencies must protect personal information with security safeguards reasonable in the circumstances",
+    "Agencies must encrypt all personal information using approved government algorithms"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "IPP5 requires reasonable security safeguards against loss and unauthorised access, use, modification or disclosure. It isn't an absolute guarantee, it doesn't impose data localisation, and it doesn't mandate specific encryption algorithms."
+  },
+  {
+   "id": "governance.d6.q010",
+   "lesson": "governance.d6.1.05",
+   "objective": "d6.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "An individual requests access to their personal information held by a company. Within what maximum period must the company decide on the request, unless an extension applies?",
+   "options": [
+    "10 working days",
+    "20 working days",
+    "30 calendar days",
+    "72 hours"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The Act requires a decision as soon as reasonably practicable and no later than 20 working days. 30 calendar days is a GDPR-style period, and 72 hours is OPC's breach-notification expectation."
+  },
+  {
+   "id": "governance.d6.q011",
+   "lesson": "governance.d6.1.05",
+   "objective": "d6.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A customer asks an insurer to change a note in their file describing them as 'uncooperative'. The insurer believes the note is accurate and declines. What must the insurer do under IPP7 if the customer asks?",
+   "options": [
+    "Delete the note anyway, because the customer has a right to erasure",
+    "Refer the request to the Human Rights Review Tribunal for decision",
+    "Take no further action, because the decision is final",
+    "Attach the customer's statement of the correction sought to the record"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Under IPP7, if an agency declines to correct, it must, on request, take reasonable steps to attach a statement of the correction sought but not made. NZ has no general erasure right, and the HRRT isn't the first decision-maker."
+  },
+  {
+   "id": "governance.d6.q012",
+   "lesson": "governance.d6.1.06",
+   "objective": "d6.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about retention under IPP9, select Yes if true.",
+   "explain": "IPP9 sets no fixed period: keep information no longer than required for lawful purposes. Other laws (tax, health) can set minimums, but secure storage doesn't justify keeping data with no remaining purpose.",
+   "statements": [
+    {
+     "s": "IPP9 requires every agency to keep personal information for exactly seven years.",
+     "a": false
+    },
+    {
+     "s": "Another law may require an agency to keep certain information for a minimum period.",
+     "a": true
+    },
+    {
+     "s": "Storing information securely justifies keeping it after no lawful purpose remains.",
+     "a": false
+    }
+   ]
+  },
+  {
+   "id": "governance.d6.q013",
+   "lesson": "governance.d6.1.06",
+   "objective": "d6.1",
+   "difficulty": 3,
+   "type": "multi",
+   "case": "Kiwi Fitness collected members' contact and attendance details to manage memberships. Marketing now proposes three new uses: emailing members about a change to class times, sharing attendance data with a supplement brand for its own advertising, and producing aggregated, non-identifying usage statistics for the board.",
+   "stem": "Which proposed uses can likely proceed under IPP10/IPP11 without new member authorisation? Select TWO.",
+   "options": [
+    "Emailing members about changed class times",
+    "Sharing attendance data with the supplement brand",
+    "Producing aggregated, non-identifying statistics for the board",
+    "Selling member contact lists to a gym equipment retailer"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "Class-time emails are directly related to managing memberships, and non-identifying statistics fit an IPP10 exception. Giving data to a supplement brand or retailer for their own marketing is an unrelated disclosure needing authorisation under IPP11."
+  },
+  {
+   "id": "governance.d6.q014",
+   "lesson": "governance.d6.1.07",
+   "objective": "d6.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A loyalty programme proposes using customers' IRD (tax) numbers as membership numbers to avoid generating new IDs. Which principle does this most clearly conflict with?",
+   "options": [
+    "IPP12 cross-border disclosure",
+    "IPP3 notice of collection",
+    "IPP6 access",
+    "IPP13 unique identifiers"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "IPP13 restricts an agency from assigning an identifier it knows another agency has already assigned to the person, and from requiring people to disclose identifiers for unrelated purposes. The other principles don't govern identifier reuse."
+  },
+  {
+   "id": "governance.d6.q015",
+   "lesson": "governance.d6.1.08",
+   "objective": "d6.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about enforcing the Information Privacy Principles, select Yes if true.",
+   "statements": [
+    {
+     "s": "An individual's IPP6(1) access entitlement to information held by a public sector agency is enforceable in a court of law.",
+     "a": true
+    },
+    {
+     "s": "A customer can sue a private retailer directly in the District Court for breaching IPP5.",
+     "a": false
+    },
+    {
+     "s": "The Human Rights Review Tribunal can award damages for an interference with privacy.",
+     "a": true
+    }
+   ],
+   "explain": "Section 31 makes IPPs generally unenforceable in court, except IPP6(1) access against public sector agencies. Other breaches go through the Commissioner and potentially the HRRT, which can award damages."
+  },
+  {
+   "id": "governance.d6.q016",
+   "lesson": "governance.d6.2.01",
+   "objective": "d6.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Under IPP12(1)(a), what must happen before an individual's authorisation can justify disclosure to a foreign recipient?",
+   "options": [
+    "The individual must be expressly informed the recipient may not protect the information with comparable safeguards",
+    "The Privacy Commissioner must approve the disclosure in writing",
+    "The recipient's country must be prescribed by regulation",
+    "The individual must sign a statutory declaration before a lawyer"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Authorisation under IPP12(1)(a) is valid only after the agency expressly informs the person that the recipient may not be required to provide comparable protection. No Commissioner approval, prescription or statutory declaration is required for this ground."
+  },
+  {
+   "id": "governance.d6.q017",
+   "lesson": "governance.d6.2.01",
+   "objective": "d6.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which are grounds under IPP12(1) on which an agency may disclose personal information to a foreign person or entity? Select THREE.",
+   "options": [
+    "The agency reasonably believes the recipient is subject to privacy laws with comparable safeguards",
+    "The recipient is carrying on business in New Zealand and the agency reasonably believes it's subject to the Act",
+    "The recipient has an ISO/IEC 27001 certificate",
+    "The agency reasonably believes the recipient is required by agreement to protect the information comparably",
+    "The disclosure is to a company listed on a recognised stock exchange"
+   ],
+   "answer": [
+    0,
+    1,
+    3
+   ],
+   "explain": "IPP12(1) grounds include comparable laws, the recipient carrying on business in NZ, and contractual comparable safeguards. Security certification or a stock listing isn't a listed ground, though certification might inform a risk assessment."
+  },
+  {
+   "id": "governance.d6.q018",
+   "lesson": "governance.d6.2.01",
+   "objective": "d6.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A NZ fintech wants to rely on IPP12 ground (e), disclosure to a recipient subject to the privacy laws of a prescribed country, when sending data to a partner in the United Kingdom. Its compliance lead checks the current regulations and OPC guidance.",
+   "stem": "What is the most accurate advice?",
+   "options": [
+    "The UK is prescribed because it has an EU adequacy decision, so ground (e) applies",
+    "No countries have been prescribed, so the fintech should rely on another ground such as comparable laws or a contract",
+    "Ground (e) applies automatically to any Commonwealth country",
+    "The fintech must apply to the Commissioner to have the UK prescribed before disclosing"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "OPC guidance notes no countries or binding schemes have been prescribed under the regulation-making powers, so ground (e) isn't available. The fintech can use ground (c) after due diligence or ground (f) with model clauses. Adequacy and Commonwealth status don't confer prescription."
+  },
+  {
+   "id": "governance.d6.q019",
+   "lesson": "governance.d6.2.02",
+   "objective": "d6.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A NZ law firm moves its document management system to a cloud provider hosting data in Australia. The provider processes the data only on the firm's instructions and can't use it for its own purposes. How is this treated?",
+   "options": [
+    "It's a disclosure requiring express client authorisation under IPP12(1)(a)",
+    "It's a disclosure permitted only because Australia is a prescribed country",
+    "It isn't a disclosure, and the firm remains responsible for the information",
+    "It isn't a disclosure, and responsibility for the information transfers to the provider"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Under s 11, information held by an agent solely on another agency's behalf is treated as held by the principal, so it isn't a disclosure and IPP12 isn't triggered. The firm keeps responsibility for security, access and breach notification."
+  },
+  {
+   "id": "governance.d6.q020",
+   "lesson": "governance.d6.2.02",
+   "objective": "d6.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "A SaaS analytics vendor based overseas hosts a NZ retailer's customer data. The vendor's updated terms allow it to use the data to build its own cross-client benchmarking product. What is the main privacy consequence for the retailer?",
+   "options": [
+    "None, because cloud hosting is never a disclosure",
+    "The retailer can rely on s 11 provided the data remains encrypted at rest",
+    "The vendor must notify the Commissioner instead of the retailer",
+    "The vendor is no longer acting only as an agent, so IPP11 and IPP12 must be satisfied"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The s 11 agent treatment applies only where the provider doesn't use or disclose the information for its own purposes. Once it does, the transfer becomes a disclosure needing an IPP11 exception and an IPP12 ground. Encryption doesn't change that."
+  },
+  {
+   "id": "governance.d6.q021",
+   "lesson": "governance.d6.2.03",
+   "objective": "d6.2",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about the OPC's model contract clauses, select Yes if true.",
+   "explain": "OPC's model clauses support IPP12(1)(f) and can be adapted to the situation. They're voluntary, and prescribed countries can only be specified by regulation, not by contract.",
+   "statements": [
+    {
+     "s": "They are designed to help an agency show the overseas recipient must provide comparable safeguards under IPP12.",
+     "a": true
+    },
+    {
+     "s": "Agencies must use them unchanged for every overseas disclosure.",
+     "a": false
+    },
+    {
+     "s": "Signing them makes the recipient's country a prescribed country.",
+     "a": false
+    }
+   ]
+  },
+  {
+   "id": "governance.d6.q022",
+   "lesson": "governance.d6.2.04",
+   "objective": "d6.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Personal information about EU residents arrives in New Zealand and is about to be sent on to a third country with no comparable privacy law. Which tool lets the Privacy Commissioner stop the onward transfer?",
+   "options": [
+    "A compliance notice under the IPP12 grounds",
+    "A transfer prohibition notice under s 193",
+    "An access direction",
+    "A code of practice exemption"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Section 193 lets the Commissioner prohibit transfers of information received from another country where it's likely to go to a third country without comparable safeguards and would breach OECD basic principles. Access directions and codes don't do this."
+  },
+  {
+   "id": "governance.d6.q023",
+   "lesson": "governance.d6.3.01",
+   "objective": "d6.3",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each event, select Yes if it meets the Privacy Act definition of a privacy breach.",
+   "statements": [
+    {
+     "s": "Ransomware encrypts a client database so the agency can't access it, with no evidence the data was copied.",
+     "a": true
+    },
+    {
+     "s": "An employee browses a celebrity customer's records out of curiosity with no work reason.",
+     "a": true
+    },
+    {
+     "s": "An agency publishes its own aggregated, non-identifying annual statistics on its website.",
+     "a": false
+    }
+   ],
+   "explain": "A privacy breach includes unauthorised access and actions that prevent the agency accessing information temporarily or permanently. Publishing non-identifying aggregate statistics involves no personal information, so it isn't a privacy breach."
+  },
+  {
+   "id": "governance.d6.q024",
+   "lesson": "governance.d6.3.01",
+   "objective": "d6.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which statement about privacy breaches under the Privacy Act 2020 is correct?",
+   "options": [
+    "Every privacy breach must be notified to the Commissioner within 72 hours",
+    "A privacy breach must be notified only when it has caused or is likely to cause serious harm",
+    "Only breaches caused by external attackers count as privacy breaches",
+    "Accidental breaches are excluded from the definition"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Only notifiable privacy breaches, those that have caused or are likely to cause serious harm, must be notified. The definition covers accidental and internal breaches, not just external attacks."
+  },
+  {
+   "id": "governance.d6.q025",
+   "lesson": "governance.d6.3.02",
+   "objective": "d6.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which factors are relevant when an agency assesses whether a privacy breach is likely to cause serious harm? Select THREE.",
+   "options": [
+    "Whether the information is protected by a security measure such as encryption",
+    "The sensitivity of the personal information involved",
+    "The agency's current share price",
+    "The person or body that has obtained, or may obtain, the information",
+    "Whether the breach happened outside business hours"
+   ],
+   "answer": [
+    0,
+    1,
+    3
+   ],
+   "explain": "The Act and OPC list mitigation, sensitivity, the nature of the harm, who has or may obtain the information, and security protections like encryption. Share price and time of day aren't harm factors."
+  },
+  {
+   "id": "governance.d6.q026",
+   "lesson": "governance.d6.3.02",
+   "objective": "d6.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A community law centre emails a client update to the wrong recipient. It concerns one client, a family-violence survivor, and includes her new address. The recipient is unknown and hasn't replied to requests to delete the email.",
+   "stem": "How should the centre treat this breach?",
+   "options": [
+    "Not notifiable, because only one person is affected",
+    "Not notifiable, because it was accidental rather than malicious",
+    "Notifiable only if the recipient confirms they read the email",
+    "Likely notifiable, because sensitive information and a vulnerable person make serious harm likely"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Serious harm turns on sensitivity, vulnerability, who may hold the information and mitigation, not record counts or intent. An uncontained address of a family-violence survivor creates a real risk of physical harm, so it's likely notifiable."
+  },
+  {
+   "id": "governance.d6.q027",
+   "lesson": "governance.d6.3.03",
+   "objective": "d6.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "According to Office of the Privacy Commissioner guidance, what is the expected timeframe for notifying the Commissioner after an agency becomes aware of a notifiable privacy breach?",
+   "options": [
+    "Within 30 days",
+    "Within 20 working days",
+    "Ideally within 72 hours",
+    "Within 24 hours in all cases"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "The Act requires notification as soon as practicable, and OPC guidance expects this ideally within 72 hours of becoming aware, even if investigating. 20 working days is the access-request timeframe, and the others aren't NZ requirements."
+  },
+  {
+   "id": "governance.d6.q028",
+   "lesson": "governance.d6.3.03",
+   "objective": "d6.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An agency confirms a breach is likely to cause serious harm but hasn't yet determined the root cause or full number of affected people. What should it do?",
+   "options": [
+    "Notify the Commissioner now with what it knows and update as the investigation progresses",
+    "Wait until the investigation is complete so the notification is accurate",
+    "Notify only affected individuals, then tell the Commissioner when the investigation ends",
+    "Notify the Commissioner only if media coverage is likely"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Notification is due as soon as practicable after becoming aware, and OPC accepts incremental notification. Waiting for a complete investigation, skipping the Commissioner, or deciding by media exposure all fail the obligation."
+  },
+  {
+   "id": "governance.d6.q029",
+   "lesson": "governance.d6.3.04",
+   "objective": "d6.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "In which circumstance does the Privacy Act permit an agency to delay notifying affected individuals of a notifiable breach?",
+   "options": [
+    "Notifying would cause the agency reputational harm before its annual results",
+    "Notifying may create risks for the security of personal information that outweigh the benefits of informing people",
+    "The agency hasn't yet notified its cyber insurer",
+    "The breach affects fewer than 100 people"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Section 116 allows delay only where notification may create risks for the security of personal information that outweigh the benefits, and only while that remains so. Reputation, insurance and small numbers aren't grounds, and Commissioner notification can't be delayed."
+  },
+  {
+   "id": "governance.d6.q030",
+   "lesson": "governance.d6.3.04",
+   "objective": "d6.3",
+   "difficulty": 3,
+   "type": "multi",
+   "case": "A retailer's old loyalty database is breached. It contains names and purchase histories of about 40,000 people, but most email and postal addresses are years out of date. Some affected people are under 16.",
+   "stem": "Which statements correctly describe the retailer's notification options? Select TWO.",
+   "options": [
+    "It may give public notice if notifying people directly isn't reasonably practicable",
+    "Outdated contact details mean it need not notify the Commissioner",
+    "For a person under 16, if notice would be contrary to their interests, it should consider notifying a representative such as a parent",
+    "It may skip individual notification entirely because the data is old"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "Public notice is used when direct notification isn't reasonably practicable, and s 116 lets agencies notify a representative where notifying an under-16 would be contrary to their interests. Commissioner notification is still required, and data age isn't an exception."
+  },
+  {
+   "id": "governance.d6.q031",
+   "lesson": "governance.d6.3.05",
+   "objective": "d6.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is the maximum fine for an agency that, without reasonable excuse, fails to notify the Privacy Commissioner of a notifiable privacy breach?",
+   "options": [
+    "NZD 100,000",
+    "4% of global annual turnover",
+    "NZD 1,000,000",
+    "NZD 10,000"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Failing to notify the Commissioner without reasonable excuse is an offence with a maximum fine of NZD 10,000. Turnover-based penalties belong to the GDPR, and the higher dollar figures aren't in the Privacy Act 2020."
+  },
+  {
+   "id": "governance.d6.q032",
+   "lesson": "governance.d6.3.06",
+   "objective": "d6.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is NotifyUs?",
+   "options": [
+    "The National Cyber Security Centre's incident ticketing portal",
+    "The Office of the Privacy Commissioner's online tool for assessing and reporting privacy breaches",
+    "A Police service for reporting identity theft",
+    "A mandatory customer notification email template set by regulation"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "NotifyUs is OPC's online breach notification tool, including a self-assessment for serious harm. The NCSC and Police have their own reporting channels, and no regulation prescribes a customer email template."
+  },
+  {
+   "id": "governance.d6.q033",
+   "lesson": "governance.d6.3.06",
+   "objective": "d6.3",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "A staff member emails a client spreadsheet to the wrong external address. Put the OPC breach response steps in order.",
+   "options": [
+    "Contain: recall the email and ask the recipient to delete it",
+    "Assess: evaluate sensitivity, who received it and the likelihood of serious harm",
+    "Notify: report via NotifyUs and tell affected clients if serious harm is likely",
+    "Prevent: review the root cause and add controls such as external-recipient warnings"
+   ],
+   "explain": "OPC's breach guidance is contain, assess, notify, prevent. Containment limits damage first, assessment decides notifiability, notification follows promptly, and prevention addresses the root cause."
+  }
+ ]
+}

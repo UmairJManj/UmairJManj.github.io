@@ -1,0 +1,488 @@
+{
+  "exam": "sc-100",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "sc-100.d3.4.01",
+      "objective": "d3.4",
+      "seq": 1,
+      "title": "Evaluating network designs against best practices",
+      "short": "Assess a network design against Zero Trust and MCSB network security: hub-and-spoke or Virtual WAN with central Azure Firewall, segmentation with NSGs and application security groups, private endpoints instead of public PaaS access, DDoS Protection and WAF at the edge, and no direct internet management ports.",
+      "deep": "When you evaluate a design, check these areas:\n- **Topology**: **hub-and-spoke** (or **Azure Virtual WAN** secured hubs) with shared services in the hub, workloads in spokes, all in an **Azure landing zone**. Spokes are not peered to each other directly; traffic flows through the hub firewall.\n- **Segmentation**: **network security groups (NSGs)** at subnet/NIC, **application security groups** to group VMs by role, default deny; micro-segmentation for sensitive tiers.\n- **Inspection**: **Azure Firewall** with user-defined routes (0.0.0.0/0 to the firewall). Pick the SKU: **Basic** (up to 250 Mbps, small sites), **Standard** (threat intelligence filtering, web categories, DNS proxy), **Premium** (**TLS inspection**, signature-based **IDPS**, full-path **URL filtering**) for sensitive workloads. Manage rules centrally with **Azure Firewall Manager** policies.\n- **PaaS access**: **Private Link/private endpoints** with private DNS zones; disable public network access. Service endpoints are a weaker, older option.\n- **Edge**: **Azure DDoS Protection** and **Azure WAF** (Front Door or Application Gateway).\n- **Admin access**: **Azure Bastion** or JIT; no public RDP/SSH.\n- **Visibility**: VNet flow logs, Traffic Analytics, Firewall logs to Sentinel.\n- **Hybrid**: ExpressRoute/VPN, and increasingly **SSE** (Global Secure Access) replacing legacy VPN for users.",
+      "terms": [
+        {
+          "t": "Hub-and-spoke",
+          "d": "Topology with shared security services in a hub VNet and workloads in peered spokes."
+        },
+        {
+          "t": "Application security group",
+          "d": "Logical group of NICs used as source/destination in NSG rules."
+        },
+        {
+          "t": "Azure Firewall Premium",
+          "d": "SKU adding TLS inspection, signature IDPS and URL filtering."
+        },
+        {
+          "t": "Private endpoint",
+          "d": "Private IP in your VNet for a PaaS resource via Private Link."
+        }
+      ],
+      "trap": "TLS inspection and IDPS are Premium-only; a stem requiring inspection of encrypted outbound traffic rules out Firewall Standard and Basic.",
+      "example": "Reviewing a design, the architect replaces spoke-to-spoke peering with forced routing through a Premium firewall in the hub and moves SQL to private endpoints.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Firewall SKU",
+          "Key features"
+        ],
+        "rows": [
+          [
+            "Basic",
+            "Up to 250 Mbps"
+          ],
+          [
+            "Standard",
+            "Threat intel, web categories"
+          ],
+          [
+            "Premium",
+            "TLS inspection, IDPS, URL"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.4.02",
+      "objective": "d3.4",
+      "seq": 2,
+      "title": "Microsoft Entra Internet Access as a secure web gateway",
+      "short": "Microsoft Entra Internet Access is the identity-aware secure web gateway (SWG) in Global Secure Access, Microsoft's Security Service Edge. The Global Secure Access client or remote networks forward internet traffic, and web content filtering policies in security profiles, linked through Conditional Access, allow or block by category, FQDN or URL.",
+      "deep": "**Security Service Edge (SSE)** moves network security to the cloud close to users. Microsoft's SSE is **Global Secure Access**, made up of **Microsoft Entra Internet Access** and **Microsoft Entra Private Access**.\n\n**How Internet Access works**\n- Traffic is acquired by the **Global Secure Access client** (Windows, macOS, iOS, Android) or from branches via **remote networks**, and sent to Microsoft's edge.\n- Enable the **Internet Access traffic forwarding profile**.\n- Build **web content filtering policies** (rules by **web category**, **FQDN** or URL, action Allow or Block).\n- Group policies into a **security profile** with a priority.\n- Link the profile in a **Conditional Access** policy targeting **All internet resources with Global Secure Access**, session control **Use Global Secure Access security profile**. This makes filtering **user- and context-aware**.\n- The **baseline profile** applies to all Internet Access traffic, including remote networks, without Conditional Access.\n- **TLS inspection** lets it see inside HTTPS for URL path rules; threat intelligence filtering, DLP and AI protections such as prompt injection protection extend it.\n\n**Licensing**: Internet Access is in the **Microsoft Entra Suite** or sold standalone; users also need Entra ID P1/P2.\n\nCompared with Azure Firewall: Firewall protects Azure workloads' egress; Internet Access protects **users** wherever they are.",
+      "terms": [
+        {
+          "t": "Security Service Edge (SSE)",
+          "d": "Cloud-delivered SWG, CASB and ZTNA services; Microsoft's is Global Secure Access."
+        },
+        {
+          "t": "Secure web gateway (SWG)",
+          "d": "Service that filters user web traffic by policy."
+        },
+        {
+          "t": "Security profile",
+          "d": "Prioritised group of web filtering policies, applied through Conditional Access."
+        },
+        {
+          "t": "Traffic forwarding profile",
+          "d": "Defines which traffic (Microsoft, Internet, Private) the client tunnels."
+        }
+      ],
+      "trap": "A filtering policy does nothing per user until its security profile is linked through a Conditional Access session control (or placed in the baseline profile).",
+      "example": "Finance users get a security profile that blocks gambling and file-sharing categories, applied through a Conditional Access policy scoped to the Finance group.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Filtering policy",
+          "Security profile",
+          "Conditional Access",
+          "GSA client",
+          "Internet"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.4.03",
+      "objective": "d3.4",
+      "seq": 3,
+      "title": "Internet Access for Microsoft services and cross-tenant control",
+      "short": "The Microsoft traffic profile, included with Entra ID P1/P2, tunnels Microsoft 365 and Entra traffic through Global Secure Access. It enables universal tenant restrictions (enforcing tenant restrictions v2 without a proxy), the compliant network check in Conditional Access, and source IP restoration in sign-in logs.",
+      "deep": "**Microsoft traffic profile** features:\n- **Universal tenant restrictions**: enforces **tenant restrictions v2 (TRv2)** policies, configured in **cross-tenant access settings**, for all devices with the client or on a remote network, **without a corporate proxy injecting headers**. Users can sign in only to allowed tenants and apps, which stops data exfiltration to personal or foreign tenants. You must first configure the TRv2 default and partner policies, then enable it under Global Secure Access > Settings > Session management.\n- **Compliant network check**: Conditional Access location condition **All Compliant Network locations**. It is tenant-specific and replaces brittle IP-based named locations. It is enforced at sign-in (stolen refresh tokens replayed elsewhere fail) and, for **CAE**-capable apps such as Microsoft Graph and Exchange Online, on the data plane in near real time.\n- **Source IP restoration**: sign-in logs and risk detections see the user's real public IP rather than the SSE egress IP.\n\n**Cross-tenant design**: TRv2 restricts **your users** going to **other** tenants (outbound control at your network). **Cross-tenant access settings** inbound/outbound govern B2B collaboration and direct connect. For external users who need your private apps, Global Secure Access supports **B2B guest access**: the guest signs in with their home account and switches to the resource tenant in the client; the resource tenant's policies apply and the home tenant needs no GSA licence.",
+      "terms": [
+        {
+          "t": "Tenant restrictions v2",
+          "d": "Policy limiting which external tenants your users can access from your devices/network."
+        },
+        {
+          "t": "Universal tenant restrictions",
+          "d": "Global Secure Access enforcement of TRv2 without a header-injecting proxy."
+        },
+        {
+          "t": "Compliant network",
+          "d": "Conditional Access condition met only when traffic comes through your tenant's GSA."
+        },
+        {
+          "t": "Source IP restoration",
+          "d": "Preserves the user's original IP in Entra logs when tunnelled via GSA."
+        }
+      ],
+      "trap": "Blocking access to other organisations' tenants from corporate devices is tenant restrictions (TRv2 via universal tenant restrictions), not inbound cross-tenant access settings, which control guests coming into your tenant.",
+      "example": "To stop staff uploading data to personal OneDrive or a competitor's tenant, Contoso configures TRv2 to allow only its own and a partner tenant and enables universal tenant restrictions.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User device",
+          "GSA client",
+          "Microsoft profile",
+          "TRv2 check",
+          "Allowed tenant"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.4.04",
+      "objective": "d3.4",
+      "seq": 4,
+      "title": "Microsoft Entra Private Access",
+      "short": "Microsoft Entra Private Access is Microsoft's zero trust network access (ZTNA). It replaces VPNs by giving users access to specific private apps, defined by FQDN, IP and port, through Global Secure Access, with Conditional Access per app and outbound-only private network connectors in the datacenter.",
+      "deep": "Traditional VPNs put a user **on the network**, enabling lateral movement. **Private Access** grants access **per application**.\n\n**Components**\n- **Global Secure Access client** with the **Private Access traffic forwarding profile**.\n- **Microsoft Entra private network connectors** (the evolution of application proxy connectors) installed on servers near the apps. They make **outbound-only** connections, so no inbound firewall ports are needed. Group them into **connector groups** per site.\n- Apps defined as **enterprise applications**:\n  - **Quick Access**: one broad app containing FQDNs, IP ranges and ports, the fast path to replace VPN.\n  - **Global Secure Access (per-app) applications**: separate apps for subsets that need their own users, Conditional Access policies or time limits.\n\n**Security**: assign users/groups per app; apply **Conditional Access** per app (MFA, compliant device, authentication strength, even for legacy protocols such as RDP, SMB or SSH). Supports TCP and UDP, **private DNS** for internal names, and SSO, including Kerberos to on-premises apps. Integrates with Entra ID Protection and CAE.\n\n**Licensing**: in the **Microsoft Entra Suite** or standalone (plus Entra ID P1/P2). Design pattern: start with Quick Access to retire VPN, then carve high-value apps into per-app applications with stricter policies.",
+      "terms": [
+        {
+          "t": "ZTNA",
+          "d": "Zero trust network access: per-app access instead of network-level VPN access."
+        },
+        {
+          "t": "Private network connector",
+          "d": "Outbound-only agent that brokers Private Access traffic to internal apps."
+        },
+        {
+          "t": "Quick Access",
+          "d": "Single Private Access app covering broad FQDN/IP ranges to replace VPN."
+        },
+        {
+          "t": "Per-app access",
+          "d": "Separate Private Access apps with their own assignments and CA policies."
+        }
+      ],
+      "trap": "If a subset of private resources needs stricter Conditional Access than the rest, move it from Quick Access into its own per-app Global Secure Access application.",
+      "example": "Engineers reach a legacy SSH jump host through a per-app Private Access application that requires phishing-resistant MFA, while general file shares stay in Quick Access.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User + GSA client",
+          "Conditional Access",
+          "Microsoft SSE edge",
+          "Connector (outbound)",
+          "Private app"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-100.d3.q075",
+      "lesson": "sc-100.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A payment workload in Azure must have its outbound HTTPS traffic decrypted and inspected with signature-based intrusion detection and prevention. Which Azure Firewall SKU is required?",
+      "options": [
+        "Premium",
+        "Standard",
+        "Basic",
+        "Standard with Firewall Manager"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "TLS inspection and signature-based IDPS are Azure Firewall Premium features. Standard provides threat intelligence and web categories, Basic targets small environments, and Firewall Manager is a management tool that does not add these features."
+    },
+    {
+      "id": "sc-100.d3.q076",
+      "lesson": "sc-100.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A design gives an Azure SQL Database a public endpoint protected only by its server firewall allowing the app subnet's NAT IP. Security requires the database to be reachable only from the VNet with no public exposure. What should you recommend?",
+      "options": [
+        "An NSG on the app subnet that denies outbound port 1433",
+        "A private endpoint for the SQL server with a private DNS zone, and public network access disabled",
+        "Azure DDoS IP Protection on the SQL server",
+        "A user-defined route to the internet for the SQL service tag"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A private endpoint gives the database a private IP and disabling public access removes internet exposure. Blocking 1433 breaks the app, DDoS IP Protection protects public IPs rather than removing them, and a UDR does not change the database's exposure."
+    },
+    {
+      "id": "sc-100.d3.q077",
+      "lesson": "sc-100.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A review of Litware's Azure network finds 30 spoke VNets peered in a full mesh, each with its own NSGs and some with public IPs on VMs for remote administration. The CISO wants all traffic between spokes and to the internet inspected and logged centrally, consistent rule management, and no public management ports.",
+      "stem": "Which redesign should you recommend?",
+      "options": [
+        "Keep the full mesh and add Azure WAF to every VNet",
+        "Replace NSGs with application security groups and keep public IPs",
+        "Hub-and-spoke with a hub Azure Firewall, UDRs, Firewall Manager policy, and Azure Bastion for admin access",
+        "Deploy a separate Azure Firewall Basic in each spoke managed individually"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Hub-and-spoke with forced routing through a central firewall gives central inspection and logging, Firewall Manager gives consistent policy, and Bastion removes public management IPs. WAF is HTTP only, ASGs do not inspect traffic, and per-spoke firewalls fragment management."
+    },
+    {
+      "id": "sc-100.d3.q078",
+      "lesson": "sc-100.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure network security, select Yes if true.",
+      "statements": [
+        {
+          "s": "Application security groups let NSG rules target VMs by role instead of by IP address.",
+          "a": true
+        },
+        {
+          "s": "Azure Firewall Standard supports web category filtering.",
+          "a": true
+        },
+        {
+          "s": "Network security groups can perform TLS inspection of HTTPS traffic.",
+          "a": false
+        }
+      ],
+      "explain": "ASGs group NICs so rules reference roles such as web or db. Firewall Standard includes web categories. NSGs filter on IP, port and protocol only and cannot decrypt TLS."
+    },
+    {
+      "id": "sc-100.d3.q079",
+      "lesson": "sc-100.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft product provides an identity-aware secure web gateway for users' internet traffic as part of Microsoft's Security Service Edge?",
+      "options": [
+        "Microsoft Entra Private Access",
+        "Azure Firewall Premium",
+        "Azure Front Door",
+        "Microsoft Entra Internet Access"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Entra Internet Access is the SWG in Global Secure Access. Private Access is the ZTNA component for private apps, Azure Firewall protects Azure network traffic rather than roaming users, and Front Door is an inbound application delivery service."
+    },
+    {
+      "id": "sc-100.d3.q080",
+      "lesson": "sc-100.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "The Internet Access traffic forwarding profile and client are already deployed. You need to block the gambling web category for the Sales group. Put the steps in order.",
+      "options": [
+        "Create a web content filtering policy that blocks the Gambling category",
+        "Add the policy to a security profile",
+        "Create a Conditional Access policy for Sales with the session control 'Use Global Secure Access security profile'",
+        "Have a Sales user get a new token and confirm the block in the traffic logs"
+      ],
+      "explain": "The filtering policy must exist before it can be grouped into a security profile, the profile must exist before Conditional Access can reference it, and testing requires a new token that carries the profile."
+    },
+    {
+      "id": "sc-100.d3.q081",
+      "lesson": "sc-100.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Adatum has 40 branch offices whose devices, including shared kiosks and printers, cannot run the Global Secure Access client. Branch internet traffic must be filtered by web category through Microsoft's SSE. Head office users with the client need different, group-specific filtering.",
+      "stem": "How should you apply filtering to the branch traffic?",
+      "options": [
+        "Connect the branches as remote networks and place the branch filtering policy in the baseline profile",
+        "Link a security profile through Conditional Access targeting the kiosk device accounts",
+        "Deploy Azure Firewall Premium in each branch",
+        "Use Private Access Quick Access with an FQDN range of *"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Remote networks forward branch traffic without a client, and the baseline profile applies tenant-wide without Conditional Access, which suits non-user devices. CA-linked profiles depend on user tokens from the client, branch firewalls are not SSE, and Private Access is for private apps."
+    },
+    {
+      "id": "sc-100.d3.q082",
+      "lesson": "sc-100.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about Microsoft Entra Internet Access are true? Select TWO.",
+      "options": [
+        "Web content filtering rules can match web categories or FQDNs",
+        "TLS inspection is needed to enforce rules that depend on the full URL path or HTTP method of HTTPS traffic",
+        "It is included in every Microsoft Entra ID P1 licence at no extra cost",
+        "It requires users to connect to an on-premises VPN concentrator first",
+        "It replaces the need for Conditional Access"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Filtering rules use categories, FQDNs or URLs, and TLS inspection is needed to see paths and methods inside HTTPS. Internet Access needs the Entra Suite or a standalone licence, does not use VPNs, and relies on Conditional Access to apply profiles."
+    },
+    {
+      "id": "sc-100.d3.q083",
+      "lesson": "sc-100.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Users on managed laptops must be prevented from signing in to Microsoft 365 tenants other than your own and one approved partner, including when working from home, without deploying a header-injecting proxy. What should you recommend?",
+      "options": [
+        "Configure inbound cross-tenant access settings to block all external tenants",
+        "Configure tenant restrictions v2 and enable universal tenant restrictions in Global Secure Access",
+        "Create a Conditional Access policy that blocks guest users",
+        "Enable source IP restoration in Global Secure Access"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "TRv2 defines allowed tenants, and universal tenant restrictions enforce it through the client without a proxy. Inbound settings control external users entering your tenant, blocking guests affects your tenant's resources, and source IP restoration only improves logging."
+    },
+    {
+      "id": "sc-100.d3.q084",
+      "lesson": "sc-100.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso's Conditional Access policies rely on a list of 200 office egress IP ranges that changes often, and an incident showed a stolen refresh token replayed from an attacker's network. Contoso has Entra ID P1 and has deployed the Global Secure Access client. It wants to block access unless traffic comes through its own SSE and to reject replayed tokens quickly.",
+      "stem": "What should you recommend?",
+      "options": [
+        "Add the attacker's IP range to a blocked named location",
+        "Configure a GPS-based named location for all offices",
+        "Enable CA signaling and block access from any location except All Compliant Network locations",
+        "Enable tenant restrictions v2 for the Contoso tenant"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The compliant network condition requires traffic through Contoso's own Global Secure Access, removes IP list maintenance, and blocks replayed tokens at sign-in and, for CAE apps, in near real time. Blocking one IP is reactive, GPS locations depend on the Authenticator app and do not prove the network, and TRv2 controls access to other tenants."
+    },
+    {
+      "id": "sc-100.d3.q085",
+      "lesson": "sc-100.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the Global Secure Access Microsoft traffic profile, select Yes if true.",
+      "statements": [
+        {
+          "s": "It is included with Microsoft Entra ID P1 or P2.",
+          "a": true
+        },
+        {
+          "s": "Source IP restoration lets Entra sign-in logs show the user's original public IP rather than the SSE egress IP.",
+          "a": true
+        },
+        {
+          "s": "A user from another tenant can satisfy your tenant's compliant network condition by using their own organisation's Global Secure Access client.",
+          "a": false
+        }
+      ],
+      "explain": "The Microsoft traffic profile is included in Entra ID P1/P2. Source IP restoration preserves the original IP in logs. The compliant network check is tenant-specific, so another tenant's SSE does not satisfy it."
+    },
+    {
+      "id": "sc-100.d3.q086",
+      "lesson": "sc-100.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Fabrikam engineers from a partner company need to reach two private engineering apps in Fabrikam's datacenter. The partner's tenant has only Microsoft Entra ID Free and no Global Secure Access licences. The partners already exist as B2B guests in Fabrikam's tenant.",
+      "stem": "Which TWO statements describe a valid Global Secure Access design? Select TWO.",
+      "options": [
+        "Partners sign in to the GSA client with home accounts and switch to Fabrikam's tenant for assigned apps",
+        "Fabrikam's Conditional Access and MFA settings apply to the partners when using its Private Access apps",
+        "The partner tenant must buy Microsoft Entra Private Access for each engineer",
+        "The partners' devices must be joined to Fabrikam's Microsoft Entra tenant",
+        "The partners keep their home tenant's Internet Access tunnel active while connected to Fabrikam"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "B2B guest access lets guests switch to the resource tenant in the client, and the resource tenant's policies apply. The home tenant needs no GSA licence, device join to the resource tenant is not required, and home tenant tunnels disconnect while the resource tenant is active."
+    },
+    {
+      "id": "sc-100.d3.q087",
+      "lesson": "sc-100.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement describes how Microsoft Entra private network connectors communicate?",
+      "options": [
+        "They require inbound TCP 443 from the internet to each connector",
+        "They require a site-to-site IPsec VPN to Azure",
+        "They must be installed on every user device",
+        "They make outbound connections to the Microsoft service, so no inbound firewall ports are needed"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Connectors initiate outbound connections, so the datacenter needs no inbound ports. Inbound 443 is not required, no site-to-site VPN is needed, and users run the Global Secure Access client, not connectors."
+    },
+    {
+      "id": "sc-100.d3.q088",
+      "lesson": "sc-100.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You used Quick Access to replace the VPN for all internal IP ranges. A finance database server now needs phishing-resistant MFA for a subset of users, while other resources keep the existing policy. What should you do?",
+      "options": [
+        "Create a per-app Global Secure Access application for the server, with a CA policy using an authentication strength",
+        "Add the finance server's IP to Quick Access a second time",
+        "Require phishing-resistant MFA for the Quick Access application for everyone",
+        "Publish the finance server through Azure Front Door"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Per-app applications let a subset of private resources get their own assignments and Conditional Access, such as a phishing-resistant authentication strength. Duplicating Quick Access entries does not separate policy, tightening Quick Access affects everyone, and Front Door publishes web apps to the internet."
+    },
+    {
+      "id": "sc-100.d3.q089",
+      "lesson": "sc-100.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Woodgrove's remote staff use a full-tunnel VPN that gives access to the entire corporate network. Last year an attacker with stolen VPN credentials scanned the network and moved laterally to file servers. The CISO wants per-application access to RDP, SMB and internal web apps, with MFA and device compliance checked per app, and no inbound ports opened in the datacenter.",
+      "stem": "What should you recommend?",
+      "options": [
+        "Keep the VPN and add an NSG on the VPN gateway subnet",
+        "Microsoft Entra Private Access with private network connectors and Conditional Access per application",
+        "Microsoft Entra Internet Access with web content filtering",
+        "Publish all internal servers with public IPs behind Azure DDoS Protection"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Private Access is ZTNA: per-app access for TCP/UDP apps, Conditional Access per app, and outbound-only connectors. NSGs on a VPN gateway do not stop lateral movement, Internet Access filters internet traffic, and public IPs increase exposure."
+    },
+    {
+      "id": "sc-100.d3.q090",
+      "lesson": "sc-100.d3.4.04",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO licensing options let users use both Microsoft Entra Internet Access and Microsoft Entra Private Access? Select TWO.",
+      "options": [
+        "Microsoft Entra Suite plus Microsoft Entra ID P1",
+        "Standalone Internet Access and standalone Private Access licences plus Microsoft Entra ID P1",
+        "Microsoft Entra ID P1 alone",
+        "Microsoft Entra ID Free",
+        "Microsoft Defender for Cloud Apps"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Internet Access and Private Access are both in the Microsoft Entra Suite or sold standalone, and users also need Entra ID P1 or P2. P1 alone includes only the Microsoft traffic profile, Entra ID Free does not include them, and Defender for Cloud Apps is a separate CASB."
+    }
+  ]
+}

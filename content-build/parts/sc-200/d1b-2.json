@@ -1,0 +1,588 @@
+{
+  "exam": "sc-200",
+  "domain": "d1",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-200.d1b.q033",
+      "lesson": "sc-200.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You create a DCR-based custom table with Azure CLI to store data from an HR application. Which naming requirement applies?",
+      "options": [
+        "The name must end with _CL, and you must add it yourself",
+        "The name must match the DCR name exactly",
+        "The name must start with Custom- and the portal adds it",
+        "The name must end with _CF"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Custom log tables end in _CL. The portal appends it automatically, but CLI, PowerShell, REST and ARM don't. _CF is for custom columns. 'Custom-' prefixes the DCR stream name, not the table, and the table name is independent of the DCR name."
+    },
+    {
+      "id": "sc-200.d1b.q034",
+      "lesson": "sc-200.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A developer's script sends JSON to a custom table through the Logs Ingestion API. It authenticates with an Entra app registration and gets a 403 Forbidden from the DCR endpoint. The app has Log Analytics Contributor on the workspace.",
+      "stem": "Which role assignment fixes the problem?",
+      "options": [
+        "Log Analytics Reader on the workspace",
+        "Monitoring Contributor on the subscription",
+        "Monitoring Metrics Publisher on the data collection rule",
+        "Microsoft Sentinel Responder on the workspace"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Logs Ingestion API callers need Monitoring Metrics Publisher on the DCR they send to. Workspace roles like Log Analytics Contributor manage tables but don't grant ingestion rights. Sentinel Responder handles incidents, and Monitoring Contributor manages monitoring settings rather than publishing data."
+    },
+    {
+      "id": "sc-200.d1b.q035",
+      "lesson": "sc-200.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Your sample JSON has a string field named EventTime but no TimeGenerated column. Complete the DCR transformation so every record gets a valid TimeGenerated.",
+      "code": "source\n| extend TimeGenerated = ____(EventTime)",
+      "options": [
+        "format_datetime",
+        "todatetime",
+        "bin",
+        "tostring"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "TimeGenerated must be a datetime, so todatetime() converts the string. tostring keeps it a string, format_datetime formats a datetime as text, and bin() rounds values into buckets, which needs a datetime or number input anyway."
+    },
+    {
+      "id": "sc-200.d1b.q036",
+      "lesson": "sc-200.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about custom log tables, select Yes if true.",
+      "statements": [
+        {
+          "s": "When you create a custom table in the portal, a sample JSON file is used to define the table schema.",
+          "a": true
+        },
+        {
+          "s": "For Custom Logs via AMA, the destination table must be created before you create the DCR.",
+          "a": true
+        },
+        {
+          "s": "Custom tables can only use the Analytics table plan.",
+          "a": false
+        }
+      ],
+      "explain": "The portal infers the schema from a sample file. Custom Logs via AMA needs the _CL table (TimeGenerated plus RawData) first. Custom tables can use Analytics, Basic or Auxiliary/data lake plans."
+    },
+    {
+      "id": "sc-200.d1b.q037",
+      "lesson": "sc-200.d1.4.01",
+      "objective": "d1.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "A custom detection rule queries the DeviceProcessEvents table. Which THREE columns must the query results include? Select THREE.",
+      "options": [
+        "ReportId",
+        "AlertId",
+        "InitiatingProcessSHA256",
+        "Timestamp",
+        "DeviceId"
+      ],
+      "answer": [
+        0,
+        3,
+        4
+      ],
+      "explain": "Defender for Endpoint tables need Timestamp (or TimeGenerated), DeviceId and ReportId so alerts link back to events. A SHA256 column is only needed for file actions such as quarantine. AlertId belongs to alert tables and isn't required."
+    },
+    {
+      "id": "sc-200.d1b.q038",
+      "lesson": "sc-200.d1.4.01",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Your detection counts antivirus detections per device. Complete the query so it keeps the columns a custom detection rule requires.",
+      "code": "DeviceEvents\n| where ActionType == \"AntivirusDetection\"\n| summarize (Timestamp, ReportId) = ____(Timestamp, ReportId), count() by DeviceId\n| where count_ > 5",
+      "options": [
+        "take_any",
+        "make_set",
+        "dcount",
+        "arg_max"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "arg_max(Timestamp, ReportId) returns the latest event's Timestamp and its matching ReportId. make_set returns arrays and dcount returns a number. take_any returns arbitrary values that may not come from the latest event."
+    },
+    {
+      "id": "sc-200.d1b.q039",
+      "lesson": "sc-200.d1.4.01",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You set a custom detection rule on Defender XDR data to run every 3 hours. What lookback period does each run use?",
+      "options": [
+        "12 hours",
+        "48 hours",
+        "3 hours",
+        "4 hours"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Lookbacks for Defender data are fixed: hourly rules look back 4 hours, 3-hourly 12 hours, 12-hourly 48 hours and daily 30 days. The longer lookback catches late-arriving events, and duplicate alerts are grouped."
+    },
+    {
+      "id": "sc-200.d1b.q040",
+      "lesson": "sc-200.d1.4.01",
+      "objective": "d1.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A hunter wants a custom detection that fires within minutes when an Office process spawns powershell.exe. Her query joins DeviceProcessEvents to DeviceNetworkEvents to add the remote IP, and she wants the Continuous (NRT) frequency.",
+      "stem": "What must she change to save the rule with Continuous frequency?",
+      "options": [
+        "Change the scope to all device groups",
+        "Map the remote IP as an impacted asset",
+        "Remove the join so the query references only one table",
+        "Add a where Timestamp > ago(1h) filter"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Continuous (NRT) custom detections must reference one table, with no joins, unions or externaldata. Adding a Timestamp filter is discouraged, because the service applies the lookback itself. Scope doesn't affect NRT eligibility, and IP is evidence, not an impacted asset."
+    },
+    {
+      "id": "sc-200.d1b.q041",
+      "lesson": "sc-200.d1.4.01",
+      "objective": "d1.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about custom detection rules in Defender XDR, select Yes if true.",
+      "statements": [
+        {
+          "s": "Every 6 hours is one of the frequency options for rules on Defender XDR data.",
+          "a": false
+        },
+        {
+          "s": "Each rule run can generate at most 150 alerts.",
+          "a": true
+        },
+        {
+          "s": "When saved, a new rule immediately checks the past 30 days of data.",
+          "a": true
+        }
+      ],
+      "explain": "The options are Continuous (NRT), every 1, 3, 12 or 24 hours, and Custom for Sentinel data only. There is no 6-hour option. Each run is capped at 150 alerts, and a new rule first scans 30 days of data."
+    },
+    {
+      "id": "sc-200.d1b.q042",
+      "lesson": "sc-200.d1.4.01",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Following least privilege, which Microsoft Defender permission lets an analyst create custom detection rules on Microsoft Defender XDR data?",
+      "options": [
+        "Global Administrator",
+        "Security settings (manage)",
+        "Microsoft Sentinel Reader",
+        "Security Reader"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Defender permission Security settings (manage) is enough to manage custom detections. Global Administrator works but is excessive. Security Reader and Sentinel Reader are read-only. Rules on Sentinel data also need Microsoft Sentinel Contributor."
+    },
+    {
+      "id": "sc-200.d1b.q043",
+      "lesson": "sc-200.d1.4.02",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A custom detection should automatically soft-delete phishing messages found by the query. Which columns must the query output for this action?",
+      "options": [
+        "ReportId and DeviceId",
+        "SenderFromAddress and Subject",
+        "InternetMessageId and SenderObjectId",
+        "NetworkMessageId and RecipientEmailAddress"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Email actions (move to folder, soft or hard delete) need NetworkMessageId and RecipientEmailAddress to find each copy of the message. Sender and Subject don't identify a specific mailbox copy. DeviceId is for device actions, and InternetMessageId isn't the key the action uses."
+    },
+    {
+      "id": "sc-200.d1b.q044",
+      "lesson": "sc-200.d1.4.02",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO actions can a custom detection rule take automatically against devices returned by the query? Select TWO.",
+      "options": [
+        "Offboard device from Defender for Endpoint",
+        "Run live response script",
+        "Reimage device",
+        "Isolate device",
+        "Collect investigation package"
+      ],
+      "answer": [
+        3,
+        4
+      ],
+      "explain": "Device actions are isolate, collect investigation package, run antivirus scan, initiate investigation and restrict app execution. Live response is an interactive session. Offboarding and reimaging aren't available as custom detection actions."
+    },
+    {
+      "id": "sc-200.d1b.q045",
+      "lesson": "sc-200.d1.4.02",
+      "objective": "d1.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What happens when a custom detection rule runs the 'Mark user as compromised' action?",
+      "options": [
+        "The user's Microsoft Entra ID risk level is set to high",
+        "The user's password is reset immediately",
+        "The user is added to a Defender XDR watchlist",
+        "The user's account is disabled in Active Directory"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Mark user as compromised raises the user risk level to high in Entra ID Protection, which risk-based Conditional Access can then act on. Disabling and resetting authentication are separate actions that need SID columns. Defender XDR has no watchlist for this."
+    },
+    {
+      "id": "sc-200.d1b.q047",
+      "lesson": "sc-200.d1.4.03",
+      "objective": "d1.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In the Microsoft Defender portal, where do you manage existing custom detection rules?",
+      "options": [
+        "Assets > Devices > Device groups",
+        "Incidents & alerts > Alerts > Tune alert",
+        "Hunting > Custom detection rules",
+        "Settings > Endpoints > Rules > Indicators"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Custom detections live under Hunting > Custom detection rules, alongside Sentinel analytics rules when a workspace is onboarded. Indicators are IoC allow/block entries, Tune alert creates suppression or tuning rules, and Device groups manage RBAC scoping."
+    },
+    {
+      "id": "sc-200.d1b.q048",
+      "lesson": "sc-200.d1.4.03",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A custom detection is producing false positives while you rework its logic. You want it to stop running but keep its configuration for later. What should you do?",
+      "options": [
+        "Select Run to reset the interval",
+        "Turn off the rule",
+        "Delete the rule",
+        "Change its frequency to every 24 hours"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Turn off stops the rule without losing it, and you can turn it back on later. Delete removes it permanently. Run executes it immediately, which makes things worse. A 24-hour frequency still fires, and its lookback grows to 30 days."
+    },
+    {
+      "id": "sc-200.d1b.q050",
+      "lesson": "sc-200.d1.4.04",
+      "objective": "d1.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In a Microsoft Sentinel scheduled analytics rule, what is the allowed range for both 'Run query every' and 'Lookup data from the last'?",
+      "options": [
+        "1 minute to 24 hours",
+        "1 hour to 7 days",
+        "5 minutes to 30 days",
+        "5 minutes to 14 days"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Both settings accept 5 minutes to 14 days, and the interval must not exceed the lookback. One-minute cadence is NRT. 30 days and 7 days are other limits (custom detection lookback, and the alert grouping window)."
+    },
+    {
+      "id": "sc-200.d1b.q051",
+      "lesson": "sc-200.d1.4.04",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A scheduled rule detects password spray. Each run may return hundreds of matching accounts. Analysts want one incident per affected account, and each account's alerts within a 5-hour window should go into that incident.",
+      "stem": "Which configuration should you use?",
+      "options": [
+        "Alert per result with alert grouping on matching selected entities (Account)",
+        "Suppression for 5 hours with incident creation disabled",
+        "Alert per result with incident creation disabled",
+        "Group all events into a single alert with grouping of all alerts from the rule"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "One alert per result plus grouping by the Account entity in a 5-hour window gives one incident per account. A single summary alert merges every account. Suppression and disabling incidents stop the incidents analysts need, and alert-only output is hidden in the Defender portal."
+    },
+    {
+      "id": "sc-200.d1b.q052",
+      "lesson": "sc-200.d1.4.04",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about scheduled analytics rules, select Yes if true.",
+      "statements": [
+        {
+          "s": "A rule can include up to 10 entity mappings.",
+          "a": true
+        },
+        {
+          "s": "The query interval can be longer than the lookback period to reduce cost.",
+          "a": false
+        },
+        {
+          "s": "Suppression can stop the rule from running for up to 24 hours after it generates an alert.",
+          "a": true
+        }
+      ],
+      "explain": "Rules allow up to 10 entity mappings with up to 3 identifiers each. An interval longer than the lookback leaves gaps and fails validation. Suppression is configurable up to 24 hours."
+    },
+    {
+      "id": "sc-200.d1b.q053",
+      "lesson": "sc-200.d1.4.04",
+      "objective": "d1.4",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "You create a new scheduled query rule in Microsoft Sentinel. Put the wizard tabs in order.",
+      "options": [
+        "General (name, severity, MITRE tactics)",
+        "Set rule logic (query, entities, schedule, threshold)",
+        "Incident settings (incident creation, alert grouping)",
+        "Automated response (automation rules)",
+        "Review + create"
+      ],
+      "explain": "The analytics rule wizard runs General → Set rule logic → Incident settings → Automated response → Review + create. Validation on the final tab checks things such as the interval being no longer than the lookback."
+    },
+    {
+      "id": "sc-200.d1b.q054",
+      "lesson": "sc-200.d1.4.05",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need an alert within about two minutes whenever the Security log is cleared (event 1102) on any server. Which analytics rule type best fits?",
+      "options": [
+        "Anomaly rule",
+        "Scheduled rule running every 5 minutes over 1 hour",
+        "Near-real-time (NRT) rule",
+        "Microsoft Security incident creation rule"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "NRT rules run every minute with a 2-minute built-in delay, ideal for rare, high-value single events. A 5-minute scheduled rule adds a 5-minute delay. Anomaly rules don't alert. Microsoft Security rules turn alerts from other Microsoft products into incidents."
+    },
+    {
+      "id": "sc-200.d1b.q055",
+      "lesson": "sc-200.d1.4.05",
+      "objective": "d1.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements describe limits of Microsoft Sentinel NRT rules? Select TWO.",
+      "options": [
+        "NRT rules can query only one workspace and one table",
+        "NRT rules can't trigger automation rules",
+        "NRT rules cannot use entity mapping",
+        "Each run can produce up to 30 single-event alerts",
+        "No more than 50 NRT rules can be defined per customer"
+      ],
+      "answer": [
+        3,
+        4
+      ],
+      "explain": "NRT rules are limited to 50 per customer and up to 30 single-event alerts per run (29 plus a summary alert). They support entity mapping and automation, and they can now query multiple tables and workspaces."
+    },
+    {
+      "id": "sc-200.d1b.q056",
+      "lesson": "sc-200.d1.4.06",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You want alerts when CEF firewall logs show traffic to IP addresses in Microsoft's threat intelligence. You don't want to ingest a full indicator feed or write or maintain a query. What should you enable?",
+      "options": [
+        "The Fusion rule",
+        "Microsoft Defender Threat Intelligence Analytics rule",
+        "ML behavior analytics for RDP",
+        "A TI map IP entity to CommonSecurityLog scheduled rule"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Microsoft Defender Threat Intelligence Analytics rule matches Microsoft indicators against CEF, DNS and Syslog data with no query to maintain. TI map rules match your ingested indicators through an editable query. Fusion correlates alerts, and ML behavior analytics covers SSH and RDP logins."
+    },
+    {
+      "id": "sc-200.d1b.q057",
+      "lesson": "sc-200.d1.4.06",
+      "objective": "d1.4",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": "Tailspin onboards its Microsoft Sentinel workspace to the Microsoft Defender portal. Before onboarding, the workspace had the Fusion rule enabled and two Microsoft Security incident creation rules for Defender for Cloud alerts.",
+      "stem": "For each statement, select Yes if true after onboarding.",
+      "statements": [
+        {
+          "s": "The Fusion rule is disabled, and Defender XDR correlation creates incidents instead.",
+          "a": true
+        },
+        {
+          "s": "The Microsoft Security incident creation rules stay active to avoid losing incidents.",
+          "a": false
+        },
+        {
+          "s": "Scheduled analytics rules can still be created and edited with the analytics rule wizard.",
+          "a": true
+        }
+      ],
+      "explain": "Onboarding disables Fusion and deactivates Microsoft Security incident creation rules to avoid duplicates, and the Defender XDR engine handles incident creation and correlation. Scheduled rule creation and management are unchanged."
+    },
+    {
+      "id": "sc-200.d1b.q058",
+      "lesson": "sc-200.d1.4.07",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your SOC manager asks how much ATT&CK coverage would improve if the team enabled the available rule templates for the Credential Access tactic, before anything is deployed. What should you use?",
+      "options": [
+        "The Analytics page Active rules tab filtered by tactic",
+        "Threat analytics reports for Credential Access",
+        "The Anomalies table filtered by tactic",
+        "Simulated rules on the Sentinel MITRE ATT&CK page"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The MITRE ATT&CK page's Simulated rules option shows the coverage you would gain from available detections that aren't configured yet. The Active rules tab shows only deployed rules. The Anomalies table holds ML output, and threat analytics reports don't model your coverage."
+    },
+    {
+      "id": "sc-200.d1b.q059",
+      "lesson": "sc-200.d1.4.07",
+      "objective": "d1.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the MITRE ATT&CK page in Microsoft Sentinel, select Yes if true.",
+      "statements": [
+        {
+          "s": "By default the matrix counts active scheduled and NRT analytics rules.",
+          "a": true
+        },
+        {
+          "s": "Disabled analytics rules are shown as active coverage.",
+          "a": false
+        },
+        {
+          "s": "Incidents inherit MITRE techniques from the rules that generated their alerts.",
+          "a": true
+        }
+      ],
+      "explain": "Active coverage counts enabled scheduled and NRT rules. Disabled rules aren't active coverage, though templates can be viewed as simulated coverage. Incidents gain the techniques of the rules behind their alerts."
+    },
+    {
+      "id": "sc-200.d1b.q061",
+      "lesson": "sc-200.d1.4.08",
+      "objective": "d1.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Where are the results of Microsoft Sentinel anomaly rules stored?",
+      "options": [
+        "The Anomalies table",
+        "The BehaviorAnalytics table only",
+        "The SecurityAlert table",
+        "The SecurityIncident table"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Anomaly rules don't create alerts or incidents. They write to the Anomalies table, which is used for hunting and investigation context. SecurityAlert and SecurityIncident hold alerts and incidents. BehaviorAnalytics is the UEBA enrichment table, not where anomaly rule output goes."
+    },
+    {
+      "id": "sc-200.d1b.q062",
+      "lesson": "sc-200.d1.4.08",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A built-in anomaly rule produces too many anomalies. Put the tuning steps in order.",
+      "options": [
+        "Duplicate the built-in anomaly rule",
+        "Adjust the threshold and parameters on the '- Customized' copy",
+        "Run the copy in Flighting mode and compare results in the Anomalies table",
+        "Switch the customized copy to Production"
+      ],
+      "explain": "Built-in anomaly rules can't be edited. You duplicate one, tune the copy (which starts in Flighting), compare outputs by AnomalyTemplateId, then promote the copy to Production. The original then switches to Flighting automatically."
+    },
+    {
+      "id": "sc-200.d1b.q063",
+      "lesson": "sc-200.d1.4.08",
+      "objective": "d1.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An analyst tuned a copy of 'Anomalous sign-in location' and wants the copy's improved threshold to become the official version. The original rule is currently in Production.",
+      "stem": "What happens when the analyst switches the customized copy to Production?",
+      "options": [
+        "Both rules run in Production and results are merged",
+        "The original rule is deleted",
+        "The original rule automatically switches to Flighting",
+        "The copy starts generating incidents"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Only one version of an anomaly rule can be in Production at a time, so promoting the copy flips the original to Flighting. Built-in rules can't be deleted. Anomaly rules never create incidents, only Anomalies table records."
+    },
+    {
+      "id": "sc-200.d1b.q064",
+      "lesson": "sc-200.d1.4.08",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You want to review the past day of output from one anomaly rule to judge whether its threshold is too low. Complete the query.",
+      "code": "____\n| where TimeGenerated > ago(1d)\n| where RuleId contains \"<RuleId>\"",
+      "options": [
+        "BehaviorAnalytics",
+        "Anomalies",
+        "IdentityInfo",
+        "SecurityAlert"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Anomaly rule output is in the Anomalies table, filtered by RuleId (expand AnomalyReasons for detail). SecurityAlert holds alerts, which anomalies don't create. BehaviorAnalytics is UEBA enrichment, and IdentityInfo holds identity attributes."
+    }
+  ]
+}

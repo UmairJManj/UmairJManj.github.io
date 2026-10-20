@@ -1,0 +1,1243 @@
+{
+ "exam": "sc-300",
+ "domain": "d4",
+ "lessons": [
+  {
+   "id": "sc-300.d4.3.01",
+   "objective": "d4.3",
+   "seq": 1,
+   "title": "PIM for Microsoft Entra roles: assignments",
+   "short": "**Privileged Identity Management (PIM)** gives just-in-time admin access. An **eligible** assignment must be activated before use; an **active** assignment always applies. Either can be **permanent** or **time-bound**.",
+   "deep": "PIM is part of Microsoft Entra ID Governance and needs **Microsoft Entra ID P2** or **ID Governance** for users with eligible or time-bound assignments. Assign at **ID Governance > Privileged Identity Management > Microsoft Entra roles > Roles > Add assignments** as at least **Privileged Role Administrator**.\n\nAssignment types:\n- **Eligible**: the user activates in PIM (**My roles**), possibly with MFA, justification or approval.\n- **Active**: always on, no activation needed.\n- Durations: **permanent** or **time-bound** (start and end date).\n\nScope can be the whole directory or, for supported roles, an **administrative unit** or a single application. You can assign roles to users, **role-assignable groups** and agent identities.\n\nRules worth knowing: an assignment can't be shorter than **5 minutes** or removed within 5 minutes of creation; PIM never automatically removes the **last Global Administrator** assignment. Users can request **extend** (within 14 days of expiry) or **renew** (up to 30 days after expiry), which admins approve. Graph: eligible assignment via `roleEligibilityScheduleRequests` with `action: adminAssign`; user activation via `roleAssignmentScheduleRequests` with `action: selfActivate`.",
+   "terms": [
+    {
+     "t": "Eligible assignment",
+     "d": "Role a user must activate before using."
+    },
+    {
+     "t": "Active assignment",
+     "d": "Role that is always in effect without activation."
+    },
+    {
+     "t": "Time-bound",
+     "d": "Assignment with start and end date, e.g. for contractors."
+    }
+   ],
+   "trap": "Eligible means 'can activate', not 'has the permissions now'; the exam often asks which type requires activation.",
+   "example": "Helpdesk staff get an eligible, time-bound User Administrator assignment for 6 months and activate it only when needed.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "",
+     "Eligible",
+     "Active"
+    ],
+    "rows": [
+     [
+      "Needs activation",
+      "Yes",
+      "No"
+     ],
+     [
+      "Permanent option",
+      "Yes",
+      "Yes"
+     ],
+     [
+      "Time-bound option",
+      "Yes",
+      "Yes"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.3.02",
+   "objective": "d4.3",
+   "seq": 2,
+   "title": "PIM for Microsoft Entra roles: role settings",
+   "short": "Each role's **settings** control activation: **maximum duration (1–24 hours)**, **MFA** or **Conditional Access authentication context**, justification, ticket information, **approval**, assignment expiration rules and notifications.",
+   "deep": "Open PIM > Microsoft Entra roles > **Settings** > select a role > **Edit**. Tabs:\n- **Activation**: *Activation maximum duration* (1–24 h); *On activation, require* **Azure MFA** or a **Microsoft Entra Conditional Access authentication context** (for authentication strengths or compliant devices); *Require justification*; *Require ticket information* (not validated against any system); *Require approval to activate* with selected approvers.\n- **Assignment**: *Allow permanent eligible assignment* or *Expire eligible assignments after* a period; same for active assignments; *Require MFA on active assignment*; *Require justification on active assignment*.\n- **Notification**: emails for eligible/active assignments and activations, with default recipients, extra recipients and *critical emails only*.\n\nIf approval is required but **no approvers are specified**, **Privileged Role Administrators** and **Global Administrators** become default approvers. For authentication context, create and enable the Conditional Access policy first; if no enabled policy targets the context, PIM falls back to MFA. Settings are per role; in Graph they're **roleManagementPolicies** rules.",
+   "terms": [
+    {
+     "t": "Activation maximum duration",
+     "d": "How long an activation lasts, 1 to 24 hours."
+    },
+    {
+     "t": "Authentication context",
+     "d": "Tag that links PIM activation to a Conditional Access policy."
+    },
+    {
+     "t": "Ticket information",
+     "d": "Free-text ticket number recorded at activation; not validated."
+    }
+   ],
+   "trap": "Settings are configured per role, not once for all roles, and the ticket field is never validated against ServiceNow or any ITSM tool.",
+   "example": "Global Administrator activation is limited to 2 hours and requires approval from two named security leads plus a phishing-resistant authentication context.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Activation",
+     "Assignment",
+     "Notification"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.3.03",
+   "objective": "d4.3",
+   "seq": 3,
+   "title": "PIM for Azure resources",
+   "short": "PIM also governs **Azure RBAC roles** (Owner, Contributor, User Access Administrator, etc.) at **management group, subscription, resource group or resource** scope, with the same eligible/active model and per-role, per-scope settings.",
+   "deep": "Go to PIM > **Azure resources**. The current experience manages Azure resources without manual onboarding; in the legacy experience you **discover** a management group or subscription first. Bringing a resource under management creates the **MS-PIM** service principal with **User Access Administrator** on it, and a managed management group or subscription can't be unmanaged.\n\nWho manages: **Owner** or **User Access Administrator** of the resource manages its PIM role settings and assignments (Global Administrators without access can **elevate access** first).\n\nKey behaviours:\n- **Role assignments** follow Azure RBAC inheritance: eligible Contributor on a subscription applies to its resource groups once activated.\n- **Role settings** are per role and per scope and are **not inherited**: settings on a subscription don't flow to a resource group.\n- Activation maximum duration is 1–24 hours; MFA, authentication context, justification, ticket and approval options match Entra roles.\n- Unlike Entra roles, Azure resource roles have **no default approvers**; you must select at least one when requiring approval.\n- Assignments can include **conditions** for some roles, and access reviews of Azure roles are created in PIM.",
+   "terms": [
+    {
+     "t": "MS-PIM",
+     "d": "Service principal PIM uses to manage Azure role assignments."
+    },
+    {
+     "t": "Scope",
+     "d": "Management group, subscription, resource group or resource."
+    },
+    {
+     "t": "Elevate access",
+     "d": "Lets a Global Administrator gain User Access Administrator at root scope."
+    }
+   ],
+   "trap": "Role settings do not inherit down the Azure hierarchy even though role assignments do.",
+   "example": "Developers get eligible Contributor on the production resource group, activated for up to 4 hours with approval by the platform lead.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Management group",
+     "Subscription",
+     "Resource group",
+     "Resource"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.3.04",
+   "objective": "d4.3",
+   "seq": 4,
+   "title": "PIM for Groups",
+   "short": "**PIM for Groups** gives just-in-time **membership** or **ownership** of a security group or Microsoft 365 group. Each has its own activation policy. Dynamic groups and on-premises synced groups aren't supported.",
+   "deep": "PIM for Groups (formerly *Privileged Access Groups*) applies JIT to anything the group grants: app access, Azure roles, or Entra roles if the group is **role-assignable**.\n\nFacts to know:\n- Supported: **Microsoft Entra security groups** and **Microsoft 365 groups**. Not supported: **dynamic membership groups** and groups **synchronized from on-premises**.\n- The group doesn't have to be role-assignable to be used with PIM; it must be role-assignable only to receive Entra role assignments (limit 500 role-assignable groups per tenant).\n- Two separate roles and settings: **Member** and **Owner**, each with activation duration, MFA/authentication context, justification and approval.\n- Assign under PIM > **Groups** > group > **Assignments** > Add assignments, choose Member or Owner, then Eligible or Active.\n- Who can assign: for role-assignable groups, Privileged Role Administrator, Global Administrator or an active owner; for other groups, Groups Administrator, Identity Governance Administrator or an active owner.\n- Every eligible member/owner needs **Entra ID P2** or **ID Governance**.\n- For groups that elevate into Entra roles, Microsoft recommends **requiring approval** on eligible member activation.\n- Group membership changes made outside PIM override PIM.",
+   "terms": [
+    {
+     "t": "PIM for Groups",
+     "d": "Just-in-time membership or ownership of a group."
+    },
+    {
+     "t": "Role-assignable group",
+     "d": "Group created with isAssignableToRole so it can hold Entra roles."
+    },
+    {
+     "t": "Member vs Owner",
+     "d": "Two separately governed PIM roles on a group."
+    }
+   ],
+   "trap": "Dynamic and on-premises synced groups can't be used with PIM for Groups; the group doesn't need to be role-assignable unless it will hold Entra roles.",
+   "example": "The SQL-Admins security group grants Azure roles on database servers; DBAs are eligible members and activate for 3 hours.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Eligible member",
+     "Activate",
+     "Group member",
+     "Group's access"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.3.05",
+   "objective": "d4.3",
+   "seq": 5,
+   "title": "PIM request and approval process",
+   "short": "Eligible users activate in **My roles**; if approval is required the request goes to approvers on **Approve requests**. Approvers have **24 hours**, the **first** approver's decision wins, and nobody can approve their own request.",
+   "deep": "Activation flow: user opens PIM > **My roles** > Eligible assignments > **Activate**, enters duration (up to the maximum), justification, ticket, satisfies MFA or the authentication context, and submits. Without approval, the role activates within moments; with approval the request is **pending**.\n\nApprovers receive email and open **PIM > Approve requests**, review the request and justification, add their own justification and **Approve** or **Deny**.\n\nRules:\n- Approvers have **24 hours** to act; after that the user must submit a new request (not configurable).\n- With several approvers, the **first approve or deny** resolves the request and everyone is notified.\n- **Approvers can't approve their own** activation, and service principals can't approve.\n- Global Administrators and Privileged Role Administrators can view and cancel pending requests; requesters can cancel their own pending requests.\n- Users can **deactivate** early when finished; activations end automatically at the chosen duration.\n- Extend/renew requests also go to administrators for approval.\n\nApproval is configured per role in role settings; approvers can be users or groups.",
+   "terms": [
+    {
+     "t": "My roles",
+     "d": "PIM page where users see and activate eligible assignments."
+    },
+    {
+     "t": "Approve requests",
+     "d": "PIM page where approvers act on pending activations."
+    },
+    {
+     "t": "Deactivate",
+     "d": "Ending an activation before its scheduled end."
+    }
+   ],
+   "trap": "Requests are not approved by majority vote; the first approver to respond decides, and pending requests expire after 24 hours.",
+   "example": "An engineer requests Exchange Administrator at 22:00; the on-call approver approves via the email link and the engineer activates for 2 hours.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "My roles",
+     "Activate",
+     "Pending approval",
+     "Approved",
+     "Role active"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.3.06",
+   "objective": "d4.3",
+   "seq": 6,
+   "title": "PIM audit history, alerts and reports",
+   "short": "PIM **Resource audit** shows all role activity for the last **30 days**; **My audit** shows your own. PIM **alerts** flag risky configuration such as roles assigned outside PIM. Keep longer history by routing audit logs to Log Analytics.",
+   "deep": "Audit: PIM > Microsoft Entra roles > **Resource audit** (all assignments, activations and policy changes; needs a role such as Privileged Role Administrator, Security Reader or Global Reader) or **My audit** (any user, own activity). Data covers the past **30 days**; for longer, use **diagnostic settings** to send `AuditLogs` to Log Analytics or a storage account, then query, for example, `AuditLogs | where OperationName has \"Add member to role\"`. Link related events with **roleAssignmentRequestId**.\n\nAlerts (PIM > Microsoft Entra roles > **Alerts**; configure in Alerts > Settings as Privileged Role Administrator):\n- **Roles are assigned outside PIM** (High)\n- **Potential stale accounts in a privileged role** (Medium)\n- **Administrators aren't using their privileged roles** (Low)\n- **Roles don't require MFA for activation** (Low)\n- **Too many Global Administrators** (Low; both a count and a percentage threshold must be met)\n- **Roles are activated too frequently** (Low)\n- **Organization doesn't have Entra ID P2 or ID Governance** (Low)\n\nAzure resources and groups each have their own audit history in PIM. Pair alerts with **access reviews** of privileged roles.",
+   "terms": [
+    {
+     "t": "Resource audit",
+     "d": "All PIM activity for a role type, last 30 days."
+    },
+    {
+     "t": "My audit",
+     "d": "A user's own PIM activity."
+    },
+    {
+     "t": "PIM alert",
+     "d": "Warning about risky privileged configuration, e.g. roles assigned outside PIM."
+    }
+   ],
+   "trap": "PIM audit in the portal is 30 days; the fix for longer retention is diagnostic settings, not changing a PIM setting.",
+   "example": "A High alert shows Global Administrator was assigned directly in Roles & admins; the admin converts it to an eligible PIM assignment.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d4.3.07",
+   "objective": "d4.3",
+   "seq": 7,
+   "title": "Emergency access accounts",
+   "short": "Keep **two or more** cloud-only **emergency access (break-glass)** accounts on the `*.onmicrosoft.com` domain with **permanent active Global Administrator**, phishing-resistant authentication, Conditional Access exclusions, and sign-in alerts.",
+   "deep": "Emergency access accounts prevent tenant lockout when federation, MFA, Conditional Access or admins are unavailable. Microsoft guidance:\n- **Two or more** accounts, **cloud-only**, on the **\\*.onmicrosoft.com** domain; not federated or synchronized from on-premises; not tied to one person or phone.\n- Assign **Global Administrator** as a **permanent active** assignment in PIM (not eligible).\n- Use a **phishing-resistant, passwordless** method that satisfies **mandatory MFA**, such as **passkeys (FIDO2)** (or certificate-based authentication if you run PKI), and preferably a different method from regular admins.\n- **Exclude** them (via a dedicated group) from Conditional Access policies that block or restrict sign-in; report-only policies need no exclusion.\n- Store credentials securely in separate locations, e.g. fireproof safes.\n- **Monitor**: send sign-in logs to Log Analytics and create an alert rule on `SigninLogs` filtered on the accounts' **Object IDs** (UserId), threshold greater than 0, Severity 0 (Critical), with an action group.\n- **Validate at least every 90 days** and after staff or licensing changes.",
+   "terms": [
+    {
+     "t": "Break-glass account",
+     "d": "Emergency access account used only when normal admin access fails."
+    },
+    {
+     "t": "Permanent active",
+     "d": "Assignment that never expires and needs no activation."
+    },
+    {
+     "t": "Action group",
+     "d": "Azure Monitor notification target (email, SMS) for alerts."
+    }
+   ],
+   "trap": "Break-glass accounts should be permanent active, not eligible, and cloud-only, not synchronized from AD DS.",
+   "example": "An alert fires when breakglass2@contoso.onmicrosoft.com signs in; the security team confirms it was the quarterly test.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Break-glass sign-in",
+     "SigninLogs",
+     "Alert rule",
+     "Action group"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.4.01",
+   "objective": "d4.4",
+   "seq": 1,
+   "title": "Sign-in and audit logs",
+   "short": "**Sign-in logs** record authentication events (interactive user, non-interactive user, service principal, managed identity). **Audit logs** record changes to users, groups, apps, roles and policies. Both are kept **7 days** on Free and **30 days** on P1/P2.",
+   "deep": "Find them in **Entra admin center > Entra ID > Monitoring & health**. Reading needs at least **Reports Reader** (Security Reader and Global Reader also work).\n\n**Sign-in logs** tabs:\n- **Interactive user sign-ins**: user provides a credential or completes MFA.\n- **Non-interactive user sign-ins**: a client signs in on the user's behalf with a token (often aggregated).\n- **Service principal sign-ins**: apps using secrets or certificates.\n- **Managed identity sign-ins**: Azure-managed secrets.\nEach entry has basic info, location, device, **Authentication details**, **Conditional Access** (which policies applied and their result) and **Report-only** tabs. Failure codes such as 50126 (invalid credentials) or 53003 (blocked by Conditional Access) help troubleshooting.\n\n**Audit logs** show **Activity**, **Category** (e.g. UserManagement, RoleManagement), **Service**, initiator, target and result. They are system-generated and can't be edited.\n\nRetention: audit and sign-in logs **7 days** (Free) or **30 days** (P1/P2). Upgrading doesn't recover older data, so route logs to Log Analytics or storage for longer retention.",
+   "terms": [
+    {
+     "t": "Interactive sign-in",
+     "d": "User presents a credential or MFA directly."
+    },
+    {
+     "t": "Non-interactive sign-in",
+     "d": "Token-based sign-in performed by a client for the user."
+    },
+    {
+     "t": "Audit log",
+     "d": "Record of directory changes and who made them."
+    }
+   ],
+   "trap": "Service principal and managed identity sign-ins are separate tabs; a user's token refreshes are non-interactive, not service principal sign-ins.",
+   "example": "A user says they're blocked; the sign-in log's Conditional Access tab shows a device compliance policy failed.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Log",
+     "Free",
+     "P1/P2"
+    ],
+    "rows": [
+     [
+      "Audit",
+      "7 days",
+      "30 days"
+     ],
+     [
+      "Sign-ins",
+      "7 days",
+      "30 days"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.4.02",
+   "objective": "d4.4",
+   "seq": 2,
+   "title": "Provisioning logs",
+   "short": "**Provisioning logs** show what the Microsoft Entra provisioning service did when creating, updating, disabling or deleting accounts in connected apps (SCIM, Workday, ServiceNow), with status **Success, Failure, Skipped or Warning**.",
+   "deep": "Open **Entra ID > Monitoring & health > Provisioning logs**, or from an enterprise app's **Provisioning** blade. Each event lists the **Identity**, **Action** (Create, Update, Delete, Disable, StagedDelete, Other), **Source system**, **Target system** and **Status**:\n- **Success**: change applied.\n- **Failure**: error; see **Troubleshooting & Recommendations** for the error code and fix.\n- **Skipped**: user wasn't processed, often because they're **out of scope** (not assigned, or a scoping filter excluded them).\n- **Warning**: completed with issues.\n\nThe detail pane has **Steps** (import, match, scope evaluation, provision), **Troubleshooting & Recommendations**, **Modified properties** (old/new values) and **Summary**. You can filter by identity, action, status, date and job and download records.\n\nFor trend analysis, stream **ProvisioningLogs** with diagnostic settings to Log Analytics and use the **Provisioning Analysis** workbook. Provisioning logs complement audit logs: audit shows configuration changes to the provisioning job, provisioning logs show per-object results.",
+   "terms": [
+    {
+     "t": "Provisioning service",
+     "d": "Entra engine that syncs accounts to apps, often via SCIM."
+    },
+    {
+     "t": "Skipped",
+     "d": "Status for objects not processed, commonly out of scope."
+    },
+    {
+     "t": "Modified properties",
+     "d": "Before/after attribute values for a provisioning event."
+    }
+   ],
+   "trap": "A user missing from a target app with status Skipped usually isn't assigned or is filtered out, not failing authentication.",
+   "example": "Provisioning to ServiceNow shows Failure for one user; the Troubleshooting tab reports a duplicate email in the target.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Import",
+     "Match",
+     "Scope check",
+     "Provision"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.4.03",
+   "objective": "d4.4",
+   "seq": 3,
+   "title": "Diagnostic settings and destinations",
+   "short": "**Diagnostic settings** stream Entra logs to a **Log Analytics workspace** (query, alert, workbooks), a **storage account** (cheap long-term archive), an **event hub** (third-party SIEM) or a partner solution. Configuring them needs **Security Administrator**.",
+   "deep": "Path: **Entra ID > Monitoring & health > Diagnostic settings > Add diagnostic setting**. Choose log categories and one or more destinations; create multiple settings to send different categories to different places. The destination must already exist in an Azure subscription.\n\nCommon categories: **AuditLogs**, **SignInLogs**, **NonInteractiveUserSignInLogs**, **ServicePrincipalSignInLogs**, **ManagedIdentitySignInLogs**, **ProvisioningLogs**, **ADFSSignInLogs**, **RiskyUsers**, **UserRiskEvents**, **RiskyServicePrincipals**, **ServicePrincipalRiskEvents**, **MicrosoftGraphActivityLogs**, **NetworkAccessTrafficLogs**. Custom security attribute audit logs are configured separately and need **Attribute Log Administrator**.\n\nChoosing a destination:\n- **Log Analytics** (Azure Monitor Logs): regular KQL querying, **alert rules**, workbooks; the base for **Microsoft Sentinel**.\n- **Storage account**: retain logs well beyond 30 days for compliance with rare access.\n- **Event Hubs**: stream to a non-Microsoft SIEM such as Splunk or QRadar.\n- **Partner solution**: Azure Native ISV services.\n\nAll destinations incur Azure costs. Data appears after a short delay, not instantly.",
+   "terms": [
+    {
+     "t": "Diagnostic setting",
+     "d": "Rule that routes chosen log categories to destinations."
+    },
+    {
+     "t": "Event hub",
+     "d": "Streaming endpoint used to feed external SIEMs."
+    },
+    {
+     "t": "Log Analytics workspace",
+     "d": "Azure Monitor store for KQL queries, alerts and workbooks."
+    }
+   ],
+   "trap": "Pick Event Hubs for third-party SIEM streaming, storage for cheap archive, Log Analytics for querying and alerts.",
+   "example": "Contoso keeps two years of audit logs in a storage account for auditors and sends sign-in logs to Log Analytics for alerts.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Destination",
+     "Best for"
+    ],
+    "rows": [
+     [
+      "Log Analytics",
+      "KQL, alerts, workbooks"
+     ],
+     [
+      "Storage account",
+      "Cheap long archive"
+     ],
+     [
+      "Event hub",
+      "Third-party SIEM"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.4.04",
+   "objective": "d4.4",
+   "seq": 4,
+   "title": "Monitoring Entra ID with KQL",
+   "short": "Once logs reach Log Analytics, query tables such as **SigninLogs**, **AADNonInteractiveUserSignInLogs**, **AuditLogs** and **AADProvisioningLogs** with **KQL** (`where`, `summarize`, `project`, `extend`, `ago()`, `bin()`), and turn queries into alert rules.",
+   "deep": "Open **Entra ID > Monitoring & health > Log Analytics** or the workspace in Azure Monitor. Main tables: `SigninLogs` (interactive), `AADNonInteractiveUserSignInLogs`, `AADServicePrincipalSignInLogs`, `AADManagedIdentitySignInLogs`, `AuditLogs`, `AADProvisioningLogs`, `AADRiskyUsers`, `AADUserRiskEvents`, `MicrosoftGraphActivityLogs`.\n\nUseful columns: SigninLogs has `UserPrincipalName`, `UserId`, `AppDisplayName`, `IPAddress`, `ResultType` (a string; \"0\" means success), `ConditionalAccessStatus` (success, failure, notApplied), `AuthenticationRequirement`, `ClientAppUsed`. AuditLogs has `OperationName`, `Category`, `LoggedByService`, `Result`, `InitiatedBy`, `TargetResources`.\n\nCore operators:\n- `where TimeGenerated > ago(7d)` filters time.\n- `summarize count() by AppDisplayName` aggregates.\n- `summarize count() by bin(TimeGenerated, 1h)` buckets time; `render timechart` charts it.\n- `project` picks columns; `extend` adds computed columns; `top 10 by` ranks; `distinct` dedupes.\n\nExample: failed sign-ins per user today:\n`SigninLogs | where TimeGenerated > ago(1d) | where ResultType != \"0\" | summarize Failures = count() by UserPrincipalName | top 10 by Failures`.\nSave a query as an **Azure Monitor alert rule** (custom log search) for notifications, as with break-glass monitoring.",
+   "terms": [
+    {
+     "t": "KQL",
+     "d": "Kusto Query Language used in Log Analytics."
+    },
+    {
+     "t": "summarize",
+     "d": "KQL operator that aggregates rows, e.g. count() by column."
+    },
+    {
+     "t": "ago()",
+     "d": "KQL function returning a time relative to now."
+    }
+   ],
+   "trap": "Interactive and non-interactive user sign-ins are different tables; a query on SigninLogs alone misses token-based sign-ins.",
+   "example": "A query counts sign-ins with ConditionalAccessStatus == \"failure\" by app to find which policy is blocking a rollout.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d4.4.05",
+   "objective": "d4.4",
+   "seq": 5,
+   "title": "Workbooks and reporting",
+   "short": "**Workbooks** are Azure Monitor dashboards over Entra logs in Log Analytics. Templates include **Sign-ins using legacy authentication**, **Conditional Access gap analyzer**, **Authentication prompts analysis**, **Sensitive Operations Report**, **Cross-tenant access activity** and **Risk analysis**.",
+   "deep": "Open **Entra ID > Monitoring & health > Workbooks**. Tabs: **Workbooks** (saved), **Public Templates**, **My Templates**. Workbooks query a **Log Analytics workspace**, so you need diagnostic settings sending logs there first and an **Entra ID P1** tenant.\n\nRoles: read Entra data with **Reports Reader**, Security Reader or Global Reader; read the workspace with **Log Analytics Reader** or Monitoring Reader; edit with Log Analytics Contributor or Monitoring Contributor; creating the diagnostic setting needs Security Administrator.\n\nUseful templates:\n- **Sign-ins using legacy authentication**: who still uses basic/legacy protocols before you block them.\n- **Conditional Access gap analyzer**: sign-ins not covered by policies.\n- **Multifactor authentication gaps** and **Authentication prompts analysis**: MFA coverage and prompt fatigue.\n- **Sensitive Operations Report**: risky changes such as new credentials on apps.\n- **Cross-tenant access activity**: inbound/outbound B2B use.\n- **Risk analysis**: ID Protection trends.\nGovernance workbooks such as **Access Package Activity** use audit data too.\n\nYou can edit a template, save it to a resource group, or build one with **+ New**. Also use built-in **Usage & insights** reports and the **Recommendations** page.",
+   "terms": [
+    {
+     "t": "Workbook",
+     "d": "Interactive Azure Monitor report built on Log Analytics data."
+    },
+    {
+     "t": "Public template",
+     "d": "Microsoft-provided workbook you can open and customise."
+    },
+    {
+     "t": "Legacy authentication",
+     "d": "Basic-auth protocols that can't do MFA."
+    }
+   ],
+   "trap": "Workbooks show nothing until logs are sent to a Log Analytics workspace with diagnostic settings.",
+   "example": "Before blocking legacy auth, the admin uses the legacy authentication workbook to find three printers still using SMTP basic auth.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Entra logs",
+     "Diagnostic setting",
+     "Log Analytics",
+     "Workbook"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.4.06",
+   "objective": "d4.4",
+   "seq": 6,
+   "title": "Identity Secure Score",
+   "short": "**Identity Secure Score** is a percentage showing how well the tenant follows Microsoft's identity security recommendations. It's recalculated every **24 hours** and is the identity part of **Microsoft Secure Score**.",
+   "deep": "Find it in **Entra admin center > Entra ID > Identity Secure Score** (or **Overview > Recommendations** filtered to Security); the full Microsoft Secure Score is in the **Microsoft Defender portal**. Viewing requires at least **Global Reader**.\n\nScoring: each **improvement action** carries points. Some are binary (setting on or off); others are partial, scored by the share of users covered (e.g. MFA for 50 of 100 admins earns half the points). Actions marked **[Not Scored]** improve security but add no points. Typical actions: require MFA for administrative roles, block legacy authentication, designate more than one Global Administrator, enable self-service password reset, protect all users with user risk and sign-in risk policies, use least-privileged roles.\n\n**Statuses** you can set on an action: **To address**, **Planned**, **Risk accepted** (no points), **Resolved through third party** and **Resolved through alternate mitigation** (points awarded but unverified), and **Ignored**. Score updates take up to a day. It's available to all tenants, though some actions need paid licences. The score measures adoption of controls, not breach probability.",
+   "terms": [
+    {
+     "t": "Improvement action",
+     "d": "Recommendation with points toward the score."
+    },
+    {
+     "t": "Risk accepted",
+     "d": "Status for an action you won't do; earns no points."
+    },
+    {
+     "t": "Microsoft Secure Score",
+     "d": "Overall score across identity, data, devices, apps and infrastructure."
+    }
+   ],
+   "trap": "Marking an action Risk accepted removes it from the to-do list but earns no points; third-party and alternate mitigation statuses do award points.",
+   "example": "The score is 48%; requiring MFA for admin roles and blocking legacy authentication lift it within a day.",
+   "diagram": null
+  }
+ ],
+ "questions": [
+  {
+   "id": "sc-300.d4.q040",
+   "lesson": "sc-300.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "In PIM, which assignment type requires the user to take an action, such as completing MFA, before using the role?",
+   "options": [
+    "Eligible",
+    "Active",
+    "Permanent active",
+    "Time-bound active"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Eligible assignments must be activated before use, and activation can require MFA, justification or approval. Active assignments, permanent or time-bound, always apply with no activation."
+  },
+  {
+   "id": "sc-300.d4.q041",
+   "lesson": "sc-300.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A contractor must be able to use User Administrator just-in-time for the next three months only. What assignment should you create in PIM?",
+   "options": [
+    "Active, permanent",
+    "Eligible, time-bound, ending in three months",
+    "Eligible, permanent",
+    "Active, time-bound, ending in three months"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Just-in-time use needs an eligible assignment, and the three-month limit needs a time-bound end date. Active assignments give standing access, and a permanent eligible assignment never expires."
+  },
+  {
+   "id": "sc-300.d4.q042",
+   "lesson": "sc-300.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "A PIM role assignment can last as little as one minute.",
+     "a": false
+    },
+    {
+     "s": "Some Microsoft Entra roles can be assigned in PIM with an administrative unit scope.",
+     "a": true
+    },
+    {
+     "s": "PIM automatically removes the last Global Administrator assignment when it expires.",
+     "a": false
+    }
+   ],
+   "explain": "Assignments must last at least five minutes. Supported roles can be scoped to an administrative unit or an application. PIM won't automatically remove the last Global Administrator assignment, to avoid lockout."
+  },
+  {
+   "id": "sc-300.d4.q043",
+   "lesson": "sc-300.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "You use Microsoft Graph to give a user a permanent eligible assignment to Global Reader. Complete the request body.",
+   "code": "POST https://graph.microsoft.com/v1.0/roleManagement/directory/roleEligibilityScheduleRequests\n{\n  \"action\": \"____\",\n  \"justification\": \"Auditor access\",\n  \"roleDefinitionId\": \"f2ef992c-3afb-46b9-b7cf-a126ee74c451\",\n  \"directoryScopeId\": \"/\",\n  \"principalId\": \"aaaaaaaa-bbbb-cccc-1111-222222222222\",\n  \"scheduleInfo\": { \"startDateTime\": \"2026-11-01T00:00:00Z\", \"expiration\": { \"type\": \"noExpiration\" } }\n}",
+   "options": [
+    "selfActivate",
+    "adminRemove",
+    "adminAssign",
+    "selfExtend"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "An administrator creating an assignment uses adminAssign. selfActivate is what an eligible user sends to activate a role, adminRemove deletes an assignment, and selfExtend asks to extend an expiring assignment."
+  },
+  {
+   "id": "sc-300.d4.q044",
+   "lesson": "sc-300.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What range can you set for Activation maximum duration in PIM role settings?",
+   "options": [
+    "1 to 8 hours",
+    "30 minutes to 72 hours",
+    "1 to 7 days",
+    "1 to 24 hours"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The Activation maximum duration slider runs from 1 to 24 hours, for both Microsoft Entra roles and Azure resource roles."
+  },
+  {
+   "id": "sc-300.d4.q045",
+   "lesson": "sc-300.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "A Microsoft Entra role's PIM settings require approval to activate, but no approvers are selected. Who approves activation requests?",
+   "options": [
+    "Privileged Role Administrators and Global Administrators",
+    "The requester's manager",
+    "Security Administrators",
+    "Nobody; the request can't be submitted"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "For Entra roles, if no approvers are specified, active Privileged Role Administrators and Global Administrators are the default approvers. Microsoft recommends naming specific approvers so you can't get locked out."
+  },
+  {
+   "id": "sc-300.d4.q046",
+   "lesson": "sc-300.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Contoso's Global Administrators activate their eligible role in PIM. Security requires that every activation is done with a phishing-resistant method such as a FIDO2 passkey, and that SMS or app notifications aren't accepted.",
+   "stem": "What should you configure?",
+   "options": [
+    "On activation, require Azure MFA",
+    "An authentication context whose Conditional Access policy requires phishing-resistant strength",
+    "Require ticket information on activation",
+    "Require multifactor authentication on active assignment"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Authentication context links PIM activation to a Conditional Access policy, which can require an authentication strength. The plain MFA setting accepts any MFA method, ticket information is free text, and MFA on active assignment applies when an admin creates the assignment."
+  },
+  {
+   "id": "sc-300.d4.q047",
+   "lesson": "sc-300.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which settings are on the Activation tab of a Microsoft Entra role's PIM settings? Select THREE.",
+   "options": [
+    "Allow permanent eligible assignment",
+    "Require justification on activation",
+    "Require ticket information on activation",
+    "Send notifications when members are assigned as eligible",
+    "Require approval to activate"
+   ],
+   "answer": [
+    1,
+    2,
+    4
+   ],
+   "explain": "Activation covers maximum duration, MFA or authentication context, justification, ticket information and approval. Permanent eligible assignment is on the Assignment tab, and assignment notifications are on the Notification tab."
+  },
+  {
+   "id": "sc-300.d4.q048",
+   "lesson": "sc-300.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "A Global Administrator without any Azure RBAC role must make Contributor on a subscription eligible-only in PIM. Put the steps in order.",
+   "options": [
+    "Elevate access to get User Access Administrator at root scope",
+    "In PIM, open Azure resources and select the subscription",
+    "Edit the Contributor role settings for that subscription",
+    "Add an eligible assignment of Contributor"
+   ],
+   "explain": "A Global Administrator without Azure access first elevates access. PIM then needs the subscription selected, settings configured per role and scope, and an eligible assignment added."
+  },
+  {
+   "id": "sc-300.d4.q049",
+   "lesson": "sc-300.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "PIM role settings set on a subscription are inherited by the resource groups in it.",
+     "a": false
+    },
+    {
+     "s": "An activated eligible Contributor assignment at subscription scope grants Contributor on that subscription's resource groups.",
+     "a": true
+    },
+    {
+     "s": "For Azure resource roles, Global Administrators are the default approvers when approval is required but none are selected.",
+     "a": false
+    }
+   ],
+   "explain": "Role settings apply per role and scope and aren't inherited. Role assignments follow Azure RBAC inheritance. Azure resource roles have no default approvers, so you must select at least one."
+  },
+  {
+   "id": "sc-300.d4.q050",
+   "lesson": "sc-300.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which Azure role on a subscription lets you manage PIM role settings for that subscription?",
+   "options": [
+    "Contributor",
+    "Reader",
+    "Owner",
+    "Security Reader"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Managing PIM settings and assignments for Azure resources needs Owner or User Access Administrator, because both can write role assignments. Contributor, Reader and Security Reader can't."
+  },
+  {
+   "id": "sc-300.d4.q051",
+   "lesson": "sc-300.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which groups can you manage with PIM for Groups? Select TWO.",
+   "options": [
+    "Group with dynamic membership rules",
+    "Cloud security group that isn't role-assignable",
+    "Group synchronized from on-premises AD DS",
+    "Microsoft 365 group"
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "explain": "PIM for Groups supports Microsoft Entra security groups and Microsoft 365 groups, role-assignable or not. Dynamic membership groups and groups synchronized from on-premises aren't supported."
+  },
+  {
+   "id": "sc-300.d4.q052",
+   "lesson": "sc-300.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "multi",
+   "case": null,
+   "stem": "You want admins to get the Exchange Administrator role just-in-time by activating membership of a group with PIM for Groups. Which TWO are required?",
+   "options": [
+    "The group must be created as role-assignable",
+    "Every eligible member needs a Microsoft Entra ID P2 or ID Governance licence",
+    "The group must use dynamic membership",
+    "The group must be synchronized from on-premises",
+    "Eligible members must already be Global Administrators"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "Only role-assignable groups can hold Entra role assignments, and every eligible member or owner needs P2 or ID Governance. Dynamic and synced groups aren't supported, and members don't need other roles."
+  },
+  {
+   "id": "sc-300.d4.q053",
+   "lesson": "sc-300.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Group owners must get approval before they activate ownership in PIM for Groups, while members activate membership without approval. How do you configure this?",
+   "options": [
+    "Create two groups, one for owners and one for members",
+    "Set an access review with different reviewers for owners",
+    "Use a Conditional Access policy that targets group owners",
+    "Set the Owner and Member role settings separately for the group in PIM"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "PIM for Groups has separate role settings for Member and Owner, each with its own approval, MFA, justification and duration. You don't need extra groups, reviews or Conditional Access."
+  },
+  {
+   "id": "sc-300.d4.q054",
+   "lesson": "sc-300.d4.3.05",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "An approver doesn't act on a pending PIM activation request. After how long must the requester submit a new request?",
+   "options": [
+    "24 hours",
+    "1 hour",
+    "8 hours",
+    "7 days"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Approvers have 24 hours to approve a PIM request. After that the request can't be approved and the eligible user must submit a new one. The window can't be configured."
+  },
+  {
+   "id": "sc-300.d4.q055",
+   "lesson": "sc-300.d4.3.05",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "An approver can approve their own PIM activation request.",
+     "a": false
+    },
+    {
+     "s": "When several approvers are configured, the first approver to approve or deny resolves the request.",
+     "a": true
+    },
+    {
+     "s": "A user can deactivate a role before the activation duration ends.",
+     "a": true
+    }
+   ],
+   "explain": "Approvers can't approve their own requests. The first approver's decision resolves the request and the others are notified. Users can deactivate early when they finish."
+  },
+  {
+   "id": "sc-300.d4.q056",
+   "lesson": "sc-300.d4.3.05",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "order",
+   "case": null,
+   "stem": "A role requires approval to activate. Put the steps of a successful activation in order.",
+   "options": [
+    "The user selects Activate on the eligible role in My roles",
+    "The user enters duration and justification and completes MFA",
+    "An approver approves the request on Approve requests",
+    "The role becomes active for the chosen duration",
+    "The role deactivates when the duration ends"
+   ],
+   "explain": "Activation starts from My roles, gathers the required details and MFA, waits for approval, then grants the role for the chosen time before it deactivates automatically."
+  },
+  {
+   "id": "sc-300.d4.q057",
+   "lesson": "sc-300.d4.3.06",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which PIM alert for Microsoft Entra roles has High severity?",
+   "options": [
+    "Too many Global Administrators",
+    "Roles are assigned outside PIM",
+    "Roles don't require MFA for activation",
+    "Administrators aren't using their privileged roles"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Roles are assigned outside PIM is the High-severity alert, because standing assignments made outside PIM bypass its controls. Too many Global Administrators, roles not requiring MFA, and unused privileged roles are Low severity."
+  },
+  {
+   "id": "sc-300.d4.q058",
+   "lesson": "sc-300.d4.3.06",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Auditors need PIM activation history for the past 12 months. Resource audit shows only recent data. What should you do?",
+   "options": [
+    "Increase the Resource audit retention in PIM settings",
+    "Ask each administrator to export My audit",
+    "Configure diagnostic settings to send audit logs to a Log Analytics workspace or storage account",
+    "Enable the Potential stale accounts alert"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "PIM audit history in the portal covers 30 days. To keep it longer, route Entra audit logs with diagnostic settings. PIM has no retention setting, My audit shows only the user's own activity, and alerts don't store history."
+  },
+  {
+   "id": "sc-300.d4.q059",
+   "lesson": "sc-300.d4.3.06",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "You query PIM role activations that were sent to Log Analytics. Complete the query.",
+   "code": "____\n| where TimeGenerated > ago(90d)\n| where OperationName has \"Add member to role\"\n| project TimeGenerated, OperationName, InitiatedBy, TargetResources",
+   "options": [
+    "SigninLogs",
+    "AADProvisioningLogs",
+    "AADRiskyUsers",
+    "AuditLogs"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "PIM activations and assignments are audit events, so they're in the AuditLogs table with InitiatedBy and TargetResources columns. Sign-in, provisioning and risky-user tables don't record role membership changes."
+  },
+  {
+   "id": "sc-300.d4.q060",
+   "lesson": "sc-300.d4.3.07",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which configuration matches Microsoft guidance for an emergency access account?",
+   "options": [
+    "Cloud-only account on the *.onmicrosoft.com domain with a permanent active Global Administrator assignment",
+    "Account synchronized from AD DS with an eligible Global Administrator assignment",
+    "Federated account whose MFA uses one administrator's mobile phone",
+    "Cloud-only account with Global Administrator eligible and approval required"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Break-glass accounts should be cloud-only on onmicrosoft.com, so they don't depend on federation or sync, and hold permanent active Global Administrator. Eligible or approval-gated assignments, and dependence on one person's phone, can fail in an emergency."
+  },
+  {
+   "id": "sc-300.d4.q061",
+   "lesson": "sc-300.d4.3.07",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO actions follow Microsoft's recommendations for emergency access accounts?",
+   "options": [
+    "Tie each account's MFA to one administrator's personal phone",
+    "Register a FIDO2 passkey as a phishing-resistant method",
+    "Make the Global Administrator assignment eligible with approval",
+    "Exclude the accounts from blocking Conditional Access policies by using a dedicated group"
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "explain": "Use a phishing-resistant method such as a FIDO2 passkey, and exclude the accounts from Conditional Access policies that block or restrict sign-in. Don't depend on one person's device, and keep the role permanently active."
+  },
+  {
+   "id": "sc-300.d4.q062",
+   "lesson": "sc-300.d4.3.07",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "You create an Azure Monitor alert that fires whenever an emergency access account signs in. Complete the query.",
+   "code": "SigninLogs\n| where ____ == \"00aa00aa-bb11-cc22-dd33-44ee44ee44ee\"\n| project TimeGenerated, UserPrincipalName, IPAddress, ResultType",
+   "options": [
+    "AppId",
+    "UserId",
+    "CorrelationId",
+    "ResourceId"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Microsoft recommends filtering SigninLogs on the accounts' object IDs, stored in UserId, with a threshold above 0. AppId identifies the application, CorrelationId links related events, and ResourceId is the target resource."
+  },
+  {
+   "id": "sc-300.d4.q063",
+   "lesson": "sc-300.d4.4.01",
+   "objective": "d4.4",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Your tenant used Microsoft Entra ID Free and upgraded to P1 today. Can you see audit log entries from 20 days ago in the admin center?",
+   "options": [
+    "Yes; P1 retention of 30 days applies backwards",
+    "Yes; audit logs are always kept for 90 days",
+    "No; only data still inside the 7-day Free retention is available",
+    "No; audit logs need P2"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Retention changes aren't retroactive. Free keeps audit and sign-in logs for 7 days, so older data is gone unless it was exported. From now on, P1 keeps 30 days."
+  },
+  {
+   "id": "sc-300.d4.q064",
+   "lesson": "sc-300.d4.4.01",
+   "objective": "d4.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Outlook silently refreshes a user's token in the background. In which sign-in log is this recorded?",
+   "options": [
+    "Interactive user sign-ins",
+    "Service principal sign-ins",
+    "Managed identity sign-ins",
+    "Non-interactive user sign-ins"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Token-based sign-ins that a client does for a user, without the user entering a credential, are non-interactive user sign-ins. Service principal and managed identity logs cover app identities, not users."
+  },
+  {
+   "id": "sc-300.d4.q065",
+   "lesson": "sc-300.d4.4.01",
+   "objective": "d4.4",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which sign-in log types record authentication by non-human identities? Select TWO.",
+   "options": [
+    "Interactive user sign-ins",
+    "Service principal sign-ins",
+    "Non-interactive user sign-ins",
+    "Managed identity sign-ins"
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "explain": "Service principal sign-ins are apps using secrets or certificates, and managed identity sign-ins are Azure-managed identities. Interactive and non-interactive sign-ins both belong to users."
+  },
+  {
+   "id": "sc-300.d4.q066",
+   "lesson": "sc-300.d4.4.01",
+   "objective": "d4.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A user can't reach an app and you think a Conditional Access policy blocked them. Where do you find which policy caused the failure?",
+   "options": [
+    "On the Conditional Access tab of the user's sign-in log entry",
+    "In the audit logs, under the Policy category",
+    "In the provisioning logs for the app",
+    "In Identity Secure Score improvement actions"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Each sign-in log entry has a Conditional Access tab listing the policies evaluated and their result. Audit logs record policy changes, not evaluations, provisioning logs cover account sync, and Secure Score gives recommendations."
+  },
+  {
+   "id": "sc-300.d4.q067",
+   "lesson": "sc-300.d4.4.02",
+   "objective": "d4.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "In the provisioning logs for a SaaS app, a user's event has the status Skipped. What is the most likely cause?",
+   "options": [
+    "The user's password expired",
+    "The user is out of scope, for example not assigned to the app",
+    "A Conditional Access policy blocked the user's sign-in",
+    "The user failed MFA"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Skipped usually means the provisioning service didn't process the object, often because it's out of scope through assignment or a scoping filter. Password, Conditional Access and MFA issues affect sign-in, not provisioning."
+  },
+  {
+   "id": "sc-300.d4.q068",
+   "lesson": "sc-300.d4.4.03",
+   "objective": "d4.4",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You need to stream Microsoft Entra sign-in logs to Log Analytics. Put the steps in order.",
+   "options": [
+    "Create a Log Analytics workspace in an Azure subscription",
+    "In the Entra admin center, open Diagnostic settings and add a setting",
+    "Select the SignInLogs category",
+    "Choose Send to Log Analytics workspace and pick the workspace",
+    "Save, then query the data once it arrives"
+   ],
+   "explain": "The destination must exist first. Then you add a diagnostic setting, choose the categories and destination, and save. Data arrives after a delay."
+  },
+  {
+   "id": "sc-300.d4.q069",
+   "lesson": "sc-300.d4.4.03",
+   "objective": "d4.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Your SOC uses Splunk. You need to stream Microsoft Entra audit and sign-in logs to it in near real time. Which diagnostic setting destination should you use?",
+   "options": [
+    "Archive to a storage account",
+    "Send to Log Analytics workspace",
+    "Stream to an event hub",
+    "Send to a Microsoft Sentinel watchlist"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Event Hubs is the destination for streaming to non-Microsoft SIEMs such as Splunk. Storage accounts archive, Log Analytics is for Azure Monitor querying, and a watchlist isn't a diagnostic destination."
+  },
+  {
+   "id": "sc-300.d4.q070",
+   "lesson": "sc-300.d4.4.03",
+   "objective": "d4.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Compliance needs Microsoft Entra audit logs kept for three years at the lowest cost. They'll rarely be read. Which destination should you choose?",
+   "options": [
+    "Log Analytics workspace",
+    "Event hub",
+    "The Entra admin center's built-in retention",
+    "Storage account"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "A storage account is the cheap long-term archive for rarely read logs. Log Analytics is for querying and costs more to keep data, an event hub streams but doesn't store long term, and built-in retention is 30 days at most."
+  },
+  {
+   "id": "sc-300.d4.q071",
+   "lesson": "sc-300.d4.4.03",
+   "objective": "d4.4",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which log categories can you select in Microsoft Entra diagnostic settings? Select THREE.",
+   "options": [
+    "NonInteractiveUserSignInLogs",
+    "DeviceComplianceOrg",
+    "AuditLogs",
+    "SecurityAlert",
+    "ProvisioningLogs"
+   ],
+   "answer": [
+    0,
+    2,
+    4
+   ],
+   "explain": "Entra diagnostic settings offer categories such as AuditLogs, SignInLogs, NonInteractiveUserSignInLogs and ProvisioningLogs. DeviceComplianceOrg is an Intune log category, and SecurityAlert is a Microsoft Sentinel table."
+  },
+  {
+   "id": "sc-300.d4.q072",
+   "lesson": "sc-300.d4.4.04",
+   "objective": "d4.4",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the query to list the 10 users with the most failed sign-ins in the last 7 days.",
+   "code": "SigninLogs\n| where TimeGenerated > ago(7d)\n| where ResultType != \"0\"\n| ____ FailedCount = count() by UserPrincipalName\n| top 10 by FailedCount",
+   "options": [
+    "summarize",
+    "project",
+    "extend",
+    "distinct"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "summarize groups rows and calculates aggregates such as count() by a column. project and extend shape columns without aggregating, and distinct returns unique values but can't use count()."
+  },
+  {
+   "id": "sc-300.d4.q073",
+   "lesson": "sc-300.d4.4.04",
+   "objective": "d4.4",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the query to chart interactive sign-ins per hour over the last day.",
+   "code": "SigninLogs\n| where TimeGenerated > ago(1d)\n| summarize count() by ____(TimeGenerated, 1h)\n| render timechart",
+   "options": [
+    "ago",
+    "bin",
+    "format_datetime",
+    "todatetime"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "bin() rounds timestamps into fixed buckets, here one hour, for time charts. ago() gives a time relative to now, format_datetime returns a string, and todatetime converts values, so none of them bucket by an interval."
+  },
+  {
+   "id": "sc-300.d4.q074",
+   "lesson": "sc-300.d4.4.04",
+   "objective": "d4.4",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "You need to count token-based sign-ins that client apps made for users, by app, over the last day. Complete the query.",
+   "code": "____\n| where TimeGenerated > ago(1d)\n| summarize count() by AppDisplayName",
+   "options": [
+    "SigninLogs",
+    "AADServicePrincipalSignInLogs",
+    "AADNonInteractiveUserSignInLogs",
+    "AADManagedIdentitySignInLogs"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Token-based sign-ins on a user's behalf go to AADNonInteractiveUserSignInLogs. SigninLogs holds interactive sign-ins only, and the service principal and managed identity tables cover non-human identities."
+  },
+  {
+   "id": "sc-300.d4.q075",
+   "lesson": "sc-300.d4.4.05",
+   "objective": "d4.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Before blocking legacy authentication, you need to find which users and apps still use it. Which Microsoft Entra workbook should you use?",
+   "options": [
+    "Sensitive Operations Report",
+    "Cross-tenant access activity",
+    "Authentication prompts analysis",
+    "Sign-ins using legacy authentication"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The legacy authentication workbook shows sign-ins that use legacy protocols. The Sensitive Operations Report tracks risky configuration changes, cross-tenant access activity tracks B2B traffic, and authentication prompts analysis looks at MFA prompts."
+  },
+  {
+   "id": "sc-300.d4.q076",
+   "lesson": "sc-300.d4.4.05",
+   "objective": "d4.4",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Microsoft Entra workbooks show no data for your tenant. Which TWO are required for them to work?",
+   "options": [
+    "A Log Analytics workspace",
+    "A diagnostic setting that sends Entra logs to the workspace",
+    "An Event Hubs namespace",
+    "A storage account in the same region as the tenant"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "Workbooks query Log Analytics, so you need a workspace and a diagnostic setting sending Entra logs to it. Event hubs and storage accounts are other destinations that workbooks don't query."
+  },
+  {
+   "id": "sc-300.d4.q077",
+   "lesson": "sc-300.d4.4.06",
+   "objective": "d4.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "How often is the Identity Secure Score recalculated?",
+   "options": [
+    "Every 24 hours",
+    "Every hour",
+    "Every 7 days",
+    "Only when an admin selects Refresh"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Microsoft evaluates your configuration and recalculates the Identity Secure Score every 24 hours, so changes can take up to a day to show."
+  },
+  {
+   "id": "sc-300.d4.q078",
+   "lesson": "sc-300.d4.4.06",
+   "objective": "d4.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Contoso enforces MFA with a non-Microsoft identity provider for an improvement action Entra can't verify. Which status gives the points?",
+   "options": [
+    "Risk accepted",
+    "Resolved through third party",
+    "Planned",
+    "To address"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Resolved through third party (or alternate mitigation) awards the points even though Microsoft can't verify it. Risk accepted gives no points, and Planned and To address mark work not yet done."
+  },
+  {
+   "id": "sc-300.d4.q079",
+   "lesson": "sc-300.d4.4.06",
+   "objective": "d4.4",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "Marking an improvement action as Risk accepted earns its full points.",
+     "a": false
+    },
+    {
+     "s": "Identity Secure Score is the identity category of Microsoft Secure Score.",
+     "a": true
+    },
+    {
+     "s": "Partly completing an action, such as MFA for half of the users in scope, can earn partial points.",
+     "a": true
+    }
+   ],
+   "explain": "Risk accepted hides the action but earns no points. Identity Secure Score is the identity part of Microsoft Secure Score. Many actions score in proportion to how many users are covered."
+  }
+ ]
+}

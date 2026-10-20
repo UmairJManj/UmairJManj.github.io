@@ -1,0 +1,808 @@
+{
+ "exam": "thm-ai1",
+ "domain": "d4",
+ "lessons": [],
+ "questions": [
+  {
+   "id": "thm-ai1.d4.q041",
+   "lesson": "thm-ai1.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Why can membership inference be harmful even without extracting the record's content?",
+   "options": [
+    "Confirming someone was in a dataset (for example, a clinic's patients) can itself reveal sensitive facts",
+    "It increases token costs",
+    "It only affects public data",
+    "It always deletes the record"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Membership itself can be sensitive."
+  },
+  {
+   "id": "thm-ai1.d4.q042",
+   "lesson": "thm-ai1.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "What is the main risk of treating stored embeddings as anonymised data?",
+   "options": [
+    "Embeddings can't be searched",
+    "Inversion can reconstruct much of the original text from vectors",
+    "Embeddings take too much disk space",
+    "There is no risk"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "OWASP LLM08 warns embeddings can leak source text via inversion (T0024.001)."
+  },
+  {
+   "id": "thm-ai1.d4.q043",
+   "lesson": "thm-ai1.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO controls reduce membership-inference and extraction risk? (Select TWO)",
+   "options": [
+    "Log nothing",
+    "Rate-limit queries per user",
+    "Allow unauthenticated access to the vector store",
+    "Publish the training set",
+    "Limit output detail, such as not returning raw confidence scores"
+   ],
+   "answer": [
+    1,
+    4
+   ],
+   "explain": "Less output detail and rate limits make inference harder. The other options increase risk."
+  },
+  {
+   "id": "thm-ai1.d4.q044",
+   "lesson": "thm-ai1.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which technique trains with calibrated noise so no single record measurably changes the model?",
+   "options": [
+    "Chunking",
+    "Quantisation",
+    "Differential privacy",
+    "Tokenisation"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Differential privacy limits what can be inferred about any one record."
+  },
+  {
+   "id": "thm-ai1.d4.q045",
+   "lesson": "thm-ai1.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "Access control on the vector store matters as much as on the source documents",
+     "a": true
+    },
+    {
+     "s": "ATLAS AML.M0019 covers controlling access to AI models and data in production",
+     "a": true
+    },
+    {
+     "s": "Embedding inversion requires physical access to the GPU",
+     "a": false
+    }
+   ],
+   "explain": "Vectors can leak their source text, so protect them. M0019 is production access control. Inversion works from vectors or outputs."
+  },
+  {
+   "id": "thm-ai1.d4.q046",
+   "lesson": "thm-ai1.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS mitigation is Control Access to AI Models and Data at Rest?",
+   "options": [
+    "AML.M0024",
+    "AML.M0019",
+    "AML.M0025",
+    "AML.M0005"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "M0005 covers data at rest; M0019 covers production access."
+  },
+  {
+   "id": "thm-ai1.d4.q047",
+   "lesson": "thm-ai1.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Order the ingestion pipeline controls as a document flows into the index.",
+   "options": [
+    "Accept only allow-listed sources",
+    "Sanitise to plain text and strip hidden content",
+    "Scan for instruction-like text and secrets",
+    "Tag chunks with provenance and hash",
+    "Write to a versioned index"
+   ],
+   "explain": "Check the source, clean, scan, tag, then index with versioning."
+  },
+  {
+   "id": "thm-ai1.d4.q048",
+   "lesson": "thm-ai1.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS mitigation is Sanitize Training Data?",
+   "options": [
+    "AML.M0007",
+    "AML.M0029",
+    "AML.M0013",
+    "AML.M0005"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Sanitize Training Data is M0007."
+  },
+  {
+   "id": "thm-ai1.d4.q049",
+   "lesson": "thm-ai1.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Why record source, author, timestamp and hash on every chunk?",
+   "options": [
+    "To encrypt the model",
+    "So poisoned or leaked content can be traced to its origin and removed quickly",
+    "To compress embeddings",
+    "To make search faster"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Provenance enables investigation and targeted removal."
+  },
+  {
+   "id": "thm-ai1.d4.q050",
+   "lesson": "thm-ai1.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO ingestion controls most directly reduce poisoning via hidden content? (Select TWO)",
+   "options": [
+    "Raise the chunk size",
+    "Allow anonymous uploads",
+    "Convert documents to plain text and drop hidden formatting",
+    "Scan for instruction-like language addressed to AI",
+    "Index every attachment automatically"
+   ],
+   "answer": [
+    2,
+    3
+   ],
+   "explain": "Sanitisation and scanning catch hidden and instruction-like content."
+  },
+  {
+   "id": "thm-ai1.d4.q051",
+   "lesson": "thm-ai1.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the ingestion step so each chunk carries provenance metadata.",
+   "code": "chunk_record = {\n  \"text\": chunk,\n  \"source\": doc.uri,\n  \"author\": doc.author,\n  \"sha256\": ____,\n  \"ingested_at\": now_utc(),\n}",
+   "options": [
+    "doc.title.upper()",
+    "random.random()",
+    "hashlib.sha256(chunk.encode()).hexdigest()",
+    "len(chunk)"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "A content hash lets you verify integrity and find identical poisoned chunks. Random values, lengths and titles don't identify content."
+  },
+  {
+   "id": "thm-ai1.d4.q052",
+   "lesson": "thm-ai1.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the ingestion filter so documents from unapproved sources are rejected.",
+   "code": "APPROVED = {\"policies.contoso.internal\", \"kb.contoso.internal\"}\nif urlparse(doc.uri).hostname ____ APPROVED:\n    quarantine(doc)\n    continue",
+   "options": [
+    "is",
+    "in",
+    "==",
+    "not in"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Quarantine anything whose host isn't approved."
+  },
+  {
+   "id": "thm-ai1.d4.q053",
+   "lesson": "thm-ai1.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each ingestion practice, select Yes if it is good practice.",
+   "statements": [
+    {
+     "s": "Holding content from lower-trust sources in quarantine for review",
+     "a": true
+    },
+    {
+     "s": "Indexing secrets so the bot can help admins faster",
+     "a": false
+    },
+    {
+     "s": "Keeping an ML-BOM listing the indexed sources and models",
+     "a": true
+    }
+   ],
+   "explain": "Quarantine and ML-BOMs help; secrets must never be indexed."
+  },
+  {
+   "id": "thm-ai1.d4.q054",
+   "lesson": "thm-ai1.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is security trimming in a RAG system?",
+   "options": [
+    "Removing results the asking user lacks permission to see, at query time",
+    "Deleting old documents to save space",
+    "Compressing embeddings",
+    "Shortening the system prompt"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Security trimming filters retrieval by the user's permissions."
+  },
+  {
+   "id": "thm-ai1.d4.q055",
+   "lesson": "thm-ai1.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Where should document-level access control be enforced to prevent RAG disclosure?",
+   "options": [
+    "In the user's browser",
+    "Inside the retrieval query, using ACL metadata on each chunk and the user's identity",
+    "Only in the final answer text",
+    "Only in the model's system prompt"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Restricted chunks must never become candidates for the prompt."
+  },
+  {
+   "id": "thm-ai1.d4.q056",
+   "lesson": "thm-ai1.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Why should the retriever use the user's identity or a delegated token rather than a super-user service account?",
+   "options": [
+    "It is required for TLS",
+    "Service accounts are slower",
+    "So results are limited to what that user can already access",
+    "Delegated tokens make embeddings smaller"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "A super-user retriever ignores per-user permissions and maximises exposure."
+  },
+  {
+   "id": "thm-ai1.d4.q057",
+   "lesson": "thm-ai1.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the vector search so results are limited to the user's groups.",
+   "code": "results = index.search(\n    vector=embed(question),\n    top_k=5,\n    filter={\"allowed_groups\": {\"$in\": ____}},\n)",
+   "options": [
+    "[]",
+    "question",
+    "ALL_GROUPS",
+    "user.groups"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Filtering on the user's groups enforces document-level access at query time."
+  },
+  {
+   "id": "thm-ai1.d4.q058",
+   "lesson": "thm-ai1.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO practices keep retrieval-time access control correct over time? (Select TWO)",
+   "options": [
+    "Grant the retriever global admin",
+    "Disable ACL metadata for speed",
+    "Partition highly sensitive data into separate indexes",
+    "Sync chunk ACLs when source permissions change",
+    "Copy all documents into one public index"
+   ],
+   "answer": [
+    2,
+    3
+   ],
+   "explain": "ACLs must stay in sync, and high-risk data benefits from separation."
+  },
+  {
+   "id": "thm-ai1.d4.q059",
+   "lesson": "thm-ai1.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "Microsoft 365 Copilot grounds answers only on content the user already has permission to access",
+     "a": true
+    },
+    {
+     "s": "Filtering the final answer is equivalent to filtering the retrieval query",
+     "a": false
+    },
+    {
+     "s": "ATLAS AML.M0019 relates to controlling access to AI data in production",
+     "a": true
+    }
+   ],
+   "explain": "Copilot respects existing permissions; output filtering is not equivalent; M0019 is production access control."
+  },
+  {
+   "id": "thm-ai1.d4.q060",
+   "lesson": "thm-ai1.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Case: after adding a group filter to the vector query, a red-team retest still extracts HR data. What should the assessor check next?",
+   "options": [
+    "Whether HR chunks carry correct ACL metadata and whether a cache or second index bypasses the filter",
+    "Whether users are typing slowly",
+    "Whether the UI uses dark mode",
+    "Whether the model is large enough"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Missing or stale ACL tags, caches and secondary indexes are common bypasses."
+  },
+  {
+   "id": "thm-ai1.d4.q061",
+   "lesson": "thm-ai1.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which control is the LAST line of defence for PII appearing in a RAG answer?",
+   "options": [
+    "Source allow-listing",
+    "Output redaction of PII before display",
+    "Chunk provenance",
+    "Query-time ACL filtering"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Redaction on output is the final layer; the others act earlier."
+  },
+  {
+   "id": "thm-ai1.d4.q062",
+   "lesson": "thm-ai1.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "One account sends 3,000 near-duplicate questions in an hour to a RAG bot. What is the most appropriate response?",
+   "options": [
+    "Increase the account's quota",
+    "Delete the vector index",
+    "Treat it as possible systematic extraction: rate-limit, alert and investigate",
+    "Ignore it as normal usage"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "High-volume probing suggests extraction or inference; rate limits and investigation follow."
+  },
+  {
+   "id": "thm-ai1.d4.q063",
+   "lesson": "thm-ai1.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Why should retrieval logs be immutable or tamper-evident?",
+   "options": [
+    "To reduce storage cost",
+    "Because embeddings require it",
+    "To make queries faster",
+    "So investigators can trust which chunks produced which answers, even if an attacker gains access"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "OWASP LLM08 recommends immutable logs for investigation."
+  },
+  {
+   "id": "thm-ai1.d4.q064",
+   "lesson": "thm-ai1.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO checks help detect poisoned answers on critical topics? (Select TWO)",
+   "options": [
+    "Alert when answers change right after a document edit",
+    "Turn off all logging",
+    "Increase sampling temperature",
+    "Compare answers against the system of record (grounding checks)",
+    "Hide citations from users"
+   ],
+   "answer": [
+    0,
+    3
+   ],
+   "explain": "Grounding checks and change-correlated alerts reveal poisoning."
+  },
+  {
+   "id": "thm-ai1.d4.q065",
+   "lesson": "thm-ai1.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "Output redaction should be the only RAG control",
+     "a": false
+    },
+    {
+     "s": "Rate limits slow systematic extraction and inference attacks",
+     "a": true
+    },
+    {
+     "s": "Periodic re-scans of the corpus can find poisoned content added after ingestion checks",
+     "a": true
+    }
+   ],
+   "explain": "Redaction is a last layer; rate limits and re-scans add depth."
+  },
+  {
+   "id": "thm-ai1.d4.q066",
+   "lesson": "thm-ai1.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the output step so detected PII is masked before display.",
+   "code": "answer = generate(question, chunks)\nfor entity in pii_detector(answer):\n    answer = answer.replace(entity.text, ____)\nreturn answer",
+   "options": [
+    "\"[REDACTED]\"",
+    "\"\"",
+    "entity.text * 2",
+    "entity.text.upper()"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Replacing with a placeholder masks the value visibly; the empty string can garble meaning, and the others still leak the data."
+  },
+  {
+   "id": "thm-ai1.d4.q067",
+   "lesson": "thm-ai1.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS mitigation is Generative AI Guardrails, which includes output redaction?",
+   "options": [
+    "AML.M0005",
+    "AML.M0020",
+    "AML.M0025",
+    "AML.M0007"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "M0020 is Generative AI Guardrails."
+  },
+  {
+   "id": "thm-ai1.d4.q068",
+   "lesson": "thm-ai1.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "In a RAG defence write-up, which control best answers a cross-department data disclosure finding?",
+   "options": [
+    "A larger embedding model",
+    "More training data",
+    "Document-level ACLs carried into chunks and enforced in the retrieval query",
+    "A system prompt saying 'respect confidentiality'"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Disclosure is fixed at retrieval with access control."
+  },
+  {
+   "id": "thm-ai1.d4.q069",
+   "lesson": "thm-ai1.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which control best answers a RAG poisoning finding from a publicly editable wiki?",
+   "options": [
+    "Add an emoji filter",
+    "Use a faster vector database",
+    "Increase top_k",
+    "Restrict indexed sources and add sanitisation, scanning and provenance at ingestion"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Poisoning is addressed at ingestion."
+  },
+  {
+   "id": "thm-ai1.d4.q070",
+   "lesson": "thm-ai1.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Order the layers of RAG defence in depth from earliest to latest in the data flow.",
+   "options": [
+    "Ingestion controls",
+    "Retrieval-time access control",
+    "Output guardrails and redaction",
+    "Monitoring and retesting"
+   ],
+   "explain": "Stop bad content entering, restrict what each user can retrieve, filter outputs, then watch and retest."
+  },
+  {
+   "id": "thm-ai1.d4.q071",
+   "lesson": "thm-ai1.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO make a RAG-defence recommendation strong for the AI1 written deliverable? (Select TWO)",
+   "options": [
+    "Only vendor names are given",
+    "The report says 'use better AI'",
+    "Each control has an owner and a verification or retest step",
+    "Controls are listed without priorities",
+    "Each control is tied to a specific finding and an OWASP/ATLAS reference"
+   ],
+   "answer": [
+    2,
+    4
+   ],
+   "explain": "Specific, mapped, owned and verifiable controls score well."
+  },
+  {
+   "id": "thm-ai1.d4.q072",
+   "lesson": "thm-ai1.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each pairing of finding and control, select Yes if it is appropriate.",
+   "statements": [
+    {
+     "s": "RAG poisoning → source allow-listing and provenance (AML.M0025)",
+     "a": true
+    },
+    {
+     "s": "Cross-tenant leakage → per-tenant partitioning and query-time filters",
+     "a": true
+    },
+    {
+     "s": "Credential harvesting via RAG → raise the model's temperature",
+     "a": false
+    }
+   ],
+   "explain": "The first two match their layers; temperature has nothing to do with indexed secrets."
+  },
+  {
+   "id": "thm-ai1.d4.q073",
+   "lesson": "thm-ai1.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "A report lists: (A) query-time ACL filter, (B) output PII redaction, (C) 'remind the model about confidentiality'. Disclosure is the top risk. What is the best priority order?",
+   "options": [
+    "A, then B, then C",
+    "All equal",
+    "B, then C, then A",
+    "C, then B, then A"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Remove the root cause first (A), add a last layer (B); prompt reminders are weakest."
+  },
+  {
+   "id": "thm-ai1.d4.q074",
+   "lesson": "thm-ai1.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which RAG stage does an attacker who edits a source document affect first?",
+   "options": [
+    "Generation",
+    "Ingestion",
+    "Tokenisation of the user's question",
+    "Rendering"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The edited document enters at ingestion and is then chunked, embedded and retrievable."
+  },
+  {
+   "id": "thm-ai1.d4.q075",
+   "lesson": "thm-ai1.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which OWASP LLM08 recommendation directly addresses multi-tenant RAG?",
+   "options": [
+    "Higher temperature",
+    "Longer context windows",
+    "Permission-aware vector stores with logical partitioning",
+    "Disabling citations"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "OWASP LLM08 recommends permission-aware stores and partitioning by access level."
+  },
+  {
+   "id": "thm-ai1.d4.q076",
+   "lesson": "thm-ai1.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "multi",
+   "case": null,
+   "stem": "Case: a legal firm's assistant indexes all matter files in one store and answers any lawyer's question. A junior associate retrieves memos from a matter they're walled off from. Which TWO controls address the root cause? (Select TWO)",
+   "options": [
+    "Disable search for partners",
+    "Run the retriever with the asking lawyer's identity",
+    "Add 'respect ethical walls' to the system prompt",
+    "Carry matter-level ethical-wall ACLs into chunks and filter retrieval by them",
+    "Use a bigger model"
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "explain": "Permission metadata plus user-identity retrieval stops walled-off chunks from being retrieved; prompt text and model size don't."
+  },
+  {
+   "id": "thm-ai1.d4.q077",
+   "lesson": "thm-ai1.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which content pattern most suggests keyword stuffing for relevance hijacking?",
+   "options": [
+    "An FAQ with one topic per question",
+    "A long policy with clear headings",
+    "A dated changelog",
+    "A short page repeating many unrelated popular query terms"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Stuffing many unrelated terms makes content match many queries."
+  },
+  {
+   "id": "thm-ai1.d4.q078",
+   "lesson": "thm-ai1.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Case: a hospital wants a RAG assistant over clinical guidelines and staff-uploaded notes. Which ingestion design is safest?",
+   "options": [
+    "Index only approved guideline repositories; quarantine staff uploads for review, sanitise and tag provenance before indexing",
+    "Index all uploads immediately to keep answers fresh",
+    "Let the model decide which uploads to trust",
+    "Index uploads but hide citations"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Separate trusted sources from user uploads and gate the latter."
+  },
+  {
+   "id": "thm-ai1.d4.q079",
+   "lesson": "thm-ai1.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "yesno",
+   "case": null,
+   "stem": "Case: a clinic exposes a symptom-checker model with an API returning full probability scores, unauthenticated and without rate limits. For each statement, select Yes if it is a valid finding.",
+   "statements": [
+    {
+     "s": "Membership inference risk is elevated by detailed confidence scores",
+     "a": true
+    },
+    {
+     "s": "Missing rate limits make systematic probing cheap",
+     "a": true
+    },
+    {
+     "s": "The main fix is adding a friendlier disclaimer",
+     "a": false
+    }
+   ],
+   "explain": "Rich outputs and unlimited queries enable inference; disclaimers don't reduce it. Fixes: authentication, rate limits, reduced output detail."
+  },
+  {
+   "id": "thm-ai1.d4.q080",
+   "lesson": "thm-ai1.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS mitigation most directly supports investigating which chunks produced a harmful answer?",
+   "options": [
+    "AML.M0029 Human In-the-Loop for AI Agent Actions",
+    "AML.M0024 AI Telemetry Logging",
+    "AML.M0013 Code Signing",
+    "AML.M0007 Sanitize Training Data"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Telemetry logging records retrievals and responses for investigation."
+  }
+ ]
+}

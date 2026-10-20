@@ -1,0 +1,1227 @@
+{
+  "exam": "ai-901",
+  "domain": "d2",
+  "lessons": [
+    {
+      "id": "ai-901.d2.1.01",
+      "objective": "d2.1",
+      "seq": 1,
+      "title": "System prompts vs user prompts",
+      "short": "A **system prompt** (called *instructions* in Foundry) sets the model's role, tone, rules and output format for the whole conversation. A **user prompt** is the end user's actual request. Rules that must hold on every turn belong in the system prompt.",
+      "deep": "Generative models answer whatever text they are given, so you shape behaviour with two kinds of prompt.\n\n- **System prompt** (the *Instructions* box in the Foundry playground, the `system` role in Chat Completions, or the `instructions` parameter in the Responses API): written by the developer, applied to every turn. Use it for the persona (\"You are a patient maths tutor\"), scope limits (\"Only answer questions about Contoso orders\"), tone, safety rules and the output format (for example JSON or bullet points).\n- **User prompt** (`user` role): what the person types, e.g. \"Where is my order 1234?\". It changes every turn.\n- **Assistant messages**: the model's earlier replies, sent back as history in multi-turn chats.\n\nEffective prompts are **specific** and **descriptive**, put the task first, and give the model an **out**: tell it what to say when it cannot answer (\"If the answer isn't in the policy, say you don't know\"). A system prompt does not retrain the model; it only conditions the current request, so it must be sent (or stored with an agent) every time.",
+      "terms": [
+        {
+          "t": "System prompt",
+          "d": "Developer-written instructions that set role, rules, tone and format for every turn."
+        },
+        {
+          "t": "User prompt",
+          "d": "The end user's request or question for this turn."
+        },
+        {
+          "t": "Assistant message",
+          "d": "A previous model reply included as conversation history."
+        },
+        {
+          "t": "Prompt engineering",
+          "d": "Designing and refining prompts to get accurate, useful output."
+        }
+      ],
+      "trap": "Distractors put persona or scope rules in the user prompt, or claim the system prompt retrains the model; it only conditions each request.",
+      "example": "A returns chatbot's system prompt says 'Only discuss Contoso returns; politely decline other topics', while the user prompt is 'Can I return shoes after 40 days?'.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "System prompt",
+          "User prompt"
+        ],
+        "rows": [
+          [
+            "Written by developer",
+            "Typed by end user"
+          ],
+          [
+            "Applies every turn",
+            "Changes each turn"
+          ],
+          [
+            "Role, rules, format",
+            "Question or task"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.1.02",
+      "objective": "d2.1",
+      "seq": 2,
+      "title": "Prompt engineering techniques",
+      "short": "Improve answers with **zero-shot** or **few-shot** prompting, **grounding** (supplying source text and saying 'answer only from this'), a clear **output format**, **cues**, and **chain-of-thought** steps. Grounding and giving the model an 'I don't know' out reduce **hallucinations**.",
+      "deep": "Microsoft's prompt engineering guidance lists techniques you should recognise by name:\n\n- **Zero-shot**: just the instruction, no examples.\n- **Few-shot**: include a few example input/output pairs (in chat, as user/assistant turns after the system message). This conditions the response but does **not** change the model's weights.\n- **Grounding**: paste the source data (policy, document) into the prompt and tell the model to answer only from it or reply 'not found'. **Retrieval-augmented generation (RAG)** automates this by searching your data and inserting the relevant chunks.\n- **Output format**: specify the exact structure (JSON keys, a table, bullet list).\n- **Cues**: start the answer for the model, e.g. 'Key points:\\n-'.\n- **Break the task down** and **chain of thought**: ask for step-by-step reasoning on non-reasoning models.\n- **Recency**: content at the end of a long prompt can outweigh earlier text, so repeat key instructions at the end.\n\nA **hallucination** is fluent but false output. Grounding, citations and an explicit 'say you don't know' instruction are the main prompt-level defences.",
+      "terms": [
+        {
+          "t": "Few-shot prompting",
+          "d": "Giving a few worked examples in the prompt to show the desired pattern."
+        },
+        {
+          "t": "Grounding",
+          "d": "Supplying trusted source content and limiting answers to it."
+        },
+        {
+          "t": "RAG",
+          "d": "Retrieval-augmented generation: retrieve relevant data and add it to the prompt."
+        },
+        {
+          "t": "Hallucination",
+          "d": "Confident model output that is not true or not supported by sources."
+        }
+      ],
+      "trap": "Exams offer fine-tuning or raising temperature as fixes for hallucination; the expected answer is grounding with source data plus an 'I don't know' instruction.",
+      "example": "An HR assistant pastes the leave policy into the prompt and adds: 'Answer only from the policy below; if it isn't covered, reply Not found.'",
+      "diagram": null
+    },
+    {
+      "id": "ai-901.d2.1.03",
+      "objective": "d2.1",
+      "seq": 3,
+      "title": "Model catalog and deploying a model",
+      "short": "In the Foundry portal you pick a model from the **model catalog**, compare it with **benchmarks/leaderboards**, then **deploy** it to get an endpoint. The **deployment type** (Global Standard, Data Zone Standard, Standard, Provisioned, Batch) controls where data is processed and how you pay; **TPM** limits throughput.",
+      "deep": "Work happens in a **Foundry project** inside a **Foundry resource** (an Azure resource in a subscription and resource group). The **model catalog** lists foundation models from Microsoft, OpenAI, Meta, Mistral, Anthropic and others, each with a model card, capabilities and **benchmarks**; leaderboards compare quality, safety, cost and throughput.\n\nA model must be **deployed** before apps can call it. Deploying creates an endpoint, fixes the model version and settings, and sets a **tokens-per-minute (TPM)** rate limit. Exceeding TPM or request limits causes rate-limit (throttling) errors; lower max tokens or concurrency to mitigate.\n\n**Deployment types** (serverless API, pay-per-token unless noted):\n- **Global Standard**: default; data may be processed in any Azure region; highest default quota.\n- **Data Zone Standard**: processing stays in a data zone (US, EU or APAC).\n- **Standard**: processing stays in the Azure geography.\n- **Provisioned** (Global/Data Zone/Regional): reserved **PTUs**, predictable latency.\n- **Global/Data Zone Batch**: asynchronous, about 50% cheaper, 24-hour target turnaround.\n- **Developer**: for evaluating fine-tuned models only.\n\nOpen-source models can instead use **managed compute** (dedicated GPUs, billed hourly, preview).",
+      "terms": [
+        {
+          "t": "Model catalog",
+          "d": "Foundry hub for discovering, comparing and deploying models."
+        },
+        {
+          "t": "Global Standard",
+          "d": "Default pay-per-token deployment; processing in any Azure region."
+        },
+        {
+          "t": "Provisioned throughput (PTU)",
+          "d": "Reserved capacity billed per PTU for predictable performance."
+        },
+        {
+          "t": "TPM",
+          "d": "Tokens per minute: the throughput limit of a deployment."
+        }
+      ],
+      "trap": "Data-residency questions want Data Zone Standard or Standard, not Global Standard; cheapest large offline jobs want Global Batch, not Provisioned.",
+      "example": "An EU insurer deploys gpt-4.1-mini as Data Zone Standard so prompts are processed only inside the EU data zone.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Type",
+          "Data processed",
+          "Billing"
+        ],
+        "rows": [
+          [
+            "Global Standard",
+            "Any Azure region",
+            "Pay per token"
+          ],
+          [
+            "Data Zone Standard",
+            "US, EU or APAC zone",
+            "Pay per token"
+          ],
+          [
+            "Standard",
+            "Azure geography",
+            "Pay per token"
+          ],
+          [
+            "Provisioned",
+            "Depends on scope",
+            "Reserved PTUs"
+          ],
+          [
+            "Global Batch",
+            "Any region, async",
+            "~50% off, 24h"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.1.04",
+      "objective": "d2.1",
+      "seq": 4,
+      "title": "Playground and model parameters",
+      "short": "After deploying, test the model in the Foundry **playground**: set **instructions**, chat, and tune parameters such as **temperature**, **top-p**, **max output tokens**, **stop sequences** and **frequency/presence penalties**. Then copy the generated sample code into your app.",
+      "deep": "The **playground** is the no-code way to interact with a deployment. You type user prompts in the chat pane, set the system prompt in **Instructions**, start a **New chat** to clear history, and can add tools or **Save as agent**.\n\nKey generation parameters:\n- **Temperature** (0 to 2): higher = more random and creative; lower (e.g. 0.2) = focused and consistent.\n- **Top-p** (nucleus sampling): also controls randomness by limiting the token pool. Adjust temperature **or** top-p, not both.\n- **Max output tokens**: caps response length (and token cost); too low cuts answers off.\n- **Stop sequences**: text that makes the model stop generating.\n- **Frequency penalty**: discourages tokens in proportion to how often they already appeared (less repetition).\n- **Presence penalty**: discourages any token that has appeared at all (pushes new topics).\n\nSome reasoning models ignore or reject sampling parameters. Every deployment also has a **guardrail** (content filter) — by default Microsoft.DefaultV2 — that classifies **hate, sexual, violence and self-harm** content and detects jailbreak attempts with prompt shields. The playground's code view generates Python that reproduces your prompts and settings.",
+      "terms": [
+        {
+          "t": "Temperature",
+          "d": "Randomness of token choice; low is deterministic, high is creative."
+        },
+        {
+          "t": "Top-p",
+          "d": "Nucleus sampling: only tokens within the top probability mass are considered."
+        },
+        {
+          "t": "Max output tokens",
+          "d": "Upper limit on how many tokens the response can contain."
+        },
+        {
+          "t": "Content filters / guardrails",
+          "d": "Safety controls that detect and block harmful input or output."
+        }
+      ],
+      "trap": "Cut-off answers are fixed by raising max output tokens, not by changing temperature; repetition is fixed with frequency penalty.",
+      "example": "A legal drafting team sets temperature to 0.2 in the playground so clause wording stays consistent, then copies the sample code into their app.",
+      "diagram": null
+    },
+    {
+      "id": "ai-901.d2.1.05",
+      "objective": "d2.1",
+      "seq": 5,
+      "title": "Chat client with the Foundry SDK",
+      "short": "A lightweight Python chat client uses **azure-ai-projects**: create an **AIProjectClient** with the project endpoint and **DefaultAzureCredential**, call **get_openai_client()**, then **responses.create(model=<deployment name>, input=...)** and print **output_text**.",
+      "deep": "The **Foundry SDK** for Python is the `azure-ai-projects` package (2.x for the new Foundry portal), used with `azure-identity` and `openai`.\n\n```\nfrom azure.ai.projects import AIProjectClient\nfrom azure.identity import DefaultAzureCredential\nproject = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())\nopenai = project.get_openai_client()\nresponse = openai.responses.create(model=\"my-gpt\", input=\"Hi\")\nprint(response.output_text)\n```\n\n- **Project endpoint** format: `https://<resource>.services.ai.azure.com/api/projects/<project>` (shown on the project overview).\n- **DefaultAzureCredential** authenticates with **Microsoft Entra ID** (your `az login` session locally, a managed identity in Azure). The identity needs the **Foundry User** role (formerly Azure AI User) or higher on the project.\n- `AIProjectClient` handles Foundry operations (agents, connections, tracing); `get_openai_client()` returns an OpenAI-compatible client that calls the **Responses API**.\n- `model` is your **deployment name**, which may differ from the model name.\n- The model runs remotely, so the client is tiny: read input in a loop, call the API, print the reply.",
+      "terms": [
+        {
+          "t": "AIProjectClient",
+          "d": "Foundry SDK client for a project, created from the project endpoint."
+        },
+        {
+          "t": "DefaultAzureCredential",
+          "d": "azure-identity credential that tries Entra ID sign-in methods in order."
+        },
+        {
+          "t": "Responses API",
+          "d": "OpenAI-compatible API (responses.create) for model and agent calls."
+        },
+        {
+          "t": "Foundry User",
+          "d": "Built-in role (formerly Azure AI User) to use a project's data actions."
+        }
+      ],
+      "trap": "The model argument takes the deployment name, and AIProjectClient expects an Entra ID token credential, not a raw API key string.",
+      "example": "A developer signs in with az login, runs a 15-line Python script with AIProjectClient, and chats with the support-gpt deployment from a terminal.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Python app",
+          "AIProjectClient",
+          "OpenAI client",
+          "Responses API",
+          "Model deployment"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.1.06",
+      "objective": "d2.1",
+      "seq": 6,
+      "title": "Multi-turn chat, roles and authentication",
+      "short": "Models are stateless: for multi-turn chat either resend history as **system/user/assistant** messages (Chat Completions) or chain calls with **previous_response_id** (Responses API). Authenticate with an **endpoint and API key** or, preferably, **Microsoft Entra ID**.",
+      "deep": "Each call to a model is independent. To keep context:\n\n- **Chat Completions**: send a `messages` list each time; the **system** message first, then alternating **user** and **assistant** messages. Every turn adds to the list, so long chats use more tokens and can exceed the **context window**.\n- **Responses API**: pass `previous_response_id=<last response id>` and only the new input, or use a **conversation** object so the service stores history. You can also pass `instructions=` for the system prompt.\n\n**Tokens** are the units models read and write (words or word pieces); they drive cost, TPM limits and context size.\n\nAuthentication options:\n- **Endpoint and API key**: e.g. the OpenAI client with `base_url=\"https://<resource>.openai.azure.com/openai/v1/\"` and `api_key=...`. Keep keys out of code (a `.env` file loaded with `load_dotenv()`, or Azure Key Vault).\n- **Microsoft Entra ID** (recommended): `DefaultAzureCredential`, with a **managed identity** when running in Azure, so no long-lived secret exists. Grant the identity a Foundry role such as Foundry User.",
+      "terms": [
+        {
+          "t": "previous_response_id",
+          "d": "Responses API parameter that links a call to the prior response for context."
+        },
+        {
+          "t": "Context window",
+          "d": "Maximum tokens (prompt plus history plus output) a model can handle at once."
+        },
+        {
+          "t": "Endpoint and API key",
+          "d": "Resource URL plus secret key used for key-based authentication."
+        },
+        {
+          "t": "Managed identity",
+          "d": "Entra ID identity for an Azure resource, avoiding stored secrets."
+        }
+      ],
+      "trap": "Options claim the model remembers earlier calls automatically; without resent history, previous_response_id or a conversation it does not.",
+      "example": "A web app running in Azure App Service uses its managed identity with DefaultAzureCredential and chains turns with previous_response_id.",
+      "diagram": null
+    },
+    {
+      "id": "ai-901.d2.1.07",
+      "objective": "d2.1",
+      "seq": 7,
+      "title": "Create a single agent in the Foundry portal",
+      "short": "A **Foundry Agent Service** prompt agent combines a **model**, **instructions** (its system prompt) and **tools**. Create it from Build > Agents or with **Save as agent** in the playground, then test it in the **agent playground**.",
+      "deep": "A model call is raw inference: prompt in, text out. An **AI agent** packages a model with **instructions** and **tools** so it can pursue a goal, call tools automatically, keep conversation state and return structured output.\n\nFoundry Agent Service agent types:\n- **Prompt agents**: defined purely by configuration (model, instructions, tools) in the portal or SDK; Foundry runs them, no code to host.\n- **Hosted agents**: your own code (Agent Framework, LangGraph, etc.) packaged as a container that Foundry hosts.\n\nPortal steps for a single agent:\n1. Choose a deployed model.\n2. Write the **instructions**, e.g. 'You are a scheduling assistant; answer in concise bullets.'\n3. Add **tools** and **knowledge**.\n4. **Save** the agent (each save creates a new **version**).\n5. Test in the agent playground chat, using **New chat** to reset context.\n\nThe agent playground shows a **YAML** view of the definition (model, instructions, tools). Iterate: if the agent answers off-topic questions, tighten the instructions and retest. You can preview it as a simple web app before publishing.",
+      "terms": [
+        {
+          "t": "AI agent",
+          "d": "Software built on a model that reasons, uses tools and acts toward a goal."
+        },
+        {
+          "t": "Agent instructions",
+          "d": "The agent's system prompt: role, scope, style and rules."
+        },
+        {
+          "t": "Prompt agent",
+          "d": "Configuration-only agent (model + instructions + tools) run by Foundry."
+        },
+        {
+          "t": "Agent playground",
+          "d": "Portal chat pane for testing and refining an agent."
+        }
+      ],
+      "trap": "Agents are not bigger models; the exam contrasts a raw model deployment with an agent that adds instructions and tools.",
+      "example": "A museum builds a 'computing-historian' agent on gpt-5-mini with instructions to answer only computing-history questions and tests it in the agent playground.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Choose model",
+          "Write instructions",
+          "Add tools",
+          "Save agent",
+          "Test in playground"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.1.08",
+      "objective": "d2.1",
+      "seq": 8,
+      "title": "Agent tools, knowledge and testing",
+      "short": "**Tools** let an agent act: **web search**, **file search** (your documents), **code interpreter** (run Python), **Azure AI Search**, **function calling**, **OpenAPI** tools and **MCP** servers. Knowledge tools ground answers with citations. Test changes in a new chat before publishing.",
+      "deep": "Tools are actions; knowledge is context. Built-in tools you should match to scenarios:\n\n- **Web search**: current public information with inline citations.\n- **File search**: upload documents; Foundry chunks and indexes them in a vector store and the agent retrieves from them (RAG), citing sources.\n- **Azure AI Search**: ground on an existing search index.\n- **Code interpreter**: writes and runs Python in a sandbox — calculations, data analysis, charts from an uploaded CSV.\n- **Function calling**: you describe a function; the agent decides when to call it, and **your app runs the function** and returns the result.\n- **OpenAPI tool**: the agent calls a REST API described by an OpenAPI spec.\n- **MCP servers**: connect tools exposed through the Model Context Protocol.\n- Others include Azure Functions, SharePoint, Fabric, image generation and browser automation (several in preview).\n\nTesting: add a tool, start a **New chat**, and check the agent chooses the tool. Guardrails can also scan tool calls and tool responses. **Publish** promotes the agent to a stable endpoint (for example via **Preview web app**, Teams or Microsoft Copilot); versions let you roll back.",
+      "terms": [
+        {
+          "t": "Agent tools",
+          "d": "Actions an agent can invoke, such as web search or code interpreter."
+        },
+        {
+          "t": "File search",
+          "d": "Tool that retrieves from uploaded documents in a vector store."
+        },
+        {
+          "t": "Tool calling",
+          "d": "The model deciding to invoke a tool and using its result."
+        },
+        {
+          "t": "MCP",
+          "d": "Model Context Protocol: open standard for connecting agents to tools."
+        }
+      ],
+      "trap": "Scenario questions swap file search (your documents) with web search (public internet), and code interpreter (computation) with function calling (your code).",
+      "example": "A support agent uses file search over 40 product manuals and code interpreter to chart warranty-claim data a user uploads.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Tool",
+          "Use it for"
+        ],
+        "rows": [
+          [
+            "Web search",
+            "Current public info"
+          ],
+          [
+            "File search",
+            "Your uploaded docs"
+          ],
+          [
+            "Code interpreter",
+            "Run Python, charts"
+          ],
+          [
+            "Function calling",
+            "Your own code"
+          ],
+          [
+            "MCP / OpenAPI",
+            "External APIs"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.1.09",
+      "objective": "d2.1",
+      "seq": 9,
+      "title": "Client application for an agent",
+      "short": "With **azure-ai-projects** 2.x, create or get an agent via **project.agents** (e.g. **create_version** with **PromptAgentDefinition**), get an OpenAI client, create a **conversation**, and call **responses.create** referencing the agent. Conversations replace classic **threads**; responses replace **runs**.",
+      "deep": "In the portal, **Continue in code** (or the code view) shows sample client code. The flow in Python:\n\n```\nproject = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())\nagent = project.agents.create_version(agent_name=\"hr-helper\",\n    definition=PromptAgentDefinition(model=\"gpt-4.1-mini\", instructions=\"...\"))\nopenai = project.get_openai_client(agent_name=\"hr-helper\")\nconv = openai.conversations.create()\nr = openai.responses.create(conversation=conv.id, input=\"Hi\")\nprint(r.output_text)\n```\n\n- An existing agent can also be referenced on each call with `extra_body={\"agent_reference\": {\"name\": ..., \"type\": \"agent_reference\"}}`.\n- Reusing the same **conversation** ID gives multi-turn memory.\n- Authentication uses Microsoft Entra ID (`DefaultAzureCredential`).\n\n**Threads and messages** are the classic Agent Service (and Assistants API) terms. Mapping to the current API: **thread → conversation**, **message → item**, **run (polled) → response (no polling)**, **assistant/agent → agent version**. Agent creation uses the project client; conversations and responses use the OpenAI client.",
+      "terms": [
+        {
+          "t": "PromptAgentDefinition",
+          "d": "SDK model class holding an agent's model, instructions and tools."
+        },
+        {
+          "t": "Conversation",
+          "d": "Stored stream of items (messages, tool calls) for multi-turn chat; replaces thread."
+        },
+        {
+          "t": "Threads and messages",
+          "d": "Classic terms for a conversation and the messages within it."
+        },
+        {
+          "t": "Agent version",
+          "d": "Immutable snapshot of an agent definition created on save."
+        }
+      ],
+      "trap": "Questions using 2.x code expect conversations and responses; threads, runs and polling are the classic pattern.",
+      "example": "An intranet page creates one conversation per employee session and sends each question to the hr-helper agent with responses.create.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Classic",
+          "Current"
+        ],
+        "rows": [
+          [
+            "Thread",
+            "Conversation"
+          ],
+          [
+            "Message",
+            "Item"
+          ],
+          [
+            "Run (polled)",
+            "Response"
+          ],
+          [
+            "Assistant / agent",
+            "Agent version"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.2.01",
+      "objective": "d2.2",
+      "seq": 1,
+      "title": "Text analysis: features and choosing an approach",
+      "short": "Text analysis covers **language detection**, **PII detection**, **named entity recognition**, **entity linking**, **key phrase extraction**, **sentiment analysis/opinion mining** and **summarization**. Use a general-purpose LLM for flexible, conversational analysis, or **Azure Language in Foundry Tools** for structured, consistent output.",
+      "deep": "Know what each analysis returns:\n\n- **Language detection**: primary language, ISO 639-1 code (e.g. `es`) and a confidence score.\n- **PII detection**: finds names, phone numbers, email and street addresses (and health data) and can return **redacted text**.\n- **Named entity recognition (NER)**: categorises people, places, organisations, dates, quantities.\n- **Entity linking**: disambiguates an entity by linking it to a knowledge base (Wikipedia).\n- **Key phrase extraction**: main talking points, useful for indexing and tags.\n- **Sentiment analysis**: positive/negative/neutral/mixed per document and sentence; **opinion mining** ties sentiment to aspects (\"service\" was negative).\n- **Summarization**: condensed text.\n\nTwo ways to do it in Foundry:\n- **General-purpose model** (chat playground or Responses API): any task via a prompt, follow-up questions allowed, but wording varies between calls.\n- **Azure Language in Foundry Tools**: purpose-built analyzers returning **structured, deterministic** JSON — best for automated pipelines. Microsoft now marks language detection, PII, NER, custom NER and Text Analytics for health as core, and features such as key phrases, sentiment and summarization as legacy (still supported).\n\nIn the new portal, find Azure Language under Build's AI services and test it in its playground.",
+      "terms": [
+        {
+          "t": "Named entity recognition",
+          "d": "Identifying and categorising entities such as people, places and dates."
+        },
+        {
+          "t": "Entity linking",
+          "d": "Linking a recognised entity to a knowledge-base entry to disambiguate it."
+        },
+        {
+          "t": "PII detection",
+          "d": "Finding and optionally redacting personal data in text."
+        },
+        {
+          "t": "Opinion mining",
+          "d": "Aspect-based sentiment: which target got which opinion."
+        }
+      ],
+      "trap": "Entity linking (disambiguation via Wikipedia) is confused with NER (categorisation); masking personal data is PII detection, not NER.",
+      "example": "A bank routes emails by the ISO code from language detection and stores only PII-redacted text from Azure Language.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Aspect",
+          "General LLM",
+          "Azure Language"
+        ],
+        "rows": [
+          [
+            "Input",
+            "Natural-language prompt",
+            "Analyzer call"
+          ],
+          [
+            "Output",
+            "Varies with prompt",
+            "Structured, consistent"
+          ],
+          [
+            "Follow-ups",
+            "Yes, in chat",
+            "No"
+          ],
+          [
+            "Best for",
+            "Exploration",
+            "Automated pipelines"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.2.02",
+      "objective": "d2.2",
+      "seq": 2,
+      "title": "Build a text analysis app (SDK and agent tool)",
+      "short": "Install **azure-ai-textanalytics**, create a **TextAnalyticsClient** with the resource endpoint and **AzureKeyCredential**, and call methods like **detect_language** or **recognize_pii_entities** on a list of documents. Agents can use Azure Language through its **MCP server** tool.",
+      "deep": "**SDK app (deterministic results)**\n\n```\nfrom azure.core.credentials import AzureKeyCredential\nfrom azure.ai.textanalytics import TextAnalyticsClient\nclient = TextAnalyticsClient(endpoint=endpoint, credential=AzureKeyCredential(key))\nresult = client.detect_language([text])[0]\nprint(result.primary_language.name, result.primary_language.iso6391_name)\n```\n\n- Endpoint looks like `https://<resource>.cognitiveservices.azure.com/`; keep the endpoint and key in a `.env` file (`load_dotenv()`, `os.getenv()`).\n- Methods take a **list** of documents and return one result per document: `detect_language`, `recognize_pii_entities` (`redacted_text`, `entities` with `text`, `category`, `confidence_score`), `recognize_entities`, `recognize_linked_entities`, `extract_key_phrases`, `analyze_sentiment` (with `show_opinion_mining=True`).\n\n**LLM app (flexible)**: the OpenAI client with your deployment, a prompt like 'Classify the sentiment of this review', and `output_text`.\n\n**Agent + Azure Language**: in the agent playground add the **Azure Language in Foundry Tools** tool, enter your Foundry resource name to connect its **MCP server**, then prompt the agent. **MCP** (Model Context Protocol) is the open standard: the agent is the MCP client, the Language service is the MCP server. A Foundry resource already includes Language, so no separate resource is needed.",
+      "terms": [
+        {
+          "t": "TextAnalyticsClient",
+          "d": "Python client for Azure Language text analysis."
+        },
+        {
+          "t": "AzureKeyCredential",
+          "d": "Wraps an API key for Azure SDK clients."
+        },
+        {
+          "t": "redacted_text",
+          "d": "PII result property with personal data masked."
+        },
+        {
+          "t": "Azure Language MCP server",
+          "d": "Managed MCP endpoint exposing Language features as agent tools."
+        }
+      ],
+      "trap": "Text Analytics methods expect a list of documents and AzureKeyCredential for key auth; an LLM prompt does not return properties like redacted_text.",
+      "example": "A helpdesk script calls recognize_pii_entities on each ticket and saves result.redacted_text, while a triage agent uses the Language MCP tool to detect ticket language.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Load .env",
+          "TextAnalyticsClient",
+          "Analyze list",
+          "Read results"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.2.03",
+      "objective": "d2.2",
+      "seq": 3,
+      "title": "Spoken prompts with multimodal models",
+      "short": "Audio-capable **multimodal models** (e.g. gpt-4o-audio-preview, gpt-realtime) accept speech directly. In a request you add an **input_audio** content part with base64 audio, and can ask for spoken replies with **modalities** and an **audio** voice setting.",
+      "deep": "A **multimodal model** handles more than one kind of input or output. Audio-capable models let a user *speak* the prompt instead of typing it.\n\n**Request/response pattern (Chat Completions)**\n- Read the audio file and **base64-encode** it.\n- Send a user message whose `content` list holds a `text` part (\"Answer the question in this recording\") and an `input_audio` part: `{\"data\": encoded, \"format\": \"wav\"}`.\n- For a spoken answer, set `modalities=[\"text\", \"audio\"]` and `audio={\"voice\": \"alloy\", \"format\": \"wav\"}`.\n- The reply holds `message.audio.transcript` (text) and `message.audio.data` (base64 audio to decode and play). Audio files up to 20 MB.\n\nModels include `gpt-4o-audio-preview` and `gpt-4o-mini-audio-preview` (audio in chat completions), `gpt-4o-transcribe` (transcription), `gpt-4o-mini-tts` (speech output), and **gpt-realtime** models for low-latency speech-in/speech-out sessions.\n\n**Realtime API** connections: **WebRTC** for browser/mobile clients (lowest latency), **WebSocket** for server-to-server, **SIP** for telephony. Voice activity detection (`server_vad` or `semantic_vad`) decides when the user finished speaking.",
+      "terms": [
+        {
+          "t": "Multimodal model",
+          "d": "A model that accepts or produces several modalities such as text, audio, images."
+        },
+        {
+          "t": "input_audio",
+          "d": "Message content part carrying base64-encoded audio and its format."
+        },
+        {
+          "t": "Realtime API",
+          "d": "Low-latency streaming API for speech-in, speech-out conversations."
+        },
+        {
+          "t": "Voice activity detection",
+          "d": "Detecting when speech starts and ends to manage turns."
+        }
+      ],
+      "trap": "Audio-native models don't need a separate speech-to-text step; and the realtime choice for browsers is WebRTC, not SIP or batch.",
+      "example": "A field engineer records 'What torque does valve 7 need?'; the app base64-encodes the WAV, sends it as input_audio, and plays back the model's spoken reply.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Record audio",
+          "Base64 encode",
+          "input_audio part",
+          "Multimodal model",
+          "Text + audio reply"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.2.04",
+      "objective": "d2.2",
+      "seq": 4,
+      "title": "Voice Live and voice-enabled agents",
+      "short": "**Voice Live** (Azure Speech) is a managed **speech-to-speech** service: it combines speech-to-text, a generative model and text-to-speech, plus **noise suppression**, **echo cancellation**, **interruption** and **end-of-turn detection**. In Foundry you enable **Voice mode** on an agent.",
+      "deep": "Building a voice agent by hand means chaining three services: **speech recognition** (STT), the **reasoning model**, and **speech synthesis** (TTS), and handling microphones, streaming and interruptions yourself. **Voice Live API** does that orchestration as one managed service — you choose a generative model (GPT-Realtime, GPT-4.1/GPT-5 families, Phi and others) but don't deploy or manage the underlying models.\n\nConversational features: **noise suppression**, **echo cancellation** (the agent doesn't respond to its own voice), robust **interruption** (barge-in) handling, **end-of-turn detection** that tolerates natural pauses, avatars, custom voices and **function calling**. It uses **WebSocket** events compatible with the Azure OpenAI Realtime API. Pricing tiers (Pro, Standard, Lite) follow from the model you pick.\n\n**In the Foundry portal**: create an agent with model and instructions, turn on **Voice mode** and review speech input/output settings and voice, **Save**, then **Start session**, allow the microphone and speak; the status shows Listening, Processing, Speaking, and **cc** shows the transcript. Code: `pip install azure-ai-voicelive` (with pyaudio, azure-identity); the portal's sample code handles session setup and audio streaming.",
+      "terms": [
+        {
+          "t": "Voice Live API",
+          "d": "Managed speech-to-speech service for low-latency voice agents."
+        },
+        {
+          "t": "Speech-to-speech",
+          "d": "Spoken input in, spoken output out, with no typing."
+        },
+        {
+          "t": "Voice mode",
+          "d": "Foundry agent setting that adds Voice Live to the agent definition."
+        },
+        {
+          "t": "Echo cancellation",
+          "d": "Stops the agent hearing and reacting to its own audio."
+        }
+      ],
+      "trap": "When a scenario wants a voice bot without orchestrating STT, LLM and TTS separately, choose Voice Live, not a hand-built chain or batch transcription.",
+      "example": "A council kiosk agent with Voice mode answers spoken questions about bin collection and stops talking when a resident interrupts.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Microphone",
+          "Speech to text",
+          "Generative model",
+          "Text to speech",
+          "Speaker"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.2.05",
+      "objective": "d2.2",
+      "seq": 5,
+      "title": "Speech-to-text and speech translation apps",
+      "short": "With **azure-cognitiveservices-speech**, create a **SpeechConfig** (key + endpoint), an **AudioConfig** (microphone or file) and a **SpeechRecognizer**; call **recognize_once_async()** for one utterance or **start_continuous_recognition()** for long audio. **TranslationRecognizer** adds speech translation.",
+      "deep": "**Speech recognition (speech-to-text)** turns audio into text using an acoustic model (audio to phonemes) and a language model (phonemes to words). Try it first in the portal's **Azure Speech – Speech to Text** playground.\n\n```\nimport azure.cognitiveservices.speech as speechsdk\nspeech_config = speechsdk.SpeechConfig(subscription=key, endpoint=endpoint)\nspeech_config.speech_recognition_language = \"en-US\"\naudio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)\nrecognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)\nresult = recognizer.recognize_once_async().get()\n```\n\n- `AudioConfig(filename=\"call.wav\")` reads a file instead.\n- `recognize_once_async` handles one utterance (up to about 30 seconds or until silence). For longer audio use `start_continuous_recognition()` with `recognizing`/`recognized` event handlers.\n- Check `result.reason`: `ResultReason.RecognizedSpeech`, `NoMatch` (no speech recognised) or `Canceled` (e.g. wrong key/endpoint).\n- Default recognition language is `en-US`.\n- **Batch transcription** processes stored files by SAS URI asynchronously on a best-effort basis.\n\n**Speech translation**: `speechsdk.translation.SpeechTranslationConfig`, set `speech_recognition_language`, call `add_target_language(\"it\")`, use a `TranslationRecognizer`; success is `ResultReason.TranslatedSpeech` and text is in `result.translations[\"it\"]`.",
+      "terms": [
+        {
+          "t": "Speech recognition",
+          "d": "Speech-to-text: converting spoken audio into text."
+        },
+        {
+          "t": "SpeechRecognizer",
+          "d": "Speech SDK class that transcribes audio from an AudioConfig source."
+        },
+        {
+          "t": "Continuous recognition",
+          "d": "Event-driven recognition for long or ongoing audio."
+        },
+        {
+          "t": "Speech translation",
+          "d": "Recognising speech and translating it into target languages."
+        }
+      ],
+      "trap": "recognize_once_async stops after one utterance; long meetings need continuous recognition, and stored archives suit batch transcription.",
+      "example": "A voicemail app uses AudioConfig(filename=...) and a SpeechRecognizer to transcribe each message, then translates Spanish ones to English with TranslationRecognizer.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "SpeechConfig",
+          "AudioConfig",
+          "SpeechRecognizer",
+          "Recognize",
+          "result.text"
+        ]
+      }
+    },
+    {
+      "id": "ai-901.d2.2.06",
+      "objective": "d2.2",
+      "seq": 6,
+      "title": "Text-to-speech apps, neural voices and SSML",
+      "short": "**Speech synthesis** (text-to-speech) needs the text and a **voice**. Set **speech_synthesis_voice_name** on SpeechConfig, create a **SpeechSynthesizer**, and call **speak_text_async(text).get()**. Use **SSML** with **speak_ssml_async** to control pauses, rate, pitch and style.",
+      "deep": "**Speech synthesis** converts text into audio: the text is tokenised, mapped to phonemes and prosodic units, then rendered by a voice. **Neural voices** use deep neural networks for natural intonation; HD and multilingual neural voices exist, and custom neural voice is a limited-access option. Try voices, speed and pitch in the **Azure Speech – Text to Speech** playground.\n\n```\nspeech_config.speech_synthesis_voice_name = \"en-US-AvaMultilingualNeural\"\naudio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)\nsynth = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)\nresult = synth.speak_text_async(\"Your order has shipped\").get()\n```\n\nSuccess is `ResultReason.SynthesizingAudioCompleted`; failures return `Canceled` with cancellation details. Audio can go to the speaker or be saved to a file for later playback.\n\n**SSML** (Speech Synthesis Markup Language) is an **XML** format: root `<speak>`, `<voice name=...>`, `<prosody rate/pitch/volume>`, `<break time=\"500ms\"/>`, `<say-as>`, `<phoneme>`, and `<mstts:express-as style=...>` for speaking styles. Send it with `speak_ssml_async(ssml)`; passing SSML to `speak_text_async` would read the tags aloud. Billing counts characters converted to speech.",
+      "terms": [
+        {
+          "t": "Speech synthesis",
+          "d": "Text-to-speech: generating spoken audio from text."
+        },
+        {
+          "t": "Neural voice",
+          "d": "Synthetic voice produced by neural networks with natural prosody."
+        },
+        {
+          "t": "SSML",
+          "d": "XML markup controlling voice, pauses, rate, pitch and pronunciation."
+        },
+        {
+          "t": "SpeechSynthesizer",
+          "d": "Speech SDK class that turns text or SSML into audio."
+        }
+      ],
+      "trap": "SSML is XML (not JSON) and is sent with speak_ssml_async; speak_text_async is for plain text.",
+      "example": "An accessibility app reads incoming texts aloud with a neural voice and uses SSML to add a short pause between sender name and message.",
+      "diagram": null
+    }
+  ],
+  "questions": [
+    {
+      "id": "ai-901.d2a.q001",
+      "lesson": "ai-901.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You want the rule 'Only answer questions about our return policy' to apply to every turn of a chat. Where should you put it?",
+      "options": [
+        "In each user prompt",
+        "In the system prompt (instructions)",
+        "In a stop sequence",
+        "In an assistant message"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The system prompt sets role and rules for the whole conversation. User prompts change every turn, stop sequences only end generation, and assistant messages are the model's earlier replies, not instructions."
+    },
+    {
+      "id": "ai-901.d2a.q002",
+      "lesson": "ai-901.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about prompts, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "The user prompt is normally written by the developer and stays the same for every request.",
+          "a": false
+        },
+        {
+          "s": "A system prompt can tell the model which output format to use, such as JSON.",
+          "a": true
+        },
+        {
+          "s": "Adding a system prompt permanently retrains the deployed model.",
+          "a": false
+        }
+      ],
+      "explain": "The user prompt comes from the end user and changes each turn. System prompts can define output format. Prompts only condition the current request; they never change model weights."
+    },
+    {
+      "id": "ai-901.d2a.q003",
+      "lesson": "ai-901.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A tutoring app uses a deployed model. The developer configures it to act as a patient maths tutor, never reveal final answers, and keep replies under three sentences. A student then types a homework problem into the app.",
+      "stem": "Which text is the user prompt?",
+      "options": [
+        "You are a patient maths tutor who explains step by step.",
+        "Never reveal the final answer; ask a guiding question instead.",
+        "Solve 3x + 5 = 20",
+        "Keep every reply under three sentences."
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The student's homework problem is the user prompt. The persona, the 'never reveal' rule and the length limit are developer-set rules that belong in the system prompt."
+    },
+    {
+      "id": "ai-901.d2a.q004",
+      "lesson": "ai-901.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO items typically belong in a system prompt? Select TWO.",
+      "options": [
+        "The assistant's role or persona",
+        "The end user's specific question about their order",
+        "What to do when the answer is unknown",
+        "The base64 audio of the user's voice",
+        "The Azure subscription ID"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "System prompts define persona, scope, tone and fallback behaviour such as 'say you don't know'. The user's question and audio are user input; a subscription ID isn't prompt content."
+    },
+    {
+      "id": "ai-901.d2a.q005",
+      "lesson": "ai-901.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A chat assistant sometimes invents answers when it does not know them. Which system prompt change best addresses this?",
+      "options": [
+        "Set temperature to 1.5",
+        "Tell the model to say 'I don't know' when the answer isn't in the provided information",
+        "Move all instructions into the user prompt",
+        "Increase max output tokens"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Giving the model an explicit 'out' reduces fabricated answers. Higher temperature increases randomness, moving instructions doesn't help, and more output tokens only allow longer answers."
+    },
+    {
+      "id": "ai-901.d2a.q006",
+      "lesson": "ai-901.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In a Chat Completions messages list, which role carries the system prompt?",
+      "options": [
+        "user",
+        "assistant",
+        "system",
+        "tool"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The system role holds developer instructions, usually as the first message. user holds the end user's input, assistant holds model replies, and tool holds tool results."
+    },
+    {
+      "id": "ai-901.d2a.q007",
+      "lesson": "ai-901.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso deploys a customer service chatbot whose system prompt is only 'You are a helpful assistant.' Testers find it happily answers cooking and sports questions, which management wants it to decline. The bot should only discuss Contoso orders.",
+      "stem": "What should you do?",
+      "options": [
+        "Add to the system prompt: 'Only answer questions about Contoso orders and politely decline other topics.'",
+        "Ask every user to start messages with 'Contoso:'",
+        "Lower top-p to 0.1",
+        "Redeploy the model with the Global Batch deployment type"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Scope restrictions belong in the system prompt. Relying on users is unreliable, top-p only changes randomness, and Global Batch is an asynchronous deployment type that doesn't change behaviour."
+    },
+    {
+      "id": "ai-901.d2a.q008",
+      "lesson": "ai-901.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You include two worked input/output examples in a prompt before the real request. What is this technique called?",
+      "options": [
+        "Fine-tuning",
+        "Zero-shot prompting",
+        "Chain-of-thought prompting",
+        "Few-shot prompting"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Few-shot prompting supplies a few examples in the prompt. Zero-shot uses none, chain-of-thought asks for step-by-step reasoning, and fine-tuning retrains the model on data."
+    },
+    {
+      "id": "ai-901.d2a.q009",
+      "lesson": "ai-901.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You paste your company's leave policy into the prompt and tell the model to answer only from that text. Which technique is this?",
+      "options": [
+        "Grounding the prompt with supplied context",
+        "Few-shot prompting",
+        "Prompt shields",
+        "Increasing the context window"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Supplying source content and limiting answers to it is grounding. Few-shot uses examples, prompt shields detect jailbreak attacks, and the context window is a model limit, not a technique."
+    },
+    {
+      "id": "ai-901.d2a.q010",
+      "lesson": "ai-901.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO prompt techniques help reduce hallucinations? Select TWO.",
+      "options": [
+        "Supply source content and instruct the model to answer only from it",
+        "Set temperature to 2",
+        "Tell the model to reply 'not found' when the source lacks the answer",
+        "Remove the system prompt",
+        "Increase the frequency penalty"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Grounding plus an explicit fallback keeps answers tied to facts. Maximum temperature makes output more random, removing the system prompt removes guidance, and frequency penalty only reduces repetition."
+    },
+    {
+      "id": "ai-901.d2a.q011",
+      "lesson": "ai-901.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Few-shot examples in a prompt permanently change the model's weights.",
+          "a": false
+        },
+        {
+          "s": "Asking a model to work through a problem step by step is chain-of-thought prompting.",
+          "a": true
+        },
+        {
+          "s": "Retrieval-augmented generation (RAG) retrieves relevant data and adds it to the prompt to ground the response.",
+          "a": true
+        }
+      ],
+      "explain": "Examples only condition the current request; weights change only through training. Step-by-step reasoning prompts are chain of thought. RAG retrieves data and injects it into the prompt."
+    },
+    {
+      "id": "ai-901.d2a.q012",
+      "lesson": "ai-901.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your app passes model output to a JSON parser, but the model often adds friendly sentences around the data. What is the most direct prompt-level fix?",
+      "options": [
+        "Increase max output tokens",
+        "Add a presence penalty",
+        "Specify the exact JSON structure in the system prompt and ask for JSON only",
+        "Switch to zero-shot prompting"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Stating the required output format (and that nothing else should be returned) is the output-format technique. Token limits and penalties don't control structure, and zero-shot removes helpful examples."
+    },
+    {
+      "id": "ai-901.d2a.q013",
+      "lesson": "ai-901.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A model produces a fluent, confident answer that is factually false. What is this called?",
+      "options": [
+        "Grounding",
+        "Hallucination",
+        "Tokenization",
+        "Throttling"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A hallucination is confident output not supported by facts. Grounding is the mitigation, tokenization splits text into tokens, and throttling is rate limiting."
+    },
+    {
+      "id": "ai-901.d2a.q014",
+      "lesson": "ai-901.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An analyst's prompt starts with 'Return exactly five bullet points', followed by a 6,000-word report to summarise. The model reads the whole report but usually returns long paragraphs instead of bullets. The analyst wants to keep the same model and settings.",
+      "stem": "Based on Microsoft prompt engineering guidance, what should the analyst try first?",
+      "options": [
+        "Remove the system prompt entirely",
+        "Set temperature to 2",
+        "Send the report to a second deployment",
+        "Repeat the key format instruction at the end of the prompt, after the report"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Models show recency bias: instructions at the end of a long prompt carry more weight, so repeating the format instruction there helps. The other options add randomness or don't address instruction placement."
+    },
+    {
+      "id": "ai-901.d2a.q015",
+      "lesson": "ai-901.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In the Foundry portal, where do you browse and compare models from Microsoft, OpenAI, Meta, Mistral and others before deploying one?",
+      "options": [
+        "Model catalog",
+        "Agent playground",
+        "Azure Marketplace",
+        "Language playground"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The model catalog lists models with model cards and benchmarks and lets you deploy them. The agent playground tests agents, Azure Marketplace sells third-party products, and the Language playground tests Azure Language."
+    },
+    {
+      "id": "ai-901.d2a.q016",
+      "lesson": "ai-901.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which deployment type is the default, is billed per token, may process data in any Azure region, and offers the highest default quota?",
+      "options": [
+        "Standard",
+        "Data Zone Standard",
+        "Global Standard",
+        "Regional Provisioned"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Global Standard is the default pay-per-token type with global processing. Standard keeps processing in the geography, Data Zone Standard in a data zone, and Provisioned uses reserved PTUs."
+    },
+    {
+      "id": "ai-901.d2a.q017",
+      "lesson": "ai-901.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A German insurer is deploying a chat model in Foundry. Compliance requires that prompts and responses are processed only within the EU. The team expects bursty traffic, wants high quota and wants to pay only for tokens used rather than reserving capacity.",
+      "stem": "Which deployment type should they choose?",
+      "options": [
+        "Global Standard",
+        "Data Zone Standard",
+        "Global Batch",
+        "Developer"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Data Zone Standard keeps processing in the EU data zone with pay-per-token billing and high quotas. Global Standard and Global Batch can process anywhere; Developer is only for evaluating fine-tuned models."
+    },
+    {
+      "id": "ai-901.d2a.q018",
+      "lesson": "ai-901.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A publisher wants to summarise 200,000 archived articles. Results are needed within about a day, nobody is waiting interactively, and the priority is the lowest cost. Normal interactive traffic on the same model must not be disrupted.",
+      "stem": "Which deployment type best fits?",
+      "options": [
+        "Global Provisioned",
+        "Standard",
+        "Developer",
+        "Global Batch"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Global Batch is asynchronous with a 24-hour target turnaround, about 50% cheaper, and uses separate enqueued quota. Provisioned reserves costly capacity, Standard is interactive pay-per-token, Developer is for fine-tuned evaluation."
+    },
+    {
+      "id": "ai-901.d2a.q019",
+      "lesson": "ai-901.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about model deployments, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Provisioned deployments are billed by reserved provisioned throughput units (PTUs) rather than per token.",
+          "a": true
+        },
+        {
+          "s": "Exceeding a deployment's tokens-per-minute (TPM) limit can cause rate-limit errors.",
+          "a": true
+        },
+        {
+          "s": "Every model in the catalog supports every deployment type in every region.",
+          "a": false
+        }
+      ],
+      "explain": "Provisioned types reserve PTUs. TPM limits throttle requests when exceeded. Availability of deployment types varies by model and region."
+    },
+    {
+      "id": "ai-901.d2a.q020",
+      "lesson": "ai-901.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "An app frequently receives rate-limit errors from a deployment. Which TWO changes in the app can reduce them? Select TWO.",
+      "options": [
+        "Lower the max output tokens per request",
+        "Reduce the number of concurrent requests",
+        "Raise the temperature",
+        "Move the system prompt into the user prompt",
+        "Add more few-shot examples"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Larger max token settings and more concurrent calls consume more TPM. Temperature doesn't affect quota, moving instructions changes nothing, and extra examples add tokens, making throttling worse."
+    },
+    {
+      "id": "ai-901.d2a.q021",
+      "lesson": "ai-901.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are starting from an Azure subscription. Put the steps in order to begin chatting with a new model in the Foundry portal.",
+      "options": [
+        "Create or open a Foundry project",
+        "Open the model catalog and select a model",
+        "Select Deploy and choose the deployment settings",
+        "Test prompts in the playground"
+      ],
+      "explain": "Models are deployed inside a project, so the project comes first. You choose the model from the catalog, deploy it to get an endpoint, then interact with it in the playground."
+    },
+    {
+      "id": "ai-901.d2a.q022",
+      "lesson": "ai-901.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A research team wants to run an open-source model from the catalog's Hugging Face collection. They need dedicated GPU capacity for it and accept hourly billing per accelerator. They don't want to manage virtual machines or serving runtimes themselves.",
+      "stem": "Which deployment option fits?",
+      "options": [
+        "Managed compute",
+        "Serverless API with Global Standard",
+        "Global Batch",
+        "Developer deployment"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Managed compute runs open-source and custom models on dedicated GPUs billed hourly, with Foundry managing the runtime. Serverless API types are pay-per-token for Foundry Models; Developer is for fine-tuned evaluation."
+    },
+    {
+      "id": "ai-901.d2a.q023",
+      "lesson": "ai-901.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which parameter makes a model's output more random and creative when you increase it?",
+      "options": [
+        "Max output tokens",
+        "Stop sequence",
+        "Frequency penalty",
+        "Temperature"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Higher temperature flattens token probabilities, giving more varied output. Max output tokens limits length, a stop sequence ends output, and frequency penalty reduces repetition."
+    },
+    {
+      "id": "ai-901.d2a.q024",
+      "lesson": "ai-901.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A legal team wants generated contract clauses to be focused and consistent between runs. Which playground setting should they use?",
+      "options": [
+        "Set temperature to about 0.2",
+        "Set temperature to 1.8",
+        "Set presence penalty to 2",
+        "Remove the max output tokens limit"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Low temperature gives focused, repeatable output, which suits legal text. High temperature adds creativity, presence penalty pushes new topics, and output length doesn't affect consistency."
+    },
+    {
+      "id": "ai-901.d2a.q025",
+      "lesson": "ai-901.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about model parameters, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Microsoft recommends adjusting temperature or top-p, but not both at the same time.",
+          "a": true
+        },
+        {
+          "s": "Max output tokens limits the length of the model's response.",
+          "a": true
+        },
+        {
+          "s": "A stop sequence forces the model to keep generating until it reaches the max token limit.",
+          "a": false
+        }
+      ],
+      "explain": "Temperature and top-p both control randomness, so change one. Max output tokens caps length. A stop sequence does the opposite: it makes generation stop when that text appears."
+    },
+    {
+      "id": "ai-901.d2a.q026",
+      "lesson": "ai-901.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A model keeps repeating the same phrases. Which parameter penalises tokens in proportion to how often they have already appeared?",
+      "options": [
+        "Presence penalty",
+        "Temperature",
+        "Top-p",
+        "Frequency penalty"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Frequency penalty scales with how often a token has appeared, cutting repetition. Presence penalty applies once a token has appeared at all, encouraging new topics; top-p and temperature control randomness."
+    },
+    {
+      "id": "ai-901.d2a.q027",
+      "lesson": "ai-901.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE can you configure directly in the Foundry model playground? Select THREE.",
+      "options": [
+        "System instructions",
+        "Temperature",
+        "Max output tokens",
+        "The model's original training data",
+        "The Azure region of the Foundry resource"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "The playground exposes instructions and generation parameters such as temperature and max tokens. Training data is fixed by the model provider, and the region is set when the resource is created."
+    },
+    {
+      "id": "ai-901.d2a.q028",
+      "lesson": "ai-901.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which list shows the harm categories that Foundry guardrails (content filters) classify for model input and output?",
+      "options": [
+        "Fraud, malware, spam and phishing",
+        "Bias, toxicity, profanity and sarcasm",
+        "Hate, sexual, violence and self-harm",
+        "PII, PHI, PCI and credentials"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Foundry content risk controls, based on Azure AI Content Safety, classify hate, sexual, violence and self-harm content with severity levels. The other lists aren't the content filter categories."
+    },
+    {
+      "id": "ai-901.d2a.q029",
+      "lesson": "ai-901.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You have tuned prompts and parameters in the playground and want starter Python code that reproduces them. What is the quickest option?",
+      "options": [
+        "Export the deployment as an ARM template",
+        "Download the model weights from the catalog",
+        "Open the Azure Language playground",
+        "Use the playground's code view to copy the generated sample code"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The playground generates sample code that calls your deployment with the same prompts and settings. ARM templates deploy infrastructure, hosted models' weights aren't downloadable for this, and the Language playground is a different service."
+    },
+    {
+      "id": "ai-901.d2a.q030",
+      "lesson": "ai-901.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A support chatbot's answers often stop mid-sentence. Logs show each response ends exactly when the output token count hits the configured limit. Answer accuracy is otherwise fine and no stop sequences are configured.",
+      "stem": "What should you change?",
+      "options": [
+        "Lower the temperature",
+        "Increase the max output tokens setting",
+        "Add a stop sequence",
+        "Increase the presence penalty"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Responses are truncated by the max output tokens cap, so raise it (or ask for shorter answers). Temperature and presence penalty change wording, and a stop sequence would end output even sooner."
+    }
+  ]
+}

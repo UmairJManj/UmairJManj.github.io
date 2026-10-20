@@ -1,0 +1,1482 @@
+{
+  "exam": "sc-900",
+  "domain": "d1",
+  "lessons": [
+    {
+      "id": "sc-900.d1.1.01",
+      "objective": "d1.1",
+      "seq": 1,
+      "title": "Shared responsibility model",
+      "short": "In the cloud, security duties are split between the provider and the customer. The split depends on the service model (IaaS, PaaS, SaaS), but the customer always keeps responsibility for its data, identities, endpoints and configuration choices.",
+      "deep": "On-premises, your organization secures everything: the building, hardware, network, operating system, applications and data. Moving to the cloud hands some of that stack to the provider, which is the **shared responsibility model**.\n\n- **IaaS** (Infrastructure as a Service, e.g. Azure VMs): the provider secures the physical datacenter, physical network and hosts. You manage the **operating system**, patching, apps, network controls you configure and data.\n- **PaaS** (Platform as a Service, e.g. Azure App Service): the provider also runs the OS and runtime. You manage your application code, its configuration, access and data.\n- **SaaS** (Software as a Service, e.g. Microsoft 365): the provider runs the whole application stack. You manage who has access, tenant settings and your data.\n\nWhatever the model, the customer **always retains**: information and data, accounts and identities (including MFA and least privilege), devices/endpoints that connect, and the configuration choices made in the tenant. A misconfigured storage account or a phished admin account is still the customer's problem on a perfectly secured platform.\n\nThe rule of thumb: the further you move from on-premises toward SaaS, the more the provider handles, but accountability for data and identities never transfers.",
+      "terms": [
+        {
+          "t": "Shared responsibility model",
+          "d": "Framework that defines which security tasks the cloud provider handles and which the customer handles."
+        },
+        {
+          "t": "IaaS",
+          "d": "Infrastructure as a Service: provider runs physical hardware and hosts; customer runs the OS and everything above."
+        },
+        {
+          "t": "PaaS",
+          "d": "Platform as a Service: provider also runs the OS and runtime; customer manages app code, access and data."
+        },
+        {
+          "t": "SaaS",
+          "d": "Software as a Service: provider runs the full application; customer manages access, settings and data."
+        }
+      ],
+      "trap": "Exams ask who patches the OS of an Azure VM: it is the customer (IaaS), not Microsoft; and data/identities are never the provider's responsibility in any model.",
+      "example": "A company moves its file server to an Azure VM. Microsoft secures the datacenter, but the company must still patch Windows Server, configure the firewall rules and control who can read the files.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Layer",
+          "IaaS",
+          "PaaS",
+          "SaaS"
+        ],
+        "rows": [
+          [
+            "Data & identities",
+            "Customer",
+            "Customer",
+            "Customer"
+          ],
+          [
+            "Applications",
+            "Customer",
+            "Customer",
+            "Provider"
+          ],
+          [
+            "Operating system",
+            "Customer",
+            "Provider",
+            "Provider"
+          ],
+          [
+            "Physical datacenter",
+            "Provider",
+            "Provider",
+            "Provider"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.1.02",
+      "objective": "d1.1",
+      "seq": 2,
+      "title": "Shared responsibility for AI",
+      "short": "AI workloads extend the shared responsibility model into three layers: AI platform, AI application and AI usage. The provider usually secures the platform and model hosting; the customer controls data access, identities, safe configuration, prompt injection mitigation and user policies.",
+      "deep": "AI systems add new risk because their behaviour can be steered by user prompts and by external data they read, and their outputs can drive real decisions. Microsoft describes three layers for an AI-enabled app:\n\n- **AI platform**: infrastructure, the model, and platform safety controls such as **content filtering**.\n- **AI application**: the app you build or deploy, its configuration, data sources, connectors and plugins.\n- **AI usage**: how people use it, their inputs, acceptable use policies and oversight.\n\nFor SaaS AI (e.g. Microsoft 365 Copilot) or PaaS AI (e.g. Microsoft Foundry), the **provider typically handles** physical infrastructure, model hosting and platform-level safety controls.\n\nThe **customer typically handles**:\n- What sensitive data the AI can reach (data protection and governance)\n- Who can use the AI app and what they can do (identity and access)\n- Safe configuration: connectors, data sources, logging, retention\n- **Prompt injection** mitigation: an attacker hides instructions in input or in external content; counter with input validation, access controls and monitoring\n- User training and acceptable use policies\n\nAs with classic cloud, using a higher-level AI service shifts work to the provider, but not accountability for your data or how the technology is used.",
+      "terms": [
+        {
+          "t": "AI platform layer",
+          "d": "Infrastructure, model and platform safety controls such as content filtering."
+        },
+        {
+          "t": "AI application layer",
+          "d": "The app built on the model, its configuration, connectors, data sources and plugins."
+        },
+        {
+          "t": "AI usage layer",
+          "d": "How people use the AI: prompts, acceptable use policies and oversight."
+        },
+        {
+          "t": "Prompt injection",
+          "d": "Attack that embeds malicious instructions in user input or external data to manipulate an AI system."
+        }
+      ],
+      "trap": "A tempting wrong answer is that the provider's content filtering fully covers prompt injection; securing connectors, data access and inputs remains the customer's job.",
+      "example": "A firm builds a support bot in Microsoft Foundry that reads web pages. Microsoft hosts the model and filters harmful content, but the firm must restrict which sources the bot reads and monitor for injected instructions.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "AI usage",
+          "AI application",
+          "AI platform"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.1.03",
+      "objective": "d1.1",
+      "seq": 3,
+      "title": "Defense-in-depth layers",
+      "short": "Defense-in-depth uses multiple layers of security controls so that if one layer fails, the next still protects data. Microsoft lists seven layers from outermost to innermost: physical, identity and access, perimeter, network, compute, application, data.",
+      "deep": "**Defense-in-depth** is a layered strategy: instead of one big wall, many overlapping controls each slow an attacker and give defenders another chance to detect and respond. A single misconfiguration or vulnerability should not lead straight to a breach.\n\nThe seven layers, outermost to innermost:\n- **Physical security**: locked datacenters, guards, badge readers, cameras.\n- **Identity and access**: MFA, role-based access control (RBAC), Conditional Access checking location, device and risk.\n- **Perimeter**: DDoS protection and perimeter firewalls at the network edge.\n- **Network**: segmentation into zones, network security groups (NSGs) limiting traffic between resources.\n- **Compute**: securing VMs and containers: patching, closing unused ports, restricting admin access.\n- **Application**: secure development, input validation against SQL injection and XSS, security testing.\n- **Data**: the innermost, most critical layer: access controls on data, encryption, classification.\n\nThe point for the exam is the idea of layering, and recognising which layer a given control belongs to.",
+      "terms": [
+        {
+          "t": "Defense-in-depth",
+          "d": "Security strategy using multiple overlapping layers of protection so no single failure exposes data."
+        },
+        {
+          "t": "Perimeter layer",
+          "d": "Protects the network edge from large-scale attacks, e.g. DDoS protection and firewalls."
+        },
+        {
+          "t": "Network security group (NSG)",
+          "d": "Azure rule set that allows or denies traffic between resources; a network-layer control."
+        },
+        {
+          "t": "Compute layer",
+          "d": "Protection of VMs and containers through patching, port closure and restricted admin access."
+        }
+      ],
+      "trap": "Exams mix up perimeter (DDoS, edge firewall) and network (segmentation, NSGs) layers; also remember data is the innermost layer, physical the outermost.",
+      "example": "An attacker phishes a password (identity layer), but network segmentation stops lateral movement and the database is encrypted, so the stolen data is unreadable.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Physical",
+          "Identity & access",
+          "Perimeter",
+          "Network",
+          "Compute",
+          "Application",
+          "Data"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.1.04",
+      "objective": "d1.1",
+      "seq": 4,
+      "title": "The CIA triad",
+      "short": "Security goals are summarised by the CIA triad: confidentiality (only authorised people see data), integrity (data stays accurate and unaltered), and availability (data and systems are reachable when needed). Every control supports at least one of the three.",
+      "deep": "The **CIA triad** describes what defense-in-depth is protecting.\n\n- **Confidentiality**: sensitive data (customer records, financial data, passwords, intellectual property) is visible only to authorised people. Controls: encryption, access controls, secure transmission. A breach of confidentiality means someone unauthorised read the data.\n- **Integrity**: data stays accurate and complete and changes only through authorised processes. Threats include tampering, corruption by bugs, and unauthorised deletion. Controls: **cryptographic hashing**, **digital signatures**, audit logs, database transaction controls.\n- **Availability**: authorised users can reach data and systems when needed. Threats: **DDoS attacks**, ransomware, hardware failure, natural disasters. Controls: redundancy, load balancing, failover, tested backups, DDoS protection.\n\nThe goals can conflict. Strong encryption boosts confidentiality, but if the key is lost the data becomes unavailable. Security teams balance the three according to how sensitive the data is and the business impact of each kind of failure.",
+      "terms": [
+        {
+          "t": "Confidentiality",
+          "d": "Only authorised parties can access the information."
+        },
+        {
+          "t": "Integrity",
+          "d": "Data remains accurate and unmodified except by authorised processes."
+        },
+        {
+          "t": "Availability",
+          "d": "Data and systems are accessible to authorised users when needed."
+        }
+      ],
+      "trap": "Hashing and digital signatures map to integrity, not confidentiality; DDoS and ransomware lockouts map to availability.",
+      "example": "A hospital's records system is hit by a DDoS attack: no data is read or changed, but doctors cannot reach records, which is a failure of availability.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d1.1.05",
+      "objective": "d1.1",
+      "seq": 5,
+      "title": "Zero Trust guiding principles",
+      "short": "Zero Trust means \"never trust, always verify\": every request is authenticated and authorised no matter where it comes from. Its three guiding principles are verify explicitly, use least privileged access, and assume breach.",
+      "deep": "Traditional security trusted anything inside the corporate network. **Zero Trust** removes that assumption: every access request is checked as if it came from an open network.\n\n**1. Verify explicitly**: always authenticate and authorise using all available signals, not just a password or network location. Signals include user identity, location, device and its compliance state, the app or service being accessed, data classification, and anomalies such as unusual sign-in times.\n\n**2. Use least privileged access**: give the minimum access needed for the minimum time, via:\n- **Just-in-time (JIT)** access: granted when needed, removed after.\n- **Just-enough-access (JEA)**: only the specific permissions the task needs.\n- **Risk-based adaptive policies**: automatically restrict access when risk is detected.\n\n**3. Assume breach**: design as if an attacker is already inside. Segment access so one compromised account or device cannot reach everything (minimising the \"blast radius\"), encrypt end to end, and use monitoring and analytics to detect and respond quickly.\n\nIn Microsoft's products, Conditional Access is a key tool for verify explicitly, and Privileged Identity Management (PIM) supports JIT access.",
+      "terms": [
+        {
+          "t": "Zero Trust",
+          "d": "Security model that trusts no request by default and verifies every one, wherever it originates."
+        },
+        {
+          "t": "Verify explicitly",
+          "d": "Authenticate and authorise using all available signals such as identity, location, device health and risk."
+        },
+        {
+          "t": "Just-in-time / just-enough-access",
+          "d": "Least privilege techniques: access only when needed (JIT) and only the permissions needed (JEA)."
+        },
+        {
+          "t": "Assume breach",
+          "d": "Design as if attackers are inside: segment, encrypt end to end, and monitor to limit blast radius."
+        }
+      ],
+      "trap": "Don't pick \"trust devices on the corporate network\": Zero Trust explicitly rejects location-based trust; and JIT/JEA belongs to least privilege, not verify explicitly.",
+      "example": "An admin activates the Global Administrator role for two hours to fix an issue, then it expires automatically: least privileged access through just-in-time elevation.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Verify explicitly",
+          "Least privilege",
+          "Assume breach"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.1.06",
+      "objective": "d1.1",
+      "seq": 6,
+      "title": "Zero Trust foundational pillars",
+      "short": "Zero Trust is applied across foundational pillars: identities, devices, applications, data, infrastructure and networks, tied together by visibility, automation and orchestration, which uses SIEM and SOAR to correlate signals and automate response.",
+      "deep": "Microsoft describes **six foundational pillars** of Zero Trust, plus an integrating layer. The six are sources of signals, places to enforce control, and resources to defend:\n\n- **Identities**: users, services and devices. Identity is the primary control plane because most attacks abuse an identity; require strong authentication and least privilege.\n- **Devices**: every device is an entry point; device health and compliance feed access decisions.\n- **Applications**: how data is consumed; includes discovering unsanctioned **shadow IT** and controlling app permissions and consent.\n- **Data**: classify, label and encrypt by sensitivity so protection travels with the data.\n- **Infrastructure**: on-premises or cloud; assess configuration and versions, use JIT access to admin interfaces, use telemetry.\n- **Networks**: segment, including **micro-segmentation** inside zones, encrypt end to end, real-time threat protection.\n\nThe integrating layer, **visibility, automation, and orchestration** (often counted as a seventh pillar), aggregates and correlates signals from the other six:\n- **SIEM** (Security Information and Event Management) ingests and correlates data to detect threats, e.g. Microsoft Sentinel.\n- **SOAR** (Security Orchestration, Automated Response) runs automated playbooks based on detections.",
+      "terms": [
+        {
+          "t": "Shadow IT",
+          "d": "Applications used without the IT department's knowledge or approval; discovered under the Applications pillar."
+        },
+        {
+          "t": "Micro-segmentation",
+          "d": "Dividing networks into small zones so a single compromise cannot move freely."
+        },
+        {
+          "t": "SIEM",
+          "d": "Security Information and Event Management: collects and correlates security data to detect threats."
+        },
+        {
+          "t": "SOAR",
+          "d": "Security Orchestration, Automated Response: automates response actions using playbooks."
+        }
+      ],
+      "trap": "SIEM/SOAR correlation is the visibility, automation and orchestration pillar, not Infrastructure or Networks.",
+      "example": "A company's SIEM correlates a risky sign-in (identity) with malware on the same laptop (device) and a SOAR playbook automatically disables the account.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d1.1.07",
+      "objective": "d1.1",
+      "seq": 7,
+      "title": "Encryption: symmetric, asymmetric and data states",
+      "short": "Encryption makes data unreadable without a key. Symmetric encryption uses one shared key; asymmetric uses a public/private key pair. Data is protected at rest, in transit (e.g. TLS) and in use (confidential computing).",
+      "deep": "**Encryption** converts readable data into ciphertext that is useless without the right **key**.\n\n- **Symmetric encryption**: one key both encrypts and decrypts. Fast, so good for bulk data (disks, databases). Weakness: securely sharing that single key (**key distribution**).\n- **Asymmetric encryption**: a mathematically linked **public key** and **private key**. Data encrypted with someone's public key can only be decrypted with their private key. Data signed with a private key can be verified with the public key. The public key can be shared freely, solving key distribution. Used in HTTPS and email encryption.\n- **Digital signatures** (built on asymmetric keys) prove **authenticity** (who sent it) and **integrity** (unchanged since signing).\n\nData states:\n- **At rest**: stored on disk, in a database or storage account.\n- **In transit**: moving over a network; **TLS** protects HTTPS traffic; VPNs protect traffic over public networks.\n- **In use**: being processed in memory/CPU. **Confidential computing** uses **secure enclaves** so data stays protected even from the OS or hypervisor.\n\n**Key management**: store keys separately from data, use **hardware security modules (HSMs)**, rotate keys, restrict access. **Azure Key Vault** centrally stores keys, secrets and certificates.",
+      "terms": [
+        {
+          "t": "Symmetric encryption",
+          "d": "One shared secret key encrypts and decrypts; fast but hard to distribute safely."
+        },
+        {
+          "t": "Asymmetric encryption",
+          "d": "Public key encrypts or verifies; matching private key decrypts or signs."
+        },
+        {
+          "t": "Data in transit",
+          "d": "Data moving across networks, typically protected with TLS or a VPN."
+        },
+        {
+          "t": "Confidential computing",
+          "d": "Protects data in use by processing it inside hardware-based secure enclaves."
+        },
+        {
+          "t": "Azure Key Vault",
+          "d": "Cloud service for storing and managing keys, secrets and certificates."
+        }
+      ],
+      "trap": "To send someone a confidential message you encrypt with THEIR public key; encrypting with your own private key is signing, which anyone with your public key can read.",
+      "example": "A browser connects to a bank over HTTPS: TLS uses asymmetric keys to agree a session key, then fast symmetric encryption protects the data in transit.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Symmetric",
+          "Asymmetric"
+        ],
+        "rows": [
+          [
+            "Keys",
+            "One shared key",
+            "Public + private pair"
+          ],
+          [
+            "Speed",
+            "Fast",
+            "Slower"
+          ],
+          [
+            "Main issue",
+            "Key distribution",
+            "Protect private key"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.1.08",
+      "objective": "d1.1",
+      "seq": 8,
+      "title": "Hashing and salting",
+      "short": "Hashing turns any input into a fixed-length digest using an algorithm, with no key, and cannot be reversed. It is used to verify integrity and to store passwords; adding a unique random salt per password defeats rainbow-table attacks.",
+      "deep": "**Hashing** runs data through an algorithm to produce a **fixed-length** value called a **hash** or **digest**.\n\nKey properties:\n- **One-way**: you cannot recover the input from the hash. (Encryption, by contrast, is designed to be reversed with a key.)\n- **No keys** are involved.\n- **Deterministic**: the same input and algorithm always give the same hash, so a hash acts as a fingerprint. Change one character and the hash changes completely, which is why hashing supports **integrity** checks.\n\n**Password storage**: systems store a password's hash, not the password. At sign-in, the typed password is hashed and compared to the stored hash. If the database leaks, attackers get hashes, not plain-text passwords.\n\nWeakness: because hashing is deterministic, attackers precompute hashes of common passwords (**rainbow tables**, **dictionary attacks**) and look them up.\n\n**Salting** fixes this: a unique random value (the **salt**) is added to each password before hashing. Two users with the same password get different hashes, and precomputed tables become useless. Salting is standard practice for secure password storage.",
+      "terms": [
+        {
+          "t": "Hash / digest",
+          "d": "Fixed-length output of a hashing algorithm, effectively unique to the input."
+        },
+        {
+          "t": "Salt",
+          "d": "Random value added to each password before hashing so identical passwords produce different hashes."
+        },
+        {
+          "t": "Rainbow table",
+          "d": "Precomputed list of hashes for common passwords used to reverse-lookup unsalted hashes."
+        }
+      ],
+      "trap": "Hashing is not encryption: it uses no key and is not reversible, and its output length is fixed regardless of input size.",
+      "example": "A software vendor publishes a file's hash; after downloading, you hash the file yourself and compare to confirm it was not altered.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Password",
+          "+ unique salt",
+          "Hash algorithm",
+          "Stored digest"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.1.09",
+      "objective": "d1.1",
+      "seq": 9,
+      "title": "Governance, risk and compliance (GRC)",
+      "short": "GRC brings together governance (rules and accountability that direct the organization), risk management (identify, assess, respond to and monitor threats) and compliance (meeting laws, regulations and standards). Compliance sets a minimum; it is not the same as security.",
+      "deep": "**GRC** is an integrated way to manage regulation, risk and accountability using policies, processes and technology.\n\n**Governance**: the rules, practices and processes used to direct and control the organization. In security that means data classification and retention policies, identity standards, approval processes for privileged access, and clear ownership of controls. Governance is the structure that risk and compliance work inside.\n\n**Risk management**: identifying, assessing and responding to threats to the organization's objectives. The aim is informed decisions, not zero risk.\n- External risks: cyberattacks, natural disasters, regulatory change, suppliers.\n- Internal risks: accidental data exposure, insider threats, fraud, process gaps.\n- Process: **Identify**, **Assess** (impact and likelihood, giving a risk score), **Respond** (accept, mitigate, transfer such as insurance, or avoid), **Monitor**.\n\n**Compliance**: adhering to the laws, regulations, standards and policies that apply because of industry, geography and data types, for example **HIPAA** (US health data), **ISO/IEC 27001** (information security management systems) and **SOC 2** (service organization audits).\n\nImportant: **compliance is not security**. A compliant organization can still have serious vulnerabilities.",
+      "terms": [
+        {
+          "t": "Governance",
+          "d": "Rules, practices and processes that direct and control an organization, including accountability for controls."
+        },
+        {
+          "t": "Risk management",
+          "d": "Identifying, assessing, responding to and monitoring threats to objectives."
+        },
+        {
+          "t": "Compliance",
+          "d": "Adhering to the laws, regulations, standards and policies that apply to the organization."
+        },
+        {
+          "t": "Risk transfer",
+          "d": "Shifting a risk's financial impact to another party, e.g. buying cyber insurance."
+        }
+      ],
+      "trap": "Buying insurance is risk transfer, not mitigation; and an organization that passes an audit is compliant, not automatically secure.",
+      "example": "A retailer scores phishing as high likelihood and high impact, mitigates it with MFA, transfers residual cost with cyber insurance, and reviews the score each quarter.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Identify",
+          "Assess",
+          "Respond",
+          "Monitor"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.1.10",
+      "objective": "d1.1",
+      "seq": 10,
+      "title": "Data residency, data sovereignty and data privacy",
+      "short": "Data residency is about the physical location where data is stored and how it can move across borders. Data sovereignty means data is subject to the laws of the country where it is collected, held or processed. Data privacy is the proper handling of personal data.",
+      "deep": "Three compliance terms that are easy to confuse:\n\n- **Data residency**: regulations about the **physical or geographic location** where data may be stored, and how and when it can be transferred, processed or accessed internationally. In the cloud, organizations must check which regions the provider stores data in.\n- **Data sovereignty**: the concept that data is **subject to the laws and regulations of the country or region** in which it is collected, held or processed. Data collected in one country, stored in a second and processed in a third may fall under several legal regimes at once.\n- **Data privacy**: appropriate handling of **personal data**, meaning any information relating to an identified or identifiable person. That includes direct identifiers (name, email, phone) and indirect identifiers (location history, browsing data). Privacy laws generally require transparency about collection and use, consent where required, individual rights (access, correction, deletion) and protection from unauthorised access.\n\nShortcut: residency = **where** it sits; sovereignty = **whose laws** apply; privacy = **how personal data is treated**.",
+      "terms": [
+        {
+          "t": "Data residency",
+          "d": "Rules about the physical location where data can be stored and how it may move across borders."
+        },
+        {
+          "t": "Data sovereignty",
+          "d": "Data is subject to the laws of the country or region where it is collected, held or processed."
+        },
+        {
+          "t": "Data privacy",
+          "d": "Proper handling of personal data: transparency, consent, individual rights and protection."
+        },
+        {
+          "t": "Personal data",
+          "d": "Any information relating to an identified or identifiable individual."
+        }
+      ],
+      "trap": "If the question is about which country's laws govern data, answer data sovereignty; if it is about where data must physically be stored, answer data residency.",
+      "example": "A New Zealand company requires all customer records to be stored in an Australian or NZ Azure region: that is a data residency requirement.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d1.2.01",
+      "objective": "d1.2",
+      "seq": 1,
+      "title": "Identity as the primary security perimeter",
+      "short": "Cloud apps, remote work, personal devices and partner access have eroded the network perimeter, so identity is now the primary security perimeter. Human, device, workload and agent identities must all be authenticated and authorised, across four pillars: administration, authentication, authorization and auditing.",
+      "deep": "Traditionally, organizations protected a **network perimeter** with firewalls and VPNs and trusted everything inside. That stopped working because of:\n- **Cloud and SaaS apps** running outside the corporate network\n- **Remote and hybrid work** from home and public Wi-Fi\n- **Personal devices (BYOD)** the organization does not fully control\n- **Partner and customer access** without joining the network\n- **IoT devices** with hard-to-manage credentials\n\nAn attacker with a stolen VPN or cloud credential bypasses the perimeter entirely. So the key question becomes \"who or what is asking, and should it be trusted?\" That makes **identity the primary security perimeter**.\n\nAn **identity** is the set of attributes defining a person, device or software component. Types:\n- **Human**: employees, contractors, partners, customers\n- **Device**: laptops, phones, IoT sensors\n- **Workload**: apps, services, containers, scripts calling APIs with no user involved\n- **Agent**: AI agents acting for users or processes\n\nThe **four pillars of identity infrastructure**:\n- **Administration**: creating, updating and removing identities (provisioning, deprovisioning) and the policies around them\n- **Authentication**: proving the identity is genuine\n- **Authorization**: deciding what it can access\n- **Auditing**: recording who did what, when and where",
+      "terms": [
+        {
+          "t": "Identity",
+          "d": "Set of attributes that define a person, device, service or agent."
+        },
+        {
+          "t": "Workload identity",
+          "d": "Identity for software such as an app, service or container that accesses resources without a user."
+        },
+        {
+          "t": "Provisioning / deprovisioning",
+          "d": "Creating identities and access when people join, and removing them when they leave."
+        },
+        {
+          "t": "Auditing",
+          "d": "Tracking and recording identity activity: who did what, when and from where."
+        }
+      ],
+      "trap": "Auditing is the pillar about logs and investigation, not verifying credentials (authentication) or granting permissions (authorization).",
+      "example": "A salesperson works from a hotel on a personal tablet and opens Microsoft 365 directly over the internet; the firewall never sees the request, so the sign-in check is the real control point.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Administration",
+          "Authentication",
+          "Authorization",
+          "Auditing"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.2.02",
+      "objective": "d1.2",
+      "seq": 2,
+      "title": "Authentication",
+      "short": "Authentication (AuthN) proves an identity is who or what it claims to be, answering \"who are you?\". Credentials come from three factor types: something you know, something you have, something you are. MFA requires two or more factors from different categories.",
+      "deep": "**Authentication**, often shortened to **AuthN**, is the process of proving identity. The system challenges you for **credentials** and verifies them before allowing access.\n\nA username alone proves nothing, because others can know it. A password helps but can be stolen, guessed or phished.\n\nThe three **authentication factor** categories:\n- **Something you know**: password, PIN, security question\n- **Something you have**: mobile phone with an authenticator app, hardware security key, smart card\n- **Something you are**: biometrics such as fingerprint or facial recognition\n\n**Single-factor authentication** (e.g. password only) is common but weak: if that factor is phished, the attacker becomes the user.\n\n**Multifactor authentication (MFA)** requires **two or more factors from different categories**, for example a password plus approving a push notification on a registered phone. A password plus a security question is still just two \"something you know\" items, so it is not true MFA.\n\nAuthentication succeeds or fails. It confirms only **who** you are; it says nothing about **what** you can do, which is authorization.",
+      "terms": [
+        {
+          "t": "Authentication (AuthN)",
+          "d": "Proving that an identity is who or what it claims to be."
+        },
+        {
+          "t": "Credentials",
+          "d": "Evidence presented to prove identity, such as a password, key or biometric."
+        },
+        {
+          "t": "Multifactor authentication (MFA)",
+          "d": "Sign-in requiring two or more factors from different categories."
+        }
+      ],
+      "trap": "Two factors from the same category (password + PIN, or password + security question) do not count as MFA.",
+      "example": "An employee types a password, then touches a fingerprint reader on a security key: something you know plus something you have/are, so MFA.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Know",
+          "Have",
+          "Are"
+        ],
+        "rows": [
+          [
+            "Password",
+            "Phone app",
+            "Fingerprint"
+          ],
+          [
+            "PIN",
+            "Security key",
+            "Face scan"
+          ],
+          [
+            "Security question",
+            "Smart card",
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.2.03",
+      "objective": "d1.2",
+      "seq": 3,
+      "title": "Authorization",
+      "short": "Authorization (AuthZ) decides what an authenticated identity is allowed to do, answering \"what can you access?\". It always follows authentication and is based on roles, permissions and attributes, following the principle of least privilege.",
+      "deep": "**Authorization**, often shortened to **AuthZ**, determines what an authenticated identity may do: which apps, files, data or features it can use, and with what level of access (read, write, delete).\n\nDecisions are usually based on:\n- **Roles**: employee, manager, administrator (the basis of role-based access control, RBAC)\n- **Permissions**: read, write, delete\n- **Attributes**: department, location, job function\n\n**Order and dependency**: authentication always happens first. You cannot evaluate permissions until you know who is asking. Authentication alone leaves resources exposed; authorization without verified identity has nothing reliable to check.\n\n**Principle of least privilege**: give each identity only the minimum access needed for its job. This limits damage from a compromised account, reduces accidental data loss and supports compliance.\n\nMicrosoft's hotel analogy: showing ID at the front desk is authentication; the keycard that opens your room and the gym, but not other guests' rooms, is authorization.",
+      "terms": [
+        {
+          "t": "Authorization (AuthZ)",
+          "d": "Determining what an authenticated identity is permitted to access or do."
+        },
+        {
+          "t": "Least privilege",
+          "d": "Granting only the minimum access required for a task or role."
+        },
+        {
+          "t": "Role-based access control (RBAC)",
+          "d": "Authorization model that assigns permissions to roles, then roles to identities."
+        }
+      ],
+      "trap": "If a user signs in successfully but gets \"access denied\" on a resource, that is an authorization outcome, not an authentication failure.",
+      "example": "A new analyst can sign in to the finance app but only view reports; editing budgets is restricted to the Finance Manager role.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Sign in",
+          "AuthN: who?",
+          "AuthZ: what?",
+          "Access granted"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.2.04",
+      "objective": "d1.2",
+      "seq": 4,
+      "title": "Identity providers, tokens and protocols",
+      "short": "Modern authentication moves sign-in out of each app into a central identity provider (IdP), such as Microsoft Entra ID. The IdP verifies credentials and issues security tokens containing claims, using standard protocols: OpenID Connect, OAuth 2.0 and SAML.",
+      "deep": "With **modern authentication**, apps no longer keep their own passwords. They delegate authentication, authorization and auditing to an **identity provider (IdP)**, a central service that creates, maintains and manages identity information.\n\nSign-in flow:\n1. The user opens an app.\n2. The app redirects the user to the IdP.\n3. The IdP verifies credentials (and MFA).\n4. The IdP issues a **security token**.\n5. The app, which **trusts** the IdP, validates the token and grants access.\n\nTokens carry **claims**: facts about the identity such as a unique ID, name, email, roles or groups, and issue/expiry times. Tokens are **time-limited**.\n- **ID token**: proves the user signed in (authentication); tells the app who the user is.\n- **Access token**: lets an app call a specific resource or API on the user's behalf (authorization).\n\nProtocols:\n- **OpenID Connect (OIDC)**: authentication for modern web and mobile apps, built on OAuth 2.0.\n- **OAuth 2.0**: authorization; issues access tokens.\n- **SAML**: XML-based, common for enterprise and legacy apps and cross-organization federation.\n\nExamples of IdPs: Microsoft Entra ID, Google, Amazon, LinkedIn, GitHub.",
+      "terms": [
+        {
+          "t": "Identity provider (IdP)",
+          "d": "Central service that stores identities and provides authentication, authorization and auditing to apps."
+        },
+        {
+          "t": "Claims",
+          "d": "Pieces of identity information inside a token, such as name, ID, roles and expiry."
+        },
+        {
+          "t": "ID token vs access token",
+          "d": "ID token proves who signed in; access token grants access to a specific resource or API."
+        },
+        {
+          "t": "OpenID Connect / OAuth 2.0 / SAML",
+          "d": "Standard protocols: OIDC for authentication, OAuth 2.0 for authorization, SAML for enterprise and federation."
+        }
+      ],
+      "trap": "OAuth 2.0 is an authorization protocol; OpenID Connect adds the authentication layer on top of it. Tokens never contain the user's password.",
+      "example": "A staff member opens an HR SaaS app, is redirected to Microsoft Entra ID, completes MFA, and returns with a token the HR app accepts.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User opens app",
+          "Redirect to IdP",
+          "IdP verifies",
+          "Token issued",
+          "App validates"
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.2.05",
+      "objective": "d1.2",
+      "seq": 5,
+      "title": "Single sign-on (SSO)",
+      "short": "Single sign-on (SSO) lets a user sign in once to a central identity provider and then access every application that trusts it without re-entering credentials. It improves user experience, reduces passwords, and lets admins remove access everywhere by disabling one account.",
+      "deep": "Without a central IdP, each app has its own accounts. That causes **fragmented credentials** (password reuse, weak passwords), **inconsistent policies** (MFA in some apps, not others) and **administrative overhead** (forgotten accounts left active after staff leave).\n\nA central IdP lets the organization apply MFA and other policies once, monitor all sign-ins in one place, and manage the full lifecycle from provisioning to deprovisioning.\n\nIt also enables **single sign-on (SSO)**: the user authenticates once and is automatically signed in to every application that trusts that IdP, because each app accepts the IdP's token.\n\nBenefits:\n- **Better experience**: no separate credentials per app\n- **Stronger security**: fewer password prompts means fewer phishing chances and less password reuse\n- **Central control**: disabling one account in the IdP removes access to all connected apps immediately, making offboarding reliable\n\nDon't confuse terms: **SSO** is about one sign-in across many apps that trust **one IdP**. **Federation** is a trust between **two separate IdPs** (often in different organizations). Microsoft Entra ID supports SSO to thousands of SaaS apps.",
+      "terms": [
+        {
+          "t": "Single sign-on (SSO)",
+          "d": "Signing in once to access multiple apps that trust the same identity provider."
+        },
+        {
+          "t": "Trust relationship",
+          "d": "Configuration that makes an app (or another IdP) accept tokens from an identity provider."
+        },
+        {
+          "t": "Deprovisioning",
+          "d": "Removing an identity's access when it is no longer needed, for example when an employee leaves."
+        }
+      ],
+      "trap": "SSO reduces the number of passwords, it doesn't add one per app; and SSO within one IdP is not the same as federation between IdPs.",
+      "example": "An employee signs in to Windows in the morning and opens Outlook, Salesforce and ServiceNow during the day without another password prompt.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d1.2.06",
+      "objective": "d1.2",
+      "seq": 6,
+      "title": "Directory services and Active Directory Domain Services",
+      "short": "A directory service stores information about users, devices, groups and other objects and answers who they are and what they can access. Active Directory Domain Services (AD DS) is Microsoft's on-premises directory, run on domain controllers, using Kerberos and NTLM.",
+      "deep": "A **directory** is a structured store of information about network objects: users, devices, groups, policies, applications. A **directory service** is the software that stores this data and makes it available to people and apps. It answers \"who is this user, what groups are they in, what can they access?\"\n\n**Active Directory (AD)** is Microsoft's set of directory services, first released with **Windows 2000 Server**. Its best-known component is **Active Directory Domain Services (AD DS)**, which:\n- Stores information about every member of a domain (users, computers, groups)\n- Verifies credentials at sign-in\n- Defines access rights to network resources\n\nA server running AD DS is a **domain controller (DC)**.\n\nWith AD DS, organizations can:\n- Give each user a single identity for many on-premises systems\n- Use **Group Policy** to configure Windows devices centrally\n- Authenticate users to on-premises apps using **Kerberos** and **NTLM**\n- Organise objects into **organizational units (OUs)**\n\nFor many years AD DS was the foundation of identity in most organizations, built for Windows PCs on a corporate network running on-premises apps.",
+      "terms": [
+        {
+          "t": "Directory service",
+          "d": "Software that stores directory data about objects and makes it available to users and apps."
+        },
+        {
+          "t": "AD DS",
+          "d": "Active Directory Domain Services: Microsoft's on-premises directory service for domain-based networks."
+        },
+        {
+          "t": "Domain controller",
+          "d": "A server running AD DS that stores the directory and authenticates sign-ins."
+        },
+        {
+          "t": "Kerberos / NTLM",
+          "d": "Authentication protocols used by AD DS for on-premises sign-in."
+        }
+      ],
+      "trap": "AD DS is on-premises and uses Kerberos/NTLM; it does not natively speak OAuth 2.0 or OpenID Connect.",
+      "example": "When an employee logs on to a domain-joined Windows PC at the office, a domain controller checks the password with Kerberos and applies Group Policy settings.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d1.2.07",
+      "objective": "d1.2",
+      "seq": 7,
+      "title": "Limits of AD DS and Microsoft Entra ID",
+      "short": "AD DS wasn't built for cloud apps, mobile devices, modern protocols or remote users. Microsoft Entra ID is Microsoft's cloud identity and access management service, delivered as Identity as a Service (IDaaS), and can connect to AD DS for hybrid identity.",
+      "deep": "AD DS was designed for an on-premises world, so it has limits today:\n- **Cloud and SaaS apps**: AD DS doesn't natively authenticate users to them; extra sync tools or federation are needed.\n- **Mobile devices**: no native management of iOS, Android and other non-Windows devices.\n- **Modern protocols**: no native support for **OAuth 2.0** or **OpenID Connect**.\n- **Remote access**: users off the corporate network usually need a VPN to reach a domain controller.\n\n**Microsoft Entra ID** (formerly Azure Active Directory) is Microsoft's **cloud-based identity and access management** service, the cloud-era evolution of directory services.\n- Delivered as **Identity as a Service (IDaaS)**: Microsoft runs the infrastructure; you manage users, devices, apps and policies.\n- Supports modern, standards-based authentication (OIDC, OAuth 2.0, SAML).\n- Works across platforms and device types.\n- Connects to cloud and SaaS apps over the internet without a VPN.\n\n**Hybrid identity**: organizations that already run AD DS can synchronize identities to Entra ID so users have one set of credentials for both on-premises and cloud resources. (The sync tools, Microsoft Entra Connect Sync and Cloud Sync, are covered in domain 2.)",
+      "terms": [
+        {
+          "t": "Microsoft Entra ID",
+          "d": "Microsoft's cloud identity and access management service, formerly Azure Active Directory."
+        },
+        {
+          "t": "Identity as a Service (IDaaS)",
+          "d": "Cloud-delivered identity service where the provider runs the infrastructure."
+        },
+        {
+          "t": "Hybrid identity",
+          "d": "Linking on-premises AD DS with Microsoft Entra ID so users have one identity for both."
+        }
+      ],
+      "trap": "Don't call it Azure AD on the exam; and Entra ID is not simply AD DS hosted in the cloud: it uses different, internet-friendly protocols.",
+      "example": "A company with AD DS adopts Microsoft 365; it synchronizes users to Microsoft Entra ID so staff use the same password in the office and in Teams from home.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "AD DS",
+          "Entra ID"
+        ],
+        "rows": [
+          [
+            "Location",
+            "On-premises",
+            "Cloud (IDaaS)"
+          ],
+          [
+            "Protocols",
+            "Kerberos, NTLM",
+            "OIDC, OAuth, SAML"
+          ],
+          [
+            "Remote users",
+            "Usually need VPN",
+            "Over the internet"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-900.d1.2.08",
+      "objective": "d1.2",
+      "seq": 8,
+      "title": "Federation",
+      "short": "Federation creates a trust relationship between separate identity providers so a user can access another organization's or domain's resources with their home credentials. Trust is one-way unless two-way trust is explicitly configured. Examples: B2B partners, social sign-in, and AD FS.",
+      "deep": "**Federation** enables access to services across **organizational or domain boundaries** by establishing **trust relationships** between separate identity providers. The user authenticates with their own IdP and doesn't need a new account in the other organization.\n\nThink passport control: your home country issues the passport and other countries accept it.\n\nHow it works: Organization A configures its IdP to **trust** Organization B's IdP. When a B user accesses an A resource, A accepts the authentication B already performed.\n\n**Trust direction matters**: trust is **not automatically bidirectional**. If A trusts B, B does not automatically trust A; a two-way trust must be explicitly configured.\n\nCommon scenarios:\n- **Business-to-business (B2B) collaboration**: partner staff use their own company credentials to reach a shared workspace or app.\n- **Social and consumer identity providers**: \"Sign in with Google, Microsoft or GitHub\" in a customer app.\n- **On-premises enterprise identity**: **Active Directory Federation Services (AD FS)**, a Windows Server role, lets AD DS users authenticate on-premises and receive tokens that cloud services accept.\n\nFederation works across vendors because IdPs use standard protocols such as SAML, OpenID Connect and WS-Federation. Microsoft Entra ID supports all these scenarios.",
+      "terms": [
+        {
+          "t": "Federation",
+          "d": "Trust between separate identity providers so users can access resources across boundaries with home credentials."
+        },
+        {
+          "t": "AD FS",
+          "d": "Active Directory Federation Services: Windows Server role that extends AD DS authentication to external and cloud services."
+        },
+        {
+          "t": "B2B collaboration",
+          "d": "Letting users from partner organizations access your resources using their own identities."
+        }
+      ],
+      "trap": "Federation trust is one-way by default; and federation (two IdPs) differs from SSO (one IdP, many apps).",
+      "example": "Contoso's engineers sign in to Fabrikam's project portal with their Contoso accounts because Fabrikam's identity provider trusts Contoso's.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Partner user",
+          "Home IdP signs in",
+          "Trust",
+          "Resource IdP",
+          "Resource access"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-900.d1.q001",
+      "lesson": "sc-900.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A company runs its line-of-business app on Azure virtual machines (IaaS). Who is responsible for patching the guest operating system on those VMs?",
+      "options": [
+        "Microsoft, because the VMs run in Microsoft datacenters",
+        "Microsoft and the customer equally, splitting OS and application patches",
+        "The customer, because in IaaS the operating system is the customer's responsibility",
+        "The Azure physical network team, because the hosts are shared"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "In IaaS the provider secures the physical datacenter, network and hosts; the customer owns the operating system and everything above it, including patching. Microsoft only takes over the OS in PaaS and SaaS. There is no equal split of OS patching."
+    },
+    {
+      "id": "sc-900.d1.q002",
+      "lesson": "sc-900.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the shared responsibility model, select Yes if true.",
+      "statements": [
+        {
+          "s": "When an organization uses a SaaS application, it remains responsible for its data and for who can access the service.",
+          "a": true
+        },
+        {
+          "s": "In PaaS, the customer manages the operating system that hosts its application.",
+          "a": false
+        },
+        {
+          "s": "Moving workloads from IaaS to SaaS transfers responsibility for securing users' laptops and phones to the cloud provider.",
+          "a": false
+        }
+      ],
+      "explain": "Data and access stay with the customer in every model. In PaaS the provider runs the OS and runtime. Endpoints that connect to cloud services remain a customer responsibility regardless of service model."
+    },
+    {
+      "id": "sc-900.d1.q003",
+      "lesson": "sc-900.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which responsibilities always remain with the customer, regardless of whether a workload is on-premises, IaaS, PaaS, or SaaS? Select THREE.",
+      "options": [
+        "Information and data",
+        "Physical security of the datacenter",
+        "Accounts and identities",
+        "Devices (endpoints) that connect to the service",
+        "Physical host hardware"
+      ],
+      "answer": [
+        0,
+        2,
+        3
+      ],
+      "explain": "Data, accounts/identities and endpoint devices are always retained by the customer. Physical datacenter security and host hardware move to the provider in any cloud model (IaaS, PaaS and SaaS)."
+    },
+    {
+      "id": "sc-900.d1.q004",
+      "lesson": "sc-900.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailspin builds a customer support assistant on Microsoft Foundry. The assistant reads product web pages and uploaded documents to answer questions. A tester shows that a hidden line in an uploaded document makes the assistant reveal internal discount codes.",
+      "stem": "Under the AI shared responsibility model, who is primarily responsible for mitigating this risk?",
+      "options": [
+        "Microsoft, because platform content filtering covers all prompt-based attacks",
+        "The customer who uploaded the document, under the acceptable use policy",
+        "Microsoft, because the model is hosted on Microsoft infrastructure",
+        "Tailspin, by restricting data sources and connectors, validating inputs, and monitoring"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "This is prompt injection through external data. Microsoft secures the platform and model hosting and offers content filtering, but the organization that builds the AI application controls its data sources, connectors, input validation and monitoring. Blaming an end user ignores the application owner's configuration responsibility."
+    },
+    {
+      "id": "sc-900.d1.q005",
+      "lesson": "sc-900.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An administrator patches virtual machine operating systems, closes unused ports, and restricts administrative access to the VMs. Which defense-in-depth layer do these controls belong to?",
+      "options": [
+        "Compute",
+        "Network",
+        "Application",
+        "Perimeter"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The compute layer protects VMs and containers through patching, closing ports and limiting admin access. Network covers segmentation and NSGs, perimeter covers DDoS protection and edge firewalls, and application covers secure code and input validation."
+    },
+    {
+      "id": "sc-900.d1.q006",
+      "lesson": "sc-900.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put these defense-in-depth layers in order from the outermost layer to the innermost layer.",
+      "options": [
+        "Physical security",
+        "Identity and access",
+        "Perimeter",
+        "Network",
+        "Data"
+      ],
+      "explain": "Microsoft's model runs physical, identity and access, perimeter, network, compute, application, then data. Data is the innermost and most critical layer; physical security is the outermost."
+    },
+    {
+      "id": "sc-900.d1.q007",
+      "lesson": "sc-900.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company records a cryptographic hash of each contract when it is signed and later compares hashes to detect whether a contract was altered. Which security principle does this primarily support?",
+      "options": [
+        "Confidentiality",
+        "Availability",
+        "Integrity",
+        "Authorization"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Comparing hashes detects modification, which protects integrity. Hashing doesn't hide content (confidentiality) or keep systems reachable (availability). Authorization is about permissions, not a CIA triad goal."
+    },
+    {
+      "id": "sc-900.d1.q008",
+      "lesson": "sc-900.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the CIA triad, select Yes if true.",
+      "statements": [
+        {
+          "s": "A distributed denial-of-service (DDoS) attack primarily threatens availability.",
+          "a": true
+        },
+        {
+          "s": "Encrypting customer records primarily supports confidentiality.",
+          "a": true
+        },
+        {
+          "s": "Losing an encryption key can affect confidentiality but never availability.",
+          "a": false
+        }
+      ],
+      "explain": "DDoS stops authorised users reaching systems (availability). Encryption keeps data from unauthorised readers (confidentiality). A lost key makes your own data unreadable, which is an availability problem, showing how the goals can conflict."
+    },
+    {
+      "id": "sc-900.d1.q009",
+      "lesson": "sc-900.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Zero Trust guiding principle is implemented with just-in-time (JIT) and just-enough-access (JEA)?",
+      "options": [
+        "Verify explicitly",
+        "Assume breach",
+        "Defense-in-depth",
+        "Use least privileged access"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "JIT and JEA limit access to the minimum needed for the minimum time, which is use least privileged access. Verify explicitly is about evaluating all signals at sign-in; assume breach is about segmentation, encryption and detection. Defense-in-depth is a separate layered strategy, not a Zero Trust principle."
+    },
+    {
+      "id": "sc-900.d1.q010",
+      "lesson": "sc-900.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which actions align with the Zero Trust principle of assume breach? Select TWO.",
+      "options": [
+        "Segment access by network, user and device to limit the blast radius",
+        "Trust traffic that originates from inside the corporate network",
+        "Use analytics and monitoring to detect threats and respond quickly",
+        "Allow devices that passed a check last month to skip compliance evaluation"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Assume breach means designing as if attackers are inside: segment to minimise blast radius and monitor to detect quickly. Trusting internal traffic or previously checked devices contradicts Zero Trust, which verifies every request."
+    },
+    {
+      "id": "sc-900.d1.q011",
+      "lesson": "sc-900.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Northwind's policy evaluates every sign-in to its finance app. Before granting access it checks the user's identity, the sign-in location, whether the device is compliant, the sensitivity of the data requested, and whether the sign-in time is unusual for that user.",
+      "stem": "Which Zero Trust principle does this policy most directly implement?",
+      "options": [
+        "Assume breach",
+        "Verify explicitly",
+        "Use least privileged access",
+        "Shared responsibility"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Verify explicitly means authenticating and authorising using all available signals: identity, location, device health, data classification and anomalies. Least privilege limits how much access is granted; assume breach focuses on segmentation and detection. Shared responsibility is a cloud model, not a Zero Trust principle."
+    },
+    {
+      "id": "sc-900.d1.q012",
+      "lesson": "sc-900.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which Zero Trust pillar aggregates and correlates signals from the other pillars, using SIEM and SOAR to detect threats and automate response?",
+      "options": [
+        "Visibility, automation, and orchestration",
+        "Infrastructure",
+        "Networks",
+        "Applications"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Visibility, automation, and orchestration is the integrating pillar that correlates signals and drives automated playbooks with SIEM and SOAR. Infrastructure, networks and applications are signal sources and resources being protected."
+    },
+    {
+      "id": "sc-900.d1.q013",
+      "lesson": "sc-900.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which type of encryption uses the same key to both encrypt and decrypt data?",
+      "options": [
+        "Symmetric encryption",
+        "Asymmetric encryption",
+        "Hashing",
+        "Digital signatures"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Symmetric encryption uses one shared secret key. Asymmetric uses a public/private key pair, digital signatures rely on asymmetric keys, and hashing uses no key at all."
+    },
+    {
+      "id": "sc-900.d1.q014",
+      "lesson": "sc-900.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Alice wants to send Ben a file that only Ben can read, using asymmetric encryption. Which key should Alice use to encrypt the file?",
+      "options": [
+        "Alice's private key",
+        "Ben's private key",
+        "Ben's public key",
+        "Alice's public key"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Data encrypted with a public key can only be decrypted with the matching private key, so Alice uses Ben's public key and only Ben's private key can decrypt it. Encrypting with Alice's private key is signing, which anyone with her public key can verify. Alice never has Ben's private key."
+    },
+    {
+      "id": "sc-900.d1.q015",
+      "lesson": "sc-900.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement correctly distinguishes hashing from encryption?",
+      "options": [
+        "Hashing uses a public and private key pair",
+        "Hashing produces output whose length grows with the input",
+        "Hashing is one-way and does not use a key",
+        "Hashing can be reversed if you know the salt"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Hashing is a one-way, keyless function producing a fixed-length digest. Key pairs belong to asymmetric encryption. Output length is fixed regardless of input. A salt makes hashes unique; it doesn't make them reversible."
+    },
+    {
+      "id": "sc-900.d1.q016",
+      "lesson": "sc-900.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An attacker steals a database of unsalted password hashes from a legacy web app. Many users share common passwords, and the attacker matches them quickly against a precomputed rainbow table.",
+      "stem": "Which change to how passwords are stored would best defeat this attack in future?",
+      "options": [
+        "Encrypt all hashes with one shared symmetric key stored in the same database",
+        "Add a unique random salt to each password before hashing it",
+        "Store passwords in plain text but restrict database access",
+        "Use a hash algorithm with a shorter output"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A unique salt per password makes identical passwords hash differently, so precomputed rainbow tables no longer match. A key stored next to the data is exposed in the same breach. Plain text is worse. Shorter hashes weaken security."
+    },
+    {
+      "id": "sc-900.d1.q017",
+      "lesson": "sc-900.d1.1.09",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps of the risk management process in order.",
+      "options": [
+        "Identify potential risks",
+        "Assess impact and likelihood",
+        "Respond by accepting, mitigating, transferring, or avoiding",
+        "Monitor risks and control effectiveness"
+      ],
+      "explain": "Risk management first identifies risks, then assesses impact and likelihood to prioritise them, then responds (accept, mitigate, transfer, avoid), and finally monitors and updates as the environment changes."
+    },
+    {
+      "id": "sc-900.d1.q018",
+      "lesson": "sc-900.d1.1.10",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A retailer collects customer data in Germany, stores it in an Azure region in the Netherlands, and has it processed by an analytics team in the United States. Legal asks which concept explains why the data may be subject to the laws of all three countries.",
+      "stem": "Which concept should the security team cite?",
+      "options": [
+        "Data residency",
+        "Data sovereignty",
+        "Data classification",
+        "Data loss prevention"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Data sovereignty means data is subject to the laws of the countries where it is collected, held or processed, so several regimes can apply. Data residency concerns where data is physically stored. Classification and DLP are protection practices, not legal concepts."
+    },
+    {
+      "id": "sc-900.d1.q019",
+      "lesson": "sc-900.d1.1.09",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about governance, risk, and compliance, select Yes if true.",
+      "statements": [
+        {
+          "s": "An organization that meets all its regulatory compliance requirements can still have significant security vulnerabilities.",
+          "a": true
+        },
+        {
+          "s": "Buying cyber insurance is an example of transferring a risk.",
+          "a": true
+        },
+        {
+          "s": "The goal of risk management is to eliminate all risk before any business activity takes place.",
+          "a": false
+        }
+      ],
+      "explain": "Compliance sets a legal minimum; security is broader. Insurance shifts financial impact to another party (risk transfer). Risk management aims for informed decisions, not zero risk; low-impact risks may simply be accepted."
+    },
+    {
+      "id": "sc-900.d1.q020",
+      "lesson": "sc-900.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Why is identity now considered the primary security perimeter?",
+      "options": [
+        "Users, devices, and apps increasingly access resources from outside the corporate network",
+        "Firewalls can no longer filter network traffic",
+        "Cloud providers do not allow organizations to use VPNs",
+        "Identity providers make data encryption unnecessary"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Cloud apps, remote work, BYOD and partner access mean requests often never cross the network edge, so verifying who or what is asking becomes the key control. Firewalls and VPNs still exist; and identity does not replace encryption."
+    },
+    {
+      "id": "sc-900.d1.q021",
+      "lesson": "sc-900.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO of the following are examples of workload identities?",
+      "options": [
+        "A contractor who signs in to a project portal",
+        "A web app that calls a database API without a signed-in user",
+        "A laptop enrolled in device management",
+        "A container process that reads messages from a storage queue",
+        "A customer who signs in to an online store"
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "explain": "Workload identities represent software (apps, services, containers, scripts) accessing resources without a user. Contractors and customers are human identities; an enrolled laptop is a device identity."
+    },
+    {
+      "id": "sc-900.d1.q022",
+      "lesson": "sc-900.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the four pillars of identity infrastructure, select Yes if true.",
+      "statements": [
+        {
+          "s": "Removing a departing employee's account is part of the administration pillar.",
+          "a": true
+        },
+        {
+          "s": "The auditing pillar is responsible for verifying a user's credentials at sign-in.",
+          "a": false
+        },
+        {
+          "s": "The authorization pillar determines what an authenticated identity can access.",
+          "a": true
+        }
+      ],
+      "explain": "Administration covers provisioning and deprovisioning. Verifying credentials is authentication; auditing records who did what, when and from where. Authorization decides permitted access."
+    },
+    {
+      "id": "sc-900.d1.q023",
+      "lesson": "sc-900.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A user unlocks access with a fingerprint scan. Which authentication factor category is this?",
+      "options": [
+        "Something you know",
+        "Something you have",
+        "Something you are",
+        "Something you configure"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Biometrics such as fingerprints and facial scans are something you are. Passwords and PINs are something you know; phones, security keys and smart cards are something you have. \"Something you configure\" is not a factor category."
+    },
+    {
+      "id": "sc-900.d1.q024",
+      "lesson": "sc-900.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which sign-in method qualifies as multifactor authentication (MFA)?",
+      "options": [
+        "A password and an answer to a security question",
+        "A PIN and a password",
+        "Two different passwords for two systems",
+        "A password and approval of a notification on a registered phone"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "MFA requires factors from different categories: a password (know) plus a registered phone (have). Password, PIN and security answers are all something you know, so combining them is still single-category authentication."
+    },
+    {
+      "id": "sc-900.d1.q025",
+      "lesson": "sc-900.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are examples of the \"something you have\" authentication factor?",
+      "options": [
+        "A smart card",
+        "A PIN",
+        "A facial scan",
+        "A hardware security key",
+        "A security question"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "Smart cards and hardware security keys are physical possessions. A PIN and a security question are something you know; a facial scan is something you are."
+    },
+    {
+      "id": "sc-900.d1.q026",
+      "lesson": "sc-900.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which question does authorization answer?",
+      "options": [
+        "Who are you?",
+        "What are you allowed to do?",
+        "Which identity provider issued your token?",
+        "Where are your sign-in logs stored?"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Authorization determines what an authenticated identity can access or do. \"Who are you?\" is authentication. Token issuers and log storage relate to identity providers and auditing."
+    },
+    {
+      "id": "sc-900.d1.q027",
+      "lesson": "sc-900.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": "Priya, a new marketing analyst, signs in to the company intranet with her password and MFA without any problem. When she opens the Finance team's budget folder she receives an \"Access denied\" message.",
+      "stem": "Which process prevented Priya from opening the folder?",
+      "options": [
+        "Federation",
+        "Auditing",
+        "Authentication",
+        "Authorization"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Authentication succeeded when she signed in. Denying access to a specific resource based on her permissions is authorization, applying least privilege. Auditing only records activity, and federation is trust between identity providers."
+    },
+    {
+      "id": "sc-900.d1.q028",
+      "lesson": "sc-900.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "Authorization can be evaluated before the user has been authenticated.",
+          "a": false
+        },
+        {
+          "s": "Applying least privilege reduces the damage an attacker can do with a compromised account.",
+          "a": true
+        },
+        {
+          "s": "Authorization decisions can be based on user attributes such as department or location.",
+          "a": true
+        }
+      ],
+      "explain": "Authentication always comes first; permissions can't be evaluated without knowing who is asking. Least privilege limits what a compromised account can reach. Authorization uses roles, permissions and attributes such as department."
+    },
+    {
+      "id": "sc-900.d1.q029",
+      "lesson": "sc-900.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A user signs in to a cloud app that uses a central identity provider. Put the steps in order.",
+      "options": [
+        "The user tries to open the application",
+        "The application redirects the user to the identity provider",
+        "The identity provider verifies the user's credentials",
+        "The identity provider issues a security token",
+        "The application validates the token and grants access"
+      ],
+      "explain": "With modern authentication the app delegates sign-in: it redirects to the IdP, the IdP verifies credentials and issues a token, and the app, which trusts the IdP, validates the token before granting access."
+    },
+    {
+      "id": "sc-900.d1.q030",
+      "lesson": "sc-900.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which security token tells an application who the signed-in user is, proving that authentication took place?",
+      "options": [
+        "Access token",
+        "SAML metadata document",
+        "Refresh token",
+        "ID token"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "An ID token proves the user signed in and identifies them to the app. An access token authorises calls to a specific resource or API. A refresh token obtains new tokens, and SAML metadata describes a federation partner's configuration."
+    },
+    {
+      "id": "sc-900.d1.q031",
+      "lesson": "sc-900.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A developer needs an app to obtain permission to read a user's calendar through an API on the user's behalf. Which protocol is designed for this authorization scenario?",
+      "options": [
+        "Kerberos",
+        "SAML",
+        "OAuth 2.0",
+        "NTLM"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "OAuth 2.0 is the authorization protocol that issues access tokens for protected resources such as APIs. SAML is mainly used for enterprise sign-in and federation. Kerberos and NTLM are on-premises AD DS authentication protocols."
+    },
+    {
+      "id": "sc-900.d1.q032",
+      "lesson": "sc-900.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam must connect a long-standing enterprise expense application to Microsoft Entra ID. The vendor states that the application only accepts XML-based assertions and has historically been used for cross-organization sign-in with partner companies. It doesn't support JSON web tokens.",
+      "stem": "Which protocol should Fabrikam use to integrate the application?",
+      "options": [
+        "SAML",
+        "OpenID Connect",
+        "OAuth 2.0",
+        "Kerberos"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "SAML uses XML-based assertions and is common for enterprise and legacy apps and cross-organization federation. OpenID Connect and OAuth 2.0 are modern protocols that use JSON-based tokens. Kerberos is an on-premises AD DS protocol, not used for cloud app federation."
+    },
+    {
+      "id": "sc-900.d1.q033",
+      "lesson": "sc-900.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which of the following could be included as claims in a security token issued by an identity provider? Select THREE.",
+      "options": [
+        "The user's unique identifier",
+        "The user's group memberships or roles",
+        "The token's expiration time",
+        "The user's password",
+        "The identity provider's private signing key"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Claims describe the identity and token: identifier, name, email, roles or groups, issue and expiry times. Tokens never contain the user's password, and the IdP's private key is kept secret; it signs the token but is never included in it."
+    },
+    {
+      "id": "sc-900.d1.q034",
+      "lesson": "sc-900.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "When an employee resigns, Contoso's admin disables the user's account once in Microsoft Entra ID. Within minutes the former employee can no longer sign in to Microsoft 365, the HR SaaS app, or the expense app, all of which trust Entra ID.",
+      "stem": "Which capability makes this one-step offboarding possible?",
+      "options": [
+        "Self-service password reset",
+        "Federation between two separate identity providers",
+        "Single sign-on through a central identity provider",
+        "Group Policy applied by domain controllers"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Because all apps trust one central IdP for SSO, disabling the account there removes access everywhere. Federation is trust between two different IdPs. SSPR lets users reset their own passwords, and Group Policy configures domain-joined Windows devices."
+    },
+    {
+      "id": "sc-900.d1.q035",
+      "lesson": "sc-900.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about single sign-on (SSO), select Yes if true.",
+      "statements": [
+        {
+          "s": "With SSO, a user signs in once and can access multiple applications that trust the same identity provider.",
+          "a": true
+        },
+        {
+          "s": "SSO increases the number of passwords each user must remember.",
+          "a": false
+        },
+        {
+          "s": "SSO within one identity provider is the same thing as federation between two identity providers.",
+          "a": false
+        }
+      ],
+      "explain": "SSO means one sign-in across many apps that trust one IdP, so users need fewer passwords. Federation is a separate concept: a trust relationship between two different identity providers."
+    },
+    {
+      "id": "sc-900.d1.q036",
+      "lesson": "sc-900.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is a server that runs Active Directory Domain Services (AD DS) called?",
+      "options": [
+        "A domain controller",
+        "A federation server",
+        "A Microsoft Entra tenant",
+        "A Microsoft Entra Connect Sync server"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A server running AD DS is a domain controller. A federation server runs AD FS. A Microsoft Entra tenant is a cloud directory instance, and an Entra Connect Sync server synchronizes AD DS identities to the cloud; neither is the AD DS server itself."
+    },
+    {
+      "id": "sc-900.d1.q037",
+      "lesson": "sc-900.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO protocols does Active Directory Domain Services (AD DS) natively use to authenticate users to on-premises applications?",
+      "options": [
+        "Kerberos",
+        "OpenID Connect",
+        "NTLM",
+        "OAuth 2.0"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "AD DS authenticates on-premises sign-ins with Kerberos and NTLM. It doesn't natively support modern protocols such as OAuth 2.0 and OpenID Connect, which is one reason organizations add Microsoft Entra ID."
+    },
+    {
+      "id": "sc-900.d1.q038",
+      "lesson": "sc-900.d1.2.07",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Adatum relies only on AD DS. It is adopting several SaaS apps, many staff work remotely on iOS and Android phones, and leadership wants to stop requiring a VPN just to sign in. Users should keep a single set of credentials.",
+      "stem": "What should Adatum implement?",
+      "options": [
+        "Deploy additional domain controllers in each branch office",
+        "Connect AD DS to Microsoft Entra ID to create a hybrid identity",
+        "Create new organizational units (OUs) for remote users",
+        "Use Group Policy to manage the iOS and Android phones"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Microsoft Entra ID is cloud identity (IDaaS) that supports modern protocols, any device and internet access without a VPN; connecting it to AD DS gives users one identity for both. More DCs or OUs don't add cloud or mobile support, and Group Policy doesn't natively manage iOS or Android."
+    },
+    {
+      "id": "sc-900.d1.q039",
+      "lesson": "sc-900.d1.2.08",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Organization A configures its identity provider to trust Organization B's identity provider. What is true about trust in the other direction?",
+      "options": [
+        "Organization B automatically trusts Organization A, because federation trusts are always two-way",
+        "Organization B trusts Organization A only if both use SAML",
+        "Federation can never be configured in both directions",
+        "Organization B doesn't trust Organization A unless a trust in that direction is also configured"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Federation trust is not automatically bidirectional. If A trusts B, B does not trust A unless that trust is explicitly configured. Two-way trust is possible, and it doesn't depend on a specific protocol."
+    },
+    {
+      "id": "sc-900.d1.q040",
+      "lesson": "sc-900.d1.2.08",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft server role lets users authenticate against on-premises Active Directory and receive tokens that external cloud services accept?",
+      "options": [
+        "Microsoft Entra Connect Sync",
+        "Active Directory Federation Services (AD FS)",
+        "Active Directory Certificate Services (AD CS)",
+        "Group Policy Management"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "AD FS is the Windows Server federation role that extends AD DS authentication to external and cloud services by issuing tokens. Entra Connect Sync synchronizes identities rather than issuing tokens; AD CS issues certificates; Group Policy configures devices."
+    }
+  ]
+}

@@ -1,0 +1,1217 @@
+{
+  "exam": "sc-200",
+  "domain": "d2",
+  "lessons": [
+    {
+      "id": "sc-200.d2.1.01",
+      "objective": "d2.1",
+      "seq": 1,
+      "title": "Investigating and remediating email threats with Defender for Office 365",
+      "short": "Defender for Office 365 Plan 2 gives analysts Threat Explorer, automated investigation and response (AIR) and email remediation actions such as soft delete, hard delete and move to junk. Every action is tracked in the Action center.",
+      "deep": "**Hunting tools.** Plan 1 includes **Real-time detections** (malicious mail at delivery time). Plan 2 adds **Threat Explorer**, with extra views (All email, Campaigns, URL clicks), saved queries, post-delivery data and **Go hunt**.\n\n**Remediation actions.** From Threat Explorer (**Take action**), advanced hunting or an AIR investigation you can: **Move to junk**, **Move to inbox**, **Move to deleted items**, **Soft delete** (recoverable from Recoverable Items), **Hard delete** (purged; admins can still use single-item recovery) and **Delete sender's copy**. In Explorer you can pick up to 100 messages by hand or act on a whole query.\n\n**Approvals.** For the action to be approved you need the **Search and Purge** role (or the unified RBAC *Email & collaboration advanced actions (manage)* permission). With **two-step approval**, one analyst adds messages to a remediation and another approves it from the Action center **Pending** tab. The **History** tab shows the last 30 days.\n\n**AIR.** Alerts such as user-reported phish, ZAP, URL clicks and compromised-user detections start automated investigations. By default their recommended actions wait for approval. Admins can opt specific clusters into **automated remediation** (*Settings > Email & collaboration > MDO automation settings*); the only action it uses is **soft delete**.\n\n**Compromised mailbox.** Disable the account or reset its password, revoke sessions, check MFA methods and consented apps, remove forwarding and hidden inbox rules, then unblock the user from **Restricted entities** if it was stopped for sending spam.",
+      "terms": [
+        {
+          "t": "Threat Explorer",
+          "d": "Plan 2 hunting tool for email, covering delivery and post-delivery events, with remediation actions."
+        },
+        {
+          "t": "Soft delete",
+          "d": "Moves mail to Recoverable Items\\Deletions; users and admins can still recover it."
+        },
+        {
+          "t": "AIR",
+          "d": "Automated investigation and response: playbooks that investigate alerts and recommend remediation."
+        },
+        {
+          "t": "Restricted entities",
+          "d": "Defender portal page that lists users blocked from sending mail, for example after outbound spam."
+        }
+      ],
+      "trap": "Exams contrast Real-time detections (Plan 1) with Threat Explorer (Plan 2), and soft delete (recoverable) with hard delete (purged).",
+      "example": "A phishing message reached 300 inboxes. The analyst queries it in Threat Explorer, chooses Take action > Soft delete, and a second analyst approves the remediation in the Action center.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Alert / report",
+          "AIR investigation",
+          "Pending action",
+          "Approve",
+          "Action center"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.02",
+      "objective": "d2.1",
+      "seq": 2,
+      "title": "Automatic attack disruption across Defender XDR",
+      "short": "Automatic attack disruption uses high-confidence, correlated XDR signals to contain an attack while it is still running. It can disable or contain users, contain devices or IPs, and revoke sessions. Affected incidents get an Attack Disruption tag.",
+      "deep": "**What it is.** When Defender XDR correlates signals into a high-confidence incident, such as ransomware, business email compromise (BEC) or adversary-in-the-middle (AiTM) phishing, it acts automatically to cut the attacker off.\n\n**Actions.** **Contain device**, **Contain IP** and **Contain user** (Defender for Endpoint), **Disable user** (Defender for Identity in AD, or through a Microsoft-managed app in Entra ID), and **Revoke user session** / suspend in Microsoft Entra ID. It can also handle OAuth app compromise through Defender for Cloud Apps. Microsoft Sentinel connectors add preview actions for Okta and AWS.\n\n**Prerequisites.** You need a qualifying licence (such as Microsoft 365 E5) and the relevant workloads deployed. For Defender for Endpoint, set device-group automation to **Full** (recommended), use **Standard discovery**, and keep the sensor current. Defender for Identity needs a sensor on the domain controller that holds the account. Defender for Office 365 needs Exchange Online mailboxes with audit actions such as MailItemsAccessed, UpdateInboxRules, MoveToDeletedItems, SoftDelete and HardDelete. Defender Antivirus mode doesn't matter.\n\n**Seeing it.** The incident shows an **Attack Disruption** tag, a yellow banner and contained assets in the graph, and the action is logged in the **Action center**. You can query it in the `DisruptionAndResponseEvents` table.\n\n**Control.** Add exclusions under *Settings > Microsoft Defender XDR > Automated response* (users, device groups, IPs). After investigating, release a contained device or select **Enable user**. Opting out completely requires a support case.",
+      "terms": [
+        {
+          "t": "Attack Disruption tag",
+          "d": "Label on incidents in which automatic disruption took action."
+        },
+        {
+          "t": "Contain user",
+          "d": "Defender for Endpoint policy that blocks a compromised account's activity on onboarded devices."
+        },
+        {
+          "t": "Automated response exclusions",
+          "d": "Users, device groups or IPs that are kept out of automatic containment."
+        }
+      ],
+      "trap": "Releasing a contained asset is a manual step (release from containment or Enable user). Exclusions are preventive, so they don't undo an action that has already run.",
+      "example": "An AiTM phishing attack steals a session cookie. Defender XDR disables the user and revokes the user's sessions within minutes, and the incident appears with the Attack Disruption tag.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "XDR signals",
+          "High-confidence",
+          "Auto contain",
+          "Tag + banner",
+          "Analyst release"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.03",
+      "objective": "d2.1",
+      "seq": 3,
+      "title": "Microsoft Purview DLP alerts in the Defender portal",
+      "short": "Microsoft Purview data loss prevention (DLP) alerts flow into the Defender XDR incident queue, where analysts correlate them with other alerts and remediate files, emails, users and devices without leaving the portal.",
+      "deep": "**Licensing and flow.** With E5/A5 (or E5 Compliance / Information Protection & Governance), DLP alerts flow to Defender automatically. In the Purview portal you must **turn on alerts for your DLP policies**. Administrative unit restrictions carry over, so a scoped admin sees only alerts for that unit.\n\n**Investigating.** Filter the queue by service/detection source **Microsoft Data Loss Prevention**. A DLP alert page shows the **alert story** (matched policy and sensitive information types), **Related events**, a **Sensitive info types** tab and a **Source** tab with the matched content. Viewing the source requires specific permissions, and downloading the file needs the **Data classification content viewer** role.\n\n**Hunting.** DLP audit data is in the **CloudAppEvents** table, about 30 days of activity, which requires the Microsoft 365 connector in Defender for Cloud Apps.\n\n**Remediation.** For SharePoint or OneDrive files you can **apply a retention label**, **apply a sensitivity label**, **unshare**, **delete** or **download**. For email you can download the message. Use the user and device cards for identity and endpoint actions, and **Manage incident** to assign, tag or resolve.\n\n**Roles.** Manage Alerts gives access to DLP and security alerts. Information Protection Analyst and DLP Compliance Management give access to DLP alerts only.",
+      "terms": [
+        {
+          "t": "DLP alert",
+          "d": "Alert raised when content matches a Purview DLP policy rule."
+        },
+        {
+          "t": "Data classification content viewer",
+          "d": "Purview role needed to see or download the content that matched."
+        },
+        {
+          "t": "CloudAppEvents",
+          "d": "Advanced hunting table that holds Microsoft 365 app activity, including DLP audit data."
+        }
+      ],
+      "trap": "If DLP alerts are missing from Defender, the fix is usually in Purview (alerts not turned on for the policy). Adding a Sentinel connector doesn't fix it.",
+      "example": "A DLP alert shows a spreadsheet of credit card numbers shared externally from OneDrive. The analyst unshares the file and applies a Highly Confidential sensitivity label from the alert page.",
+      "diagram": null
+    },
+    {
+      "id": "sc-200.d2.1.04",
+      "objective": "d2.1",
+      "seq": 4,
+      "title": "Insider risk management alerts in Defender XDR",
+      "short": "Microsoft Purview Insider Risk Management (IRM) alerts can appear in the Defender XDR alert and incident queue and in advanced hunting. Only users who hold an IRM role can see that data.",
+      "deep": "**Why it matters.** A user downloads thousands of files just before resigning. On its own, that is an insider risk signal. Combined with a Defender for Endpoint USB alert or a Defender for Cloud Apps mass-download alert, it becomes a stronger, correlated incident.\n\n**Integration.** IRM alerts, indicators and events appear in the unified **alert and incident queue**. They are also available in **advanced hunting** (tables such as `DataSecurityBehaviors` and `DataSecurityEvents`), the Microsoft Graph security API and Microsoft Sentinel through the Defender XDR connector.\n\n**Setup.** In IRM settings, an admin turns on data sharing with other security solutions.\n\n**Privacy controls.** Inside the IRM solution, usernames can be pseudonymized. In Defender XDR, IRM data isn't pseudonymized, so it can be correlated with endpoint and cloud-app alerts. To compensate, access is restricted: only users with **Insider Risk Management analyst or investigator roles** in Purview can view IRM data in Defender.\n\n**Response.** Analysts correlate the IRM alert with other evidence in the incident, then escalate inside Purview, for example by opening an IRM case, or act on the identity or device.",
+      "terms": [
+        {
+          "t": "Insider Risk Management",
+          "d": "Purview solution that detects risky user activity such as data theft by departing employees."
+        },
+        {
+          "t": "Pseudonymization",
+          "d": "Masking usernames in IRM views. It doesn't apply to IRM data shown in Defender XDR."
+        },
+        {
+          "t": "DataSecurityEvents",
+          "d": "Advanced hunting table with IRM and data security events."
+        }
+      ],
+      "trap": "A Security Administrator in Defender doesn't automatically see IRM alerts. They need an IRM analyst or investigator role in Purview.",
+      "example": "The SOC sees an incident that combines an IRM 'data theft by departing user' alert with a Defender for Endpoint removable storage alert on the same laptop.",
+      "diagram": null
+    },
+    {
+      "id": "sc-200.d2.1.05",
+      "objective": "d2.1",
+      "seq": 5,
+      "title": "Defender for Cloud workload protection alerts",
+      "short": "Defender for Cloud workload protection plans (Servers, Storage, Containers, Databases and others) raise security alerts that appear in the Defender XDR queue. Analysts respond with the Take action tab, Logic App workflow automation and suppression rules.",
+      "deep": "**Alerts.** Each enabled plan generates alerts with a severity: **High** (high confidence the activity is malicious, for example Mimikatz), **Medium** (suspicious, often anomaly-based), **Low** (possibly benign or blocked, for example log clearing) and **Informational**. Alerts stay visible for 90 days.\n\n**Defender XDR integration.** Defender for Cloud alerts and incidents are correlated in the Defender portal, and cloud resources appear in the attack story. **Informational alerts are not sent.** Status changes to Defender for Cloud alerts sync in both directions. Defender for Endpoint alerts on cloud VMs show in both products, but their status doesn't sync. Filter the queue by **alert subscription ID**. Sentinel customers should use the **tenant-based** Defender for Cloud connector and disconnect the subscription-based legacy one to avoid duplicates.\n\n**Take action tab.**\n- **Inspect resource context**: activity logs for the resource\n- **Mitigate the threat**: manual remediation steps\n- **Prevent future attacks**: hardening recommendations\n- **Trigger automated response**: run a Logic App\n- **Suppress similar alerts**: create a suppression rule\n\n**Automation.** Workflow automation runs consumption Logic Apps when an alert, recommendation or compliance change occurs. It needs Security Admin or Owner on the resource group plus **Logic App Contributor** to create the app. **Suppression rules** auto-dismiss matching alerts, with an optional expiry. Security admin or Owner can create them.",
+      "terms": [
+        {
+          "t": "Workload protection (CWP)",
+          "d": "Defender for Cloud plans that detect threats on servers, storage, containers, databases and other resources."
+        },
+        {
+          "t": "Suppression rule",
+          "d": "Rule that automatically sets matching alerts to Dismissed."
+        },
+        {
+          "t": "Workflow automation",
+          "d": "Runs a Logic App when a Defender for Cloud alert or recommendation fires."
+        }
+      ],
+      "trap": "For known benign recurring alerts the answer is a suppression rule. Disabling the plan or dismissing alerts by hand is wrong.",
+      "example": "Defender for Storage flags malware uploaded to a blob container. The analyst follows the Mitigate the threat steps, applies the hardening recommendations and triggers a Logic App that opens a ticket.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Inspect context",
+          "Mitigate",
+          "Prevent",
+          "Automate",
+          "Suppress"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.06",
+      "objective": "d2.1",
+      "seq": 6,
+      "title": "Defender for Cloud Apps risks and governance actions",
+      "short": "Defender for Cloud Apps detects anomalies in SaaS apps, such as impossible travel, suspicious inbox forwarding, ransomware activity and risky OAuth apps. Analysts remediate with governance actions like Suspend user, Require user to sign in again and Confirm user compromised.",
+      "deep": "**Detections.** Anomaly detections learn normal behaviour, mostly over about **7 days**. Examples include **Impossible travel**, **Activity from infrequent country**, **Suspicious inbox manipulation rule**, **Suspicious inbox forwarding**, **Unusual file download (by user)**, **Ransomware activity**, **Multiple failed login attempts** and OAuth alerts such as **Unusual ISP for an OAuth app**.\n\n**Classify.** **True positive** (malicious), **Benign true positive** (real but allowed, such as a pen test) or **False positive** (not malicious). An impossible travel alert caused by a corporate VPN is a false positive: dismiss it and tag the VPN IP range so it doesn't recur.\n\n**User governance actions.**\n- **Notify user**: sends an email\n- **Suspend user**: blocks sign-in, including users already signed in\n- **Require user to sign in again**: revokes refresh tokens and session cookies\n- **Confirm user compromised**: sets the user's risk to **high** in Microsoft Entra ID Protection, so risk-based policies apply\n\n**App actions.** Revoke an app, ban an app, or revoke all OAuth tokens for a compromised app. **File actions** include remove external users, make private, quarantine and apply a sensitivity label.\n\n**Tracking.** Manual and policy-driven actions are logged in **Cloud Apps > Governance log**, where some can be retried or reverted.",
+      "terms": [
+        {
+          "t": "Governance action",
+          "d": "Remediation that Defender for Cloud Apps applies to a user, file or app."
+        },
+        {
+          "t": "Confirm user compromised",
+          "d": "Raises user risk to high in Entra ID Protection."
+        },
+        {
+          "t": "Benign true positive",
+          "d": "Real activity that is suspicious but authorized, such as a security test."
+        }
+      ],
+      "trap": "Learn the three user actions apart: Suspend blocks sign-in, Require sign in again only revokes sessions, and Confirm compromised changes risk in Entra ID.",
+      "example": "A Suspicious inbox forwarding alert shows a finance user's mail auto-forwarded to Gmail. The analyst suspends the user, resets the password and deletes the rule.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Action",
+          "Effect"
+        ],
+        "rows": [
+          [
+            "Suspend user",
+            "Blocks sign-in"
+          ],
+          [
+            "Sign in again",
+            "Revokes tokens"
+          ],
+          [
+            "Confirm compromised",
+            "Entra risk = high"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.07",
+      "objective": "d2.1",
+      "seq": 7,
+      "title": "Compromised identities in Microsoft Entra ID Protection",
+      "short": "Microsoft Entra ID Protection calculates sign-in risk and user risk from detections such as leaked credentials, anonymous IP address and anomalous token. Analysts investigate the risk reports, then remediate through self-service flows or admin actions such as resetting the password or confirming compromise.",
+      "deep": "**Licence.** Full ID Protection requires **Microsoft Entra ID P2** (or Entra Suite).\n\n**Detections.** *Sign-in risk* examples are **Anonymous IP address**, **Atypical travel**, **Unfamiliar sign-in properties**, **Password spray** and **Anomalous token**. *User risk* examples are **Leaked credentials** (offline, always high), **Attacker in the Middle** (always high) and **Microsoft Entra threat intelligence**. Detections are either real-time or offline.\n\n**Self-remediation** (requires risk-based Conditional Access policies). Sign-in risk is remediated when the user completes **MFA**. User risk is remediated by **MFA followed by a secure password change**. Hybrid users who change their password on-premises need **password hash sync** and the **Allow on-premises password change to reset user risk** setting.\n\n**Admin actions.** **Reset password** (temporary password), **Require password change**, **Dismiss risk** (the password doesn't change), **Confirm compromised** and **Confirm safe**. After confirming compromise you can also block the user, revoke refresh tokens (`Revoke-MgUserSignInSession`) and disable devices.\n\n**Least-privilege roles.** **Security Operator** to dismiss risk, **User Administrator** to reset passwords and **Security Administrator** to edit risk policies. In Log Analytics or Sentinel, detections are in `AADUserRiskEvents` and user risk state is in `AADRiskyUsers`.",
+      "terms": [
+        {
+          "t": "User risk",
+          "d": "Probability that an identity is compromised, built from user risk detections."
+        },
+        {
+          "t": "Sign-in risk",
+          "d": "Probability that a specific sign-in wasn't made by the account owner."
+        },
+        {
+          "t": "Secure password change",
+          "d": "Password change after MFA; it clears user risk."
+        },
+        {
+          "t": "Dismiss risk",
+          "d": "Admin marks risk as handled without changing the password."
+        }
+      ],
+      "trap": "Dismissing risk doesn't reset the password, and user risk self-remediation needs MFA plus a password change, not MFA alone.",
+      "example": "Leaked credentials raises a user to high risk. The risk-based policy forces MFA and a secure password change at next sign-in, and the user's state changes to Remediated.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Risk type",
+          "Self-remediation"
+        ],
+        "rows": [
+          [
+            "Sign-in risk",
+            "Complete MFA"
+          ],
+          [
+            "User risk",
+            "MFA + password change"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.08",
+      "objective": "d2.1",
+      "seq": 8,
+      "title": "Defender for Identity alerts and response actions",
+      "short": "Defender for Identity sensors on domain controllers detect on-premises Active Directory attacks such as reconnaissance, DCSync, Golden Ticket and pass-the-hash. Analysts respond with identity actions like Disable, Revoke session, Mark as compromised and Force password change.",
+      "deep": "**Alert categories.**\n- **Reconnaissance and discovery**: account enumeration (LDAP), network-mapping (DNS), SAMR reconnaissance, honeytoken queried via LDAP\n- **Persistence and privilege escalation**: Golden Ticket variants, suspicious additions to sensitive groups, AdminSdHolder changes\n- **Credential access**: **Suspected DCSync attack**, brute force (Kerberos, NTLM), AS-REP roasting, **Honeytoken authentication activity**\n- **Lateral movement**: **pass-the-hash**, **pass-the-ticket**, **overpass-the-hash**, remote code execution over DNS\n\nDefender for Identity alerts can trigger Defender **automated investigation and response**. Classify alerts as **true positive**, **benign true positive** or **false positive**. Classic-format detections are tuned under *Settings > Identities > Excluded entities*. Defender-format alerts use alert tuning rules.\n\n**Response actions** (from the identity page, advanced hunting or the Action center):\n- **Disable** / **Enable**: AD, Entra ID and other connected identity sources\n- **Revoke session**: Entra ID, Okta\n- **Mark as compromised**: Entra ID\n- **Force password change**: AD and Entra ID\n\n**How actions run.** In AD, the sensor on a **domain controller** runs the action as the DC's **LocalSystem** account. Sensors on AD FS, AD CS or Entra Connect don't run remediation. In Entra ID, a Microsoft-managed *Microsoft Defender for Identity* app runs it. Analysts need the unified RBAC **Response (manage)** permission.",
+      "terms": [
+        {
+          "t": "DCSync",
+          "d": "Abusing directory replication to pull password hashes from a domain controller."
+        },
+        {
+          "t": "Pass-the-ticket",
+          "d": "Reusing a stolen Kerberos ticket to authenticate as the victim."
+        },
+        {
+          "t": "Honeytoken",
+          "d": "Decoy account; any use of it raises an alert."
+        }
+      ],
+      "trap": "Look for the category mapping (DCSync is credential access, pass-the-hash is lateral movement) and remember that only the DC sensor runs AD remediation.",
+      "example": "An alert reports a workstation requesting replication from a domain controller. The analyst confirms DCSync, disables the account used and forces a password reset.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Recon",
+          "Credential access",
+          "Lateral movement",
+          "Domain dominance"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.09",
+      "objective": "d2.1",
+      "seq": 9,
+      "title": "Microsoft Sentinel incidents in the Defender portal",
+      "short": "After Microsoft Sentinel is onboarded to the Defender portal, SIEM and XDR incidents share one queue and one correlation engine. That changes how incident creation rules, automation rules and multi-workspace setups behave.",
+      "deep": "**Unified queue.** Sentinel analytics-rule alerts and Defender XDR alerts land in *Investigation & response > Incidents & alerts > Incidents* and are correlated across domains. Microsoft Sentinel is supported in the Azure portal only until **March 31, 2027**, after which it is Defender-portal only.\n\n**What changes on onboarding.**\n- **Microsoft incident creation rules** aren't supported and are **deactivated**, which prevents duplicate incidents.\n- Incidents created in Sentinel by API, a Logic App or manually in the Azure portal **don't sync** to the Defender portal.\n- Correlation can rename incidents, so automation rules should use the **analytics rule name** and **tags** as conditions, not incident titles. The incident provider condition and the `Description` field are removed.\n- Automation rules with alert triggers act only on Sentinel alerts. Use the **Enhanced Alert Trigger** to include Defender XDR alerts.\n- With several workspaces, only the **primary workspace** correlates with Defender XDR data.\n\n**Correlation opt-out.** Add `#DONT_CORR#` at the start of an analytics rule description, or set Incident correlation to Disabled in the rule wizard, so the rule's alerts bypass correlation (the tenant default setting controls this).\n\n**Investigating.** Analysts use the attack story, entity pages (with a **Sentinel events** tab), advanced hunting across XDR and workspace tables, and the `SecurityIncident` table. That table stores one row per update, so use `arg_max` to get the latest state.",
+      "terms": [
+        {
+          "t": "Primary workspace",
+          "d": "The one Sentinel workspace whose alerts correlate with Defender XDR data."
+        },
+        {
+          "t": "#DONT_CORR#",
+          "d": "Description tag that excludes an analytics rule's alerts from Defender correlation."
+        },
+        {
+          "t": "SecurityIncident",
+          "d": "Sentinel table that holds a row for each incident create or update."
+        }
+      ],
+      "trap": "Don't build automation on incident titles after onboarding. Correlation can change them, so use analytics rule names and tags.",
+      "example": "A SOC onboards two workspaces. Only the primary workspace's alerts join Defender XDR incidents, so alerts in the secondary workspace stay in their own incidents.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Sentinel rules",
+          "Defender XDR",
+          "Correlation",
+          "Unified incident"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.10",
+      "objective": "d2.1",
+      "seq": 10,
+      "title": "Embedded Security Copilot in the Defender portal",
+      "short": "Security Copilot is embedded in the Defender portal. It summarizes incidents, suggests guided responses, explains scripts and files, summarizes devices and identities, writes KQL from natural language and drafts incident reports.",
+      "deep": "**Capabilities.**\n- **Incident summary**: when and where the attack started, a timeline, assets, IoCs and threat actors. By default it is generated whenever an incident is opened (up to 100 alerts) and cached for a week. You can switch generation to severity-based or on demand.\n- **Guided responses**, in four categories: **Triage** (classify as informational, true positive or false positive), **Containment**, **Investigation** (for example, contact the user in Teams) and **Remediation** (for example, view similar emails or incidents).\n- **Script analysis**: explains suspicious PowerShell or other command lines.\n- **File analysis**: explains what a file does.\n- **Device summary** and **identity summary**.\n- **Natural language to KQL** in advanced hunting.\n- **Incident report**: writes up actions and findings for handover.\n\nThere is also a Copilot chat pane in the portal that is aware of the current page.\n\n**Access and cost.** Users need provisioned access to Security Copilot, and each prompt consumes **Security Compute Units (SCUs)**. In 2026 Microsoft began including Security Copilot with Microsoft 365 E5, allocating SCUs per user licence. Grayed-out guided-response buttons mean the user's unified RBAC permissions don't allow that action.",
+      "terms": [
+        {
+          "t": "SCU",
+          "d": "Security Compute Unit, the capacity that Security Copilot features consume."
+        },
+        {
+          "t": "Guided response",
+          "d": "Copilot recommendation cards for triage, containment, investigation and remediation."
+        },
+        {
+          "t": "Script analysis",
+          "d": "Copilot explanation of a script or command line found in evidence."
+        }
+      ],
+      "trap": "Copilot recommends actions but your RBAC still applies, so it can't run an action you aren't permitted to take.",
+      "example": "An analyst opens a 40-alert incident, reads the Copilot summary, uses script analysis on an encoded PowerShell command and then follows the Containment card to isolate the device.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Triage",
+          "Containment",
+          "Investigation",
+          "Remediation"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.11",
+      "objective": "d2.1",
+      "seq": 11,
+      "title": "Agentic AI: Security Copilot agents in Defender",
+      "short": "Security Copilot agents triage and investigate on their own, within the permissions you give them. In Defender, the Phishing Triage (Security Alert Triage) Agent gives verdicts on user-reported phishing and learns from analyst feedback written in plain language.",
+      "deep": "**Defender agents.**\n- **Security Alert Triage Agent / Phishing Triage Agent**: triages *Email reported by user as malware or phish* alerts (and, in preview, some identity and cloud alerts). It gives a verdict with a natural-language rationale. **False positive** alerts are resolved, and **true positive** incidents stay open for an analyst.\n- **Threat Intelligence Briefing Agent**: scheduled briefings on relevant threats.\n- **Threat Hunting Assistant**: natural-language hunting that writes KQL and interprets results.\n- **Security Analyst Agent**: no-code analyses such as anomaly detection and risk scoring.\n- **Dynamic Threat Detection Agent**: an always-on backend service that finds false negatives and raises alerts mapped to MITRE ATT&CK.\n\n**Phishing Triage prerequisites.** **Defender for Office 365 Plan 2**, Security Copilot SCUs, unified RBAC for MDO, reporting enabled in Outlook and the user-reported alert policy turned on. You must disable tuning rules that auto-resolve those alerts.\n\n**Identity.** Agents run as a new **Microsoft Entra Agent ID** (recommended, least privilege) or as an existing user account.\n\n**Oversight.** Incidents the agent worked carry an **Agent** tag. You can view the agent's activity and full workflow. To correct it, use **Change classification**, explain why, and select **Use this feedback to teach the agent**. Feedback that conflicts with earlier lessons is flagged as **Conflict**.",
+      "terms": [
+        {
+          "t": "Agentic AI",
+          "d": "AI that plans and runs multi-step tasks on its own, under human oversight."
+        },
+        {
+          "t": "Entra Agent ID",
+          "d": "Dedicated identity created for an agent, with only the permissions it needs."
+        },
+        {
+          "t": "Phishing Triage Agent",
+          "d": "Copilot agent that gives verdicts on user-reported phishing alerts."
+        }
+      ],
+      "trap": "If an auto-resolve tuning rule still closes reported-phish alerts, the agent never sees them, so disable that rule first.",
+      "example": "The agent marks a benefits-enrollment email as phishing. An analyst reclassifies it, explains that genuine mail comes from @benefits.contoso.com, and teaches the agent that lesson.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User reports",
+          "Agent triage",
+          "Verdict",
+          "Analyst feedback",
+          "Agent learns"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.12",
+      "objective": "d2.1",
+      "seq": 12,
+      "title": "Investigating complex multi-stage, multi-domain attacks",
+      "short": "Defender XDR correlates alerts from endpoints, identities, email, cloud apps and Sentinel into one multi-stage incident. Analysts use the attack story, incident merging, blast radius and identity alerts to follow lateral movement across domains.",
+      "deep": "**Correlation.** Defender groups alerts into one incident when they share entities (users, devices, mailboxes), artifacts (files, processes, senders), time frames or event sequences, for example a phishing click followed by a suspicious sign-in. Incidents are named automatically, for example *Multi-stage incident on multiple endpoints reported by multiple sources*.\n\n**Merging.** When incidents are merged, Defender moves the alerts, tags and entities into the target incident. It closes the source incident and adds a **Redirected** tag. Automatic merge is blocked if one incident is **closed**, if they're assigned to **different people**, if they have **different classifications or determinations**, or if they contain devices in different device groups when that setting is on. Up to five incidents can be merged manually (preview).\n\n**Attack story.** The incident graph can be replayed in time order, highlights the alerts related to an entity, and lets you take actions or run **Go hunt** queries. **Blast radius** (*View blast radius*) shows possible paths from a node to critical assets. Those paths are possibilities, not confirmed activity.\n\n**Lateral movement.** Typical chain: initial access on a workstation, then credential dumping, then **pass-the-hash / pass-the-ticket / overpass-the-hash** to servers (Defender for Identity lateral movement alerts), then domain dominance (DCSync, Golden Ticket). Across domains, an AiTM phish (email) leads to token theft (Entra ID), then mailbox rules (Defender for Cloud Apps), then BEC.",
+      "terms": [
+        {
+          "t": "Multi-stage incident",
+          "d": "One incident that combines alerts from several attack stages and products."
+        },
+        {
+          "t": "Redirected tag",
+          "d": "Added to the source incident after it is merged into another."
+        },
+        {
+          "t": "Blast radius",
+          "d": "Graph of possible propagation paths from a compromised node to critical targets."
+        }
+      ],
+      "trap": "After a merge you can't choose the direction (Defender picks the target), and closed incidents are never merged automatically.",
+      "example": "A Defender for Endpoint credential-dumping alert and a Defender for Identity pass-the-hash alert on the same account merge into a single incident that shows the path to a file server.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Phish",
+          "Foothold",
+          "Cred dump",
+          "Pass-the-hash",
+          "DCSync"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.13",
+      "objective": "d2.1",
+      "seq": 13,
+      "title": "Managing incidents: status, assignment and classification",
+      "short": "In the Defender portal you manage an incident from the Manage incident pane, where you set the owner, status, severity, tags, classification and comments. Every change is recorded in the Activities log.",
+      "deep": "**Status.** New incidents are **Active**. Set **In progress** while you work and **Resolved** when finished (a resolution note is required).\n\n**Assignment.** New incidents have no owner. Only **one user or group** can own an incident, and assigning it also assigns all its alerts.\n\n**Severity.** **High**, **Medium**, **Low** or **Informational**. It defaults to the **highest severity of its alerts** and can be changed.\n\n**Classification.**\n- **True positive**, with a threat type\n- **Informational, expected activity**, for security tests, red team exercises or expected unusual behaviour\n- **False positive**\n- **Not set** (default)\n\n**Tags.** System tags (red or black) mark the attack type, automatic actions (such as Attack Disruption) or Defender Experts involvement. Custom tags (white) are yours and can be used as queue filters.\n\n**Comments and Activities.** Comments can be up to 30,000 characters. The **Activities** log records every user and system change and can be filtered by origin, provider, performed by and more.\n\n**Naming.** Defender names incidents from alert attributes. You can rename an incident, but a later merge can overwrite the name.\n\nThe Defender portal is introducing an **incident cases** experience (preview) that builds on these same fields.",
+      "terms": [
+        {
+          "t": "Active",
+          "d": "Default status of a new Defender XDR incident."
+        },
+        {
+          "t": "Informational, expected activity",
+          "d": "Classification for real but authorized activity, such as red-team testing."
+        },
+        {
+          "t": "Activities log",
+          "d": "Audit trail of manual and automated changes made to an incident."
+        }
+      ],
+      "trap": "Defender incidents start as Active. Sentinel (Azure portal) incidents and cases start as New, and exams mix the two.",
+      "example": "A red-team exercise triggers credential-theft alerts. After verifying it with the red-team lead, the analyst resolves the incident as Informational, expected activity, with a security testing activity type.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Active",
+          "Assign",
+          "In progress",
+          "Classify",
+          "Resolved"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d2.1.14",
+      "objective": "d2.1",
+      "seq": 14,
+      "title": "Case management in the Microsoft Defender portal",
+      "short": "Case management is a native ticketing experience in the Defender portal. A case groups related incidents, tasks, indicators, comments and attachments so SOC work that spans several incidents, or none, can be tracked without a third-party tool.",
+      "deep": "**Prerequisite.** A **Microsoft Sentinel workspace connected to the Defender portal**. Cases appear only in the Defender portal.\n\n**Uses.** Investigations that span multiple incidents, threat-hunting projects, tracking IoCs or threat actors, and detection-tuning work.\n\n**Case fields.** Case ID (auto-assigned from **1000**, never purged), priority (Very low to Critical), status (defaults **New**, **Open**, **Closed**; admins can add custom statuses), one assignee, description, due date and linked incidents.\n\n**Tasks.** Each task has an owner, priority, due date, description and closing notes. Task statuses are New, In progress, Failed, Partially completed, Skipped and Completed.\n\n**Linked objects.** Link incidents from the case or from an incident's menu. Link threat intelligence **indicators** (preview). Defender Threat Intelligence *Projects* are deprecated in favour of linking indicators to cases.\n\n**Activity log and attachments.** Rich-text comments, automatic audit events, and file attachments that are scanned for malware (password-zip any samples).\n\n**Permissions.**\n- View: *Security data basics (read)* or **Microsoft Sentinel Reader**\n- Create, assign, link and update: *Alerts (manage)* or **Microsoft Sentinel Responder**\n- Customize statuses: *Core security settings (manage)* or **Microsoft Sentinel Contributor**",
+      "terms": [
+        {
+          "t": "Case",
+          "d": "Container that groups incidents, tasks, IoCs and evidence for one piece of SOC work."
+        },
+        {
+          "t": "Task",
+          "d": "Assigned unit of work inside a case, with its own status and closing notes."
+        },
+        {
+          "t": "Custom status",
+          "d": "Admin-defined case status, such as Research phase."
+        }
+      ],
+      "trap": "Case management needs Sentinel connected to the Defender portal and isn't available in the Azure portal. Responder can manage cases, but only Contributor can customize statuses.",
+      "example": "A hunter opens a case for a suspected threat actor, links three incidents and five IoCs, and assigns containment tasks to the IR team with due dates.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Case",
+          "Linked incidents",
+          "Indicators",
+          "Tasks",
+          "Comments + files"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-200.d2a.q001",
+      "lesson": "sc-200.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You must remove a delivered phishing message from 40 mailboxes, and users and admins must still be able to recover it later if needed. Which remediation action should you choose?",
+      "options": [
+        "Soft delete",
+        "Move to junk folder",
+        "Block the sender in the Tenant Allow/Block List",
+        "Hard delete"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Soft delete moves the message to Recoverable Items\\Deletions, where it can still be recovered. Hard delete purges it. Move to junk leaves it reachable by the user. A Tenant Allow/Block List entry stops future mail but doesn't remove messages already delivered."
+    },
+    {
+      "id": "sc-200.d2a.q002",
+      "lesson": "sc-200.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your tenant has Defender for Office 365 Plan 1. Analysts want the Campaigns view, post-delivery email data and Go hunt from the email hunting tool. What do they need?",
+      "options": [
+        "Content search in Microsoft Purview eDiscovery",
+        "Threat Explorer, included with Defender for Office 365 Plan 2",
+        "Real-time detections, included with Plan 1",
+        "Message trace in the Exchange admin center"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Threat Explorer (Plan 2) adds the Campaigns and URL clicks views, post-delivery data and Go hunt. Real-time detections, which Plan 1 already has, show only delivery-time detections. Content search and message trace aren't threat-hunting views."
+    },
+    {
+      "id": "sc-200.d2a.q003",
+      "lesson": "sc-200.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO locations let an analyst manually start remediation (for example, soft delete) of delivered email in Defender for Office 365 Plan 2? Select TWO.",
+      "options": [
+        "Configuration analyzer",
+        "Microsoft Secure Score improvement actions",
+        "Take action in Threat Explorer",
+        "Attack simulation training payloads",
+        "Take actions on advanced hunting results"
+      ],
+      "answer": [
+        2,
+        4
+      ],
+      "explain": "Both Threat Explorer and advanced hunting offer Take action for email remediation. Attack simulation training runs phishing simulations, Configuration analyzer compares policy settings, and Secure Score tracks posture. None of those remediate delivered mail."
+    },
+    {
+      "id": "sc-200.d2a.q004",
+      "lesson": "sc-200.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Defender for Office 365 remediation, select Yes if true.",
+      "statements": [
+        {
+          "s": "AIR automated remediation for message clusters can be configured to hard delete messages.",
+          "a": false
+        },
+        {
+          "s": "Email remediation actions from the past 30 days can be reviewed on the History tab of the Action center.",
+          "a": true
+        },
+        {
+          "s": "With two-step approval, one analyst adds messages to a remediation and another analyst approves it.",
+          "a": true
+        }
+      ],
+      "explain": "Automated remediation of AIR clusters uses soft delete only. The Action center History tab shows the last 30 days of remediation. Two-step approval splits selecting messages from approving the action."
+    },
+    {
+      "id": "sc-200.d2a.q005",
+      "lesson": "sc-200.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You suspect a compromised mailbox has a forwarding rule that is hidden from Outlook. Complete the Exchange Online PowerShell command so hidden rules are included.",
+      "code": "Get-InboxRule -Mailbox \"megan@contoso.com\" ____ | Format-List Name,Enabled,RedirectTo,ForwardTo,ForwardAsAttachmentTo",
+      "options": [
+        "-All",
+        "-ShowHidden",
+        "-IncludeHidden",
+        "-Force"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Get-InboxRule returns hidden inbox rules only when you add -IncludeHidden, and attackers often hide forwarding rules. -ShowHidden, -All and -Force don't reveal hidden rules."
+    },
+    {
+      "id": "sc-200.d2a.q006",
+      "lesson": "sc-200.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A user's mailbox is confirmed compromised and has been sending fraud emails. Put the response steps in order.",
+      "options": [
+        "Disable the account (or reset the password if you can't disable it)",
+        "Revoke the user's active sessions and refresh tokens",
+        "Remove persistence: unknown MFA methods, consented apps and malicious forwarding or inbox rules",
+        "Re-enable the account and remove it from Restricted entities"
+      ],
+      "explain": "First stop the attacker (disable or reset the password), then kill existing sessions so they can't re-add persistence, then remove persistence (MFA methods, apps, inbox rules), and only then restore the user, including unblocking outbound mail on the Restricted entities page."
+    },
+    {
+      "id": "sc-200.d2a.q007",
+      "lesson": "sc-200.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "How can an analyst quickly spot, in the Defender portal incident queue, the incidents where automatic attack disruption has taken action?",
+      "options": [
+        "By the Defender Experts tag on the incident",
+        "By the Redirected tag on the incident",
+        "By the incident name 'Multi-stage incident'",
+        "By the Attack Disruption tag on the incident"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Disrupted incidents carry an Attack Disruption tag, and the incident page also shows a yellow banner. Redirected marks merged source incidents. Defender Experts marks managed-service involvement. 'Multi-stage' is only an automatic name."
+    },
+    {
+      "id": "sc-200.d2a.q008",
+      "lesson": "sc-200.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "You are preparing Defender for Office 365 signals for automatic attack disruption. Which THREE mailbox audit actions are among the minimum that must be enabled? Select THREE.",
+      "options": [
+        "MailItemsAccessed",
+        "SendAs",
+        "UpdateInboxRules",
+        "HardDelete",
+        "FolderBind"
+      ],
+      "answer": [
+        0,
+        2,
+        3
+      ],
+      "explain": "The documented minimum is MailItemsAccessed, UpdateInboxRules, MoveToDeletedItems, SoftDelete and HardDelete. FolderBind and SendAs are real mailbox audit actions but aren't on that list."
+    },
+    {
+      "id": "sc-200.d2a.q009",
+      "lesson": "sc-200.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "During a BEC attack, automatic attack disruption disabled the account of Lee, a finance manager. Your investigation shows that the attacker's sessions were revoked, Lee's password and MFA methods were reset, and no persistence remains. Lee needs access again now.",
+      "stem": "What should you do?",
+      "options": [
+        "In the incident graph or Action center, select Lee and choose Enable user",
+        "Add Lee as a user exclusion under Automated response > Identities",
+        "Dismiss Lee's user risk in Microsoft Entra ID Protection",
+        "Open a support case titled 'Attack disruption opt-out'"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Analysts release disruption actions themselves, using Enable user for an account or release from containment for a device, from the incident graph or the Action center. An exclusion only prevents future actions. Opting out disables the feature for the whole tenant. Dismissing risk doesn't re-enable a disabled account."
+    },
+    {
+      "id": "sc-200.d2a.q010",
+      "lesson": "sc-200.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about automatic attack disruption, select Yes if true.",
+      "statements": [
+        {
+          "s": "To stop a specific service account from being disabled automatically, add it as a user exclusion under Settings > Microsoft Defender XDR > Automated response.",
+          "a": true
+        },
+        {
+          "s": "Attack disruption requires Microsoft Defender Antivirus to run in active mode on endpoints.",
+          "a": false
+        },
+        {
+          "s": "Microsoft recommends setting Defender for Endpoint device groups to Full automation for attack disruption.",
+          "a": true
+        }
+      ],
+      "explain": "User exclusions are configured on the Identities tab of Automated response. Disruption works whether Defender Antivirus is in active mode, passive mode or EDR block mode. Full - remediate threats automatically is the recommended automation level."
+    },
+    {
+      "id": "sc-200.d2a.q011",
+      "lesson": "sc-200.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You need an organization-wide list of the automatic attack disruption actions taken in the last 30 days. Complete the advanced hunting query.",
+      "code": "____\n| where Timestamp > ago(30d)\n| project Timestamp, ActionType, DeviceName, SourceUserName, IpAddress, PolicyName\n| order by Timestamp desc",
+      "options": [
+        "AlertEvidence",
+        "DisruptionAndResponseEvents",
+        "DeviceEvents",
+        "EmailPostDeliveryEvents"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "DisruptionAndResponseEvents records automatic attack disruption block and policy events, with columns such as PolicyName and SourceUserName. DeviceEvents can show activity blocked by containment but isn't the org-wide disruption log. AlertEvidence lists alert entities, and EmailPostDeliveryEvents covers email actions."
+    },
+    {
+      "id": "sc-200.d2a.q012",
+      "lesson": "sc-200.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your tenant has Microsoft 365 E5. Analysts report that DLP policy matches are never visible in the Defender XDR incident queue. What should you configure in Microsoft Purview?",
+      "options": [
+        "Turn on data sharing with other security solutions in Insider Risk Management settings",
+        "Create a Defender for Cloud Apps file policy for each DLP rule",
+        "Turn on alerts for the DLP policies",
+        "Enable the Microsoft Defender XDR connector in Microsoft Sentinel"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Licensed tenants get DLP alerts in Defender automatically, but only for DLP policies that generate alerts, so alerts must be turned on in Purview. The IRM setting affects only insider risk data. The Sentinel connector sends data to Sentinel, not to Defender. File policies are a separate product feature."
+    },
+    {
+      "id": "sc-200.d2a.q013",
+      "lesson": "sc-200.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A DLP alert in the Defender portal concerns a OneDrive file that contains customer passport numbers. Which THREE remediation actions can you take on that file from the alert? Select THREE.",
+      "options": [
+        "Isolate the device",
+        "Soft delete the message",
+        "Unshare the file",
+        "Apply a sensitivity label",
+        "Apply a retention label"
+      ],
+      "answer": [
+        2,
+        3,
+        4
+      ],
+      "explain": "For SharePoint and OneDrive files, the DLP alert offers apply retention label, apply sensitivity label, unshare, delete and download. Isolate device is a Defender for Endpoint device action, and soft delete applies to email messages."
+    },
+    {
+      "id": "sc-200.d2a.q014",
+      "lesson": "sc-200.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An analyst can manage DLP alerts in the Defender portal but can't download the file that matched the policy. Which role is missing?",
+      "options": [
+        "Security Operator",
+        "eDiscovery Manager",
+        "Security Reader",
+        "Data classification content viewer"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Downloading the matched file from a DLP alert requires the Data classification content viewer role. Security Reader and Security Operator cover alerts, not content. eDiscovery Manager is for eDiscovery cases."
+    },
+    {
+      "id": "sc-200.d2a.q015",
+      "lesson": "sc-200.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "DLP audit activity for SharePoint and OneDrive is queried in advanced hunting. Complete the query with the correct table.",
+      "code": "____\n| where Timestamp > ago(7d)\n| where AccountDisplayName == \"Adele Vance\"\n| project Timestamp, ActionType, Application, ObjectName",
+      "options": [
+        "CloudAppEvents",
+        "IdentityDirectoryEvents",
+        "DeviceFileEvents",
+        "EmailEvents"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "DLP audit data from Microsoft 365 apps is in CloudAppEvents, which requires the Microsoft 365 connector in Defender for Cloud Apps. DeviceFileEvents holds endpoint file events, EmailEvents holds mail flow, and IdentityDirectoryEvents holds directory changes."
+    },
+    {
+      "id": "sc-200.d2a.q016",
+      "lesson": "sc-200.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You want Microsoft Purview Insider Risk Management alerts to appear in the Defender XDR incident queue. What should you turn on?",
+      "options": [
+        "The Microsoft 365 app connector in Defender for Cloud Apps",
+        "Data sharing with other security solutions in Insider Risk Management settings",
+        "Alerts for all DLP policies in Purview",
+        "Pseudonymization of usernames in Insider Risk Management"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The IRM setting that shares data with other security solutions sends IRM alerts and events to Defender XDR. DLP alert settings and the Defender for Cloud Apps connector feed other data. Pseudonymization only masks names inside IRM."
+    },
+    {
+      "id": "sc-200.d2a.q017",
+      "lesson": "sc-200.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Insider Risk Management data in Defender XDR, select Yes if true.",
+      "statements": [
+        {
+          "s": "Only users who hold an insider risk analysis or investigation role in Microsoft Purview can view IRM data in Defender XDR.",
+          "a": true
+        },
+        {
+          "s": "IRM data in Defender XDR stays pseudonymized, so it can't be correlated with Defender for Endpoint alerts.",
+          "a": false
+        },
+        {
+          "s": "IRM data can be queried with advanced hunting in the Defender portal.",
+          "a": true
+        }
+      ],
+      "explain": "IRM data in Defender isn't pseudonymized, so it can correlate with other alerts. Access is limited to IRM analysts and investigators instead. IRM data is available in advanced hunting, Graph and Sentinel."
+    },
+    {
+      "id": "sc-200.d2a.q018",
+      "lesson": "sc-200.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso enabled IRM integration with Defender XDR last month. Priya, the SOC lead, holds the Security Administrator role and can see Defender for Endpoint and Defender for Office 365 alerts. Her colleague in the Purview insider risk team can see an IRM 'data theft by departing user' alert in the Defender incident, but Priya can't.",
+      "stem": "What is the most likely reason?",
+      "options": [
+        "The Sentinel workspace isn't connected to the Defender portal",
+        "IRM alerts are visible only in the Purview portal",
+        "Priya isn't assigned an Insider Risk Management analyst or investigator role in Purview",
+        "Priya's account has no Security Copilot SCUs assigned"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "IRM data in Defender XDR is restricted to users with IRM analysis or investigation roles, so Security Administrator isn't enough. Copilot SCUs aren't needed to see alerts. Her colleague can see the alert in Defender, so the alert does reach the portal and Sentinel isn't required."
+    },
+    {
+      "id": "sc-200.d2a.q019",
+      "lesson": "sc-200.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "On a Defender for Cloud alert's Take action tab, which section lists security recommendations that harden the resource and reduce its attack surface?",
+      "options": [
+        "Trigger automated response",
+        "Mitigate the threat",
+        "Inspect resource context",
+        "Prevent future attacks"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Prevent future attacks lists hardening recommendations. Mitigate the threat gives manual remediation steps for this alert, Inspect resource context opens activity logs, and Trigger automated response runs a Logic App."
+    },
+    {
+      "id": "sc-200.d2a.q020",
+      "lesson": "sc-200.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An authorized penetration test runs against one Azure VM for the next three weeks and keeps raising the same Defender for Servers alert. You want matching alerts dismissed automatically only until the test ends. What should you do?",
+      "options": [
+        "Create a suppression rule with a custom expiration date",
+        "Create a workflow automation that emails the subscription owner",
+        "Disable the Defender for Servers plan on the subscription",
+        "Bulk-change the existing alerts to Dismissed each day"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Suppression rules dismiss matching future alerts automatically, and a custom expiration ends the rule when the test finishes. Manual dismissal doesn't scale, disabling the plan removes protection, and an email automation doesn't suppress anything."
+    },
+    {
+      "id": "sc-200.d2a.q021",
+      "lesson": "sc-200.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You must create a Defender for Cloud workflow automation and the Logic App it runs when a high-severity alert fires. Which TWO permissions do you need? Select TWO.",
+      "options": [
+        "Logic App Contributor",
+        "Log Analytics Reader",
+        "Logic App Operator",
+        "Security Admin or Owner on the resource group",
+        "Security Reader on the subscription"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "Workflow automation needs Security Admin or Owner on the resource group, and creating or editing the Logic App needs Logic App Contributor. Logic App Operator can only run or read existing apps. The reader roles can't create anything."
+    },
+    {
+      "id": "sc-200.d2a.q022",
+      "lesson": "sc-200.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Defender for Cloud alerts in the Defender portal, select Yes if true.",
+      "statements": [
+        {
+          "s": "Informational-severity Defender for Cloud alerts are sent to the Defender XDR alert queue.",
+          "a": false
+        },
+        {
+          "s": "Resolving a Defender for Cloud alert in the Defender portal syncs the status back to Defender for Cloud.",
+          "a": true
+        },
+        {
+          "s": "Status changes to a Defender for Endpoint alert on an Azure VM sync between Defender for Cloud and Defender XDR.",
+          "a": false
+        }
+      ],
+      "explain": "Informational alerts aren't sent to Defender XDR. Status syncs both ways for alerts that originate in Defender for Cloud. Defender for Endpoint alerts on cloud resources appear in both portals, but their status doesn't sync."
+    },
+    {
+      "id": "sc-200.d2a.q023",
+      "lesson": "sc-200.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam uses Microsoft Sentinel, onboarded to the Defender portal, and ingests Defender XDR incidents. It also enabled the subscription-based Microsoft Defender for Cloud connector years ago, and an analytics rule creates incidents from Defender for Cloud alerts. Analysts now see every cloud alert twice.",
+      "stem": "What should you do?",
+      "options": [
+        "Add #DONT_CORR# to every analytics rule description",
+        "Use the tenant-based Defender for Cloud connector, disconnect the legacy one and turn off the incident-creating rule",
+        "Create a Defender for Cloud suppression rule for all alert types",
+        "Turn off the Defender for Cloud integration in Defender XDR settings"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Microsoft's guidance is to move to the tenant-based connector, disconnect the subscription-based legacy connector and disable the analytics rules that create incidents from Defender for Cloud alerts. #DONT_CORR# only affects correlation. Suppressing everything or removing the integration loses real detections."
+    },
+    {
+      "id": "sc-200.d2a.q024",
+      "lesson": "sc-200.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are working a genuine Defender for Cloud alert on a storage account. Put the recommended response steps in order.",
+      "options": [
+        "Follow the Mitigate the threat steps to investigate and contain",
+        "Remediate the Prevent future attacks recommendations",
+        "Trigger a Logic App for any automated follow-up",
+        "Set the alert status to Dismissed when the investigation is complete"
+      ],
+      "explain": "Defender for Cloud's recommended order is to mitigate the immediate threat, harden through the recommendations, optionally trigger automation, and dismiss the alert once you have finished."
+    },
+    {
+      "id": "sc-200.d2a.q025",
+      "lesson": "sc-200.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Defender for Cloud Apps governance action raises the user's risk level to high in Microsoft Entra ID Protection so that risk-based policies are enforced?",
+      "options": [
+        "Require user to sign in again",
+        "Notify user",
+        "Confirm user compromised",
+        "Suspend user"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Confirm user compromised sets the user's risk to high in Entra ID Protection. Suspend user blocks sign-in, Require user to sign in again revokes tokens and session cookies, and Notify user only sends an email."
+    },
+    {
+      "id": "sc-200.d2a.q026",
+      "lesson": "sc-200.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A user's session cookie may have been stolen, but you don't want to block the user from working. You want to invalidate refresh tokens and session cookies so the user must authenticate again everywhere. Which governance action should you use?",
+      "options": [
+        "Confirm user compromised",
+        "Suspend user",
+        "Revoke app",
+        "Require user to sign in again"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Require user to sign in again revokes refresh tokens and session cookies without blocking the account. Suspend user blocks sign-in. Confirm user compromised changes Entra risk. Revoke app removes an OAuth app's permissions."
+    },
+    {
+      "id": "sc-200.d2a.q027",
+      "lesson": "sc-200.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Defender for Cloud Apps anomaly alerts, select Yes if true.",
+      "statements": [
+        {
+          "s": "If an Impossible travel alert was caused by an untagged corporate VPN, dismiss the alert and tag the VPN IP range.",
+          "a": true
+        },
+        {
+          "s": "Most anomaly detections need a learning period of about seven days before they alert.",
+          "a": true
+        },
+        {
+          "s": "Benign true positive is the classification for detections where the reported activity never actually happened.",
+          "a": false
+        }
+      ],
+      "explain": "Tagging VPN ranges prevents repeat impossible-travel false positives, and most detections learn for about seven days. Benign true positive means the activity was real and suspicious but authorized, such as a pen test. A detection error is a false positive."
+    },
+    {
+      "id": "sc-200.d2a.q028",
+      "lesson": "sc-200.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Defender for Cloud Apps raises 'Suspicious inbox forwarding' for Omar in accounts payable. His mailbox now forwards all mail to an external Gmail address. Omar says he didn't create the rule, and sign-in logs show a sign-in from an unfamiliar country an hour earlier.",
+      "stem": "Which response is most appropriate?",
+      "options": [
+        "Suspend Omar, reset his password and remove the forwarding rule",
+        "Ban the OAuth app named in Omar's most recent consent",
+        "Dismiss the alert and tag the sign-in IP address as a corporate range",
+        "Apply admin quarantine to the files in Omar's OneDrive"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "This is a true positive. The documented response is to suspend the user, reset the password and remove the forwarding rule. Dismissing the alert ignores the compromise, no OAuth app is implicated, and quarantining files doesn't stop the mail exfiltration."
+    },
+    {
+      "id": "sc-200.d2a.q029",
+      "lesson": "sc-200.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE are user governance actions in Defender for Cloud Apps? Select THREE.",
+      "options": [
+        "Make private",
+        "Suspend user",
+        "Notify user",
+        "Require user to sign in again",
+        "Revoke app"
+      ],
+      "answer": [
+        1,
+        2,
+        3
+      ],
+      "explain": "Notify user, Suspend user and Require user to sign in again act on users, as does Confirm user compromised. Make private is a file governance action, and Revoke app is an app governance action."
+    },
+    {
+      "id": "sc-200.d2a.q030",
+      "lesson": "sc-200.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A Defender for Cloud Apps 'Unusual ISP for an OAuth app' alert is confirmed as a true positive. What is the recommended first remediation?",
+      "options": [
+        "Suspend the user who first consented to the app",
+        "Revoke all OAuth access tokens for the app and investigate how they were generated",
+        "Reset the passwords of all users who use the app",
+        "Mark the app as Unsanctioned in Cloud Discovery"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "For a true positive, revoke the app's OAuth access tokens and then investigate how they were issued. Suspending the consenting user doesn't stop the app's tokens. Unsanctioning a Cloud Discovery app affects shadow-IT traffic, and password resets don't invalidate OAuth app tokens."
+    },
+    {
+      "id": "sc-200.d2a.q031",
+      "lesson": "sc-200.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which is the least-privileged Microsoft Entra role that can dismiss user risk in ID Protection?",
+      "options": [
+        "Conditional Access Administrator",
+        "Security Reader",
+        "Security Operator",
+        "User Administrator"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Security Operator is the least-privileged role that can dismiss user risk. Security Reader is read-only. User Administrator is least-privileged for password resets, and Conditional Access Administrator manages policies."
+    },
+    {
+      "id": "sc-200.d2a.q032",
+      "lesson": "sc-200.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A risk-based Conditional Access policy targets high user risk. What must a cloud-only user do to remediate their own user risk?",
+      "options": [
+        "Sign in from a familiar device and location",
+        "Re-register their MFA methods",
+        "Complete MFA only",
+        "Complete MFA and then perform a secure password change"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "User risk self-remediation requires MFA followed by a secure password change. MFA alone remediates sign-in risk only. A familiar device or location can auto-dismiss sign-in risk, not user risk. Re-registering MFA doesn't clear user risk."
+    },
+    {
+      "id": "sc-200.d2a.q033",
+      "lesson": "sc-200.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Entra ID Protection, select Yes if true.",
+      "statements": [
+        {
+          "s": "Leaked credentials is a user risk detection that is calculated offline.",
+          "a": true
+        },
+        {
+          "s": "The Attacker in the Middle detection is always raised as high risk.",
+          "a": true
+        },
+        {
+          "s": "Dismissing a user's risk also forces that user to change their password.",
+          "a": false
+        }
+      ],
+      "explain": "Leaked credentials is an offline user risk detection and is always high. Attacker in the Middle is always high and Microsoft recommends investigating it manually. Dismiss risk clears the risk state without changing the password."
+    },
+    {
+      "id": "sc-200.d2a.q034",
+      "lesson": "sc-200.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailspin has hybrid identities synced from on-premises AD. Users flagged with high user risk change their passwords with Ctrl+Alt+Del on domain-joined PCs, but their user risk in Entra ID Protection stays High and Conditional Access keeps blocking them.",
+      "stem": "What should you configure?",
+      "options": [
+        "Enable password hash sync and turn on 'Allow on-premises password change to reset user risk'",
+        "Switch to pass-through authentication",
+        "Assign Microsoft Entra ID P1 licenses to all users",
+        "Enable self-service password reset for cloud-only accounts"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "For an on-premises password change to remediate user risk, password hash sync must be on and the ID Protection setting 'Allow on-premises password change to reset user risk' must be enabled. Pass-through authentication, P1 licences or SSPR for cloud-only users don't solve this."
+    },
+    {
+      "id": "sc-200.d2a.q035",
+      "lesson": "sc-200.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You confirmed a user as compromised in ID Protection, and no risk policy has remediated the account yet. Which THREE follow-up actions does Microsoft recommend? Select THREE.",
+      "options": [
+        "Dismiss the user's risk",
+        "Revoke the user's refresh tokens",
+        "Require a password change",
+        "Exclude the user from the user risk policy",
+        "Block the user if the attacker could reset the password or complete MFA"
+      ],
+      "answer": [
+        1,
+        2,
+        4
+      ],
+      "explain": "Recommended follow-ups are requiring a password change, blocking the user when the attacker could pass MFA or reset the password, revoking refresh tokens and disabling compromised devices. Dismissing risk or excluding the user would weaken protection."
+    },
+    {
+      "id": "sc-200.d2a.q036",
+      "lesson": "sc-200.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "In Microsoft Sentinel, you want a count of high-risk Entra ID Protection detections per user and detection type. Complete the query.",
+      "code": "____\n| where TimeGenerated > ago(7d)\n| where RiskLevel == \"high\"\n| summarize Detections = count() by UserPrincipalName, RiskEventType",
+      "options": [
+        "AADRiskyUsers",
+        "AADUserRiskEvents",
+        "SigninLogs",
+        "IdentityLogonEvents"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "AADUserRiskEvents holds individual risk detections, with RiskEventType and RiskLevel. AADRiskyUsers holds each user's aggregate risk state. SigninLogs holds sign-ins (with RiskLevelDuringSignIn), and IdentityLogonEvents is a Defender advanced hunting table."
+    }
+  ]
+}

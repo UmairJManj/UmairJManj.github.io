@@ -1,0 +1,931 @@
+{
+  "exam": "governance",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "governance.d3.1.01",
+      "objective": "d3.1",
+      "seq": 1,
+      "title": "What an ISMS is",
+      "short": "ISO/IEC 27001 sets out requirements for establishing, implementing, maintaining and continually improving an information security management system (ISMS). The ISMS protects the confidentiality, integrity and availability (CIA) of information by managing risk.",
+      "deep": "An **information security management system (ISMS)** is not a product or a firewall. It is the set of policies, processes, roles, records and controls an organization uses to manage information security in a planned and repeatable way.\n\n**ISO/IEC 27001** is the international standard that lists the **requirements** an ISMS must meet. Because its clauses use 'shall', an organization can be audited and certified against it.\n\nThe ISMS protects three **information security properties**:\n- **Confidentiality**: only authorized people or processes can access information\n- **Integrity**: information is accurate and complete and is not changed without authorization\n- **Availability**: information is accessible when authorized users need it\n\nThe ISMS is **risk-based**. The organization works out its own risks and chooses controls to treat them, instead of applying a fixed checklist. It also follows a cycle of planning, doing, checking and acting, so it is **continually improved**, not built once and left alone.\n\nThe standard's requirements sit in **clauses 4 to 10**. **Annex A** holds a reference list of 93 controls the organization compares its own choices against.",
+      "terms": [
+        {
+          "t": "ISMS",
+          "d": "Information security management system: the policies, processes and controls an organization uses to manage information security risk."
+        },
+        {
+          "t": "CIA triad",
+          "d": "Confidentiality, integrity and availability: the three properties an ISMS preserves."
+        },
+        {
+          "t": "Requirement",
+          "d": "A 'shall' statement in the standard that an auditor checks for conformity."
+        },
+        {
+          "t": "Continual improvement",
+          "d": "Ongoing work to make the ISMS more suitable, adequate and effective over time."
+        }
+      ],
+      "trap": "Exams suggest 27001 forces every Annex A control on everyone; in fact the ISMS is risk-based and controls are chosen from the risk assessment.",
+      "example": "A payments startup builds an ISMS covering its cloud platform so it can show banks that card data stays confidential, unaltered and available.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Plan",
+          "Do",
+          "Check",
+          "Act"
+        ]
+      }
+    },
+    {
+      "id": "governance.d3.1.02",
+      "objective": "d3.1",
+      "seq": 2,
+      "title": "2022 edition and Amendment 1:2024",
+      "short": "ISO/IEC 27001:2022 is the third edition, published in October 2022. Amendment 1:2024 added climate change: clause 4.1 now requires the organization to decide whether climate change is a relevant issue, and a note in 4.2 says interested parties can have climate-related requirements.",
+      "deep": "ISO/IEC 27001 has three editions: 2005, 2013 and **2022** (the **third edition**, published **October 2022**). The 2022 edition kept the clause 4 to 10 structure but made changes such as:\n- a new clause **6.3 Planning of changes**\n- clause 6.2 now expects objectives to be **monitored**\n- clause 8.1 now covers controlling **externally provided** processes, products or services\n- **Annex A** rebuilt to match ISO/IEC 27002:2022: **93 controls in 4 themes**\n\nIn **February 2024** ISO published **Amendment 1 (Amd 1:2024)**. It was part of a joint ISO and IAF move that added the same climate wording to dozens of management system standards. For 27001 it:\n- adds to **clause 4.1** (context) a requirement that the organization **determine whether climate change is a relevant issue**\n- adds a **note to clause 4.2** (interested parties) that relevant interested parties **can have climate-related requirements**\n\nThe organization does not have to conclude that climate change matters. It must show it **considered** the question. A data centre operator exposed to floods or heatwaves may well find it relevant to availability.",
+      "terms": [
+        {
+          "t": "ISO/IEC 27001:2022",
+          "d": "Third edition of the ISMS requirements standard, published October 2022."
+        },
+        {
+          "t": "Amd 1:2024",
+          "d": "Amendment adding climate change considerations to clauses 4.1 and 4.2."
+        },
+        {
+          "t": "Clause 6.3",
+          "d": "Planning of changes: new in 2022; ISMS changes must be carried out in a planned way."
+        }
+      ],
+      "trap": "The climate amendment does not add an Annex A control or require ISO 14001; it only changes context (4.1) and adds a note on interested parties (4.2).",
+      "example": "During its context review a hosting company records that rising summer temperatures threaten cooling and so is a relevant issue for availability.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "2005 ed.",
+          "2013 ed.",
+          "2022 ed.",
+          "Amd 1:2024"
+        ]
+      }
+    },
+    {
+      "id": "governance.d3.1.03",
+      "objective": "d3.1",
+      "seq": 3,
+      "title": "Transition from the 2013 edition",
+      "short": "Accredited certification bodies had a three-year transition period to move clients from ISO/IEC 27001:2013 to the 2022 edition. It ended on 31 October 2025; after that, 2013 certificates expired or were withdrawn.",
+      "deep": "When a new edition of a certifiable standard is published, the **International Accreditation Forum (IAF)** sets a **transition period**. For ISO/IEC 27001:2022 the period ran three years from the end of October 2022 to **31 October 2025**.\n\nKey milestones along the way:\n- certification bodies first had to get accredited for the 2022 edition\n- from **30 April 2024**, new initial certifications and recertifications had to be against the 2022 edition\n- by **31 October 2025**, every certified client had to be transitioned\n\nA **transition audit** could be held during a surveillance audit, during a recertification audit, or as a separate audit. Typically it focused on the changed clauses (such as 6.3 and 8.1), an updated risk treatment and **Statement of Applicability** mapped to the 93 new controls, and evidence that new controls were working.\n\nAfter **31 October 2025** any certificate against the 2013 edition is **no longer valid**, whatever expiry date was printed on it. An organization that missed the deadline needs certification against the 2022 edition.",
+      "terms": [
+        {
+          "t": "Transition period",
+          "d": "Time allowed for certified organizations to move to a new edition; for 27001:2022 it ended 31 October 2025."
+        },
+        {
+          "t": "Transition audit",
+          "d": "Audit verifying an ISMS meets the new edition, often combined with a surveillance or recertification audit."
+        },
+        {
+          "t": "IAF",
+          "d": "International Accreditation Forum: sets rules accreditation bodies and certification bodies follow."
+        }
+      ],
+      "trap": "A 2013 certificate does not stay valid until its printed expiry date; it lapsed at the end of the transition period.",
+      "example": "A firm whose 2013 certificate showed an expiry in March 2026 found it invalid from November 2025 because it skipped its transition audit.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d3.1.04",
+      "objective": "d3.1",
+      "seq": 4,
+      "title": "ISO/IEC 27002 and 27005",
+      "short": "ISO/IEC 27002:2022 gives implementation guidance for each Annex A control and defines control attributes. ISO/IEC 27005 gives guidance on information security risk management. Both are guidance; you certify against 27001.",
+      "deep": "The 27000 family has many documents. Only some are **requirements** (certifiable); most are **guidance**.\n\n- **ISO/IEC 27001**: the ISMS **requirements**. This is what organizations are certified against.\n- **ISO/IEC 27002:2022**: a **code of practice** for the controls. For each of the 93 controls it gives the purpose, guidance on how to implement it, and **attributes**. Annex A of 27001 is a short list of the same controls; 27002 explains them.\n- **ISO/IEC 27005**: guidance on **managing information security risks**, describing how to set criteria, identify, analyse, evaluate and treat risks in a way that supports clauses 6.1 and 8 of 27001. It aligns with the generic risk standard **ISO 31000**.\n\nOther family members you may see:\n- **ISO/IEC 27000**: overview and vocabulary\n- **ISO/IEC 27006**: requirements for bodies that audit and certify ISMSs\n- **ISO/IEC 27701**: privacy information management\n\nBecause 27002 and 27005 use 'should', an organization **cannot be certified** to them. They help it meet 27001.",
+      "terms": [
+        {
+          "t": "ISO/IEC 27002",
+          "d": "Guidance for implementing each Annex A control, with purpose and attributes."
+        },
+        {
+          "t": "ISO/IEC 27005",
+          "d": "Guidance on information security risk management supporting 27001's risk clauses."
+        },
+        {
+          "t": "ISO/IEC 27006",
+          "d": "Requirements for certification bodies that audit and certify ISMSs."
+        },
+        {
+          "t": "ISO/IEC 27000",
+          "d": "Overview and vocabulary for the ISMS family."
+        }
+      ],
+      "trap": "A common wrong answer is 'certified to ISO 27002'; certification is only to 27001, with 27002 and 27005 as guidance.",
+      "example": "An engineer implementing control 8.15 Logging reads 27002 for what to log and how to protect logs, then records the decision in the 27001 SoA.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Standard",
+          "Role"
+        ],
+        "rows": [
+          [
+            "27001",
+            "Requirements"
+          ],
+          [
+            "27002",
+            "Control guidance"
+          ],
+          [
+            "27005",
+            "Risk guidance"
+          ],
+          [
+            "27006",
+            "Cert body rules"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "governance.d3.1.05",
+      "objective": "d3.1",
+      "seq": 5,
+      "title": "Certification audits",
+      "short": "An accredited certification body certifies the ISMS. The stage 1 audit checks documentation and readiness; the stage 2 audit checks implementation and effectiveness. Surveillance audits follow, at least yearly, and recertification happens every three years.",
+      "deep": "ISO writes the standard but **does not certify** anyone. Certification is done by **certification bodies (CBs)**, and their competence is checked by national **accreditation bodies** (for example UKAS in the UK or JAS-ANZ in Australia and New Zealand). An accredited certificate carries more trust.\n\nThe initial audit has two stages:\n- **Stage 1**: mainly a review of documented information and readiness: scope, policy, risk assessment and treatment, **Statement of Applicability**, internal audit and management review. Gaps found here should be fixed before stage 2.\n- **Stage 2**: auditors test whether the ISMS is **implemented and effective**, interviewing staff, sampling records and checking controls in practice.\n\nNonconformities must be corrected before the certificate is issued. The certificate covers the defined **scope** and is valid for **three years**.\n\nDuring the cycle the CB runs **surveillance audits**, normally once a year, sampling parts of the ISMS. Before expiry a **recertification audit** reviews the whole system for a new three-year cycle. These external audits do not replace the organization's own **internal audit** (clause 9.2).",
+      "terms": [
+        {
+          "t": "Certification body",
+          "d": "Independent organization that audits an ISMS and issues the certificate."
+        },
+        {
+          "t": "Accreditation body",
+          "d": "National body that assesses and accredits certification bodies, e.g., UKAS or JAS-ANZ."
+        },
+        {
+          "t": "Stage 1 audit",
+          "d": "Review of ISMS documentation and readiness for stage 2."
+        },
+        {
+          "t": "Stage 2 audit",
+          "d": "Evaluation of whether the ISMS is implemented and effective."
+        },
+        {
+          "t": "Surveillance audit",
+          "d": "Periodic (normally annual) audit during the three-year certificate cycle."
+        }
+      ],
+      "trap": "Exams offer 'ISO issues the certificate' or 'internal audit can replace stage 2'; only an independent certification body certifies.",
+      "example": "A SaaS firm passes its stage 1 review in March, fixes a missing SoA justification, passes stage 2 in May and then has surveillance audits each spring.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Stage 1",
+          "Stage 2",
+          "Certificate",
+          "Surveillance",
+          "Recertification"
+        ]
+      }
+    },
+    {
+      "id": "governance.d3.2.01",
+      "objective": "d3.2",
+      "seq": 1,
+      "title": "Clause 4: Context of the organization",
+      "short": "Clause 4 makes the organization understand its internal and external issues (4.1), its interested parties and their requirements (4.2), and then define the ISMS scope and boundaries (4.3) and establish the ISMS (4.4).",
+      "deep": "Before managing risk you must know what you are protecting and why. **Clause 4** does that.\n\n- **4.1 Understanding the organization and its context**: decide which **external and internal issues** affect the ISMS's ability to achieve its intended outcomes, such as regulation, threat landscape, culture, technology, and (since Amd 1:2024) whether **climate change** is relevant.\n- **4.2 Interested parties**: identify the **interested parties** (customers, regulators, staff, suppliers, shareholders), their relevant **requirements**, and which of those requirements the ISMS will address.\n- **4.3 Scope**: set the **boundaries and applicability** of the ISMS. The scope must take into account 4.1 issues, 4.2 requirements, and the **interfaces and dependencies** between what the organization does and what others do for it. The scope must be available as **documented information**.\n- **4.4 ISMS**: establish, implement, maintain and continually improve the ISMS and its processes.\n\nA scope that is too narrow can exclude the very services customers care about, so auditors challenge scope statements carefully.",
+      "terms": [
+        {
+          "t": "Interested party",
+          "d": "Person or organization that can affect, be affected by, or see itself as affected by a decision or activity."
+        },
+        {
+          "t": "ISMS scope",
+          "d": "Documented boundaries and applicability of the ISMS: locations, services, processes, technology."
+        },
+        {
+          "t": "Interfaces and dependencies",
+          "d": "Points where the organization's activities connect to those done by other organizations."
+        }
+      ],
+      "trap": "Scope is clause 4.3, not clause 6; and you must consider dependencies on outsourced parties, not just assets you own.",
+      "example": "A fintech scopes its ISMS to its mobile banking platform and notes that its cloud provider and outsourced help desk are dependencies.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "4.1 Issues",
+          "4.2 Parties",
+          "4.3 Scope",
+          "4.4 ISMS"
+        ]
+      }
+    },
+    {
+      "id": "governance.d3.2.02",
+      "objective": "d3.2",
+      "seq": 2,
+      "title": "Clause 5: Leadership",
+      "short": "Clause 5 requires top management to show leadership and commitment (5.1), set an information security policy (5.2), and assign and communicate roles, responsibilities and authorities (5.3).",
+      "deep": "An ISMS fails if it belongs only to the IT team. **Clause 5** puts it on **top management**, the people who direct and control the organization at the highest level.\n\n**5.1 Leadership and commitment**: top management must, among other things, make sure the policy and objectives fit the strategic direction, integrate ISMS requirements into business processes, provide resources, communicate why security matters, and support other managers.\n\n**5.2 Policy**: top management sets an **information security policy** that:\n- suits the organization's purpose\n- includes **information security objectives** or a framework for setting them\n- commits to meeting applicable requirements\n- commits to **continual improvement** of the ISMS\n- is available as documented information, **communicated** within the organization, and available to interested parties as appropriate\n\n**5.3 Roles, responsibilities and authorities**: top management assigns and communicates them, including who ensures the ISMS conforms to 27001 and who **reports ISMS performance** to top management.\n\nTop management can delegate tasks but not accountability.",
+      "terms": [
+        {
+          "t": "Top management",
+          "d": "Person or group that directs and controls the organization at the highest level."
+        },
+        {
+          "t": "Information security policy",
+          "d": "Top-level statement of intent and direction formally expressed by top management."
+        },
+        {
+          "t": "Clause 5.3",
+          "d": "Assignment and communication of ISMS roles, responsibilities and authorities."
+        }
+      ],
+      "trap": "Exams pick 'the CISO' as the party required to demonstrate leadership; the requirement is on top management.",
+      "example": "The CEO signs the security policy, chairs the quarterly ISMS review, and names the CISO as responsible for reporting ISMS performance to the board.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d3.2.03",
+      "objective": "d3.2",
+      "seq": 3,
+      "title": "Clause 6.1: Risk assessment and treatment",
+      "short": "Clause 6.1 plans how to address risks and opportunities. Sub-clause 6.1.2 defines the information security risk assessment process; 6.1.3 defines the risk treatment process, which produces the Statement of Applicability and the risk treatment plan.",
+      "deep": "**Clause 6 Planning** is where the risk engine is designed.\n\n**6.1.1 General**: when planning the ISMS, consider the clause 4 issues and requirements and determine the **risks and opportunities** to address so the ISMS achieves its outcomes, prevents or reduces undesired effects and improves continually.\n\n**6.1.2 Information security risk assessment**: define and apply a process that:\n- sets **risk criteria**, including **risk acceptance criteria** and criteria for performing assessments\n- produces **consistent, valid and comparable** results when repeated\n- **identifies** risks to CIA within scope and assigns **risk owners**\n- **analyses** consequences and likelihood to get risk levels\n- **evaluates** risks against criteria and prioritizes them\n\n**6.1.3 Information security risk treatment**: define and apply a process to choose treatment options, determine necessary controls, **compare them with Annex A**, produce the **Statement of Applicability (SoA)**, write a **risk treatment plan**, and get **risk owners' approval** of the plan and acceptance of **residual risk**.\n\nBoth processes must be kept as **documented information**. Clause 6 designs them; clause 8 runs them.",
+      "terms": [
+        {
+          "t": "6.1.2",
+          "d": "Sub-clause defining the information security risk assessment process."
+        },
+        {
+          "t": "6.1.3",
+          "d": "Sub-clause defining the information security risk treatment process, SoA and treatment plan."
+        },
+        {
+          "t": "Risk owner",
+          "d": "Person or entity with the accountability and authority to manage a risk."
+        }
+      ],
+      "trap": "Don't confuse 6.1.2/6.1.3 (define the process) with 8.2/8.3 (carry out assessments and implement the plan).",
+      "example": "The ISMS manager writes a risk methodology (6.1.2) with a 5x5 matrix and acceptance threshold, and a treatment procedure (6.1.3) that ends in a signed plan and SoA.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Criteria",
+          "Assess (6.1.2)",
+          "Treat (6.1.3)",
+          "SoA + plan"
+        ]
+      }
+    },
+    {
+      "id": "governance.d3.2.04",
+      "objective": "d3.2",
+      "seq": 4,
+      "title": "Clauses 6.2 and 6.3: Objectives and changes",
+      "short": "Clause 6.2 requires information security objectives that are consistent with the policy, measurable if practicable, monitored, communicated and updated, with plans to achieve them. Clause 6.3, new in 2022, requires ISMS changes to be planned.",
+      "deep": "**6.2 Information security objectives and planning to achieve them**\n\nObjectives turn the policy into targets. They must:\n- be **consistent with the policy**\n- be **measurable** (if practicable)\n- take into account security requirements and risk assessment and treatment results\n- be **monitored** (added in 2022)\n- be **communicated** and **updated** as appropriate\n- be available as **documented information**\n\nFor each objective the organization plans **what** will be done, **what resources** are needed, **who** is responsible, **when** it will be completed and **how results are evaluated**.\n\n**6.3 Planning of changes** (new in the 2022 edition)\n\nWhen the organization decides the ISMS needs to change, for example a new scope, a merger or moving to a new cloud platform, the change must be **carried out in a planned manner**. Unplanned changes can break controls or leave gaps that only show up in an audit.\n\nExample objective: 'Patch 95% of critical vulnerabilities within 14 days by Q4', owned by the infrastructure lead and reported monthly.",
+      "terms": [
+        {
+          "t": "Information security objective",
+          "d": "Measurable result to achieve, consistent with the information security policy."
+        },
+        {
+          "t": "Clause 6.3",
+          "d": "Planning of changes: changes to the ISMS must be carried out in a planned manner."
+        },
+        {
+          "t": "Measurable",
+          "d": "Able to be checked against a metric or target; required where practicable."
+        }
+      ],
+      "trap": "Objectives are not fixed for the certificate cycle; they must be monitored and updated. 6.3 is about ISMS changes, not IT change management (Annex A 8.32).",
+      "example": "Before adding a newly acquired subsidiary to scope, the ISMS team writes a change plan covering risk assessment, policy updates and staff training.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d3.2.05",
+      "objective": "d3.2",
+      "seq": 5,
+      "title": "Clause 7: Support",
+      "short": "Clause 7 covers what the ISMS needs to run: resources (7.1), competence (7.2), awareness (7.3), communication (7.4) and documented information (7.5), including how documents and records are created, updated and controlled.",
+      "deep": "**Clause 7 Support** makes sure the ISMS has people, knowledge and records.\n\n- **7.1 Resources**: determine and provide what is needed (budget, people, tools).\n- **7.2 Competence**: determine the competence needed by people whose work affects security; ensure they are competent through **education, training or experience**; take action to close gaps (training, mentoring, hiring) and evaluate whether it worked; **retain documented information** as evidence.\n- **7.3 Awareness**: people working for the organization must be aware of the **policy**, their **contribution** to ISMS effectiveness and the **implications of not conforming**.\n- **7.4 Communication**: decide what to communicate, when, with whom and how.\n- **7.5 Documented information**: includes what 27001 requires and what the organization decides it needs. When **creating and updating** it, apply proper identification, format and review/approval. **Control** it so it is available when needed and protected (confidentiality, integrity), with distribution, access, storage, version control, retention and disposal managed. Externally sourced documents must be controlled too.\n\nThe amount of documentation can differ by organization size and complexity.",
+      "terms": [
+        {
+          "t": "Competence",
+          "d": "Ability to apply knowledge and skills to achieve intended results."
+        },
+        {
+          "t": "Awareness",
+          "d": "Knowing the policy, one's contribution and consequences of not conforming."
+        },
+        {
+          "t": "Documented information",
+          "d": "Information an organization must control and maintain, plus the medium it is on (documents and records)."
+        }
+      ],
+      "trap": "Competence requires retained evidence and action to close gaps, not a specific vendor certification; awareness is distinct from competence.",
+      "example": "HR keeps training records and CVs showing each SOC analyst's competence, while every new hire completes policy awareness training in week one.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "7.1 Resources",
+          "7.2 Competence",
+          "7.3 Awareness",
+          "7.4 Communication",
+          "7.5 Documented info"
+        ]
+      }
+    },
+    {
+      "id": "governance.d3.2.06",
+      "objective": "d3.2",
+      "seq": 6,
+      "title": "Clause 8: Operation",
+      "short": "Clause 8 runs the plans: operational planning and control (8.1), performing risk assessments at planned intervals or after significant change (8.2), and implementing the risk treatment plan (8.3), with results kept as documented information.",
+      "deep": "Clause 6 designs; **clause 8 does**.\n\n**8.1 Operational planning and control**: plan, implement and control the processes needed to meet requirements and carry out clause 6 actions. This includes setting **criteria for processes** and controlling them to those criteria, keeping evidence that processes ran as planned, controlling **planned changes** and reviewing unintended ones, and making sure **externally provided processes, products or services** relevant to the ISMS are **controlled** (an important 2022 wording, relevant to outsourcing and cloud).\n\n**8.2 Information security risk assessment**: perform assessments **at planned intervals** and when **significant changes** are proposed or occur, using the 6.1.2 criteria. Retain the results.\n\n**8.3 Information security risk treatment**: **implement the risk treatment plan** and retain the results.\n\nAuditors look for proof that assessments actually happened on schedule, that a major event (a new data centre, a merger) triggered a reassessment, and that treatment actions in the plan were delivered.",
+      "terms": [
+        {
+          "t": "8.1",
+          "d": "Operational planning and control, including control of externally provided processes."
+        },
+        {
+          "t": "8.2",
+          "d": "Perform risk assessments at planned intervals or on significant change."
+        },
+        {
+          "t": "8.3",
+          "d": "Implement the information security risk treatment plan."
+        }
+      ],
+      "trap": "Outsourcing a process does not remove it from the ISMS; 8.1 requires externally provided processes relevant to the ISMS to be controlled.",
+      "example": "After migrating email to a cloud provider, the company reruns its risk assessment (8.2) and adds supplier oversight to its operational controls (8.1).",
+      "diagram": null
+    },
+    {
+      "id": "governance.d3.2.07",
+      "objective": "d3.2",
+      "seq": 7,
+      "title": "Clause 9: Performance evaluation",
+      "short": "Clause 9 checks whether the ISMS works: monitoring, measurement, analysis and evaluation (9.1), an internal audit programme (9.2) and management review by top management at planned intervals (9.3).",
+      "deep": "**9.1 Monitoring, measurement, analysis and evaluation**: decide **what** to monitor and measure, the **methods** that give valid results, **when** and **who** monitors, and when and who analyses and evaluates. Keep results as **documented information** and evaluate security performance and ISMS effectiveness.\n\n**9.2 Internal audit**: run internal audits **at planned intervals** to check the ISMS conforms to the **organization's own requirements** and to **ISO/IEC 27001**, and that it is effectively implemented. The organization plans an **audit programme** (frequency, methods, responsibilities, reporting), defines criteria and scope per audit, selects auditors to ensure **objectivity and impartiality**, reports results to relevant management and keeps evidence.\n\n**9.3 Management review**: **top management** reviews the ISMS at planned intervals to ensure its continuing **suitability, adequacy and effectiveness**. Inputs include status of previous actions, changes in issues, changes in interested-party needs, feedback on performance (nonconformities, monitoring results, audit results, objectives), interested-party feedback, risk assessment results and treatment status, and improvement opportunities. Outputs are decisions on improvement and any needed changes.",
+      "terms": [
+        {
+          "t": "Internal audit",
+          "d": "Organization-run, objective audit of the ISMS against its own and 27001 requirements."
+        },
+        {
+          "t": "Audit programme",
+          "d": "Planned set of audits with frequency, methods, responsibilities and reporting."
+        },
+        {
+          "t": "Management review",
+          "d": "Top management's planned review of ISMS suitability, adequacy and effectiveness."
+        }
+      ],
+      "trap": "Internal audit (9.2) and management review (9.3) are different; and the certification body's audits do not satisfy 9.2.",
+      "example": "The audit lead schedules quarterly internal audits so that every clause and relevant control is covered once a year, then feeds findings to the annual management review.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "9.1 Measure",
+          "9.2 Audit",
+          "9.3 Review",
+          "Decisions"
+        ]
+      }
+    },
+    {
+      "id": "governance.d3.2.08",
+      "objective": "d3.2",
+      "seq": 8,
+      "title": "Clause 10: Improvement",
+      "short": "Clause 10 requires continual improvement of the ISMS (10.1) and a response to nonconformities: react, correct, find and remove causes through corrective action, check effectiveness, and keep records (10.2).",
+      "deep": "In the 2022 edition clause 10 lists **10.1 Continual improvement** first and **10.2 Nonconformity and corrective action** second (the 2013 edition had them reversed).\n\n**10.1**: continually improve the **suitability, adequacy and effectiveness** of the ISMS.\n\n**10.2**: a **nonconformity** is a failure to meet a requirement (of 27001, the organization's own ISMS, or a control). When one occurs the organization must:\n1. **React**: take action to control and **correct** it and deal with the consequences.\n2. **Evaluate** the need to remove its **causes** so it does not recur or occur elsewhere: review it, find the root cause, and check whether similar nonconformities exist or could occur.\n3. **Implement** any action needed.\n4. **Review the effectiveness** of corrective action taken.\n5. **Make changes** to the ISMS if necessary.\n\nThe nature of nonconformities, actions taken and results must be kept as **documented information**.\n\n**Correction** fixes the immediate problem; **corrective action** removes the cause.",
+      "terms": [
+        {
+          "t": "Nonconformity",
+          "d": "Non-fulfilment of a requirement."
+        },
+        {
+          "t": "Correction",
+          "d": "Action to fix a detected nonconformity right now."
+        },
+        {
+          "t": "Corrective action",
+          "d": "Action to eliminate the cause of a nonconformity and prevent recurrence."
+        }
+      ],
+      "trap": "Exams confuse correction with corrective action; only corrective action addresses root cause, and its effectiveness must be reviewed.",
+      "example": "An audit finds two leavers still had VPN access. IT disables them (correction), discovers HR wasn't notifying IT (root cause), automates the leaver feed (corrective action) and rechecks a month later.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "React",
+          "Find cause",
+          "Act",
+          "Check effectiveness",
+          "Update ISMS"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "governance.d3.q001",
+      "lesson": "governance.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An ISMS built to ISO/IEC 27001 aims to preserve which three information security properties?",
+      "options": [
+        "Authenticity, accountability and non-repudiation",
+        "Confidentiality, integrity and availability",
+        "Identification, authentication and authorization",
+        "Privacy, safety and resilience"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "ISO/IEC 27001 frames the ISMS around preserving confidentiality, integrity and availability. Authenticity and non-repudiation are related properties but not the core three. Identification, authentication and authorization describe access control steps. Privacy, safety and resilience are separate concerns."
+    },
+    {
+      "id": "governance.d3.q002",
+      "lesson": "governance.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about ISO/IEC 27001, select Yes if true.",
+      "statements": [
+        {
+          "s": "It specifies requirements that an organization's ISMS can be audited and certified against.",
+          "a": true
+        },
+        {
+          "s": "It requires every organization to implement all Annex A controls regardless of its risk assessment.",
+          "a": false
+        },
+        {
+          "s": "It expects the ISMS to be continually improved rather than set up once.",
+          "a": true
+        }
+      ],
+      "explain": "27001 contains 'shall' requirements used for certification. Controls are selected based on risk; Annex A controls can be excluded with justification in the SoA. Continual improvement is a core requirement (clause 10.1)."
+    },
+    {
+      "id": "governance.d3.q003",
+      "lesson": "governance.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What did ISO/IEC 27001:2022 Amendment 1:2024 change?",
+      "options": [
+        "It added eleven new Annex A controls, including threat intelligence and cloud services security",
+        "It added a new clause on planning of changes to the ISMS",
+        "It added a climate change consideration to clause 4.1 and a related note to clause 4.2",
+        "It made ISO 31000 the mandatory risk assessment method"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Amd 1:2024 requires organizations to determine whether climate change is a relevant issue (4.1) and notes interested parties can have climate requirements (4.2). The eleven new controls and clause 6.3 came with the 2022 edition itself. No risk method is mandated."
+    },
+    {
+      "id": "governance.d3.q004",
+      "lesson": "governance.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "In 2026 an external auditor reviews clause 4 for a certified software company. The context register lists regulatory, technical and staffing issues but contains no evidence that climate change was ever considered. The ISMS manager argues that climate change has nothing to do with information security.",
+      "stem": "Which response best reflects the current requirements?",
+      "options": [
+        "Climate change is outside the ISMS because ISO/IEC 27001 deals only with information security",
+        "The company must add an Annex A control for climate risk to its Statement of Applicability",
+        "The company must obtain ISO 14001 certification before its next surveillance audit",
+        "It must decide whether climate change is relevant and may conclude that it is not"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Since Amd 1:2024, clause 4.1 requires a determination of whether climate change is a relevant issue. Concluding it is not relevant is acceptable if the decision was made. There is no Annex A climate control, and ISO 14001 certification is not required."
+    },
+    {
+      "id": "governance.d3.q005",
+      "lesson": "governance.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "By what date did certified organizations have to complete their transition from ISO/IEC 27001:2013 to ISO/IEC 27001:2022?",
+      "options": [
+        "31 October 2023",
+        "30 April 2024",
+        "31 October 2025",
+        "31 December 2026"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The three-year transition period ended on 31 October 2025. 31 October 2023 was a deadline for certification bodies' own accreditation transitions in many schemes, and 30 April 2024 was the date from which new and recertification audits had to use the 2022 edition."
+    },
+    {
+      "id": "governance.d3.q006",
+      "lesson": "governance.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A logistics firm holds an accredited ISO/IEC 27001:2013 certificate printed with an expiry date of March 2026. Busy with a system migration, it postponed its transition audit and had not been audited against the 2022 edition by November 2025. A customer now asks whether the certificate is still valid.",
+      "stem": "What is the most accurate answer?",
+      "options": [
+        "No; 2013 certificates lapsed when the transition period ended on 31 October 2025",
+        "Yes; the certificate remains valid until its printed expiry date in March 2026",
+        "Yes; it converts automatically to the 2022 edition at the next surveillance audit",
+        "Yes, provided the firm's SoA maps the old controls to the 2022 Annex A"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Certificates to the 2013 edition ceased to be valid after 31 October 2025 regardless of printed expiry. There is no automatic conversion; a transition or new certification audit by the certification body is required. Mapping controls in the SoA alone does not restore validity."
+    },
+    {
+      "id": "governance.d3.q007",
+      "lesson": "governance.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A security engineer wants detailed implementation guidance for each control listed in ISO/IEC 27001 Annex A. Which standard should they use?",
+      "options": [
+        "ISO/IEC 27005",
+        "ISO/IEC 27002",
+        "ISO/IEC 27006",
+        "ISO/IEC 27701"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "ISO/IEC 27002:2022 gives purpose and implementation guidance for each of the 93 controls. 27005 is risk management guidance. 27006 sets requirements for certification bodies. 27701 extends the ISMS for privacy information management."
+    },
+    {
+      "id": "governance.d3.q008",
+      "lesson": "governance.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which statements about ISO/IEC 27002 and ISO/IEC 27005 are correct? Select TWO.",
+      "options": [
+        "ISO/IEC 27005 contains the certifiable requirements for an ISMS",
+        "ISO/IEC 27002 gives control-by-control guidance and is not itself a certification standard",
+        "ISO/IEC 27002 lists controls that every certified organization must implement",
+        "ISO/IEC 27005 gives guidance on managing information security risks"
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "explain": "27002 is guidance for the controls and cannot be certified against; 27005 is risk management guidance. Certifiable ISMS requirements are in 27001, not 27005. No control is universally mandatory; controls are selected through risk treatment."
+    },
+    {
+      "id": "governance.d3.q009",
+      "lesson": "governance.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps of an ISO/IEC 27001 certification cycle in order.",
+      "options": [
+        "Stage 1 audit reviews ISMS documentation and readiness",
+        "Stage 2 audit evaluates whether the ISMS is implemented and effective",
+        "The certification body issues the certificate for the defined scope",
+        "Surveillance audits sample the ISMS during the certificate cycle",
+        "A recertification audit is held before the three-year certificate expires"
+      ],
+      "explain": "Stage 1 checks documents and readiness, stage 2 tests implementation, then the certificate is issued. Surveillance audits (normally annual) follow, and recertification renews the three-year cycle."
+    },
+    {
+      "id": "governance.d3.q010",
+      "lesson": "governance.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company wants an accredited ISO/IEC 27001 certificate it can show to customers. Who carries out the certification audit?",
+      "options": [
+        "An accredited certification body",
+        "The company's own internal audit team",
+        "The International Organization for Standardization (ISO)",
+        "The national standards body that sells copies of the standard"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Independent certification bodies, accredited by bodies such as UKAS or JAS-ANZ, perform certification audits. Internal audit is required by clause 9.2 but cannot certify. ISO publishes standards but does not certify organizations, and selling the standard is unrelated to certification."
+    },
+    {
+      "id": "governance.d3.q011",
+      "lesson": "governance.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which clause of ISO/IEC 27001:2022 requires the organization to determine the boundaries and applicability of the ISMS?",
+      "options": [
+        "Clause 4.3",
+        "Clause 5.2",
+        "Clause 6.1.2",
+        "Clause 8.1"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Clause 4.3 covers determining the ISMS scope. Clause 5.2 is the information security policy, 6.1.2 is the risk assessment process, and 8.1 is operational planning and control."
+    },
+    {
+      "id": "governance.d3.q012",
+      "lesson": "governance.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A SaaS company is defining its ISMS scope as its customer-facing platform. The platform runs on a public cloud provider, and an outsourced firm handles the service desk and user account requests. The draft scope only lists servers the company itself configures.",
+      "stem": "What must the company take into account when finalizing the scope?",
+      "options": [
+        "Only the assets it physically owns, since suppliers maintain their own ISMS",
+        "The list of Annex A controls it intends to exclude",
+        "The results of its most recent internal audit",
+        "The interfaces and dependencies between its activities and those performed by other organizations"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Clause 4.3 requires the scope to consider internal and external issues, interested-party requirements, and interfaces and dependencies with activities done by others, such as the cloud provider and service desk. Control exclusions belong in the SoA, and internal audit results are not a scope input."
+    },
+    {
+      "id": "governance.d3.q013",
+      "lesson": "governance.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Under clause 5.1, who must demonstrate leadership and commitment to the ISMS?",
+      "options": [
+        "The chief information security officer alone",
+        "Top management",
+        "The lead internal auditor",
+        "The certification body's lead auditor"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Clause 5.1 places the requirement on top management, the people who direct and control the organization at the highest level. A CISO can be given ISMS responsibilities under 5.3, but cannot carry top management's accountability. Auditors evaluate the ISMS, they do not lead it."
+    },
+    {
+      "id": "governance.d3.q014",
+      "lesson": "governance.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A draft information security policy is being checked against clause 5.2. Which TWO elements must it contain?",
+      "options": [
+        "Information security objectives or a framework for setting them",
+        "A restriction that the policy is shared only with the security team",
+        "A commitment to continual improvement of the ISMS",
+        "A complete list of the Annex A controls the organization implements"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Clause 5.2 requires the policy to include objectives or a framework for setting them and commitments to meet requirements and to continually improve. It must be communicated within the organization, not hidden. The control list belongs in the Statement of Applicability."
+    },
+    {
+      "id": "governance.d3.q015",
+      "lesson": "governance.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which sub-clause requires the organization to define a risk treatment process that produces a Statement of Applicability?",
+      "options": [
+        "6.1.2",
+        "6.1.3",
+        "8.3",
+        "9.1"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "6.1.3 defines the risk treatment process, including determining controls, comparing with Annex A, producing the SoA and the risk treatment plan. 6.1.2 is risk assessment, 8.3 implements the treatment plan, and 9.1 is monitoring and measurement."
+    },
+    {
+      "id": "governance.d3.q016",
+      "lesson": "governance.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about clause 6.1 of ISO/IEC 27001:2022, select Yes if true.",
+      "statements": [
+        {
+          "s": "The risk assessment process must ensure repeated assessments give consistent, valid and comparable results.",
+          "a": true
+        },
+        {
+          "s": "The risk treatment process must produce a Statement of Applicability.",
+          "a": true
+        },
+        {
+          "s": "The risk assessment must follow the method described in ISO/IEC 27005 exactly.",
+          "a": false
+        }
+      ],
+      "explain": "6.1.2 requires consistent, valid and comparable results, and 6.1.3 requires an SoA. 27001 does not mandate a particular method; 27005 is optional guidance the organization may use."
+    },
+    {
+      "id": "governance.d3.q017",
+      "lesson": "governance.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Clause 6.3 was added in the 2022 edition. What does it cover?",
+      "options": [
+        "Planning the internal audit programme",
+        "Planning resources for the ISMS",
+        "Planning of changes to the ISMS",
+        "Planning for ICT readiness for business continuity"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Clause 6.3 requires changes to the ISMS to be carried out in a planned manner. Audit programme planning is clause 9.2, resources are clause 7.1, and ICT readiness for business continuity is Annex A control 5.30."
+    },
+    {
+      "id": "governance.d3.q018",
+      "lesson": "governance.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which characteristics must information security objectives have under clause 6.2? Select THREE.",
+      "options": [
+        "Consistent with the information security policy",
+        "Measurable, if practicable",
+        "Approved by the certification body",
+        "Monitored",
+        "Fixed for the full three-year certification cycle"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Clause 6.2 requires objectives that are consistent with the policy, measurable if practicable, monitored, communicated and updated as appropriate. Certification bodies do not approve objectives, and objectives should be updated rather than frozen."
+    },
+    {
+      "id": "governance.d3.q019",
+      "lesson": "governance.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Under clause 7.3, people doing work under the organization's control must be aware of what?",
+      "options": [
+        "Every risk recorded in the risk register and its score",
+        "The attribute taxonomy used in ISO/IEC 27002",
+        "The certification body's audit plan",
+        "The information security policy, their contribution to the ISMS, and the implications of not conforming"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Clause 7.3 lists awareness of the policy, one's contribution to ISMS effectiveness and the implications of not conforming. Staff do not need full risk register detail, control attributes or the external audit plan."
+    },
+    {
+      "id": "governance.d3.q020",
+      "lesson": "governance.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": "An auditor asks a company how it knows its three network administrators are competent to manage firewall rules. The IT manager says they are 'obviously experienced' but has no records.",
+      "stem": "What does clause 7.2 require the company to do?",
+      "options": [
+        "Define the competence needed, ensure staff have it, close gaps and retain evidence",
+        "Ensure every administrator holds a firewall vendor certification",
+        "Provide awareness training only, because competence is not an ISMS clause requirement",
+        "Rely on the firewall vendor's support contract as proof of competence"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Clause 7.2 requires determining necessary competence, ensuring it via education, training or experience, taking action and evaluating it, and retaining documented information as evidence. No specific certification is mandated, awareness (7.3) is separate, and a vendor contract does not prove staff competence."
+    },
+    {
+      "id": "governance.d3.q021",
+      "lesson": "governance.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What do clauses 8.2 and 8.3 require?",
+      "options": [
+        "Define risk acceptance criteria and criteria for performing assessments",
+        "Produce the Statement of Applicability",
+        "Perform risk assessments at planned intervals or on significant change, and implement the risk treatment plan",
+        "Hold management reviews at planned intervals"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Clause 8 operates the processes: 8.2 performs risk assessments at planned intervals and on significant change; 8.3 implements the treatment plan. Defining criteria is 6.1.2, producing the SoA is 6.1.3, and management review is 9.3."
+    },
+    {
+      "id": "governance.d3.q022",
+      "lesson": "governance.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A retailer outsources payroll processing, which handles employee bank details and is relevant to its ISMS. The ISMS manager proposes removing payroll from all ISMS activities because 'the supplier runs it now'.",
+      "stem": "What does clause 8.1 of ISO/IEC 27001:2022 require?",
+      "options": [
+        "Outsourced processes are automatically outside the ISMS scope",
+        "Externally provided processes, products or services relevant to the ISMS must be controlled",
+        "The supplier's ISO/IEC 27001 certificate is sufficient and no further action is needed",
+        "Outsourcing must be recorded as a nonconformity under clause 10.2"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Clause 8.1 requires the organization to ensure externally provided processes, products or services relevant to the ISMS are controlled. Outsourcing does not remove responsibility. A supplier certificate can support assurance but does not replace control, and outsourcing is not a nonconformity."
+    },
+    {
+      "id": "governance.d3.q023",
+      "lesson": "governance.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which activity requires top management to review the ISMS at planned intervals to ensure its continuing suitability, adequacy and effectiveness?",
+      "options": [
+        "Internal audit (clause 9.2)",
+        "Surveillance audit by the certification body",
+        "Monitoring, measurement, analysis and evaluation (clause 9.1)",
+        "Management review (clause 9.3)"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Clause 9.3 management review is performed by top management for suitability, adequacy and effectiveness. Internal audit checks conformity and effective implementation, surveillance audits are external, and 9.1 defines what is measured and how."
+    },
+    {
+      "id": "governance.d3.q024",
+      "lesson": "governance.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about clause 9 of ISO/IEC 27001:2022, select Yes if true.",
+      "statements": [
+        {
+          "s": "Internal auditors should be selected to ensure objectivity and impartiality, so they should not audit their own work.",
+          "a": true
+        },
+        {
+          "s": "Internal audits only need to check conformity with ISO/IEC 27001, not with the organization's own ISMS requirements.",
+          "a": false
+        },
+        {
+          "s": "Evidence of monitoring and measurement results must be available as documented information.",
+          "a": true
+        }
+      ],
+      "explain": "9.2 requires audits against both the organization's own requirements and 27001, with objective, impartial auditors. 9.1 requires documented information as evidence of the results."
+    },
+    {
+      "id": "governance.d3.q025",
+      "lesson": "governance.d3.2.08",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "An internal audit finds that former employees still have VPN access. Put the clause 10.2 steps in order.",
+      "options": [
+        "React: control and correct the nonconformity and deal with its consequences",
+        "Evaluate the need to eliminate its causes by reviewing it and finding the root cause",
+        "Implement the corrective action needed",
+        "Review the effectiveness of the corrective action taken",
+        "Make changes to the ISMS if necessary"
+      ],
+      "explain": "Clause 10.2 expects reaction and correction first, then root-cause evaluation, implementation of action, a review of its effectiveness, and ISMS changes where needed, all kept as documented information."
+    }
+  ]
+}

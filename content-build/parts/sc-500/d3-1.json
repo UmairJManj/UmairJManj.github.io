@@ -1,0 +1,1027 @@
+{
+ "exam": "sc-500",
+ "domain": "d3",
+ "lessons": [
+  {
+   "id": "sc-500.d3.1.01",
+   "objective": "d3.1",
+   "seq": 1,
+   "title": "Finding overshared SharePoint content",
+   "short": "Microsoft 365 Copilot and agents answer from anything a user can already open, so overshared SharePoint sites become AI leaks. SharePoint Advanced Management data access governance (DAG) reports show where content is broadly shared: sharing links, Everyone except external users (EEEU), sensitivity labels and permission state.",
+   "deep": "Copilot doesn't add new permissions. It reads what each user already has permission to read. When a site is shared with **Everyone except external users (EEEU)**, or is full of 'anyone in the organization' links, Copilot can show its contents to every employee who asks the right question. That's why overexposure is the first AI security problem to fix.\n\n**SharePoint Advanced Management (SAM)** includes **data access governance (DAG) reports** in the SharePoint admin center:\n- **Sharing links activity**: sites where users created the most new sharing links (anyone, people in your org, specific people) over the last 28 days.\n- **EEEU insights**: items or groups shared with Everyone except external users.\n- **Sensitivity label snapshot**: how labels are spread across sites, so you can spot labelled-confidential content on wide-open sites.\n- **Permission state reports**: a snapshot of permissions on sites, OneDrive and files.\n- **Site permissions for a given user**: every site one user can reach, and how.\n\nYou can also generate DAG reports with SharePoint Online PowerShell. Reports show you *where* the exposure is. You fix it with the controls in the next lesson.",
+   "terms": [
+    {
+     "t": "Oversharing",
+     "d": "Content whose permissions are broader than its business audience, so Copilot can surface it to people who should not see it."
+    },
+    {
+     "t": "EEEU",
+     "d": "Everyone except external users: a built-in claim covering every internal account in the tenant."
+    },
+    {
+     "t": "Data access governance (DAG) reports",
+     "d": "SharePoint Advanced Management reports on sharing links, EEEU, labels and permission state."
+    },
+    {
+     "t": "SharePoint Advanced Management",
+     "d": "Add-on governance feature set for SharePoint/OneDrive (DAG reports, site access review, RAC, RCD)."
+    }
+   ],
+   "trap": "Copilot does not bypass permissions; the exam expects you to fix oversharing at the source (permissions/sharing), not to 'restrict Copilot's privileges'.",
+   "example": "Before rolling out Copilot, an admin runs the EEEU DAG report and finds an HR site with salary spreadsheets shared to Everyone except external users.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "DAG reports",
+     "Find EEEU/links",
+     "Site access review",
+     "Fix permissions"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.1.02",
+   "objective": "d3.1",
+   "seq": 2,
+   "title": "Containing overexposed sites before Copilot",
+   "short": "After DAG reports find overshared sites, site access review asks site owners to check their own permissions. Restricted access control (RAC) limits a site to named groups, and Restricted Content Discovery (RCD) stops a site's content from showing up in Copilot and agent experiences.",
+   "deep": "When you find exposure, choose a control based on how urgent the risk is and who owns the fix:\n- **Site access review**: starting from a DAG report, you send a review to the **site owners** of overshared sites. They know who should have access, so they confirm or remove permissions. This shares the cleanup work out and keeps a record of it.\n- **Restricted access control (RAC)**: limits access to a SharePoint site (or OneDrive) to members of specified groups, *even if* items inside are shared more broadly. Use it for highly sensitive sites such as M&A or executive files.\n- **Restricted Content Discovery (RCD)**: a site-level setting that hides the site's content from organization-wide search and from **Microsoft 365 Copilot and agent** experiences. Users who already have access can still open files directly. Use it as a quick containment step while permissions are being cleaned up.\n\nPurview controls work alongside these. Sensitivity labels, together with DLP for Microsoft 365 Copilot, can stop labelled files from being processed in Copilot responses.\n\nKey distinction: **RCD changes discoverability** (search and Copilot). **RAC changes who can access the site**. Neither one replaces fixing the permissions themselves.",
+   "terms": [
+    {
+     "t": "Site access review",
+     "d": "Workflow that delegates permission review of an overshared site to its site owners."
+    },
+    {
+     "t": "Restricted access control (RAC)",
+     "d": "Limits site access to members of specified groups regardless of item-level sharing."
+    },
+    {
+     "t": "Restricted Content Discovery (RCD)",
+     "d": "Prevents a site's content from surfacing in org-wide search and Copilot/agent experiences."
+    }
+   ],
+   "trap": "Candidates pick RCD to 'remove access' - it only stops discovery in search/Copilot; people who already have permission can still open the files.",
+   "example": "An admin flags the legal hold site with Restricted Content Discovery the day before Copilot launches, then starts a site access review so its owners can remove EEEU.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Control",
+     "Changes",
+     "Who acts"
+    ],
+    "rows": [
+     [
+      "Site access review",
+      "Permissions",
+      "Site owners"
+     ],
+     [
+      "RAC",
+      "Who can open site",
+      "SharePoint admin"
+     ],
+     [
+      "RCD",
+      "Search/Copilot reach",
+      "SharePoint admin"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.1.03",
+   "objective": "d3.1",
+   "seq": 3,
+   "title": "DSPM for Copilot and AI app risk",
+   "short": "Microsoft Purview Data Security Posture Management (DSPM, formerly DSPM for AI) shows how users and agents use Copilot, agents and third-party AI apps. It covers sensitive data in prompts, oversharing found by data risk assessments, and gaps you can close with one-click DLP, Insider Risk and Communication Compliance policies.",
+   "deep": "**DSPM for AI** in the Microsoft Purview portal is now part of the newer **Data Security Posture Management** experience, which covers AI apps and agents. The classic version is still documented. Core capabilities:\n- **Reports and Activity explorer**: AI interactions grouped as Copilot experiences and agents, enterprise AI apps, and other (third-party) AI apps. Event types include *AI interaction*, *Sensitive info types* and *AI website visit*.\n- **One-click policies**: preconfigured recommended policies (DLP, Insider Risk Management, Communication Compliance) that you turn on from DSPM. They take about 24 hours to start collecting data.\n- **Data risk assessments**: find oversharing in SharePoint. A **default assessment** runs weekly against the top 100 sites by usage. **Custom assessments** target chosen sites or users and expire after 30 days. Remediation options include sensitivity labels, removing sharing links, notifying site owners, and SharePoint Restricted Content Discovery.\n\n**Prerequisites**: Microsoft Purview **Audit** must be on (it's on by default for new tenants). To see third-party AI sites, you also need **devices onboarded** to Purview and the **Purview browser extension**. Admins need compliance permissions such as Compliance Administrator.\n\nThe new DSPM adds AI observability: an inventory of AI apps and agents, including which ones are high risk.",
+   "terms": [
+    {
+     "t": "DSPM for AI",
+     "d": "Purview capability that discovers, monitors and protects data used by Copilot, agents and other AI apps."
+    },
+    {
+     "t": "Data risk assessment",
+     "d": "DSPM scan that identifies overshared SharePoint content; default runs weekly for the top 100 sites."
+    },
+    {
+     "t": "One-click policy",
+     "d": "Recommended DLP/IRM/Communication Compliance policy activated directly from DSPM."
+    }
+   ],
+   "trap": "Third-party AI sites (ChatGPT, Gemini) only appear when devices are onboarded and the Purview browser extension is installed; auditing alone covers Copilot only.",
+   "example": "A compliance admin enables a one-click DLP policy from DSPM after Activity explorer shows credit card numbers pasted into consumer AI sites.",
+   "diagram": null
+  },
+  {
+   "id": "sc-500.d3.1.04",
+   "objective": "d3.1",
+   "seq": 4,
+   "title": "Real-time protection for Copilot Studio agents",
+   "short": "Copilot Studio can send every planned tool call to an external threat-detection system before it runs. With Microsoft Defender as that system, suspicious tool invocations (prompt injection, data exfiltration) are blocked, the user is notified and an alert is raised in the Defender portal.",
+   "deep": "**Real-time protection during agent runtime** puts a check in front of every action. When a user prompts a Copilot Studio agent, the agent builds a plan of tools to call. *Before* each tool runs, Copilot Studio sends the plan, the inputs and metadata to the threat-detection endpoint. The endpoint replies allow or block.\n\n**Setup with Microsoft Defender** (the security engineer and the Power Platform admin work together):\n1. Defender portal > **System > Settings > Security for AI agents**: turn on agent protection (this discovers the Copilot Studio agents), enable **real time protection during agent runtime**, and copy the Defender URL.\n2. Power Platform admin center > **Security > Threat protection**: enable **Microsoft Defender - Copilot Studio AI Agents**, paste the URL, and create or select a Microsoft Entra application.\n3. Give the generated **App ID** back to the security engineer, who enters it in Defender. Status should show **Connected**.\n\nBehaviour to know: the endpoint must respond within about **1 second**. If it doesn't, the agent **fails open** and runs the tool. Protection applies only to **new sessions**. Blocked calls appear as alerts in **Incidents & alerts**. The Microsoft 365 app connector in Defender for Cloud Apps must be connected so that audit data and alerts flow in.",
+   "terms": [
+    {
+     "t": "Real-time protection during agent runtime",
+     "d": "Copilot Studio feature that sends planned tool calls to an external monitor for allow/block decisions."
+    },
+    {
+     "t": "Fail open",
+     "d": "If the monitor does not answer within ~1 s, the agent assumes allow and proceeds."
+    },
+    {
+     "t": "Proxy App ID",
+     "d": "Entra application ID that links Power Platform and Defender; must match in both portals."
+    }
+   ],
+   "trap": "The configuration spans two portals - Defender and the Power Platform admin center; Copilot Studio maker settings alone cannot enable it.",
+   "example": "An agent planner tries to email a customer list to an external address after an injected instruction; Defender blocks the send-email tool call and raises an alert.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "User prompt",
+     "Agent plan",
+     "Defender check",
+     "Allow / Block",
+     "Tool runs"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.1.05",
+   "objective": "d3.1",
+   "seq": 5,
+   "title": "Conditional Access for Entra Agent ID",
+   "short": "Microsoft Entra Agent ID gives AI agents their own identities, and Conditional Access can target them under 'Users, agents or workload identities'. For agent identities the only grant control is Block access, and the only condition is agent risk. Agent user accounts support more controls.",
+   "deep": "An agent can call resources in three ways, and each needs its own policy:\n- **On behalf of a user** (delegated/OBO): the token belongs to the user, so normal user policies apply.\n- **As itself** (app-only): the token subject is the **agent identity**. You target **All agent identities**, selected agent identities, or agents chosen by **custom security attributes**. You can also target an **agent identity blueprint**, which covers every current and future agent created from it.\n- **As an agent user account**: target **All agent users** or selected agent users. A policy for 'All users' does **not** include agent users.\n\nRules for agent identities: the only grant control is **Block access**, because an agent can't complete interactive remediation such as MFA. The only condition is **Agent risk** (High/Medium/Low), which needs Microsoft Entra ID Protection. Grant controls such as a compliant device apply only to agent user accounts. For target resources you can choose **All agent resources**, all resources, or selected resources.\n\nLicensing: Microsoft 365 E7, or Microsoft Agent 365 plus Entra P1 or Microsoft 365 E3. Required role: **Conditional Access Administrator**. Policies are evaluated when tokens are issued. Resources reached with **API keys** skip Entra and therefore skip CA.",
+   "terms": [
+    {
+     "t": "Agent identity",
+     "d": "A Microsoft Entra identity representing an AI agent acting on its own (app-only)."
+    },
+    {
+     "t": "Agent identity blueprint",
+     "d": "Template from which agent identities are created; CA on a blueprint covers all its agents."
+    },
+    {
+     "t": "Agent user",
+     "d": "A user account associated with an agent so it can work like a digital employee."
+    },
+    {
+     "t": "Agent risk",
+     "d": "ID Protection risk level for an agent; the only CA condition for agent identities."
+    }
+   ],
+   "trap": "Requiring MFA or a compliant device for an agent identity is a wrong answer; only Block applies to agent identities.",
+   "example": "A policy blocks all agent identities with High agent risk from all agent resources, while agents created from the approved blueprint remain allowed.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Token subject",
+     "CA target",
+     "Grant"
+    ],
+    "rows": [
+     [
+      "User (OBO)",
+      "Users/groups",
+      "Full set"
+     ],
+     [
+      "Agent identity",
+      "Agents/blueprint",
+      "Block only"
+     ],
+     [
+      "Agent user",
+      "Agent users",
+      "Block, device, etc."
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.1.06",
+   "objective": "d3.1",
+   "seq": 6,
+   "title": "Agent blast radius in Defender XDR",
+   "short": "Blast radius is everything a compromised agent identity could reach. In Defender XDR, the AI Agents inventory scores agents by risk and shows their permissions, knowledge sources and attack paths. For Copilot Studio agents, you use prebuilt Advanced hunting queries instead.",
+   "deep": "To work out the **blast radius** of an agent, add up three things:\n- **Permissions**: the API scopes on the agent's service principal. Tenant-wide **application permissions** such as `Mail.ReadWrite.All`, `Files.ReadWrite.All` or `Sites.FullControl.All` reach much further than delegated or `.Selected` scopes.\n- **Knowledge sources**: the SharePoint sites, databases and files used for grounding, along with their sensitivity labels.\n- **Capabilities (blueprint actions)**: actions that move data out of the organization, such as sending email, creating external records or running code.\n\nIn the Defender portal, go to **Assets > AI Agents**. The inventory gives Microsoft Foundry, AWS Bedrock and GCP Vertex AI agents a **risk score**. The detail pane shows posture, recommendations and **View on map** for **attack paths**. For **Copilot Studio** agents, the inventory supports discovery only. Run the prebuilt **AI Agents** queries under **Advanced hunting > Queries**. The `AIAgentsInfo` table holds each agent's configuration (tools, knowledge, auth, IsBlocked), and `CloudAppEvents` records what the agent did at runtime.\n\nRank attack paths by **how critical the target is**, not by how short the path is. To shrink the blast radius, swap broad scopes for narrow ones (for example `Sites.Selected`), remove knowledge sources and actions the agent doesn't need, and apply Conditional Access.",
+   "terms": [
+    {
+     "t": "Blast radius",
+     "d": "Scope of data, resources and actions reachable if an identity is compromised."
+    },
+    {
+     "t": "Attack path",
+     "d": "Step-by-step exploitation route from a compromised entry point to a critical target."
+    },
+    {
+     "t": "AIAgentsInfo",
+     "d": "Advanced hunting table with configuration of discovered AI agents."
+    },
+    {
+     "t": "Application permission",
+     "d": "Tenant-wide permission with no signed-in user; widens blast radius versus delegated."
+    }
+   ],
+   "trap": "Prioritise by target criticality: a short path to customer financial data beats a long path to meeting notes.",
+   "example": "An HR Foundry agent with User.Read.All, the HR SharePoint site and a send-email action shows an attack path to emailing salary data externally; the team swaps the email action for a task queue.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Permissions (scopes)",
+     "Knowledge sources",
+     "Blueprint actions",
+     "= Blast radius"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.1.07",
+   "objective": "d3.1",
+   "seq": 7,
+   "title": "Managing Entra Agent ID access",
+   "short": "Agent identities start with minimal access. Owners manage them technically, required sponsors are accountable for the business side, and extra access comes through Entra ID Governance access packages with approvals and expiry. Agent ID Administrator is the RBAC role for managing agents across the tenant.",
+   "deep": "Entra Agent ID splits who does what for each agent:\n- **Owner** (optional): the technical admin. Can change properties and credentials, assign owners and sponsors, disable or delete, and re-enable, restore or hard-delete. Owners can be users or service principals, not groups.\n- **Sponsor** (**required** for agent identities and blueprints): the business person accountable for the agent. Decides on renewal or removal, requests access packages, and can disable or soft-delete. Can't change app settings or restore. If a sponsor leaves, sponsorship passes to their manager.\n- **Manager** (optional): the agent's place in the org hierarchy.\n\n**Access packages** (Entra ID Governance) can grant agents security group membership, OAuth API permissions and Entra roles. In the assignment policy, choose 'For users, service principals, and agent identities' and then **All agents**. A request can come from the agent itself through Microsoft Graph, from a sponsor or owner in My Access, or from an admin who assigns it directly. Assignments can **expire**. Sponsors get a notice and can ask for an extension, and if they do nothing, access is removed.\n\nTenant-wide management uses the **Agent ID Administrator** role (with Agent ID Developer for builders). Licensing is the same as for Agent ID CA: Microsoft 365 E7, or Agent 365 plus Entra P1 / Microsoft 365 E3.",
+   "terms": [
+    {
+     "t": "Sponsor",
+     "d": "Required human (or supported group) accountable for an agent's purpose and lifecycle decisions."
+    },
+    {
+     "t": "Owner",
+     "d": "Optional technical administrator of an agent identity or blueprint; cannot be a group."
+    },
+    {
+     "t": "Access package",
+     "d": "Entitlement management bundle (groups, API permissions, roles) requested with approval and expiry."
+    },
+    {
+     "t": "Agent ID Administrator",
+     "d": "Entra built-in role for managing agent identities and blueprints tenant-wide."
+    }
+   ],
+   "trap": "Owners, not sponsors, can re-enable or restore a soft-deleted agent; sponsors are least-privilege business approvers.",
+   "example": "A sales agent needs Mail.Send for a quarter; its sponsor requests an access package in My Access with a 90-day expiry, routed to the mailbox owner for approval.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Role",
+     "Required",
+     "Can restore"
+    ],
+    "rows": [
+     [
+      "Owner",
+      "No",
+      "Yes"
+     ],
+     [
+      "Sponsor",
+      "Yes",
+      "No"
+     ],
+     [
+      "Manager",
+      "No",
+      "No"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.1.08",
+   "objective": "d3.1",
+   "seq": 8,
+   "title": "AI gateway in API Management for Foundry",
+   "short": "The AI gateway sends Microsoft Foundry model and tool traffic through Azure API Management. There it enforces per-project token limits and quotas, uses managed identity to authenticate to back ends, applies content safety, and logs token usage. You enable it from Foundry under Manage > AI Gateway with a v2-tier APIM instance.",
+   "deep": "**Why**: if apps call model endpoints directly, keys get shared, nothing stops one app from using all the tokens, and nobody sees who is consuming what. The **AI gateway** in Azure API Management sits in front of the endpoints and fixes all three.\n\n**Enable from Foundry**: go to **Manage > AI Gateway > Add AI Gateway** and pick the Foundry resource. Either create a new APIM instance, which is **Basic v2** and meant for dev/test, or choose an existing **v2-tier** instance in the same tenant and subscription. For production, Microsoft recommends Standard v2 or Premium v2, and those tiers are also needed when the Foundry resource is private. There is **one gateway per Foundry resource**, shared by its projects. New projects are enabled automatically, but you add existing projects yourself.\n\n**Controls**:\n- **Token management**: per-project tokens-per-minute (going over returns **429**) and total token quotas (going over returns **403**). These use the `llm-token-limit` policy.\n- `llm-emit-token-metric` sends token metrics to Azure Monitor. `llm-content-safety` checks prompts with Azure AI Content Safety. `llm-semantic-cache-lookup/store` cache similar completions.\n- **Managed identity** authenticates to back ends, so clients never hold model keys. Load balancing and circuit breaker policies handle back-end failures.\n\nRoles: Foundry Owner or Foundry Account Owner to configure the gateway, and API Management Service Contributor on the APIM instance.",
+   "terms": [
+    {
+     "t": "AI gateway",
+     "d": "API Management capabilities for governing LLM, MCP and agent APIs (token limits, metrics, safety, caching)."
+    },
+    {
+     "t": "llm-token-limit",
+     "d": "APIM policy enforcing tokens-per-minute or token quotas per key (subscription, IP, expression)."
+    },
+    {
+     "t": "TPM",
+     "d": "Tokens per minute: rate limit; exceeding it returns 429 Too Many Requests."
+    }
+   ],
+   "trap": "An existing classic-tier APIM instance will not appear in the Foundry AI Gateway picker; it must be a v2 tier in the same tenant and subscription.",
+   "example": "A Foundry resource hosts three team projects; the platform team gives each project a 50,000 TPM limit so a runaway batch job in one cannot starve the others.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "App / agent",
+     "APIM AI gateway",
+     "Token limit + safety",
+     "Foundry model"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.1.09",
+   "objective": "d3.1",
+   "seq": 9,
+   "title": "Defender for AI Services threat protection",
+   "short": "Defender for AI Services is the Defender for Cloud workload protection plan for generative AI. It works with Azure AI Content Safety Prompt Shields and threat intelligence to alert on jailbreaks, data leakage, data poisoning and credential theft against Foundry and Azure OpenAI workloads, and it sends those alerts to Defender XDR.",
+   "deep": "**Enable it**: Azure portal > **Defender for Cloud > Environment settings** > pick the subscription > **Defender plans** > set **AI services** to **On**. You need the **Owner** or **Contributor** role. The plan covers Azure OpenAI and Azure AI model inference deployments in Microsoft Foundry, and scans text tokens only. It comes with a **30-day free trial** capped at 75 billion tokens.\n\n**Plan settings** (AI services > Settings):\n- **Enable user prompt evidence**: puts the suspicious parts of prompts and responses into alerts, with sensitive data redacted. When it's off, detection still runs, but the prompt content in alerts is masked.\n- **Enable data security for AI interactions**: lets **Microsoft Purview** classify, audit and govern prompts and responses. This needs a separate Purview licence.\n- **AI model security**: scans models in Azure Machine Learning registries for malware and unsafe serialization.\n\n**Detections** include jailbreak attempts flagged by **Prompt Shields**, sensitive data leakage, credential theft and suspicious access patterns. Alerts appear in Defender for Cloud and are **correlated into incidents in Defender XDR** with other signals.",
+   "terms": [
+    {
+     "t": "Defender for AI Services",
+     "d": "Defender for Cloud plan giving runtime threat protection to generative AI workloads."
+    },
+    {
+     "t": "Prompt Shields",
+     "d": "Azure AI Content Safety capability detecting direct (jailbreak) and indirect prompt attacks."
+    },
+    {
+     "t": "User prompt evidence",
+     "d": "Plan setting that includes (redacted) prompt and response snippets in alerts."
+    }
+   ],
+   "trap": "Turning off user prompt evidence does not stop detection - it only masks prompt content in alerts.",
+   "example": "A SOC analyst sees a Defender XDR incident linking a jailbreak alert on a Foundry deployment with a suspicious sign-in for the same app's API key holder.",
+   "diagram": null
+  },
+  {
+   "id": "sc-500.d3.1.10",
+   "objective": "d3.1",
+   "seq": 10,
+   "title": "Guardrails for agents in Foundry",
+   "short": "A Foundry guardrail is a named set of controls. Each control names a risk (hate, jailbreak, indirect attack, PII, task adherence and others), the intervention points to scan (user input, tool call, tool response, output) and an action. Agents support Annotate and block. A guardrail assigned to an agent completely overrides its model's guardrail.",
+   "deep": "**Building blocks**:\n- **Risks** are detected by Azure AI Content Safety classifiers: Hate, Sexual, Self-harm and Violence (each with a **severity threshold** of Low, Medium or High, where Low catches the most), **user prompt attacks** (jailbreak), **indirect attacks** (instructions hidden in documents or tool output), protected material for text and code, **PII**, and **task adherence** (the agent drifting off its job).\n- **Intervention points**: **User input** and **Output** apply to models and agents. **Tool call** (what the agent sends to a tool) and **tool response** (what comes back) apply only to agents and are in preview. They also only work with supported tools such as Azure AI Search, Azure Functions, OpenAPI, SharePoint grounding and Bing grounding.\n- **Actions**: *Annotate* flags content and works for models only. *Annotate and block* works for models and agents.\n\n**Inheritance**: models get **Microsoft.DefaultV2** by default. An agent with no guardrail of its own **inherits its model deployment's guardrail**. An agent with an assigned guardrail is checked **only** against that guardrail, and the model's settings are ignored. Each intervention point adds roughly 50-100 ms of latency.\n\nTo stop indirect prompt injection that arrives through a grounding tool, add an **Indirect attack** control on **Tool response** set to **Annotate and block**.",
+   "terms": [
+    {
+     "t": "Guardrail",
+     "d": "Named collection of controls (risk + intervention points + action) applied to models and agents."
+    },
+    {
+     "t": "Intervention point",
+     "d": "Where content is scanned: user input, tool call, tool response, output."
+    },
+    {
+     "t": "Indirect attack",
+     "d": "Malicious instructions embedded in data the agent retrieves, e.g. a document or web page."
+    },
+    {
+     "t": "Task adherence",
+     "d": "Control detecting when an agent's actions drift from the user's intended task."
+    }
+   ],
+   "trap": "Setting a stricter guardrail on the model does not protect an agent that has its own guardrail assigned - the agent's guardrail fully overrides.",
+   "example": "A support agent grounded on public web results gets a guardrail blocking indirect attacks at the tool response point, so hidden instructions in a page never reach its memory.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "User input",
+     "Tool call",
+     "Tool response",
+     "Output"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.1.11",
+   "objective": "d3.1",
+   "seq": 11,
+   "title": "Data and AI security dashboard",
+   "short": "The Data and AI security dashboard in Defender for Cloud shows data and AI resources in one view: storage, managed databases, IaaS-hosted databases and AI services. For each it shows protection coverage, top alerts, attack paths, sensitive data and AI-specific insights such as internet-exposed grounding sources.",
+   "deep": "The dashboard is in the Defender for Cloud menu. It shows everything in one place:\n- **Overview**: resources in four groups (**storage assets, managed databases, hosted databases (IaaS), AI services**). Each group shows full, partial or no protection from Defender CSPM, Defender for Storage, Defender for Databases and AI threat protection.\n- **Top issues**: the most severe alerts by MITRE ATT&CK tactic, plus critical and high recommendations and **attack paths**.\n- **Data closer look**: sensitive data discovery (info types and labels), data threat alerts, and **Security explorer** queries such as public storage that holds sensitive data.\n- **AI closer look**: **AI discovery** (all AI resources), **AI threat protection** (prompts scanned, alerts by severity), AI queries in Security explorer (for example, sensitive data used for grounding), and **internet-exposed resources used for grounding**.\n\n**To get the full view** you need **Defender CSPM** with the **sensitive data discovery** extension, Defender for Storage, Defender for Databases and the AI services plan. Each subscription must also be registered with the **Microsoft.Security** resource provider. Without these plans, parts of the dashboard stay empty.",
+   "terms": [
+    {
+     "t": "Data and AI security dashboard",
+     "d": "Defender for Cloud view of data/AI resources, protection coverage, risks and AI insights."
+    },
+    {
+     "t": "Sensitive data discovery",
+     "d": "Defender CSPM extension that classifies data stores by sensitive info types and labels."
+    },
+    {
+     "t": "Grounding resource",
+     "d": "Storage or search asset an AI app uses to retrieve context for answers."
+    }
+   ],
+   "trap": "Without Defender CSPM's sensitive data discovery extension the dashboard cannot show which grounding stores hold sensitive data.",
+   "example": "The dashboard reveals a blob container used to ground a Foundry chatbot is internet-exposed and holds labelled-confidential files, prompting a private endpoint.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Overview coverage",
+     "Top issues",
+     "Data closer look",
+     "AI closer look"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.1.12",
+   "objective": "d3.1",
+   "seq": 12,
+   "title": "Managing agents in the Microsoft 365 admin center",
+   "short": "The Agents area of the Microsoft 365 admin center lists every agent in the tenant in its Registry. From there admins install, block, delete or restore agents, reassign owners and approve requests. Blocking stops everyone in the organization from using an agent.",
+   "deep": "Path: **Microsoft 365 admin center > Agents**.\n- **Overview**: a 30-day snapshot of agent activity, with cards for governance actions.\n- **All agents > Registry**: the full inventory of Microsoft-built, partner-built and custom agents, including agents synced from connected platforms. Filtered views show pending requests, agents without owners, at-risk agents and agents with exceptions.\n- **Requests**: agents that users have asked to be published.\n\n**Actions** in an agent's details pane:\n- **Install/Uninstall** for everyone or for selected users and groups.\n- **Block/Unblock** for the whole organization. For Agent Builder and Copilot Studio agents, blocking removes them from Microsoft Copilot and from host apps such as Teams and Outlook. For SharePoint and Foundry agents, it affects Copilot Chat only.\n- **Delete** is a soft delete that you can **restore within 30 days**. After that you can permanently delete.\n- **Assign a new owner** to ownerless shared agents. You can't remove the last owner, and groups can't be owners.\n- **Start/Stop** applies only to Foundry agents.\n- **Publish to store / Reject** handles requested agents.\n\nRoles: **AI Administrator** or Global Administrator approve requests and assign owners. AI Administrators **can't** configure Conditional Access or access package policies.",
+   "terms": [
+    {
+     "t": "Agent registry",
+     "d": "Microsoft 365 admin center inventory of all agents in the tenant across platforms."
+    },
+    {
+     "t": "AI Administrator",
+     "d": "Entra role for managing Copilot and agent settings and requests in Microsoft 365."
+    },
+    {
+     "t": "Block agent",
+     "d": "Tenant-wide action preventing any user from using an agent."
+    }
+   ],
+   "trap": "Deleting an agent is a soft delete with a 30-day restore window; blocking, not deleting, is the reversible immediate containment action.",
+   "example": "A Copilot Studio agent published by a departed employee shows as ownerless in the registry; the AI Administrator assigns a new owner from the details pane.",
+   "diagram": null
+  }
+ ],
+ "questions": [
+  {
+   "id": "sc-500.d3.q001",
+   "lesson": "sc-500.d3.1.01",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Before deploying Microsoft 365 Copilot, you need a report of SharePoint items and groups shared with Everyone except external users over the last 28 days. What should you use?",
+   "options": [
+    "SharePoint Advanced Management data access governance reports",
+    "Microsoft Entra access reviews",
+    "Microsoft Defender for Cloud Apps file policies",
+    "Microsoft Purview Content explorer"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "DAG reports in SharePoint Advanced Management include EEEU insights and sharing-link activity for the last 28 days. Entra access reviews recertify group or app membership, not SharePoint sharing. Content explorer shows where classified content lives, not EEEU exposure. Defender for Cloud Apps file policies are a different, CASB-based tool."
+  },
+  {
+   "id": "sc-500.d3.q002",
+   "lesson": "sc-500.d3.1.01",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Copilot and SharePoint oversharing, select Yes if true.",
+   "statements": [
+    {
+     "s": "Microsoft 365 Copilot can return content to a user only if that user already has permission to access it.",
+     "a": true
+    },
+    {
+     "s": "A sharing links DAG report shows which sites had the most new sharing links created recently.",
+     "a": true
+    },
+    {
+     "s": "Assigning a Copilot license automatically removes Everyone except external users permissions from sites.",
+     "a": false
+    }
+   ],
+   "explain": "Copilot respects existing permissions, which is why oversharing matters. The sharing links report shows link-creation hotspots. Licensing Copilot changes no permissions; admins must fix exposure themselves."
+  },
+  {
+   "id": "sc-500.d3.q003",
+   "lesson": "sc-500.d3.1.02",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A finance site is overshared. Copilot launches tomorrow, and the permission cleanup will take weeks. Users who legitimately work on the site must keep opening its files. What should you configure right away?",
+   "options": [
+    "Restricted access control for the site",
+    "A retention policy on the site",
+    "Restricted Content Discovery for the site",
+    "Delete the site's sharing links"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Restricted Content Discovery keeps the site's content out of Copilot and organization-wide search, while people with access can still open the files. Restricted access control would limit who can open the site. Retention policies don't affect discovery. Deleting every link breaks legitimate access and doesn't scale overnight."
+  },
+  {
+   "id": "sc-500.d3.q004",
+   "lesson": "sc-500.d3.1.02",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "You want the owners of overshared SharePoint sites, who know their business audiences, to confirm or remove permissions found in a DAG report. Which feature should you use?",
+   "options": [
+    "Restricted SharePoint Search",
+    "Site access review",
+    "Microsoft Entra entitlement management",
+    "Microsoft Purview Insider Risk Management"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Site access review is launched from a DAG report and sends the permission review to the site owners. Restricted SharePoint Search limits which sites org-wide search and Copilot can use, but nobody reviews anything. Entitlement management handles access packages. Insider Risk Management detects risky user behaviour."
+  },
+  {
+   "id": "sc-500.d3.q005",
+   "lesson": "sc-500.d3.1.02",
+   "objective": "d3.1",
+   "difficulty": 3,
+   "type": "multi",
+   "case": "Contoso is piloting Microsoft 365 Copilot. An M&A site must be openable only by members of the Deal-Team group, even though some files inside it were shared with 'people in your organization' links. A separate archive site is broadly accessible but should simply never appear in Copilot answers.",
+   "stem": "Which TWO controls meet the requirements? Select TWO.",
+   "options": [
+    "Restricted access control on the M&A site",
+    "Restricted Content Discovery on the archive site",
+    "Restricted Content Discovery on the M&A site",
+    "A sensitivity label with no encryption on the archive site",
+    "Site access review on the archive site"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "Restricted access control limits the M&A site to the Deal-Team group, whatever links exist on items inside. Restricted Content Discovery keeps the archive out of Copilot and search without changing who can access it. RCD on the M&A site wouldn't stop members of the org opening links. A label without encryption or DLP doesn't stop Copilot, and a site access review doesn't hide the archive."
+  },
+  {
+   "id": "sc-500.d3.q006",
+   "lesson": "sc-500.d3.1.03",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "In Microsoft Purview DSPM for AI, which feature activates a recommended, preconfigured DLP policy for AI interactions with one selection?",
+   "options": [
+    "Data risk assessment",
+    "Activity explorer",
+    "Adaptive scopes",
+    "One-click policies"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "One-click policies turn on recommended preconfigured policies, such as DLP for sensitive data in AI prompts, directly from DSPM. Data risk assessments find oversharing. Activity explorer shows events. Adaptive scopes define dynamic policy targets in retention and other solutions."
+  },
+  {
+   "id": "sc-500.d3.q007",
+   "lesson": "sc-500.d3.1.03",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "DSPM for AI shows Microsoft 365 Copilot interactions but no activity for users pasting data into third-party generative AI websites. Which TWO prerequisites should you complete? Select TWO.",
+   "options": [
+    "Onboard devices to Microsoft Purview",
+    "Enable Defender for AI Services on the subscription",
+    "Install the Microsoft Purview browser extension",
+    "Assign users a Microsoft 365 Copilot license",
+    "Create a Microsoft Foundry project"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "Activity on third-party AI sites needs devices onboarded to Purview (endpoint DLP) and the Purview browser extension. Copilot licenses only cover Copilot activity. Defender for AI Services and Foundry projects protect Azure-hosted AI workloads, not users browsing to consumer AI sites."
+  },
+  {
+   "id": "sc-500.d3.q008",
+   "lesson": "sc-500.d3.1.03",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about DSPM for AI data risk assessments, select Yes if true.",
+   "statements": [
+    {
+     "s": "A default data risk assessment runs weekly against the top 100 SharePoint sites by usage.",
+     "a": true
+    },
+    {
+     "s": "Custom data risk assessments refresh automatically every day indefinitely.",
+     "a": false
+    },
+    {
+     "s": "Restricted Content Discovery is one of the remediation options offered for overshared sites.",
+     "a": true
+    }
+   ],
+   "explain": "The default assessment runs weekly on the top 100 sites without being activated. Custom assessments return results once (after about 48 hours), don't refresh, and expire after 30 days, so you duplicate them to run again. Remediation options include SharePoint Restricted Content Discovery, labels and removing sharing links."
+  },
+  {
+   "id": "sc-500.d3.q009",
+   "lesson": "sc-500.d3.1.04",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Copilot Studio real-time protection is configured with Microsoft Defender. At what moment does Defender evaluate the agent's activity?",
+   "options": [
+    "After the response is shown to the user",
+    "Before each planned tool invocation runs",
+    "Only when the agent is published",
+    "During the nightly batch audit of conversation transcripts"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The agent sends its planned tool call (inputs and metadata) to the threat-detection endpoint before running it, and Defender returns allow or block. Evaluating after the response or overnight would be too late to stop the action. Publishing isn't a runtime check."
+  },
+  {
+   "id": "sc-500.d3.q010",
+   "lesson": "sc-500.d3.1.04",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You are enabling real-time protection for Copilot Studio agents with Microsoft Defender. Put the steps in order.",
+   "options": [
+    "In the Defender portal, turn on Security for AI agents and real-time protection, then copy the Defender URL",
+    "In the Power Platform admin center, enable Microsoft Defender - Copilot Studio AI Agents with that URL and an Entra app",
+    "Give the generated App ID to the security engineer",
+    "Enter the App ID in the Defender portal and save",
+    "Confirm the status shows Connected"
+   ],
+   "explain": "The security engineer starts in Defender and gets the URL. The Power Platform admin then sets up the trusted connection and creates the App ID. The App ID goes back into Defender, and the status should change to Connected."
+  },
+  {
+   "id": "sc-500.d3.q011",
+   "lesson": "sc-500.d3.1.04",
+   "objective": "d3.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "During a Defender outage, the threat-detection endpoint for Copilot Studio agents stops responding. What happens when an agent plans a tool call?",
+   "options": [
+    "The tool call is blocked and the user sees a security message",
+    "The agent pauses the conversation until the endpoint responds",
+    "The agent switches to its Foundry guardrail instead",
+    "After about one second the agent treats the call as allowed and runs the tool"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The agent waits under 1,000 ms for a reply and then fails open, treating the call as allowed. It doesn't fail closed, it doesn't wait indefinitely, and there's no automatic fallback to a Foundry guardrail. This is why the monitor's availability matters."
+  },
+  {
+   "id": "sc-500.d3.q012",
+   "lesson": "sc-500.d3.1.04",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "You want to see the configuration of discovered AI agents in Advanced hunting, with only the latest record for each agent. Complete the query.",
+   "code": "AIAgentsInfo\n| summarize ____(Timestamp, *) by AIAgentId\n| project AIAgentName, Platform, CreatorAccountUpn, IsBlocked",
+   "options": [
+    "arg_max",
+    "max",
+    "make_set",
+    "dcount"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "arg_max(Timestamp, *) returns the full row with the latest Timestamp for each AIAgentId. max(Timestamp, *) isn't valid syntax for keeping all columns. make_set builds arrays. dcount counts distinct values."
+  },
+  {
+   "id": "sc-500.d3.q013",
+   "lesson": "sc-500.d3.1.05",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "You create a Conditional Access policy that targets agent identities which authenticate as themselves (app-only). Which grant control can you configure?",
+   "options": [
+    "Require multifactor authentication",
+    "Require device to be marked as compliant",
+    "Block access",
+    "Require authentication strength"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Block access is the only grant control for agent identities, because an agent can't complete interactive remediation such as MFA. Device compliance applies to agent user accounts, not agent identities. MFA and authentication strengths need an interactive user."
+  },
+  {
+   "id": "sc-500.d3.q014",
+   "lesson": "sc-500.d3.1.05",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Conditional Access for Microsoft Entra Agent ID, select Yes if true.",
+   "statements": [
+    {
+     "s": "A policy that targets an agent identity blueprint also applies to agent identities created from it in the future.",
+     "a": true
+    },
+    {
+     "s": "A policy assigned to All users automatically includes agent user accounts.",
+     "a": false
+    },
+    {
+     "s": "Agent risk is the condition you can use when a policy targets agent identities.",
+     "a": true
+    }
+   ],
+   "explain": "Blueprint targeting covers current and future agents created from the blueprint. Policies scoped to All users don't apply to agent users, so you target agents explicitly. Agent risk (with ID Protection) is the only condition for agent identities."
+  },
+  {
+   "id": "sc-500.d3.q015",
+   "lesson": "sc-500.d3.1.05",
+   "objective": "d3.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Fabrikam allows only agents built from its approved 'Finance-Bot' blueprint to reach finance resources. Developers keep creating new agent identities from other blueprints, and security wants any agent with high agent risk blocked from everything. Agents call APIs app-only.",
+   "stem": "Which approach meets the requirements with the least ongoing administration?",
+   "options": [
+    "Create a block policy for each new agent identity as developers register it",
+    "Target All users and exclude the Finance-Bot service principals",
+    "Require a compliant device for all agent identities accessing finance apps",
+    "Block all agent identities from finance resources except the Finance-Bot blueprint, and block high agent risk for all agent resources"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Targeting by blueprint and using an exclusion covers future agents automatically, and an agent-risk policy blocks high-risk agents everywhere. Writing a policy per agent doesn't scale. All users doesn't target agent identities. Device compliance doesn't apply to app-only agent identities."
+  },
+  {
+   "id": "sc-500.d3.q016",
+   "lesson": "sc-500.d3.1.05",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An agent reads an internal service using a static API key instead of a Microsoft Entra token. A Conditional Access policy blocks the agent identity, but the calls still succeed. Why?",
+   "options": [
+    "Conditional Access needs Continuous Access Evaluation enabled for agents",
+    "Conditional Access is evaluated only when Entra ID issues tokens, and API keys bypass token issuance",
+    "The policy must be in report-only mode first",
+    "Agent identities can only be blocked by ID Protection risk policies"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Conditional Access runs when Microsoft Entra ID issues or refreshes a token. A resource reached with an API key never involves Entra, so CA can't apply. CAE speeds up enforcement for tokens but doesn't cover key-based access. Report-only mode doesn't enforce anything."
+  },
+  {
+   "id": "sc-500.d3.q017",
+   "lesson": "sc-500.d3.1.06",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "You are assessing the blast radius of a Microsoft Foundry agent in Defender XDR. Which THREE factors make up the agent's blast radius? Select THREE.",
+   "options": [
+    "API permissions on the agent's service principal",
+    "Knowledge sources the agent uses for grounding",
+    "The model's token-per-minute quota",
+    "Actions defined in the agent's blueprint, such as sending email",
+    "The region where the Foundry resource is deployed"
+   ],
+   "answer": [
+    0,
+    1,
+    3
+   ],
+   "explain": "Blast radius combines permissions (scopes), knowledge sources (the data it can reach) and blueprint actions (what it can do). TPM quotas limit cost and throughput, not what an attacker could reach. The deployment region doesn't change reach."
+  },
+  {
+   "id": "sc-500.d3.q018",
+   "lesson": "sc-500.d3.1.06",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You need to review the permission breadth and knowledge sources of Copilot Studio agents in Microsoft Defender XDR. Where should you look?",
+   "options": [
+    "The prebuilt AI Agents queries in Advanced hunting",
+    "The agent detail pane's View on map attack path",
+    "Microsoft Secure Score improvement actions",
+    "Defender for Cloud regulatory compliance"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "For Copilot Studio agents, the AI Agents inventory supports discovery only. You review posture with the prebuilt AI Agents queries in Advanced hunting, using tables such as AIAgentsInfo. The detail pane and attack-path map are for Foundry, Bedrock and Vertex agents. Secure Score and regulatory compliance don't show per-agent blast radius."
+  },
+  {
+   "id": "sc-500.d3.q019",
+   "lesson": "sc-500.d3.1.06",
+   "objective": "d3.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Defender XDR shows two attack paths from compromised agents: a seven-step path ending at internal meeting notes, and a three-step path ending at a database of customer financial records. Which should you remediate first, and why?",
+   "options": [
+    "The seven-step path, because longer paths include more vulnerable assets",
+    "Both equally, because attack paths are scored only by count",
+    "The three-step path, because paths are prioritized by target criticality",
+    "Neither, until Secure Score drops below the threshold"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Attack paths are ranked by how critical the target is, not by how complex the path is. A short path to customer financial data is the bigger risk. The number of steps doesn't make a path more urgent, and waiting for a Secure Score change isn't a valid prioritization method."
+  },
+  {
+   "id": "sc-500.d3.q020",
+   "lesson": "sc-500.d3.1.07",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which relationship must be assigned when an agent identity is created in Microsoft Entra Agent ID?",
+   "options": [
+    "Owner",
+    "Manager",
+    "Sponsor",
+    "Application administrator"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "A sponsor is required for agent identities and agent identity blueprints. It's the human accountable for the agent's business purpose. Owners and managers are optional. Application administrator is an RBAC role, not a per-agent relationship."
+  },
+  {
+   "id": "sc-500.d3.q021",
+   "lesson": "sc-500.d3.1.07",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A sponsor accidentally soft-deletes an agent identity. Who can restore it?",
+   "options": [
+    "The sponsor, from the My Account portal",
+    "An owner of the agent identity (or an administrator)",
+    "The agent's manager",
+    "Any user with a Microsoft 365 Copilot license"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Sponsors can disable or soft-delete an agent but can't re-enable or restore it. Only owners (or admins) can restore or hard-delete. Managers can't modify or delete agents, and a Copilot license grants no rights over agent objects."
+  },
+  {
+   "id": "sc-500.d3.q022",
+   "lesson": "sc-500.d3.1.07",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "You configure an Entra ID Governance access package for AI agents. Which TWO statements are correct? Select TWO.",
+   "options": [
+    "The agent itself can request the package programmatically through Microsoft Graph",
+    "Access packages can grant agents only security group membership",
+    "The agent's sponsor can request the package on its behalf in My Access",
+    "Agent assignments cannot have an expiration date",
+    "Agent identities must be added to a role-assignable group before requesting"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "Requests can come from the agent through Graph, from a sponsor or owner in My Access, or from an admin who assigns directly. Packages can also grant OAuth API permissions and Entra roles, not just groups. Assignments can expire after the sponsor is notified. There's no role-assignable group requirement."
+  },
+  {
+   "id": "sc-500.d3.q023",
+   "lesson": "sc-500.d3.1.08",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which Azure API Management policy enforces a tokens-per-minute limit on large language model API calls?",
+   "options": [
+    "rate-limit-by-key",
+    "llm-token-limit",
+    "quota-by-key",
+    "llm-emit-token-metric"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "llm-token-limit enforces TPM or token quotas using a counter key. rate-limit-by-key and quota-by-key count calls or bandwidth, not LLM tokens. llm-emit-token-metric only reports token usage to Azure Monitor."
+  },
+  {
+   "id": "sc-500.d3.q024",
+   "lesson": "sc-500.d3.1.08",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You are enabling the AI gateway for an existing Microsoft Foundry resource from the Foundry portal. Put the steps in order.",
+   "options": [
+    "Go to Manage > AI Gateway and select Add AI Gateway",
+    "Select the Foundry resource and choose a new or existing v2-tier API Management instance",
+    "Name the gateway, select Add, and wait for the status to show Enabled",
+    "Add each existing project to the gateway",
+    "Set per-project token limits under Token management"
+   ],
+   "explain": "Create the gateway against the Foundry resource and an eligible APIM instance, and wait until it's enabled. Existing projects aren't added automatically. Token limits are set per project once those projects are routed through the gateway."
+  },
+  {
+   "id": "sc-500.d3.q025",
+   "lesson": "sc-500.d3.1.08",
+   "objective": "d3.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "After the AI gateway is enabled, a project's client receives HTTP 403 Forbidden from a model deployment, even though its tokens-per-minute usage is low. What is the most likely cause?",
+   "options": [
+    "The project's total token quota for the period has been used up",
+    "The project has exceeded its TPM limit",
+    "The client's API Management subscription key was regenerated",
+    "Content safety blocked a prompt"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "In Foundry's AI gateway, going over the period token quota returns 403, while going over the TPM limit returns 429. A regenerated key would produce an authentication failure (401), and a content safety block isn't a quota response."
+  },
+  {
+   "id": "sc-500.d3.q026",
+   "lesson": "sc-500.d3.1.09",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Where do you turn on threat protection for Microsoft Foundry generative AI workloads in Microsoft Defender for Cloud?",
+   "options": [
+    "Defender for Cloud > Workload protections > Just-in-time access",
+    "Microsoft Purview portal > DSPM for AI > Policies",
+    "Defender for Cloud > Environment settings > subscription > Defender plans > AI services",
+    "Foundry portal > Guardrails > Defaults"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Defender for AI Services is a subscription-level Defender plan that you turn on under Environment settings. JIT is for VM ports. DSPM for AI is Purview data posture. Foundry guardrails filter content but aren't the Defender threat protection plan."
+  },
+  {
+   "id": "sc-500.d3.q027",
+   "lesson": "sc-500.d3.1.09",
+   "objective": "d3.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Defender for AI Services settings, select Yes if true.",
+   "statements": [
+    {
+     "s": "If Enable user prompt evidence is off, AI threat detection stops analyzing prompts.",
+     "a": false
+    },
+    {
+     "s": "Enable data security for AI interactions lets Microsoft Purview analyze prompts and responses, and requires a Purview license.",
+     "a": true
+    },
+    {
+     "s": "AI threat protection alerts can be correlated with other alerts in Microsoft Defender XDR incidents.",
+     "a": true
+    }
+   ],
+   "explain": "With prompt evidence off, detection still runs and only the prompt text in alerts is masked. The Purview integration is a separate setting that needs Purview licensing. Alerts flow into Defender XDR and are correlated there."
+  },
+  {
+   "id": "sc-500.d3.q028",
+   "lesson": "sc-500.d3.1.10",
+   "objective": "d3.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A Foundry agent uses Azure AI Search and Bing grounding. A red team planted hidden instructions in a public web page, and the agent obeyed them after retrieving the page. The model deployment's guardrail blocks jailbreaks at user input. The agent has its own custom guardrail with only hate and violence controls.",
+   "stem": "What should you change to stop this attack?",
+   "options": [
+    "Raise the jailbreak threshold on the model deployment's guardrail",
+    "Add an Indirect attack control at the Tool response intervention point with Annotate and block to the agent's guardrail",
+    "Add a Protected material for text control at the Output point with Annotate",
+    "Remove the agent's custom guardrail so it inherits Microsoft.DefaultV2"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Instructions hidden in retrieved content are an indirect attack. They arrive in the tool response, and the agent's own guardrail is the only one evaluated. Changing the model's guardrail has no effect because the agent's guardrail fully overrides it. Protected material isn't injection. Removing the guardrail makes the agent inherit the model's guardrail, not DefaultV2."
+  },
+  {
+   "id": "sc-500.d3.q029",
+   "lesson": "sc-500.d3.1.10",
+   "objective": "d3.1",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO Foundry guardrail intervention points apply only to agents and not to model deployments? Select TWO.",
+   "options": [
+    "User input",
+    "Tool call",
+    "Output",
+    "Tool response"
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "explain": "Tool call and tool response (both preview) scan what an agent sends to and receives from tools, so they only apply to agents that use tools. User input and output apply to both models and agents."
+  }
+ ]
+}

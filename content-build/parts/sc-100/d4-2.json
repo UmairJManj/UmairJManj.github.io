@@ -1,0 +1,728 @@
+{
+  "exam": "sc-100",
+  "domain": "d4",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-100.d4.q037",
+      "lesson": "sc-100.d4.2.06",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A GitHub Actions workflow must authenticate to Azure with no stored secret, and only when it runs in the repo's 'prod' environment. Complete the federated identity credential.",
+      "code": "{\n  \"name\": \"gh-prod\",\n  \"issuer\": \"https://token.actions.githubusercontent.com\",\n  \"subject\": ____,\n  \"audiences\": [\"api://AzureADTokenExchange\"]\n}",
+      "options": [
+        "\"repo:contoso/payments:environment:prod\"",
+        "\"repo:contoso/*:environment:prod\"",
+        "\"https://github.com/contoso/payments\"",
+        "\"api://AzureADTokenExchange/prod\""
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The subject must exactly match the GitHub token's sub claim, which for environments is repo:<org>/<repo>:environment:<name>. Wildcards aren't supported in standard federated credentials. A repo URL or an audience value isn't a valid subject."
+    },
+    {
+      "id": "sc-100.d4.q038",
+      "lesson": "sc-100.d4.2.06",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Proseware runs a single-tenant daemon app (an app registration with a certificate) that calls Microsoft Graph and Azure Resource Manager. Security wants token requests from this service principal blocked if they come from outside the company's egress IP ranges, or if Entra ID Protection marks the service principal as high risk.",
+      "stem": "What should you design?",
+      "options": [
+        "Conditional Access requiring MFA for the service principal, with named locations",
+        "Conditional Access for workload identities with location and service principal risk conditions, licensed with Workload Identities Premium",
+        "Azure Policy denying role assignments to the service principal from untrusted networks",
+        "Convert the app to a system-assigned managed identity and apply Conditional Access to it"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Conditional Access for workload identities covers single-tenant service principals, with location and service principal risk conditions and Block as the grant. It needs Workload Identities Premium. MFA can't apply to workloads, managed identities aren't supported, and Azure Policy doesn't evaluate sign-ins."
+    },
+    {
+      "id": "sc-100.d4.q039",
+      "lesson": "sc-100.d4.2.07",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "In Azure API Management, you must reject any call that lacks a valid Microsoft Entra access token for the API's audience. Complete the inbound policy element.",
+      "code": "<inbound>\n  <base />\n  <____ header-name=\"Authorization\" failed-validation-httpcode=\"401\">\n    <openid-config url=\"https://login.microsoftonline.com/contoso.onmicrosoft.com/.well-known/openid-configuration\" />\n    <audiences>\n      <audience>api://orders</audience>\n    </audiences>\n  </validate-jwt>\n</inbound>",
+      "options": [
+        "check-header",
+        "validate-jwt",
+        "authentication-managed-identity",
+        "validate-client-certificate"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "validate-jwt checks the token signature through the OpenID configuration, plus the audience and claims, and returns 401 on failure. check-header only checks that a header exists. authentication-managed-identity gets a token for the back end. validate-client-certificate is for mTLS."
+    },
+    {
+      "id": "sc-100.d4.q040",
+      "lesson": "sc-100.d4.2.07",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Each client IP may call a public API published in API Management at most 20 times every 60 seconds. Complete the policy.",
+      "code": "<inbound>\n  <base />\n  <rate-limit-by-key calls=\"20\" renewal-period=\"60\"\n     ____=\"@(context.Request.IpAddress)\" />\n</inbound>",
+      "options": [
+        "counter-key",
+        "increment-condition",
+        "remaining-calls-header-name",
+        "retry-after-header-name"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "counter-key is the required attribute that sets what the limit is tracked by, here the caller IP. increment-condition decides which calls count, and the header-name attributes only add response headers."
+    },
+    {
+      "id": "sc-100.d4.q041",
+      "lesson": "sc-100.d4.2.07",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Relecloud exposes internal microservice APIs to partners over the internet. Requirements: inspect traffic for OWASP attacks before it reaches the gateway; the API gateway must not have a public endpoint; back-end services must accept only gateway traffic with no stored credentials; and the team wants API inventory with alerts for unauthenticated endpoints.",
+      "stem": "Which architecture should you recommend?",
+      "options": [
+        "Front Door Standard with custom WAF rules, APIM in external mode, back ends using subscription keys",
+        "Azure Firewall Premium with IDPS in front of APIM in external mode, and back ends using client secrets",
+        "Application Gateway WAF v2, then APIM in internal VNet mode using managed identity to back ends, plus Defender for APIs",
+        "APIM with a public IP and ip-filter, back ends with SQL logins, and Defender for App Service"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Application Gateway WAF in front of internal-mode APIM gives L7 inspection with no public gateway. Managed identity authenticates to back ends without secrets, and Defender for APIs provides inventory and unauthenticated-endpoint findings. The other options leave public gateways or stored credentials."
+    },
+    {
+      "id": "sc-100.d4.q042",
+      "lesson": "sc-100.d4.2.07",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure API Management security, select Yes if true.",
+      "statements": [
+        {
+          "s": "A subscription key alone gives strong proof of the calling user's identity.",
+          "a": false
+        },
+        {
+          "s": "Defender for APIs currently protects APIs published in Azure API Management.",
+          "a": true
+        },
+        {
+          "s": "Named values in API Management can reference secrets stored in Azure Key Vault.",
+          "a": true
+        }
+      ],
+      "explain": "Subscription keys are shared secrets for identifying and metering callers, not strong authentication, so pair them with OAuth token validation. Defender for APIs onboards APIs from APIM. Key Vault-backed named values keep secrets out of policies."
+    },
+    {
+      "id": "sc-100.d4.q043",
+      "lesson": "sc-100.d4.2.08",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A multi-region web app needs managed OWASP rules, bot protection and Private Link to its origins, enforced at Microsoft's global edge. Which option should you choose?",
+      "options": [
+        "Azure Front Door Standard with a WAF policy",
+        "Application Gateway WAF v2 in each region",
+        "Azure Firewall Premium",
+        "Azure Front Door Premium with a WAF policy"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Front Door Premium adds the Microsoft-managed rule set, bot protection and Private Link origins at the global edge. Front Door Standard supports only custom WAF rules. Application Gateway is regional, and Azure Firewall isn't a web application firewall for HTTP apps."
+    },
+    {
+      "id": "sc-100.d4.q044",
+      "lesson": "sc-100.d4.2.08",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A WAF policy uses DRS 2.2 in Prevention mode with the default anomaly threshold. A request matches one Warning-severity rule and nothing else. What happens?",
+      "options": [
+        "The request is allowed because its anomaly score of 3 is below the threshold of 5",
+        "The request is blocked because every match blocks in Prevention mode",
+        "The request is redirected to a CAPTCHA challenge",
+        "The request is logged only, because DRS 2.2 doesn't support Prevention mode"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "DRS 2.x uses anomaly scoring. Warning adds 3, and the action fires at 5 or more, so a single Warning match passes while one Critical (5) blocks. Per-rule blocking was the older pre-2.0 behaviour. Prevention mode is supported."
+    },
+    {
+      "id": "sc-100.d4.q045",
+      "lesson": "sc-100.d4.2.08",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are introducing Azure WAF in front of an existing production app with minimal disruption. Put the steps in order.",
+      "options": [
+        "Create a WAF policy with the latest Default Rule Set in Detection mode",
+        "Associate the policy with the Front Door endpoint or Application Gateway",
+        "Analyse WAF logs for false positives on legitimate traffic",
+        "Add targeted exclusions or rule overrides for the false positives",
+        "Switch the policy to Prevention mode"
+      ],
+      "explain": "Detection mode logs matches without blocking, so you can find and tune false positives with exclusions before blocking. Turning on Prevention first risks blocking real users."
+    },
+    {
+      "id": "sc-100.d4.q046",
+      "lesson": "sc-100.d4.2.08",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fourth Coffee hosts three apps on one Application Gateway WAF v2: a public shop, a partner portal, and an internal HR site on the same gateway. The partner portal's legacy SOAP endpoint at /legacy/* triggers many SQL injection false positives. Security won't weaken protection for the shop or the rest of the portal.",
+      "stem": "What is the best design?",
+      "options": [
+        "Switch the global WAF policy to Detection mode",
+        "Disable the SQL injection rule group in the global WAF policy",
+        "Move all three apps to Front Door Standard with custom rules only",
+        "Associate a per-URI WAF policy with tuned exclusions for /legacy/*"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Application Gateway WAF v2 supports global, per-site and per-URI policies, so tuning can be limited to /legacy/*. Detection mode or disabling the rule group globally weakens every app. Front Door Standard has no managed rules at all."
+    },
+    {
+      "id": "sc-100.d4.q047",
+      "lesson": "sc-100.d4.2.08",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You need to stop credential-stuffing bursts against /login on a Front Door-hosted app, and block traffic from countries where the company doesn't operate. Which TWO WAF features should you use? Select TWO.",
+      "options": [
+        "A rate-limit custom rule matching the /login path",
+        "A geo-filtering custom rule",
+        "DRS paranoia level 2 rules",
+        "Defender for Storage malware scanning",
+        "An Azure Firewall DNAT rule"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Rate-limit custom rules cap requests per client to a path, and geo-filter custom rules allow or block by country. Higher paranoia rules increase injection detection, not rate control. Defender for Storage and Azure Firewall DNAT don't apply here."
+    },
+    {
+      "id": "sc-100.d4.q048",
+      "lesson": "sc-100.d4.3.01",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You need to detect real customer account numbers with very few false positives by matching against values in your CRM database. Which classification method should you use?",
+      "options": [
+        "A trainable classifier",
+        "Exact data match (EDM) sensitive information type",
+        "A keyword dictionary",
+        "A regular-expression sensitive information type"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "EDM matches content against hashed values uploaded from your own data source, which gives very precise detection. Regex SITs match any number with the right pattern, keyword dictionaries match words, and trainable classifiers recognise document types rather than specific values."
+    },
+    {
+      "id": "sc-100.d4.q049",
+      "lesson": "sc-100.d4.3.01",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A retailer must prove to PCI assessors where cardholder data lives across Azure SQL, ADLS Gen2, on-premises SQL Server and Amazon S3, with a searchable inventory and lineage. Separately, the cloud security team wants to know which internet-exposed workloads can reach those stores.",
+      "stem": "Which pair of solutions should you recommend?",
+      "options": [
+        "Defender for Cloud sensitive data discovery for the inventory, and Microsoft Secure Score for exposure",
+        "Purview Information Protection content explorer for the inventory, and Defender for Storage for exposure",
+        "Microsoft Purview Data Map scans for the inventory, and Defender CSPM attack paths for exposure",
+        "Azure SQL Data Discovery & Classification for the inventory, and Azure Advisor for exposure"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Purview Data Map scans multicloud and on-premises sources into a catalogue with classifications and lineage. Defender CSPM attack paths show exposed workloads that can reach sensitive stores. Defender's sensitive data discovery samples rather than fully cataloguing, content explorer covers M365, and SQL classification covers SQL only."
+    },
+    {
+      "id": "sc-100.d4.q050",
+      "lesson": "sc-100.d4.3.01",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about data discovery and classification, select Yes if true.",
+      "statements": [
+        {
+          "s": "Defender for Cloud sensitive data discovery uses the same Purview sensitive information types and can import custom ones.",
+          "a": true
+        },
+        {
+          "s": "Defender for Cloud sensitive data discovery reads every row in every database table.",
+          "a": false
+        },
+        {
+          "s": "Trainable classifiers can identify content such as contracts that has no fixed pattern.",
+          "a": true
+        }
+      ],
+      "explain": "Defender for Cloud uses Purview's classification engine and SITs, including custom ones. It samples rows and files rather than doing full scans. Trainable classifiers use machine learning to recognise categories of content."
+    },
+    {
+      "id": "sc-100.d4.q051",
+      "lesson": "sc-100.d4.3.02",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Threat analysis shows the top risk to a claims data platform is an attacker using stolen but valid Entra credentials to download data. Which control most directly reduces this risk?",
+      "options": [
+        "Enable infrastructure encryption on the storage accounts",
+        "Rotate TDE protectors in Key Vault every 90 days",
+        "Enable TLS 1.3 on all endpoints",
+        "Enforce least-privilege data roles with PIM and Conditional Access, and alert on anomalous access with Defender"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Valid credentials are decrypted transparently, so encryption at rest, key rotation and TLS don't stop this attack. Limiting who has data access, requiring strong sign-in conditions and detecting unusual extraction all address credential misuse."
+    },
+    {
+      "id": "sc-100.d4.q052",
+      "lesson": "sc-100.d4.3.02",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A regional bank ranks ransomware destroying its core banking data and backups as its top data threat. Second is exfiltration of customer PII from Azure Storage over public endpoints. Third is staff emailing statements to personal accounts. The budget covers one large project this quarter and smaller changes later.",
+      "stem": "Which project should be prioritised first?",
+      "options": [
+        "Immutable Azure Backup vaults with soft delete and multi-user authorisation, plus blob versioning and immutability for critical data",
+        "Purview DLP policies for Exchange Online",
+        "Private endpoints for all storage accounts",
+        "Insider Risk Management with Adaptive Protection"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The top-ranked threat is ransomware destroying data and backups. Immutable, soft-deleted backups protected by multi-user authorisation make recovery possible. Private endpoints address the second threat and DLP the third, so they come later in the plan."
+    },
+    {
+      "id": "sc-100.d4.q053",
+      "lesson": "sc-100.d4.3.02",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You must reduce the risk of data exfiltration from Azure Storage and Azure SQL by external attackers. Which THREE controls remove access paths rather than only detecting misuse? Select THREE.",
+      "options": [
+        "Disable public network access and use private endpoints",
+        "Disallow Shared Key authorisation and use Entra ID RBAC",
+        "Enable Microsoft Entra-only authentication for Azure SQL",
+        "Enable Defender for Storage activity monitoring",
+        "Stream SQL audit logs to Microsoft Sentinel"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Private endpoints, removing shared keys and Entra-only SQL authentication all take away whole attack paths. Defender activity monitoring and Sentinel auditing are valuable, but they detect misuse rather than prevent it."
+    },
+    {
+      "id": "sc-100.d4.q054",
+      "lesson": "sc-100.d4.3.03",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Regulation requires encryption keys in a single-tenant, FIPS 140-3 Level 3 validated HSM pool that only your organisation controls. Which service should you select?",
+      "options": [
+        "Azure Key Vault Standard",
+        "Azure Key Vault Premium",
+        "Azure Key Vault Managed HSM",
+        "Microsoft-managed keys with infrastructure encryption"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Managed HSM gives a dedicated single-tenant HSM pool that you control through its security domain. Key Vault Premium uses HSM-backed keys in multitenant HSMs, and Standard is software-protected. Microsoft-managed keys aren't customer-controlled."
+    },
+    {
+      "id": "sc-100.d4.q055",
+      "lesson": "sc-100.d4.3.03",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about encryption in Azure, select Yes if true.",
+      "statements": [
+        {
+          "s": "Infrastructure encryption can be enabled on an existing storage account at any time.",
+          "a": false
+        },
+        {
+          "s": "A key vault used for Azure Storage customer-managed keys must have soft delete and purge protection enabled.",
+          "a": true
+        },
+        {
+          "s": "Once purge protection is enabled on a key vault, it can't be disabled.",
+          "a": true
+        }
+      ],
+      "explain": "Infrastructure encryption must be chosen at account creation. Storage CMK requires soft delete and purge protection on the vault. Purge protection is irreversible, which stops a malicious admin destroying keys early."
+    },
+    {
+      "id": "sc-100.d4.q056",
+      "lesson": "sc-100.d4.3.03",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A key vault holds customer-managed keys for SQL TDE. You must make sure deleted keys can't be permanently purged before the retention period ends. Complete the Azure CLI command.",
+      "code": "az keyvault update \\\n  --name kv-prod-tde \\\n  --resource-group rg-security \\\n  ____ true",
+      "options": [
+        "--enable-soft-delete",
+        "--enable-rbac-authorization",
+        "--enable-purge-protection",
+        "--enabled-for-disk-encryption"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "--enable-purge-protection blocks permanent deletion until retention expires, and it can't be turned off later. Soft delete is already always on. RBAC authorisation changes the permission model, and enabled-for-disk-encryption lets Azure Disk Encryption read secrets."
+    },
+    {
+      "id": "sc-100.d4.q057",
+      "lesson": "sc-100.d4.3.03",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Lamna Healthcare runs 300 Windows and Linux VMs protected by Azure Disk Encryption. An auditor notes that ADE is being retired and asks for a target design that also encrypts temp disks and caches, and lets Lamna use its own keys in Key Vault.",
+      "stem": "What should you recommend?",
+      "options": [
+        "Keep ADE and enable infrastructure encryption on the VMs' storage accounts",
+        "Redeploy the VMs with encryption at host enabled, using a disk encryption set with a customer-managed key",
+        "Convert ADE to encryption at host in place on the existing disks",
+        "Enable TDE inside each VM's operating system"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Encryption at host is the ADE replacement. It encrypts temp disks, caches and data flows, and works with a disk encryption set for CMK. In-place conversion isn't supported, so new disks and VMs are needed. Managed disks don't use customer storage accounts, and TDE is a SQL feature."
+    },
+    {
+      "id": "sc-100.d4.q058",
+      "lesson": "sc-100.d4.3.04",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An internal RAG chatbot indexes documents from many departments into Azure AI Search. Users report the bot quotes documents they can't open in SharePoint. What should you design?",
+      "options": [
+        "Enable customer-managed keys on the AI Search service",
+        "Enable Prompt Shields on the model deployment",
+        "Move the AI Search service behind a private endpoint",
+        "Apply document-level security filters (security trimming) on the index based on users' groups"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "An index doesn't carry source permissions by default, so retrieval must be trimmed to what each user may access. CMK and private endpoints protect the service, not per-user access. Prompt Shields detect jailbreak and injection attempts, not authorisation gaps."
+    },
+    {
+      "id": "sc-100.d4.q059",
+      "lesson": "sc-100.d4.3.04",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Contoso is launching a customer-facing generative AI assistant on Microsoft Foundry, grounded in product and order data. The security architect must address jailbreak attempts, alerting the SOC to AI-specific threats such as data leakage, and stopping employees pasting customer PII into consumer AI websites from their Windows laptops.",
+      "stem": "Which THREE components should the design include? Select THREE.",
+      "options": [
+        "Azure AI Content Safety Prompt Shields",
+        "Microsoft Defender for AI Services",
+        "Microsoft Purview Endpoint DLP for generative AI websites",
+        "Defender for Office 365 Safe Links",
+        "Azure Disk Encryption on the model hosts"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Prompt Shields detect jailbreak and prompt injection. Defender for AI Services alerts on AI threats such as data leakage and jailbreak. Endpoint DLP can block pasting sensitive data into third-party AI sites. Safe Links protects URLs, and ADE is irrelevant to managed AI services and is being retired."
+    },
+    {
+      "id": "sc-100.d4.q060",
+      "lesson": "sc-100.d4.3.04",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about securing data in AI workloads, select Yes if true.",
+      "statements": [
+        {
+          "s": "Apps calling Azure OpenAI in Foundry should use managed identities with Azure RBAC rather than API keys where possible.",
+          "a": true
+        },
+        {
+          "s": "Defender for AI Services scans image and audio tokens as well as text.",
+          "a": false
+        },
+        {
+          "s": "Microsoft Purview audit can capture prompts and responses from supported AI apps.",
+          "a": true
+        }
+      ],
+      "explain": "Managed identities remove keys from AI apps. Defender for AI Services threat protection scans text tokens only. Purview captures AI interactions, including referenced files and labels, in the unified audit log."
+    },
+    {
+      "id": "sc-100.d4.q061",
+      "lesson": "sc-100.d4.3.05",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "National ID numbers in an Azure SQL database must be unreadable to DBAs and cloud operators, while the payroll app can still look up employees by ID. What should you use?",
+      "options": [
+        "Always Encrypted with deterministic encryption on the column",
+        "Transparent data encryption with a customer-managed key",
+        "Dynamic data masking on the column",
+        "Row-level security"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Always Encrypted encrypts on the client, so the engine and DBAs only see ciphertext, and deterministic encryption allows equality lookups. TDE is transparent to anyone who can query. Masking can be bypassed by privileged users, and row-level security filters rows, not column values."
+    },
+    {
+      "id": "sc-100.d4.q062",
+      "lesson": "sc-100.d4.3.05",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Security requires that the logical server hosting Azure SQL Database accepts only Microsoft Entra identities and no SQL logins. Complete the Azure CLI command.",
+      "code": "az sql server ____ enable \\\n  --resource-group rg-data \\\n  --name sql-payroll-prod",
+      "options": [
+        "ad-admin",
+        "ad-only-auth",
+        "tde-key",
+        "audit-policy"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "az sql server ad-only-auth enable turns on Microsoft Entra-only authentication, which disables SQL authentication. ad-admin sets the Entra admin but leaves SQL logins working. tde-key manages the TDE protector, and audit-policy configures auditing."
+    },
+    {
+      "id": "sc-100.d4.q063",
+      "lesson": "sc-100.d4.3.05",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A financial services firm is building an Azure Synapse Analytics workspace for regulated trading data. Auditors require that Spark and pipelines can't write data to storage accounts outside the firm's own Entra tenant. The project manager suggests creating the workspace now with default settings and adding restrictions after the pilot.",
+      "stem": "What should you recommend?",
+      "options": [
+        "Create the workspace now, then enable data exfiltration protection after the pilot",
+        "Use Synapse workspace IP firewall rules to block outbound traffic",
+        "Create the workspace with a managed virtual network and data exfiltration protection, and allow only approved Entra tenants",
+        "Rely on Defender for Storage to alert on writes to external accounts"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Data exfiltration protection limits egress to managed private endpoints in approved tenants, and it can only be set at workspace creation. Adding it later isn't possible. Workspace firewall rules control inbound access, and Defender for Storage detects rather than prevents."
+    },
+    {
+      "id": "sc-100.d4.q064",
+      "lesson": "sc-100.d4.3.05",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A trading ledger in Azure SQL Database must let auditors detect any tampering with historical rows, even by DBAs, with digests kept outside the database. Which TWO elements should the design include? Select TWO.",
+      "options": [
+        "Ledger tables in the database",
+        "Dynamic data masking on all columns",
+        "Automatic digest storage in Azure Confidential Ledger or immutable Blob Storage",
+        "TDE with a service-managed key",
+        "A read-scale replica"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Ledger tables hash every change, and digests kept in Azure Confidential Ledger or immutable blobs let verification detect tampering. Masking, TDE and read replicas don't provide tamper evidence."
+    },
+    {
+      "id": "sc-100.d4.q065",
+      "lesson": "sc-100.d4.3.06",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "After leaked account keys, you must force all clients of an Azure Cosmos DB for NoSQL account to authenticate with Microsoft Entra ID only. Complete the command.",
+      "code": "az resource update \\\n  --resource-group rg-orders \\\n  --name cosmos-orders \\\n  --resource-type \"Microsoft.DocumentDB/databaseAccounts\" \\\n  --set properties.____=true",
+      "options": [
+        "disableKeyBasedMetadataWriteAccess",
+        "publicNetworkAccess",
+        "enableAutomaticFailover",
+        "disableLocalAuth"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "disableLocalAuth=true blocks primary and secondary key authentication, so clients must use Entra ID with data-plane RBAC. disableKeyBasedMetadataWriteAccess only stops keys changing resources, publicNetworkAccess takes Enabled/Disabled, and automatic failover is about availability."
+    },
+    {
+      "id": "sc-100.d4.q066",
+      "lesson": "sc-100.d4.3.06",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An App Service app's managed identity must read and write items in an Azure Cosmos DB for NoSQL container where key-based auth is disabled. What should you assign?",
+      "options": [
+        "The Cosmos DB Built-in Data Contributor role through a Cosmos DB native SQL role assignment",
+        "The Azure RBAC Cosmos DB Operator role on the account",
+        "The Azure RBAC Contributor role on the resource group",
+        "The DocumentDB Account Contributor role on the subscription"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Data-plane access in Cosmos DB for NoSQL uses native role definitions and assignments, such as Built-in Data Contributor. Cosmos DB Operator, Contributor and DocumentDB Account Contributor are Azure RBAC control-plane roles and don't grant item access."
+    },
+    {
+      "id": "sc-100.d4.q067",
+      "lesson": "sc-100.d4.3.06",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You want SOC alerts for anomalous access and possible SQL injection against an Azure Cosmos DB account. Which Defender for Cloud plan should you enable?",
+      "options": [
+        "Defender for Storage",
+        "Defender for Azure Cosmos DB",
+        "Defender CSPM",
+        "Defender for App Service"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Defender for Azure Cosmos DB, one of the Defender for Databases plans, detects anomalous access, SQL injection patterns and suspicious key extraction. Defender for Storage covers storage accounts, Defender CSPM is posture, and Defender for App Service protects web apps."
+    },
+    {
+      "id": "sc-100.d4.q068",
+      "lesson": "sc-100.d4.3.07",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You must block account keys, account SAS and service SAS on a storage account while still allowing Entra ID access and user delegation SAS. Complete the command.",
+      "code": "az storage account update \\\n  --name stclaimsprod \\\n  --resource-group rg-claims \\\n  ____ false",
+      "options": [
+        "--allow-blob-public-access",
+        "--https-only",
+        "--allow-shared-key-access",
+        "--default-action"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Setting --allow-shared-key-access to false rejects Shared Key, which also disables account and service SAS. User delegation SAS is signed with Entra credentials, so it still works. The other flags control anonymous access, HTTPS and the network firewall."
+    },
+    {
+      "id": "sc-100.d4.q069",
+      "lesson": "sc-100.d4.3.07",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A broker-dealer must keep trade confirmations in Blob Storage for seven years in non-erasable, non-rewritable form, meeting SEC 17a-4(f). Even storage account owners must not be able to shorten the retention period. Some records also face litigation with no known end date.",
+      "stem": "Which configuration should you recommend?",
+      "options": [
+        "A locked time-based retention policy, plus legal holds for litigated records",
+        "An unlocked time-based retention policy, plus blob soft delete",
+        "Blob versioning with a lifecycle management rule that moves blobs to the archive tier",
+        "A CanNotDelete resource lock on the storage account, plus a legal hold"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A locked time-based policy can only be extended, which meets SEC 17a-4(f), and legal holds keep data until they are cleared. Unlocked policies can be shortened or deleted. Lifecycle rules and resource locks don't make blob data immutable."
+    },
+    {
+      "id": "sc-100.d4.q070",
+      "lesson": "sc-100.d4.3.07",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put the layers of an Azure Storage data protection design in order, from the outermost access gate to the innermost recovery safeguard.",
+      "options": [
+        "Private endpoint with public network access disabled",
+        "Microsoft Entra ID authorisation with Shared Key disallowed",
+        "Encryption at rest with a customer-managed key",
+        "Soft delete, versioning and immutability policies"
+      ],
+      "explain": "Requests first meet the network boundary, then identity authorisation. Data is encrypted at rest under the customer's key, and soft delete, versioning and immutability provide recovery if something gets through."
+    },
+    {
+      "id": "sc-100.d4.q071",
+      "lesson": "sc-100.d4.3.08",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Defender for Storage, select Yes if true.",
+      "statements": [
+        {
+          "s": "Activity monitoring requires you to enable storage resource logs first.",
+          "a": false
+        },
+        {
+          "s": "Malware scanning results can be sent through Azure Event Grid to trigger automated responses.",
+          "a": true
+        },
+        {
+          "s": "Blob index tags written by malware scanning are tamper-resistant, so they can be the only control for gating downstream processing.",
+          "a": false
+        }
+      ],
+      "explain": "Activity monitoring uses platform telemetry without resource logs. Event Grid delivers scan results to Functions, Logic Apps and similar handlers. Index tags can be changed by anyone with write access, so Microsoft warns not to rely on them alone."
+    },
+    {
+      "id": "sc-100.d4.q072",
+      "lesson": "sc-100.d4.3.08",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Datum Insurance runs SQL Server 2019 on-premises, SQL Server on Azure VMs, Azure SQL Database, Azure Database for PostgreSQL and a public claims upload portal that writes to Blob Storage. Datum wants vulnerability assessment and threat alerts for all databases, and malicious uploads removed automatically with no custom code.",
+      "stem": "Which design meets the requirements?",
+      "options": [
+        "Defender CSPM for all resources, plus Purview Data Map scans of the upload container",
+        "Defender for Servers Plan 2 on all machines, plus Event Grid with a custom Function for uploads",
+        "Defender for Azure SQL Databases only, plus Defender for Storage activity monitoring",
+        "Defender for Databases (Arc for on-prem SQL) plus Defender for Storage malware scanning with auto-remediation"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Defender for Databases covers Azure SQL, SQL servers on machines (Azure VMs and Arc-enabled on-premises) and open-source relational databases. On-upload malware scanning's built-in remediation soft-deletes malicious blobs without code. The other options miss databases or need custom code."
+    }
+  ]
+}

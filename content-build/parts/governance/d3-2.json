@@ -1,0 +1,739 @@
+{
+  "exam": "governance",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "governance.d3.3.01",
+      "objective": "d3.3",
+      "seq": 1,
+      "title": "Risk criteria",
+      "short": "Before assessing any risk, ISO/IEC 27001 requires risk criteria: risk acceptance criteria (what level of risk is tolerable) and criteria for performing assessments. Together they make repeated assessments consistent, valid and comparable.",
+      "deep": "Two people rating the same risk should get roughly the same answer. That only happens if the organization defines **risk criteria** first (clause 6.1.2 a).\n\n**Risk acceptance criteria** say which risk levels the organization is willing to accept without further treatment, and who may accept them. For example: 'risk score 1 to 6 may be accepted by the risk owner; 7 to 14 needs treatment or executive acceptance; 15 and above must be treated'.\n\n**Criteria for performing information security risk assessments** describe how the assessment is done: the likelihood and consequence scales (for example 1 to 5 with descriptions), how risk level is calculated, the asset or scenario approach, and how often assessments run.\n\nThe point is that results are **consistent, valid and comparable** (6.1.2 b). If one team uses 'high/medium/low' and another uses a 1 to 25 score, management cannot prioritize across them.\n\n27001 does **not** prescribe a method. An organization may use qualitative, semi-quantitative or quantitative methods, asset-based or event-based identification. ISO/IEC 27005 describes options.",
+      "terms": [
+        { "t": "Risk acceptance criteria", "d": "Thresholds defining which risk levels may be accepted and by whom." },
+        { "t": "Risk criteria", "d": "Terms of reference against which the significance of a risk is evaluated." },
+        { "t": "Comparable results", "d": "Assessments repeated by different people or at different times can be compared meaningfully." }
+      ],
+      "trap": "Exams imply 27001 mandates an asset-based or quantitative method; it mandates criteria and consistency, not a specific method.",
+      "example": "A council defines a 5x5 likelihood/consequence matrix and states that any 'high' risk must be treated or accepted by the CEO, so every department scores risks the same way.",
+      "diagram": { "kind": "compare", "cols": ["Score", "Decision"], "rows": [["1-6 Low", "Owner may accept"], ["7-14 Medium", "Treat or exec accept"], ["15-25 High", "Must treat"]] }
+    },
+    {
+      "id": "governance.d3.3.02",
+      "objective": "d3.3",
+      "seq": 2,
+      "title": "Identify, analyse, evaluate",
+      "short": "Risk assessment has three steps: identify risks to confidentiality, integrity and availability within scope and assign risk owners; analyse likely consequences and likelihood to get a risk level; and evaluate the results against risk criteria to prioritize treatment.",
+      "deep": "ISO/IEC 27001 clause 6.1.2 splits risk assessment into three parts.\n\n**1. Identification** (6.1.2 c)\n- find risks associated with **loss of confidentiality, integrity and availability** for information within the ISMS scope\n- identify the **risk owners**: people with the accountability and authority to manage each risk. A risk owner is often a business manager, not the security team.\n\n**2. Analysis** (6.1.2 d)\n- assess the potential **consequences** if the risk occurs\n- assess the realistic **likelihood** of it occurring\n- determine the **level of risk** (for example consequence x likelihood)\n\n**3. Evaluation** (6.1.2 e)\n- **compare** the analysis results with the risk criteria from step 6.1.2 a\n- **prioritize** the analysed risks for treatment\n\nThe 2013 edition linked risk identification closely to assets, threats and vulnerabilities. The 2022 edition still allows that but does not require it, and event-based scenarios are equally acceptable.\n\nResults of assessments must be kept as **documented information** (8.2).",
+      "terms": [
+        { "t": "Risk identification", "d": "Finding and describing risks to CIA within the scope." },
+        { "t": "Risk analysis", "d": "Understanding consequences and likelihood to determine level of risk." },
+        { "t": "Risk evaluation", "d": "Comparing risk levels with criteria to decide priority and whether treatment is needed." },
+        { "t": "Level of risk", "d": "Magnitude of a risk, expressed as a combination of consequences and likelihood." }
+      ],
+      "trap": "Analysis (likelihood and consequence) and evaluation (comparison with criteria) are different steps, and risk owners are assigned during identification.",
+      "example": "The risk 'customer database exposed via stolen admin credentials' is owned by the head of customer operations, rated consequence 5 and likelihood 3, and evaluated as high against the criteria.",
+      "diagram": { "kind": "flow", "items": ["Identify + owner", "Analyse", "Evaluate", "Prioritize"] }
+    },
+    {
+      "id": "governance.d3.3.03",
+      "objective": "d3.3",
+      "seq": 3,
+      "title": "Risk treatment options",
+      "short": "For each risk the organization picks one or more treatment options: modify the risk by applying controls, retain (accept) it, avoid it by stopping the activity, or share it with another party, for example through insurance or outsourcing.",
+      "deep": "ISO/IEC 27001 clause 6.1.3 a requires selecting **appropriate risk treatment options**, taking the assessment results into account. ISO/IEC 27005 names four:\n\n- **Risk modification** (also called mitigation or reduction): change likelihood or consequence by **applying controls**, such as MFA, encryption or backups. This is the most common option.\n- **Risk retention** (acceptance): decide to keep the risk as is, typically because it is within the risk acceptance criteria or because treatment costs more than the potential loss. It must be an informed decision by the risk owner.\n- **Risk avoidance**: remove the risk by **not doing** the activity or removing the risk source, for example retiring a legacy service.\n- **Risk sharing** (transfer): share part of the risk with another party, such as **cyber insurance** or a contract with a supplier. Note that **accountability** stays with the organization; mostly the financial consequence is shared.\n\nOptions can be combined: apply controls, then insure the remaining exposure. Whatever remains after treatment is **residual risk**.",
+      "terms": [
+        { "t": "Risk modification", "d": "Applying controls to change likelihood or consequence." },
+        { "t": "Risk retention", "d": "Informed decision to accept a risk." },
+        { "t": "Risk avoidance", "d": "Not starting or stopping the activity that gives rise to the risk." },
+        { "t": "Risk sharing", "d": "Sharing risk with another party, e.g., insurance or contracts." }
+      ],
+      "trap": "Buying insurance is sharing, not modification; and sharing never transfers accountability for protecting information.",
+      "example": "A clinic stops storing scanned ID cards (avoid), encrypts its patient database (modify), buys cyber insurance (share) and accepts the small remaining risk (retain).",
+      "diagram": { "kind": "compare", "cols": ["Option", "Example"], "rows": [["Modify", "Add MFA"], ["Retain", "Accept low risk"], ["Avoid", "Retire old app"], ["Share", "Cyber insurance"]] }
+    },
+    {
+      "id": "governance.d3.3.04",
+      "objective": "d3.3",
+      "seq": 4,
+      "title": "Determine controls and compare with Annex A",
+      "short": "The organization designs or chooses the controls needed for its treatment options from any source, then compares them with Annex A to check that no necessary control has been overlooked. Annex A is a reference list, not an exhaustive one.",
+      "deep": "After picking treatment options, clause 6.1.3 requires the organization to:\n\n- **b) determine all controls necessary** to implement the chosen options. The organization can design its own controls or take them from **any source**: ISO/IEC 27002, NIST guidance, CIS Controls, PCI DSS, cloud provider baselines, sector rules.\n- **c) compare** those controls with **Annex A** and verify that **no necessary controls have been omitted**. Annex A acts as a checklist to catch gaps.\n\nTwo important notes in the standard:\n- Annex A lists possible controls but is **not exhaustive**; additional controls may be needed.\n- Controls in Annex A are **not mandatory just because they are listed**. They are included only if needed to treat risk or meet requirements (legal, contractual, interested-party).\n\nThe order matters conceptually: **risk drives controls**, and Annex A is then a **cross-check**. Starting from Annex A and ticking boxes without a risk basis is a classic weak ISMS that auditors challenge.",
+      "terms": [
+        { "t": "Necessary control", "d": "A control required to implement the chosen risk treatment or meet requirements." },
+        { "t": "Annex A cross-check", "d": "Comparing selected controls with Annex A to verify none are overlooked." },
+        { "t": "Not exhaustive", "d": "Annex A may not include every control an organization needs." }
+      ],
+      "trap": "Exams suggest controls must come from Annex A or that every listed control is mandatory; controls come from any source and Annex A is a gap check.",
+      "example": "A bank selects controls from its regulator's guidance, then walks through Annex A and spots it had overlooked 8.11 Data masking for test environments.",
+      "diagram": { "kind": "flow", "items": ["Treatment option", "Determine controls", "Compare Annex A", "Add missed"] }
+    },
+    {
+      "id": "governance.d3.3.05",
+      "objective": "d3.3",
+      "seq": 5,
+      "title": "Risk treatment plan and residual risk",
+      "short": "The risk treatment process ends with a risk treatment plan describing actions, owners, resources and timing, approved by the risk owners, who also formally accept the residual information security risks that remain.",
+      "deep": "Clause 6.1.3 finishes with three outputs:\n\n- **d) the Statement of Applicability** (see the SoA lessons)\n- **e) an information security risk treatment plan**\n- **f) risk owners' approval** of the plan and **acceptance of the residual risks**\n\nThe **risk treatment plan (RTP)** says how the selected treatment will be delivered. Good practice is to record, per risk: the actions or controls to implement, who is responsible, resources needed, target dates and how completion is checked. It is the project plan for reducing risk.\n\n**Residual risk** is the risk left **after treatment**. No control removes all risk, so someone with authority must knowingly accept what remains. That someone is the **risk owner**, not the ISMS manager on their behalf, which links decisions to business accountability.\n\nClause 8.3 then requires the plan to be **implemented**, and results retained. Auditors trace a risk from the register, through the plan, to evidence the controls exist, and to the owner's signed acceptance.",
+      "terms": [
+        { "t": "Risk treatment plan", "d": "Plan describing how chosen risk treatments will be implemented, by whom and when." },
+        { "t": "Residual risk", "d": "Risk remaining after risk treatment." },
+        { "t": "Risk acceptance", "d": "Informed decision by the risk owner to take on a particular risk." }
+      ],
+      "trap": "Residual risk is accepted by risk owners, not by the certification body, the auditor or automatically by top management.",
+      "example": "After MFA and conditional access are planned for remote access, the risk drops from high to medium; the head of operations signs off the plan and accepts the medium residual risk.",
+      "diagram": { "kind": "flow", "items": ["Inherent risk", "Treatment plan", "Residual risk", "Owner accepts"] }
+    },
+    {
+      "id": "governance.d3.4.01",
+      "objective": "d3.4",
+      "seq": 1,
+      "title": "What the SoA contains",
+      "short": "The Statement of Applicability (SoA) is mandatory documented information listing the necessary controls, why each is included, whether each is implemented, and why any Annex A control is excluded.",
+      "deep": "Clause 6.1.3 d) requires the organization to produce a **Statement of Applicability (SoA)**. It must contain:\n\n- the **necessary controls** (from Annex A and any other source)\n- **justification for their inclusion**, for example a treated risk, a legal or contractual requirement, or a customer obligation\n- **whether they are implemented or not** (a planned control can be listed as not yet implemented)\n- **justification for excluding** any **Annex A** control\n\nIn practice most SoAs are a table with one row per Annex A control (all 93) plus rows for extra controls, with columns for applicable yes/no, reason, implementation status and reference to the policy or procedure.\n\nExclusion justifications must be real. 'No physical office: staff work fully remotely and hosting is in a certified cloud data centre' could justify excluding some physical controls. 'Too expensive' alone is weak if a risk needs treating.\n\nThe SoA is **version controlled** and updated when risks, scope or controls change.",
+      "terms": [
+        { "t": "Statement of Applicability", "d": "Mandatory document listing necessary controls, reasons for inclusion, implementation status and reasons for excluding Annex A controls." },
+        { "t": "Justification for inclusion", "d": "Reason a control is needed, such as a treated risk or legal requirement." },
+        { "t": "Justification for exclusion", "d": "Reason an Annex A control is not necessary for this organization." }
+      ],
+      "trap": "An SoA covers all Annex A controls, including excluded ones with reasons, and may list controls not yet implemented.",
+      "example": "A fully remote startup's SoA marks 7.1 Physical security perimeters as excluded, justified by no offices and cloud hosting in an independently audited provider.",
+      "diagram": { "kind": "compare", "cols": ["Control", "Applicable", "Reason", "Status"], "rows": [["5.7 Threat intel", "Yes", "Risk R12", "Implemented"], ["8.11 Data masking", "Yes", "Contract", "Planned"], ["7.4 Phys. monitoring", "No", "No premises", "N/A"]] }
+    },
+    {
+      "id": "governance.d3.4.02",
+      "objective": "d3.4",
+      "seq": 2,
+      "title": "SoA as the central audit artifact",
+      "short": "Auditors use the SoA as a map: it links risk treatment decisions to controls and to evidence. From the SoA they trace back to the risk register and forward to policies, records and working controls.",
+      "deep": "The SoA sits in the middle of the ISMS:\n\n**Risk register / treatment plan  ->  SoA  ->  policies, procedures, evidence**\n\nThat makes it the **central artifact** for certification audits:\n- At **stage 1**, auditors check the SoA exists, covers all Annex A controls, and has sound justifications.\n- At **stage 2** and in **surveillance audits**, they pick controls from the SoA and ask for evidence that each 'implemented' control is actually operating, and trace inclusions back to a risk or requirement.\n- Certificates commonly reference the **SoA version** in force, so a big SoA change may need to be discussed with the certification body.\n\nThe SoA also helps customers: some organizations share a summary to show which controls they operate.\n\nCommon audit findings:\n- SoA says 'implemented' but there is no evidence\n- exclusions with no or weak justification\n- SoA out of date after a scope or risk change\n- controls in the risk treatment plan missing from the SoA",
+      "terms": [
+        { "t": "Traceability", "d": "Ability to follow a risk through treatment to a control and its evidence." },
+        { "t": "SoA version", "d": "Controlled revision of the SoA, often referenced on the certificate." }
+      ],
+      "trap": "The SoA is not a policy or the risk register itself; it is the bridge between risk treatment decisions and controls.",
+      "example": "A stage 2 auditor picks 8.13 Information backup from the SoA, reads the linked risk R07, then asks to see last month's restore test record.",
+      "diagram": { "kind": "flow", "items": ["Risk register", "Treatment plan", "SoA", "Evidence"] }
+    },
+    {
+      "id": "governance.d3.4.03",
+      "objective": "d3.4",
+      "seq": 3,
+      "title": "Controls from other sources",
+      "short": "The SoA is not limited to Annex A. Organizations can add controls from sector frameworks, regulations, contracts or their own design, such as PCI DSS requirements, NIST SP 800-53 controls or cloud-specific guidance like ISO/IEC 27017.",
+      "deep": "ISO/IEC 27001 says the organization determines necessary controls **from any source**. Annex A is a minimum reference set to compare against, not a boundary.\n\nTypical additional sources:\n- **ISO/IEC 27017**: guidance on cloud service controls\n- **ISO/IEC 27018**: protection of PII in public clouds\n- **ISO/IEC 27701**: privacy information management\n- **PCI DSS**: payment card requirements\n- **NIST SP 800-53** or the **NIST Cybersecurity Framework**\n- national rules such as the **NZ Information Security Manual** or the Australian **Essential Eight**\n- contractual customer requirements\n- custom, organization-designed controls\n\nThese appear in the SoA as additional rows with their own justification and status. Many organizations map one control to several frameworks so they can show compliance with several schemes from one set of evidence.\n\nAdding non-Annex A controls does not let you skip the **Annex A comparison**; you still must account for every Annex A control as included or excluded.",
+      "terms": [
+        { "t": "ISO/IEC 27017", "d": "Code of practice for information security controls for cloud services." },
+        { "t": "ISO/IEC 27018", "d": "Code of practice for protecting PII in public clouds acting as PII processors." },
+        { "t": "Control mapping", "d": "Linking one control to requirements in several frameworks." }
+      ],
+      "trap": "Wrong answer: 'only Annex A controls may appear in the SoA'. Extra controls are allowed and expected when risk or requirements need them.",
+      "example": "A payment processor's SoA lists all 93 Annex A controls plus 12 rows for PCI DSS requirements that go beyond them, each linked to card data risks.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d3.5.01",
+      "objective": "d3.5",
+      "seq": 1,
+      "title": "Organizational controls (clause 5)",
+      "short": "Annex A theme 5 has 37 organizational controls, from 5.1 Policies for information security to 5.37 Documented operating procedures, covering roles, threat intelligence, asset inventory, access control, supplier and cloud security, incident management and legal compliance.",
+      "deep": "In the 2022 Annex A, controls are numbered by theme. **Theme 5, organizational controls, has 37 controls (5.1 to 5.37)**. Highlights grouped by purpose:\n\n- **Governance**: 5.1 Policies for information security, 5.2 Information security roles and responsibilities, 5.3 Segregation of duties, 5.4 Management responsibilities\n- **External contact and intelligence**: 5.5 Contact with authorities, 5.6 Contact with special interest groups, **5.7 Threat intelligence**\n- **Assets and information**: 5.9 Inventory of information and other associated assets, 5.10 Acceptable use, 5.12 Classification, 5.13 Labelling, 5.14 Information transfer\n- **Access**: 5.15 Access control, 5.16 Identity management, 5.17 Authentication information, 5.18 Access rights\n- **Suppliers**: 5.19 to 5.22 supplier relationships, agreements, ICT supply chain, monitoring supplier services, and **5.23 Information security for use of cloud services**\n- **Incidents and continuity**: 5.24 to 5.28 incident planning, assessment, response, learning and evidence; 5.29 Information security during disruption; **5.30 ICT readiness for business continuity**\n- **Compliance**: 5.31 Legal, statutory, regulatory and contractual requirements, 5.32 Intellectual property rights, 5.33 Protection of records, 5.34 Privacy and protection of PII, 5.35 Independent review, 5.36 Compliance with policies, 5.37 Documented operating procedures",
+      "terms": [
+        { "t": "Organizational controls", "d": "Annex A theme 5: 37 controls for governance, assets, access, suppliers, incidents and compliance." },
+        { "t": "5.7 Threat intelligence", "d": "Collect and analyse information about threats to produce intelligence." },
+        { "t": "5.23 Cloud services", "d": "Processes for acquiring, using, managing and exiting cloud services." }
+      ],
+      "trap": "Access control policy (5.15) and identity management (5.16) are organizational controls, not technological; secure authentication (8.5) is technological.",
+      "example": "A firm subscribes to a sector ISAC feed and turns it into weekly briefings for its SOC, which it records against control 5.7 Threat intelligence.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d3.5.02",
+      "objective": "d3.5",
+      "seq": 2,
+      "title": "People controls (clause 6)",
+      "short": "Annex A theme 6 has 8 people controls: screening, terms and conditions of employment, awareness and training, disciplinary process, responsibilities after termination or change, confidentiality agreements, remote working, and information security event reporting.",
+      "deep": "**Theme 6, people controls, has 8 controls (6.1 to 6.8)**. They cover the employment lifecycle, before, during and after:\n\n- **6.1 Screening**: background verification checks on candidates before joining and, where appropriate, on an ongoing basis, proportionate to the role, legal constraints and risk.\n- **6.2 Terms and conditions of employment**: contracts state personnel and organizational security responsibilities.\n- **6.3 Information security awareness, education and training**: appropriate and regularly updated for roles.\n- **6.4 Disciplinary process**: formalized and communicated, for people who violate the policy.\n- **6.5 Responsibilities after termination or change of employment**: duties that remain valid afterwards are defined, enforced and communicated.\n- **6.6 Confidentiality or non-disclosure agreements**.\n- **6.7 Remote working**: security measures when people work outside the organization's premises.\n- **6.8 Information security event reporting**: a mechanism for personnel to report observed or suspected events promptly through appropriate channels.\n\nNote: control **6.3** (training for staff) is different from clause **7.3** (awareness requirement in the ISMS body); they complement each other.",
+      "terms": [
+        { "t": "Screening (6.1)", "d": "Background verification before joining and ongoing where appropriate." },
+        { "t": "Remote working (6.7)", "d": "Security measures for personnel working away from premises." },
+        { "t": "Event reporting (6.8)", "d": "Channel for personnel to report observed or suspected security events promptly." }
+      ],
+      "trap": "Remote working was moved to the people theme (6.7) in 2022; user endpoint devices are technological (8.1).",
+      "example": "A new call-centre agent is background checked (6.1), signs an NDA (6.6), completes phishing training (6.3) and learns to report suspicious emails with one button (6.8).",
+      "diagram": { "kind": "flow", "items": ["Before: 6.1", "During: 6.2-6.4", "Remote: 6.7", "After: 6.5"] }
+    },
+    {
+      "id": "governance.d3.5.03",
+      "objective": "d3.5",
+      "seq": 3,
+      "title": "Physical controls (clause 7)",
+      "short": "Annex A theme 7 has 14 physical controls: security perimeters, physical entry, securing offices, physical security monitoring, environmental threats, secure areas, clear desk and clear screen, equipment siting, off-premises assets, storage media, utilities, cabling, maintenance and secure disposal.",
+      "deep": "**Theme 7, physical controls, has 14 controls (7.1 to 7.14)**:\n\n- **7.1 Physical security perimeters**: define and use perimeters to protect areas containing information.\n- **7.2 Physical entry**: entry controls and access points such as badges, reception and delivery areas.\n- **7.3 Securing offices, rooms and facilities**\n- **7.4 Physical security monitoring** (new in 2022): premises continuously monitored for unauthorized physical access, e.g., CCTV, alarms, guards.\n- **7.5 Protecting against physical and environmental threats**: fire, flood, earthquake, other natural or man-made threats.\n- **7.6 Working in secure areas**\n- **7.7 Clear desk and clear screen**\n- **7.8 Equipment siting and protection**\n- **7.9 Security of assets off-premises**\n- **7.10 Storage media**: managed through acquisition, use, transport and disposal.\n- **7.11 Supporting utilities**: power, telecoms, cooling.\n- **7.12 Cabling security**\n- **7.13 Equipment maintenance**\n- **7.14 Secure disposal or re-use of equipment**\n\nPhysical controls still matter for cloud-first organizations: laptops, home offices and any office space remain in scope even if servers are not.",
+      "terms": [
+        { "t": "7.4 Physical security monitoring", "d": "New 2022 control: continuous monitoring of premises for unauthorized access." },
+        { "t": "7.7 Clear desk and clear screen", "d": "Rules for papers, removable media and screens to prevent unauthorized viewing." },
+        { "t": "7.14 Secure disposal or re-use", "d": "Verify storage media is wiped or destroyed before disposal or re-use." }
+      ],
+      "trap": "Clear desk and clear screen is physical (7.7), and storage media (7.10) is physical while information deletion (8.10) is technological.",
+      "example": "A data centre adds CCTV with alerting on its loading dock (7.4) and shreds failed drives under witness before disposal (7.14).",
+      "diagram": null
+    },
+    {
+      "id": "governance.d3.5.04",
+      "objective": "d3.5",
+      "seq": 4,
+      "title": "Technological controls (clause 8)",
+      "short": "Annex A theme 8 has 34 technological controls covering endpoints, privileged access, secure authentication, malware, vulnerability and configuration management, backup, logging and monitoring, networks, cryptography and secure development.",
+      "deep": "**Theme 8, technological controls, has 34 controls (8.1 to 8.34)**. Grouped:\n\n- **Endpoints and access**: 8.1 User endpoint devices, **8.2 Privileged access rights**, 8.3 Information access restriction, 8.4 Access to source code, **8.5 Secure authentication**\n- **Operations**: 8.6 Capacity management, **8.7 Protection against malware**, **8.8 Management of technical vulnerabilities**, 8.9 Configuration management, 8.13 Information backup, 8.14 Redundancy of information processing facilities\n- **Data protection**: 8.10 Information deletion, 8.11 Data masking, 8.12 Data leakage prevention\n- **Logging and monitoring**: **8.15 Logging**, 8.16 Monitoring activities, 8.17 Clock synchronization\n- **Systems and networks**: 8.18 Use of privileged utility programs, 8.19 Installation of software on operational systems, 8.20 Networks security, 8.21 Security of network services, 8.22 Segregation of networks, 8.23 Web filtering\n- **Cryptography**: **8.24 Use of cryptography**\n- **Development**: 8.25 Secure development life cycle, 8.26 Application security requirements, 8.27 Secure system architecture and engineering principles, 8.28 Secure coding, 8.29 Security testing in development and acceptance, 8.30 Outsourced development, 8.31 Separation of development, test and production environments, **8.32 Change management**, 8.33 Test information, 8.34 Protection of information systems during audit testing\n\nTotals: 37 + 8 + 14 + 34 = **93**.",
+      "terms": [
+        { "t": "8.2 Privileged access rights", "d": "Restrict and manage allocation and use of privileged access." },
+        { "t": "8.8 Technical vulnerabilities", "d": "Obtain vulnerability information, evaluate exposure and take action." },
+        { "t": "8.15 Logging", "d": "Produce, store, protect and analyse logs of activities, exceptions and faults." },
+        { "t": "8.24 Use of cryptography", "d": "Rules for effective use of cryptography, including key management." }
+      ],
+      "trap": "Change management for IT systems is Annex A 8.32, not clause 6.3 (planning ISMS changes); logging (8.15) and monitoring activities (8.16) are separate controls.",
+      "example": "A DevOps team maps its SAST pipeline to 8.28 Secure coding, its separate staging subscription to 8.31, and its pull-request approvals to 8.32 Change management.",
+      "diagram": { "kind": "compare", "cols": ["Theme", "Clause", "Controls"], "rows": [["Organizational", "5", "37"], ["People", "6", "8"], ["Physical", "7", "14"], ["Technological", "8", "34"]] }
+    },
+    {
+      "id": "governance.d3.5.05",
+      "objective": "d3.5",
+      "seq": 5,
+      "title": "2022 restructure: 114 to 93 and 11 new controls",
+      "short": "The 2022 edition reorganized Annex A from 114 controls in 14 domains into 93 controls in 4 themes by merging and updating existing controls, and added 11 new controls such as threat intelligence, cloud services security and secure coding.",
+      "deep": "The **2013** Annex A had **114 controls in 14 control domains** (A.5 to A.18). The **2022** Annex A has **93 controls in 4 themes** (organizational, people, physical, technological). The count dropped because many controls were **merged** (for example several old access and incident controls), and most others were **updated** or renamed. None of the security content was simply thrown away.\n\nThe **11 new controls**:\n- **5.7** Threat intelligence\n- **5.23** Information security for use of cloud services\n- **5.30** ICT readiness for business continuity\n- **7.4** Physical security monitoring\n- **8.9** Configuration management\n- **8.10** Information deletion\n- **8.11** Data masking\n- **8.12** Data leakage prevention\n- **8.16** Monitoring activities\n- **8.23** Web filtering\n- **8.28** Secure coding\n\nTip for remembering: one is physical (7.4), three are organizational (5.7, 5.23, 5.30) and seven are technological (8.9 to 8.12, 8.16, 8.23, 8.28). None are in the people theme.\n\nDuring transition, organizations had to assess these new controls in their risk treatment and add them to the SoA.",
+      "terms": [
+        { "t": "114 controls / 14 domains", "d": "Structure of Annex A in ISO/IEC 27001:2013." },
+        { "t": "93 controls / 4 themes", "d": "Structure of Annex A in ISO/IEC 27001:2022." },
+        { "t": "8.12 Data leakage prevention", "d": "New control: apply DLP measures to systems, networks and devices handling sensitive information." },
+        { "t": "8.11 Data masking", "d": "New control: mask data such as PII in line with policy and legal requirements." }
+      ],
+      "trap": "Exams list a plausible but old control (e.g., segregation of duties or malware protection) as 'new in 2022'; only the 11 above are new.",
+      "example": "During transition, a retailer adds web filtering (8.23) and DLP (8.12) rows to its SoA, citing risks of malware downloads and customer data leaving by email.",
+      "diagram": { "kind": "flow", "items": ["114 controls", "Merge + update", "93 controls", "+11 new"] }
+    },
+    {
+      "id": "governance.d3.5.06",
+      "objective": "d3.5",
+      "seq": 6,
+      "title": "Control attributes",
+      "short": "ISO/IEC 27002:2022 tags every control with five attributes: control type, information security properties, cybersecurity concepts, operational capabilities and security domains. Attributes let organizations filter and view controls in different ways.",
+      "deep": "Each control in **ISO/IEC 27002:2022** has hashtag-style **attributes** that give alternative views of the same 93 controls:\n\n- **Control type**: #Preventive, #Detective, #Corrective (when it acts relative to an incident)\n- **Information security properties**: #Confidentiality, #Integrity, #Availability\n- **Cybersecurity concepts**: #Identify, #Protect, #Detect, #Respond, #Recover (aligned with the NIST Cybersecurity Framework functions, as described in ISO/IEC TS 27110)\n- **Operational capabilities**: practitioner views such as #Governance, #Asset_management, #Identity_and_access_management, #Threat_and_vulnerability_management, #Secure_configuration, #Information_security_event_management and others\n- **Security domains**: #Governance_and_Ecosystem, #Protection, #Defence, #Resilience\n\nExample: 8.7 Protection against malware is tagged with preventive, detective and corrective types, all three CIA properties, and the Protect and Detect concepts.\n\nAttributes are **guidance in 27002**, not 27001 requirements. Organizations can use them, ignore them or create their own attributes to build dashboards or map controls to other frameworks.",
+      "terms": [
+        { "t": "Control type", "d": "Attribute: preventive, detective or corrective." },
+        { "t": "Cybersecurity concepts", "d": "Attribute: identify, protect, detect, respond, recover." },
+        { "t": "Security domains", "d": "Attribute: governance and ecosystem, protection, defence, resilience." },
+        { "t": "Operational capabilities", "d": "Attribute giving a practitioner view such as asset management or secure configuration." }
+      ],
+      "trap": "The four themes (organizational, people, physical, technological) are the grouping, not an attribute; 'deterrent' and 'compensating' are not 27002 control types.",
+      "example": "A CISO filters controls by #Detect to show the board which detection capabilities exist, then by #Resilience to prepare for a continuity exercise.",
+      "diagram": { "kind": "stack", "items": ["Control type", "Security properties", "Cybersecurity concepts", "Operational capabilities", "Security domains"] }
+    }
+  ],
+  "questions": [
+    {
+      "id": "governance.d3.q026",
+      "lesson": "governance.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which two kinds of risk criteria must the organization establish under ISO/IEC 27001 clause 6.1.2?",
+      "options": [
+        "Recovery time objectives and recovery point objectives",
+        "Control effectiveness criteria and audit criteria",
+        "Risk acceptance criteria and criteria for performing information security risk assessments",
+        "Asset valuation criteria and vulnerability scoring criteria"
+      ],
+      "answer": [2],
+      "explain": "Clause 6.1.2 requires risk acceptance criteria and criteria for performing assessments. RTO and RPO are continuity metrics. Audit criteria belong to clause 9.2. Asset values and vulnerability scores may be part of a method but are not the named criteria."
+    },
+    {
+      "id": "governance.d3.q027",
+      "lesson": "governance.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": "Two business units of a university run information security risk assessments. One rates risks as high, medium or low based on judgment; the other uses a 1-25 numeric score. Management cannot tell which risks are the most serious across the university.",
+      "stem": "Which ISO/IEC 27001 requirement is not being met?",
+      "options": [
+        "Assessments must use a quantitative method expressed in monetary terms",
+        "Repeated assessments must produce consistent, valid and comparable results",
+        "Each business unit must hold its own certificate",
+        "Risk assessments must be performed by the certification body"
+      ],
+      "answer": [1],
+      "explain": "Clause 6.1.2 requires the risk assessment process to give consistent, valid and comparable results, which needs common criteria. 27001 does not mandate a quantitative or monetary method, certificates are by scope not unit, and the organization itself performs assessments."
+    },
+    {
+      "id": "governance.d3.q028",
+      "lesson": "governance.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the information security risk assessment steps of ISO/IEC 27001 in order.",
+      "options": [
+        "Establish risk acceptance criteria and criteria for performing assessments",
+        "Identify risks to confidentiality, integrity and availability and their risk owners",
+        "Analyse potential consequences and likelihood to determine the level of risk",
+        "Evaluate the results against the risk criteria and prioritize risks for treatment"
+      ],
+      "explain": "Clause 6.1.2 sets criteria first, then identification (including risk owners), analysis of consequences and likelihood, and evaluation against criteria to prioritize treatment."
+    },
+    {
+      "id": "governance.d3.q029",
+      "lesson": "governance.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A risk analyst has rated a ransomware scenario as likelihood 4 and consequence 5, giving a level of 20. She now compares the score with the organization's thresholds to decide its priority. Which step is she performing?",
+      "options": [
+        "Risk identification",
+        "Risk treatment",
+        "Risk evaluation",
+        "Risk monitoring"
+      ],
+      "answer": [2],
+      "explain": "Comparing analysed risk levels with risk criteria to prioritize is risk evaluation. Identification finds risks and owners, analysis produced the score of 20, treatment selects options and controls afterwards, and monitoring tracks risks over time."
+    },
+    {
+      "id": "governance.d3.q030",
+      "lesson": "governance.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In ISO/IEC 27001 terms, who is a risk owner?",
+      "options": [
+        "The person or entity with the accountability and authority to manage the risk",
+        "The certification body auditor who reviewed the risk",
+        "Whoever discovered the threat or vulnerability",
+        "The supplier responsible for the affected system"
+      ],
+      "answer": [0],
+      "explain": "A risk owner has the accountability and authority to manage a risk; risk owners are identified during risk identification and approve the treatment plan. Auditors, discoverers and suppliers do not automatically own risks."
+    },
+    {
+      "id": "governance.d3.q031",
+      "lesson": "governance.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A company buys a cyber insurance policy to cover the financial impact of a data breach. Which risk treatment option is this?",
+      "options": [
+        "Risk avoidance",
+        "Risk modification",
+        "Risk retention",
+        "Risk sharing"
+      ],
+      "answer": [3],
+      "explain": "Insurance shares part of the risk (mainly financial consequences) with another party. Avoidance stops the activity, modification applies controls to change likelihood or consequence, and retention accepts the risk as it is. Accountability is not transferred."
+    },
+    {
+      "id": "governance.d3.q032",
+      "lesson": "governance.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": "A clinic identifies three risks: a legacy patient portal with unpatchable flaws, staff laptops that could be stolen, and occasional printer outages rated well within its risk acceptance criteria.",
+      "stem": "Which TWO treatment decisions correctly match the option named?",
+      "options": [
+        "Decommissioning the legacy portal is risk avoidance",
+        "Encrypting laptop disks is risk sharing",
+        "Formally accepting the printer outage risk is risk retention",
+        "Buying insurance for laptops is risk modification"
+      ],
+      "answer": [0, 2],
+      "explain": "Stopping the activity is avoidance, and knowingly accepting a low risk is retention. Disk encryption is a control, so it is modification, not sharing. Insurance shares the risk rather than modifying it."
+    },
+    {
+      "id": "governance.d3.q033",
+      "lesson": "governance.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Why does ISO/IEC 27001 require the organization to compare its necessary controls with Annex A?",
+      "options": [
+        "To ensure only Annex A controls are used",
+        "To verify that no necessary controls have been overlooked",
+        "To calculate the residual risk score for each risk",
+        "To decide which interested parties are relevant"
+      ],
+      "answer": [1],
+      "explain": "Clause 6.1.3 uses Annex A as a cross-check to verify no necessary controls were omitted. Controls may come from any source, residual risk is determined by risk analysis after treatment, and interested parties are a clause 4.2 matter."
+    },
+    {
+      "id": "governance.d3.q034",
+      "lesson": "governance.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about selecting controls under ISO/IEC 27001 clause 6.1.3, select Yes if true.",
+      "statements": [
+        { "s": "An organization may design its own controls or take them from sources such as NIST or the CIS Controls.", "a": true },
+        { "s": "Annex A is an exhaustive list, so a control not in it cannot be part of the ISMS.", "a": false },
+        { "s": "A control listed in Annex A is mandatory for every certified organization because it appears there.", "a": false }
+      ],
+      "explain": "Controls come from any source. The standard notes Annex A is not exhaustive and that inclusion in Annex A does not make a control mandatory; controls are included when needed for risk treatment or requirements."
+    },
+    {
+      "id": "governance.d3.q035",
+      "lesson": "governance.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Under ISO/IEC 27001 clause 6.1.3, who must approve the risk treatment plan and accept residual information security risks?",
+      "options": [
+        "The risk owners",
+        "The certification body",
+        "The internal auditor",
+        "The data protection officer"
+      ],
+      "answer": [0],
+      "explain": "Clause 6.1.3 requires risk owners' approval of the treatment plan and acceptance of residual risks. Certification bodies and internal auditors evaluate the ISMS but do not own risks, and a data protection officer has a privacy role, not general risk ownership."
+    },
+    {
+      "id": "governance.d3.q036",
+      "lesson": "governance.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A stage 2 auditor reviews risk R14, 'theft of customer data through compromised remote access'. The risk register shows MFA as the chosen treatment and the SoA marks MFA as implemented. The ISMS manager signed the residual risk acceptance himself because the operations director, who owns the risk, was too busy.",
+      "stem": "What is the most likely finding?",
+      "options": [
+        "No issue, because the ISMS manager is responsible for the whole ISMS",
+        "A nonconformity, because the SoA must not list implemented controls",
+        "A nonconformity, because residual risk must be accepted by the risk owner",
+        "No issue, because residual risk acceptance is optional when controls are implemented"
+      ],
+      "answer": [2],
+      "explain": "Clause 6.1.3 requires risk owners to approve the plan and accept residual risk, which links decisions to business accountability. The ISMS manager signing for them does not satisfy this. The SoA must show implementation status, and residual risk acceptance is not optional."
+    },
+    {
+      "id": "governance.d3.q037",
+      "lesson": "governance.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement best describes residual risk?",
+      "options": [
+        "The risk level before any controls are considered",
+        "Risk that has been shared with an insurer",
+        "Risk that falls outside the ISMS scope",
+        "The risk that remains after risk treatment"
+      ],
+      "answer": [3],
+      "explain": "Residual risk is what remains after treatment and must be accepted by risk owners. The level before controls is often called inherent risk. Shared risk is one treatment option, and out-of-scope risk is a scoping matter."
+    },
+    {
+      "id": "governance.d3.q038",
+      "lesson": "governance.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which items must a Statement of Applicability contain? Select THREE.",
+      "options": [
+        "The necessary controls and the justification for including them",
+        "Whether each necessary control is implemented or not",
+        "The full likelihood and consequence score for every risk",
+        "Justification for excluding any Annex A control",
+        "The names of the certification body's auditors"
+      ],
+      "answer": [0, 1, 3],
+      "explain": "Clause 6.1.3 d) requires the SoA to list necessary controls with justification for inclusion, whether they are implemented, and justification for excluding Annex A controls. Risk scores belong in the risk register, and auditors' names are not SoA content."
+    },
+    {
+      "id": "governance.d3.q039",
+      "lesson": "governance.d3.4.01",
+      "objective": "d3.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A fully remote software company with no offices hosts all systems with a cloud provider. Its draft SoA marks Annex A 7.1 Physical security perimeters as 'excluded' with the justification left blank. Control 7.9 Security of assets off-premises is also excluded because 'we have no premises'.",
+      "stem": "What is the best advice?",
+      "options": [
+        "Remove 7.1 and 7.9 from the SoA entirely, because excluded controls should not be listed",
+        "Exclusions need a real justification; and 7.9 likely still applies because staff laptops are used off-premises",
+        "Mark both as implemented, because the cloud provider handles physical security",
+        "Exclusions are fine without justification for small organizations"
+      ],
+      "answer": [1],
+      "explain": "Every excluded Annex A control must stay in the SoA with a justification. With no offices, excluding 7.1 may be justifiable if explained, but laptops used at home are assets off-premises, so 7.9 is probably applicable. Claiming the provider's controls as implemented by the company is inaccurate."
+    },
+    {
+      "id": "governance.d3.q040",
+      "lesson": "governance.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An auditor wants to trace why control 8.13 Information backup is in place and whether it works. Which document links the treated risk to the control and its implementation status?",
+      "options": [
+        "The information security policy",
+        "The internal audit programme",
+        "The Statement of Applicability",
+        "The management review minutes"
+      ],
+      "answer": [2],
+      "explain": "The SoA records each control's justification (such as a treated risk) and implementation status, linking risk treatment to controls and evidence. The policy states intent, the audit programme schedules audits, and management review minutes record top-level decisions."
+    },
+    {
+      "id": "governance.d3.q041",
+      "lesson": "governance.d3.4.02",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the Statement of Applicability, select Yes if true.",
+      "statements": [
+        { "s": "Auditors commonly sample controls marked 'implemented' in the SoA and ask for evidence they operate.", "a": true },
+        { "s": "Once the certificate is issued, the SoA should be frozen until recertification.", "a": false },
+        { "s": "Controls in the risk treatment plan that are missing from the SoA are a typical audit finding.", "a": true }
+      ],
+      "explain": "The SoA is the auditor's map for sampling evidence. It must be kept current as risks, scope and controls change. Gaps between the risk treatment plan and the SoA are a classic nonconformity."
+    },
+    {
+      "id": "governance.d3.q042",
+      "lesson": "governance.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A payment processor must meet PCI DSS requirements that go beyond Annex A. How should these appear in its ISMS?",
+      "options": [
+        "They cannot be included, because the SoA may list only Annex A controls",
+        "They replace Annex A, so the SoA no longer needs to address Annex A controls",
+        "They must be certified separately under ISO/IEC 27002",
+        "They can be added to the SoA as additional necessary controls with their own justification"
+      ],
+      "answer": [3],
+      "explain": "27001 lets controls come from any source, so PCI DSS requirements can be added to the SoA with justification. Every Annex A control must still be included or excluded with reasons. ISO/IEC 27002 is guidance and is not certifiable."
+    },
+    {
+      "id": "governance.d3.q043",
+      "lesson": "governance.d3.4.03",
+      "objective": "d3.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A cloud provider wants additional guidance on cloud-specific information security controls to add to its SoA. Which standard is designed for this?",
+      "options": [
+        "ISO/IEC 27017",
+        "ISO/IEC 27005",
+        "ISO/IEC 27006",
+        "ISO 22301"
+      ],
+      "answer": [0],
+      "explain": "ISO/IEC 27017 is the code of practice for information security controls for cloud services. 27005 is risk management guidance, 27006 sets rules for certification bodies, and ISO 22301 is the business continuity management system standard."
+    },
+    {
+      "id": "governance.d3.q044",
+      "lesson": "governance.d3.5.01",
+      "objective": "d3.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "How many controls are in the organizational theme (clause 5) of ISO/IEC 27001:2022 Annex A?",
+      "options": [
+        "8",
+        "14",
+        "34",
+        "37"
+      ],
+      "answer": [3],
+      "explain": "Organizational controls number 37 (5.1-5.37). People controls are 8, physical controls are 14, and technological controls are 34, for a total of 93."
+    },
+    {
+      "id": "governance.d3.q045",
+      "lesson": "governance.d3.5.01",
+      "objective": "d3.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company defines processes for selecting, using, managing and exiting SaaS and IaaS providers according to its security requirements. Which Annex A control does this primarily implement?",
+      "options": [
+        "8.21 Security of network services",
+        "5.23 Information security for use of cloud services",
+        "8.30 Outsourced development",
+        "5.14 Information transfer"
+      ],
+      "answer": [1],
+      "explain": "5.23 covers acquisition, use, management and exit of cloud services. 8.21 secures network services, 8.30 governs outsourced development, and 5.14 covers rules for transferring information."
+    },
+    {
+      "id": "governance.d3.q046",
+      "lesson": "governance.d3.5.02",
+      "objective": "d3.5",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are people controls (Annex A clause 6) in ISO/IEC 27001:2022?",
+      "options": [
+        "Screening",
+        "Clear desk and clear screen",
+        "Remote working",
+        "User endpoint devices"
+      ],
+      "answer": [0, 2],
+      "explain": "Screening (6.1) and remote working (6.7) are people controls. Clear desk and clear screen is physical (7.7), and user endpoint devices is technological (8.1)."
+    },
+    {
+      "id": "governance.d3.q047",
+      "lesson": "governance.d3.5.02",
+      "objective": "d3.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An employee spots a suspicious USB stick in the car park and needs a quick, known way to tell the security team. Which Annex A control addresses this?",
+      "options": [
+        "5.26 Response to information security incidents",
+        "6.4 Disciplinary process",
+        "6.8 Information security event reporting",
+        "8.16 Monitoring activities"
+      ],
+      "answer": [2],
+      "explain": "6.8 requires a mechanism for personnel to report observed or suspected security events promptly. 5.26 covers how the organization responds once an incident is declared, 6.4 handles policy violations, and 8.16 is technical monitoring for anomalous behaviour."
+    },
+    {
+      "id": "governance.d3.q048",
+      "lesson": "governance.d3.5.03",
+      "objective": "d3.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A data centre installs CCTV and intrusion alarms that alert guards whenever someone enters a restricted area out of hours. Which control, new in the 2022 edition, does this implement?",
+      "options": [
+        "7.2 Physical entry",
+        "7.1 Physical security perimeters",
+        "7.6 Working in secure areas",
+        "7.4 Physical security monitoring"
+      ],
+      "answer": [3],
+      "explain": "7.4 Physical security monitoring is new in 2022 and requires premises to be continuously monitored for unauthorized physical access. 7.2 controls entry points, 7.1 defines perimeters, and 7.6 covers behaviour inside secure areas."
+    },
+    {
+      "id": "governance.d3.q049",
+      "lesson": "governance.d3.5.03",
+      "objective": "d3.5",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Annex A physical controls, select Yes if true.",
+      "statements": [
+        { "s": "Clear desk and clear screen is a physical control.", "a": true },
+        { "s": "The physical theme contains 14 controls.", "a": true },
+        { "s": "Information deletion is a physical control because it concerns storage media.", "a": false }
+      ],
+      "explain": "Clear desk and clear screen is 7.7, and the physical theme has 14 controls. Information deletion is 8.10, a technological control; storage media management is the separate physical control 7.10."
+    },
+    {
+      "id": "governance.d3.q050",
+      "lesson": "governance.d3.5.04",
+      "objective": "d3.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A development team requires peer review and approval of every pull request, automated testing, and a rollback plan before any change reaches production.",
+      "stem": "Which Annex A control best matches this practice?",
+      "options": [
+        "8.32 Change management",
+        "8.9 Configuration management",
+        "8.25 Secure development life cycle",
+        "8.31 Separation of development, test and production environments"
+      ],
+      "answer": [0],
+      "explain": "8.32 requires changes to information processing facilities and systems to follow change management procedures. 8.9 governs secure configurations, 8.25 sets rules for the overall secure development life cycle, and 8.31 keeps environments separate."
+    },
+    {
+      "id": "governance.d3.q051",
+      "lesson": "governance.d3.5.04",
+      "objective": "d3.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Annex A theme contains 8.2 Privileged access rights, 8.15 Logging and 8.24 Use of cryptography?",
+      "options": [
+        "Organizational controls",
+        "People controls",
+        "Technological controls",
+        "Physical controls"
+      ],
+      "answer": [2],
+      "explain": "Controls numbered 8.x belong to the technological theme (34 controls). Organizational controls are 5.x, people controls are 6.x, and physical controls are 7.x."
+    },
+    {
+      "id": "governance.d3.q052",
+      "lesson": "governance.d3.5.05",
+      "objective": "d3.5",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which of these controls were NEW in the 2022 edition of Annex A? Select THREE.",
+      "options": [
+        "Data leakage prevention",
+        "Protection against malware",
+        "Web filtering",
+        "Segregation of duties",
+        "Secure coding"
+      ],
+      "answer": [0, 2, 4],
+      "explain": "Data leakage prevention (8.12), web filtering (8.23) and secure coding (8.28) are among the 11 new controls. Protection against malware (8.7) and segregation of duties (5.3) existed in the 2013 edition and were carried forward."
+    },
+    {
+      "id": "governance.d3.q053",
+      "lesson": "governance.d3.5.05",
+      "objective": "d3.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "How did the structure of Annex A change from the 2013 edition to the 2022 edition?",
+      "options": [
+        "From 93 controls in 4 themes to 114 controls in 14 domains",
+        "From 114 controls in 14 domains to 93 controls in 4 themes",
+        "From 133 controls in 11 domains to 114 controls in 14 domains",
+        "From 114 controls in 14 domains to 93 controls in 5 cybersecurity functions"
+      ],
+      "answer": [1],
+      "explain": "The 2013 Annex A had 114 controls in 14 domains; 2022 has 93 controls in four themes (organizational, people, physical, technological). The 133/11 figures are from the 2005 edition, and the five functions (identify, protect, detect, respond, recover) are an attribute, not the grouping."
+    },
+    {
+      "id": "governance.d3.q054",
+      "lesson": "governance.d3.5.06",
+      "objective": "d3.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "In ISO/IEC 27002:2022, which values belong to the 'control type' attribute?",
+      "options": [
+        "Identify, protect, detect, respond and recover",
+        "Confidentiality, integrity and availability",
+        "Governance and ecosystem, protection, defence and resilience",
+        "Preventive, detective and corrective"
+      ],
+      "answer": [3],
+      "explain": "Control type is preventive, detective or corrective. Identify to recover are the cybersecurity concepts attribute, CIA are the information security properties attribute, and governance and ecosystem, protection, defence and resilience are the security domains attribute."
+    },
+    {
+      "id": "governance.d3.q055",
+      "lesson": "governance.d3.5.06",
+      "objective": "d3.5",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about control attributes, select Yes if true.",
+      "statements": [
+        { "s": "Attributes are defined in ISO/IEC 27002 and organizations may also create their own.", "a": true },
+        { "s": "Organizational, people, physical and technological are values of the control type attribute.", "a": false },
+        { "s": "The cybersecurity concepts attribute aligns with the five functions familiar from the NIST Cybersecurity Framework.", "a": true }
+      ],
+      "explain": "27002 defines five attributes and allows custom ones. The four themes are the grouping of controls, not attribute values; control type is preventive, detective or corrective. Cybersecurity concepts are identify, protect, detect, respond and recover."
+    }
+  ]
+}

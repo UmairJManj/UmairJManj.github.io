@@ -1,0 +1,367 @@
+{
+  "exam": "sc-900",
+  "domain": "d2",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-900.d2.q047",
+      "lesson": "sc-900.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Entra ID feature evaluates signals such as user, location, device and application to decide whether to allow, block or require MFA for a sign-in?",
+      "options": [
+        "Conditional Access",
+        "Microsoft Entra Connect Health",
+        "Entitlement management",
+        "Administrative units"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Conditional Access is the if-then policy engine that combines signals to make access decisions. Connect Health monitors hybrid sync, entitlement management handles access requests, and administrative units limit admin role scope."
+    },
+    {
+      "id": "sc-900.d2.q048",
+      "lesson": "sc-900.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE can be used as conditions or assignments in a Conditional Access policy? Select THREE.",
+      "options": [
+        "Sign-in risk level",
+        "Device platform",
+        "The user's mailbox size",
+        "Location based on IP address or country/region",
+        "The number of groups the user owns"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Conditional Access can evaluate sign-in risk (from ID Protection), device platforms and locations such as named IP ranges or countries. Mailbox size and group ownership counts are not Conditional Access signals."
+    },
+    {
+      "id": "sc-900.d2.q049",
+      "lesson": "sc-900.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Conditional Access, select Yes if true.",
+      "statements": [
+        {
+          "s": "Conditional Access policies are enforced after first-factor authentication is completed.",
+          "a": true
+        },
+        {
+          "s": "If one applicable policy blocks access and another grants it with MFA, the user is granted access after MFA.",
+          "a": false
+        },
+        {
+          "s": "Emergency access accounts should usually be excluded from Conditional Access policies to avoid tenant lockout.",
+          "a": true
+        }
+      ],
+      "explain": "Conditional Access runs after the first factor succeeds. When multiple policies apply, all must be satisfied and a Block policy wins. Microsoft recommends excluding break-glass accounts so a misconfigured policy can't lock out all administrators."
+    },
+    {
+      "id": "sc-900.d2.q050",
+      "lesson": "sc-900.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Woodgrove Bank has employees only in New Zealand and Australia. It has seen password spray attempts against its tenant from other countries. Management wants to stop sign-ins from all other countries while still allowing staff to sign in normally from the two countries. Woodgrove has Microsoft Entra ID P1.",
+      "stem": "What should the administrator configure?",
+      "options": [
+        "Security defaults with a country exclusion",
+        "Smart lockout with a lower threshold",
+        "A named location for allowed countries and a Conditional Access policy that blocks all other locations",
+        "A custom banned password list containing the attackers' IP addresses"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Named locations with country/region selection plus a Block policy for all other locations meet the requirement with P1. Security defaults have no location settings. Smart lockout reduces guessing but doesn't restrict countries, and banned password lists hold password terms, not IP addresses."
+    },
+    {
+      "id": "sc-900.d2.q051",
+      "lesson": "sc-900.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A user signs in to a cloud app protected by Conditional Access. Put the steps in order.",
+      "options": [
+        "The user completes first-factor authentication with Microsoft Entra ID",
+        "Conditional Access collects signals such as user, location, device and app",
+        "Applicable policies are evaluated and a decision is made",
+        "The user satisfies required controls such as MFA, or access is blocked",
+        "A token is issued and the user reaches the app"
+      ],
+      "explain": "Conditional Access is evaluated after first-factor authentication. It gathers signals, evaluates every policy that applies, enforces the resulting controls (or blocks), and only then is a token issued for the app."
+    },
+    {
+      "id": "sc-900.d2.q052",
+      "lesson": "sc-900.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the minimum Microsoft Entra ID licence required to create Conditional Access policies?",
+      "options": [
+        "Microsoft Entra ID Free",
+        "Microsoft Entra ID Governance",
+        "Microsoft Entra Workload ID Premium",
+        "Microsoft Entra ID P1"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Conditional Access requires Microsoft Entra ID P1 (included in plans such as Microsoft 365 E3 and Business Premium). Free tenants use security defaults. ID Governance is an add-on for governance features, and Workload ID Premium extends policies to workload identities."
+    },
+    {
+      "id": "sc-900.d2.q053",
+      "lesson": "sc-900.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are session controls, rather than grant controls, in Conditional Access? Select TWO.",
+      "options": [
+        "Sign-in frequency",
+        "Require device to be marked as compliant",
+        "Use Conditional Access App Control",
+        "Require multifactor authentication",
+        "Require terms of use"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Sign-in frequency and Conditional Access App Control shape the session after sign-in. Requiring a compliant device, MFA or acceptance of terms of use are grant controls that must be met before access is allowed."
+    },
+    {
+      "id": "sc-900.d2.q054",
+      "lesson": "sc-900.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Litware lets contractors use unmanaged personal laptops to reach SharePoint Online and other cloud apps. Security wants contractors' browser sessions monitored in real time and file downloads blocked on these devices, while still allowing access.",
+      "stem": "Which Conditional Access control should Litware use?",
+      "options": [
+        "Block access grant control",
+        "Require Microsoft Entra hybrid joined device grant control",
+        "Persistent browser session control",
+        "Conditional Access App Control session control with Microsoft Defender for Cloud Apps"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Conditional Access App Control routes the session through Defender for Cloud Apps as a reverse proxy, allowing real-time monitoring and blocking downloads. Block access denies access entirely, hybrid join can't be met by personal laptops, and persistent browser session only controls staying signed in."
+    },
+    {
+      "id": "sc-900.d2.q055",
+      "lesson": "sc-900.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Before enforcing a new Conditional Access policy for all users, an administrator wants to see its impact in sign-in logs without affecting users. Which policy state should be used?",
+      "options": [
+        "Report-only",
+        "On",
+        "Off",
+        "Disabled for guests"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Report-only mode evaluates the policy and records the result in sign-in logs without enforcing it. On enforces the policy, Off doesn't evaluate it at all, and 'disabled for guests' isn't a policy state."
+    },
+    {
+      "id": "sc-900.d2.q056",
+      "lesson": "sc-900.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "You are creating a Conditional Access policy with Microsoft Graph. The policy must require multifactor authentication for all users signing in to all apps. Complete the grant controls.",
+      "code": "{\n  \"displayName\": \"Require MFA for all users\",\n  \"state\": \"enabled\",\n  \"conditions\": {\n    \"users\": { \"includeUsers\": [\"All\"] },\n    \"applications\": { \"includeApplications\": [\"All\"] },\n    \"clientAppTypes\": [\"all\"]\n  },\n  \"grantControls\": {\n    \"operator\": \"OR\",\n    \"builtInControls\": [\"____\"]\n  }\n}",
+      "options": [
+        "mfa",
+        "compliantDevice",
+        "block",
+        "passwordChange"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "In the Graph conditionalAccessPolicy resource, builtInControls value mfa means Require multifactor authentication. compliantDevice requires an Intune-compliant device, block denies access, and passwordChange forces a password change (used for user risk policies)."
+    },
+    {
+      "id": "sc-900.d2.q057",
+      "lesson": "sc-900.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "You want a Conditional Access policy created through Microsoft Graph to be evaluated and logged but not enforced. Complete the property value.",
+      "code": "{\n  \"displayName\": \"Block legacy authentication - pilot\",\n  \"state\": \"____\",\n  \"conditions\": {\n    \"users\": { \"includeUsers\": [\"All\"] },\n    \"applications\": { \"includeApplications\": [\"All\"] },\n    \"clientAppTypes\": [\"exchangeActiveSync\", \"other\"]\n  },\n  \"grantControls\": { \"operator\": \"OR\", \"builtInControls\": [\"block\"] }\n}",
+      "options": [
+        "disabled",
+        "enabledForReportingButNotEnforced",
+        "enabled",
+        "auditOnly"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Graph state value enabledForReportingButNotEnforced is report-only mode: the policy is evaluated and results logged, but not enforced. enabled enforces it, disabled skips evaluation, and auditOnly isn't a valid value."
+    },
+    {
+      "id": "sc-900.d2.q058",
+      "lesson": "sc-900.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An auditor needs to view all settings in the Microsoft Entra admin center and Microsoft 365 admin center but must not be able to change anything. Which built-in role follows least privilege?",
+      "options": [
+        "Global Administrator",
+        "Security Administrator",
+        "Global Reader",
+        "User Administrator"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Global Reader is the read-only counterpart of Global Administrator and can view settings across admin centers without editing. Global Administrator and Security Administrator can make changes, and User Administrator manages users and groups."
+    },
+    {
+      "id": "sc-900.d2.q059",
+      "lesson": "sc-900.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Entra administrative roles, select Yes if true.",
+      "statements": [
+        {
+          "s": "Microsoft recommends having fewer than five Global Administrators.",
+          "a": true
+        },
+        {
+          "s": "You can edit the permissions included in a built-in Microsoft Entra role.",
+          "a": false
+        },
+        {
+          "s": "Microsoft recommends keeping cloud-only emergency access accounts for when normal administrators are locked out.",
+          "a": true
+        }
+      ],
+      "explain": "Best practice is fewer than five Global Administrators and two cloud-only emergency access accounts. Built-in role permissions are fixed; if none fit, create a custom role."
+    },
+    {
+      "id": "sc-900.d2.q060",
+      "lesson": "sc-900.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A helpdesk team must reset passwords for non-administrator users. Which role provides this with the least privilege?",
+      "options": [
+        "Helpdesk Administrator",
+        "Privileged Role Administrator",
+        "Global Administrator",
+        "Exchange Administrator"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Helpdesk Administrator can reset passwords for non-administrators and invalidate refresh tokens. Privileged Role Administrator manages role assignments, Global Administrator is far broader than needed, and Exchange Administrator manages Exchange Online."
+    },
+    {
+      "id": "sc-900.d2.q061",
+      "lesson": "sc-900.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Contoso wants its Paris helpdesk to manage only users in the Paris office, not users in other offices. What should be used to limit the scope of the helpdesk's role assignment?",
+      "options": [
+        "A management group",
+        "A dynamic security group",
+        "A Conditional Access named location",
+        "An administrative unit"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Administrative units are containers that restrict a Microsoft Entra role's scope to a subset of users, groups or devices. Management groups scope Azure RBAC, dynamic groups manage membership not admin scope, and named locations are Conditional Access conditions."
+    },
+    {
+      "id": "sc-900.d2.q062",
+      "lesson": "sc-900.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A Microsoft Entra role assignment is made up of which THREE elements? Select THREE.",
+      "options": [
+        "Security principal",
+        "Role definition",
+        "Conditional Access policy",
+        "Scope",
+        "Authentication strength"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "explain": "A role assignment attaches a role definition (the permissions) to a security principal (user, group or service principal) at a scope (tenant, administrative unit or resource). Conditional Access policies and authentication strengths control sign-in, not role assignments."
+    },
+    {
+      "id": "sc-900.d2.q063",
+      "lesson": "sc-900.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A cloud engineer is assigned the Owner role on an Azure subscription. She tries to create new users in Microsoft Entra ID and gets an access denied error. Her manager is confused because 'Owner' sounds like full control.",
+      "stem": "What explains the error?",
+      "options": [
+        "Owner is an Azure RBAC role for Azure resources and doesn't grant Microsoft Entra directory permissions",
+        "Owner permissions apply only after the engineer activates them in Conditional Access",
+        "Owner can create users only in an external tenant",
+        "The subscription must be added to an administrative unit first"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Azure RBAC roles such as Owner, Contributor and Reader manage Azure resources through Azure Resource Manager; Microsoft Entra roles such as User Administrator manage directory objects. Conditional Access doesn't activate roles, and administrative units hold directory objects, not subscriptions."
+    },
+    {
+      "id": "sc-900.d2.q064",
+      "lesson": "sc-900.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "No built-in Microsoft Entra role matches the exact app registration permissions a team needs. What should the administrator create?",
+      "options": [
+        "A custom Microsoft Entra role",
+        "An Azure custom role in the subscription",
+        "A Conditional Access policy",
+        "An access package"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Custom Microsoft Entra roles are built from the same permission set used by built-in roles (and need P1 for assigned users). Azure custom roles can't contain Entra permissions. Conditional Access controls sign-in, and access packages bundle resource access, not admin permissions."
+    }
+  ]
+}

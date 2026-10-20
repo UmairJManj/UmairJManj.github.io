@@ -1,0 +1,518 @@
+{
+  "exam": "sc-900",
+  "domain": "d3",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-900.d3a.q033",
+      "lesson": "sc-900.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Where must Azure Bastion (Basic, Standard or Premium SKU) be deployed?",
+      "options": [
+        "On each virtual machine as a VM extension",
+        "In a dedicated subnet named AzureBastionSubnet in the virtual network",
+        "In the GatewaySubnet alongside the VPN gateway",
+        "In any subnet that already contains virtual machines"
+      ],
+      "answer": [1],
+      "explain": "Bastion needs its own subnet named AzureBastionSubnet, sized /26 or larger. It isn't a VM extension, GatewaySubnet is reserved for VPN/ExpressRoute gateways, and it can't share a subnet with workload VMs."
+    },
+    {
+      "id": "sc-900.d3a.q034",
+      "lesson": "sc-900.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Litware's auditors require that every administrative RDP and SSH session to production VMs is recorded for later review. Litware also wants the Bastion deployment itself to have no public IP address.",
+      "stem": "Which Azure Bastion SKU should Litware choose?",
+      "options": [
+        "Developer",
+        "Basic",
+        "Standard",
+        "Premium"
+      ],
+      "answer": [3],
+      "explain": "Session recording and private-only deployment are Premium features. Standard adds native client support, shareable links and IP-based connection but not recording. Basic offers browser RDP/SSH only, and Developer is a free shared SKU not meant for production."
+    },
+    {
+      "id": "sc-900.d3a.q035",
+      "lesson": "sc-900.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "An engineer wants to use their local SSH client, through the Azure CLI, to connect to a VM via Azure Bastion Standard. Complete the command.",
+      "code": "az network bastion ____ --name bas-hub --resource-group rg-hub --target-resource-id $vmId --auth-type ssh-key --username azureuser --ssh-key ~/.ssh/id_rsa",
+      "options": ["ssh", "rdp", "tunnel", "connect"],
+      "answer": [0],
+      "explain": "az network bastion ssh opens an SSH session through Bastion with the native client, which requires Standard or Premium. The rdp subcommand is for Windows RDP via mstsc, tunnel creates a port tunnel and doesn't take SSH auth options, and connect isn't a valid subcommand."
+    },
+    {
+      "id": "sc-900.d3a.q036",
+      "lesson": "sc-900.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE object types can Azure Key Vault store and manage? Select THREE.",
+      "options": [
+        "Secrets",
+        "Cryptographic keys",
+        "TLS/SSL certificates",
+        "Network security group rules",
+        "Conditional Access policies"
+      ],
+      "answer": [0, 1, 2],
+      "explain": "Key Vault manages secrets (passwords, connection strings), keys (encryption and signing) and certificates. NSG rules belong to network security groups, and Conditional Access policies are configured in Microsoft Entra ID."
+    },
+    {
+      "id": "sc-900.d3a.q037",
+      "lesson": "sc-900.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A web app must read a database connection string from Azure Key Vault without any credential stored in its configuration. What should the app use to authenticate to Key Vault?",
+      "options": [
+        "A shared access signature (SAS) token",
+        "The storage account access key",
+        "A managed identity in Microsoft Entra ID",
+        "A local account stored in the app's settings"
+      ],
+      "answer": [2],
+      "explain": "Key Vault authenticates callers through Microsoft Entra ID, and a managed identity gives the app an Entra identity with no secret to store. SAS tokens and account keys are storage credentials, and a local account would put a credential back in configuration."
+    },
+    {
+      "id": "sc-900.d3a.q038",
+      "lesson": "sc-900.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Key Vault, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "Soft-delete is enabled by default on new key vaults and cannot be disabled once enabled.", "a": true },
+        { "s": "Purge protection is enabled by default on every new key vault.", "a": false },
+        { "s": "The Premium tier supports keys protected by hardware security modules (HSMs).", "a": true }
+      ],
+      "explain": "Soft-delete is on by default and can't be turned off, with 7-90 days retention. Purge protection is optional and off by default. Premium adds HSM-protected keys; Standard uses software-protected keys."
+    },
+    {
+      "id": "sc-900.d3a.q039",
+      "lesson": "sc-900.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "You must grant an application permission to read secret values in a key vault that uses the Azure RBAC permission model, following least privilege. Which built-in role should you assign?",
+      "options": [
+        "Key Vault Reader",
+        "Key Vault Secrets User",
+        "Key Vault Administrator",
+        "Key Vault Secrets Officer"
+      ],
+      "answer": [1],
+      "explain": "Key Vault Secrets User can read secret contents and nothing more. Key Vault Reader sees metadata but not secret values. Secrets Officer can also create and delete secrets, and Administrator has full data-plane control, both more than needed."
+    },
+    {
+      "id": "sc-900.d3a.q040",
+      "lesson": "sc-900.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure CLI command so deleted vaults and objects cannot be permanently purged until the retention period ends.",
+      "code": "az keyvault create --name kv-contoso-prod --resource-group rg-sec --location westeurope --retention-days 90 ____ true",
+      "options": [
+        "--enable-purge-protection",
+        "--enable-soft-delete",
+        "--enable-rbac-authorization",
+        "--enabled-for-disk-encryption"
+      ],
+      "answer": [0],
+      "explain": "--enable-purge-protection true stops anyone purging deleted items before retention ends. Soft-delete is already on by default and only makes items recoverable, RBAC authorization sets the permission model, and disk-encryption access lets Azure Disk Encryption fetch secrets."
+    },
+    {
+      "id": "sc-900.d3a.q041",
+      "lesson": "sc-900.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Microsoft Defender for Cloud is best described as which type of solution?",
+      "options": [
+        "A security information and event management (SIEM) solution",
+        "A cloud access security broker (CASB)",
+        "An identity provider (IdP)",
+        "A cloud-native application protection platform (CNAPP)"
+      ],
+      "answer": [3],
+      "explain": "Defender for Cloud is a CNAPP that combines DevSecOps, CSPM and CWPP. Microsoft Sentinel is the SIEM, Defender for Cloud Apps is the CASB, and Microsoft Entra ID is the identity provider."
+    },
+    {
+      "id": "sc-900.d3a.q042",
+      "lesson": "sc-900.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE capability areas does Microsoft Defender for Cloud combine? Select THREE.",
+      "options": [
+        "DevSecOps (code-to-cloud security)",
+        "Cloud security posture management (CSPM)",
+        "Mobile device management (MDM)",
+        "Cloud workload protection (CWPP)",
+        "Identity governance and access reviews"
+      ],
+      "answer": [0, 1, 3],
+      "explain": "Defender for Cloud's CNAPP pillars are DevSecOps, CSPM and CWPP. Mobile device management is handled by Microsoft Intune, and access reviews are part of Microsoft Entra ID Governance."
+    },
+    {
+      "id": "sc-900.d3a.q043",
+      "lesson": "sc-900.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A SOC wants Defender for Cloud security alerts correlated with logs from firewalls, Microsoft 365 and on-premises servers so analysts can hunt across all of them. Where should the alerts be sent?",
+      "options": [
+        "Microsoft Sentinel",
+        "Azure Key Vault",
+        "Microsoft Purview Compliance Manager",
+        "Azure Firewall Manager"
+      ],
+      "answer": [0],
+      "explain": "Defender for Cloud alerts can be exported to a SIEM/SOAR such as Microsoft Sentinel, which correlates many data sources and supports hunting. Key Vault stores secrets, Compliance Manager tracks regulatory compliance, and Firewall Manager manages firewall policies."
+    },
+    {
+      "id": "sc-900.d3a.q044",
+      "lesson": "sc-900.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Defender for Cloud coverage, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "Defender for Cloud can assess AWS accounts and GCP projects after you add a connector.", "a": true },
+        { "s": "Defender for Cloud can protect only resources hosted in Azure.", "a": false },
+        { "s": "Defender for Cloud can connect to GitHub repositories to find issues such as infrastructure-as-code misconfigurations.", "a": true }
+      ],
+      "explain": "Connectors bring AWS and GCP into the same posture view, on-premises machines are covered through Azure Arc or Defender for Endpoint, so it isn't Azure-only. DevOps security connects Azure DevOps, GitHub and GitLab to surface IaC and secret findings."
+    },
+    {
+      "id": "sc-900.d3a.q045",
+      "lesson": "sc-900.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Microsoft recommends onboarding on-premises Windows and Linux servers in which way so they receive the full set of Defender for Servers features?",
+      "options": [
+        "As Microsoft Entra joined devices",
+        "As Azure Arc-enabled servers",
+        "As members of an application security group",
+        "Through an AWS connector"
+      ],
+      "answer": [1],
+      "explain": "Azure Arc projects non-Azure servers into Azure Resource Manager, so Defender for Cloud plans and recommendations apply fully. Entra join is a device identity state, ASGs group NICs for NSG rules, and an AWS connector is for AWS accounts."
+    },
+    {
+      "id": "sc-900.d3a.q046",
+      "lesson": "sc-900.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO capabilities are included in free Foundational CSPM in Microsoft Defender for Cloud? Select TWO.",
+      "options": [
+        "Secure score",
+        "Attack path analysis",
+        "Security recommendations based on the Microsoft cloud security benchmark",
+        "Agentless VM vulnerability scanning",
+        "Risk hunting with cloud security explorer"
+      ],
+      "answer": [0, 2],
+      "explain": "Foundational CSPM includes secure score and MCSB-based recommendations at no cost. Attack path analysis, agentless VM scanning and cloud security explorer all require the paid Defender CSPM plan."
+    },
+    {
+      "id": "sc-900.d3a.q047",
+      "lesson": "sc-900.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Adatum has hundreds of recommendations in Defender for Cloud. The security lead wants to see which weaknesses an attacker could chain together, for example an internet-exposed VM with a known vulnerability that has permissions to a storage account holding sensitive data, so the team can fix those first.",
+      "stem": "Which capability should Adatum use, and which plan does it need?",
+      "options": [
+        "Secure score, in Foundational CSPM",
+        "Regulatory compliance dashboard, in Foundational CSPM",
+        "Attack path analysis, in Defender CSPM",
+        "File integrity monitoring, in Defender for Servers Plan 1"
+      ],
+      "answer": [2],
+      "explain": "Attack path analysis maps exploitable chains toward critical assets and requires Defender CSPM. Secure score measures posture without showing paths, regulatory compliance also needs a paid plan, and FIM is a Plan 2 server feature that detects file changes."
+    },
+    {
+      "id": "sc-900.d3a.q048",
+      "lesson": "sc-900.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the main purpose of cloud security posture management (CSPM)?",
+      "options": [
+        "Detecting malware running on virtual machines in real time",
+        "Continuously identifying misconfigurations and weaknesses and guiding you to fix them",
+        "Collecting and correlating security logs from every source for threat hunting",
+        "Encrypting data stored in cloud storage accounts"
+      ],
+      "answer": [1],
+      "explain": "CSPM assesses configurations and gives hardening guidance to prevent breaches. Real-time malware detection is workload protection (CWPP), log correlation and hunting is a SIEM function, and encryption is handled by storage and Key Vault features."
+    },
+    {
+      "id": "sc-900.d3a.q049",
+      "lesson": "sc-900.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Defender CSPM, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "Defender CSPM can scan VMs for vulnerabilities and secrets without installing an agent.", "a": true },
+        { "s": "Defender CSPM includes governance rules to assign owners and due dates for remediation at scale.", "a": true },
+        { "s": "Defender CSPM is required to see a secure score.", "a": false }
+      ],
+      "explain": "Agentless VM vulnerability and secrets scanning and governance rules are Defender CSPM features. Secure score is already part of free Foundational CSPM, so the paid plan isn't needed for it."
+    },
+    {
+      "id": "sc-900.d3a.q050",
+      "lesson": "sc-900.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which security standard does Microsoft Defender for Cloud apply by default when you enable it on an Azure subscription?",
+      "options": [
+        "PCI DSS 4.0",
+        "ISO 27001:2022",
+        "NIST SP 800-53",
+        "Microsoft cloud security benchmark (MCSB)"
+      ],
+      "answer": [3],
+      "explain": "MCSB is the default standard and the basis of recommendations and secure score. PCI DSS, ISO 27001 and NIST SP 800-53 are regulatory standards you can add after enabling a qualifying paid Defender plan."
+    },
+    {
+      "id": "sc-900.d3a.q051",
+      "lesson": "sc-900.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order to show how Defender for Cloud turns a security standard into action.",
+      "options": [
+        "A security standard such as MCSB is assigned to the subscription",
+        "Defender for Cloud continuously assesses resources against the standard's controls",
+        "A resource that fails a control is marked unhealthy",
+        "A security recommendation with remediation steps is generated",
+        "The resource owner remediates the issue and the resource becomes healthy"
+      ],
+      "explain": "Standards define controls, resources are assessed against them, failures mark resources unhealthy, Defender for Cloud generates recommendations with remediation steps, and fixing them returns the resource to healthy and improves secure score."
+    },
+    {
+      "id": "sc-900.d3a.q052",
+      "lesson": "sc-900.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An administrator wants to stop anyone from creating new storage accounts that violate a Defender for Cloud recommendation, rather than fixing them after deployment. Which option should they use on the recommendation?",
+      "options": [
+        "Deny",
+        "Exempt",
+        "Fix",
+        "Assign owner"
+      ],
+      "answer": [0],
+      "explain": "Deny (like Enforce) uses Azure Policy to stop noncompliant resources being created. Exempt excludes a resource from the recommendation, Fix remediates resources that already exist, and assigning an owner is governance that tracks remediation without blocking deployments."
+    },
+    {
+      "id": "sc-900.d3a.q053",
+      "lesson": "sc-900.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Woodgrove Bank must show auditors how its Azure and AWS environments measure against PCI DSS. Only the free Foundational CSPM is enabled today. The security team opens the regulatory compliance dashboard but cannot add PCI DSS.",
+      "stem": "What must Woodgrove do first?",
+      "options": [
+        "Assign the Security Reader role to the auditors",
+        "Enable at least one paid Defender for Cloud plan, such as Defender CSPM",
+        "Raise the subscription's secure score above 80 percent",
+        "Create a Key Vault to store the PCI DSS assessment results"
+      ],
+      "answer": [1],
+      "explain": "Adding regulatory standards such as PCI DSS requires a paid Defender for Cloud plan (any except Servers Plan 1 or APIs Plan 1); Defender CSPM qualifies. Role assignments, secure score values and Key Vault don't unlock compliance standards."
+    },
+    {
+      "id": "sc-900.d3a.q054",
+      "lesson": "sc-900.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure Resource Graph query to list Defender for Cloud recommendation assessments.",
+      "code": "securityresources\n| where type == \"microsoft.security/____\"\n| project id, name, properties.displayName, properties.status.code",
+      "options": ["assessments", "alerts", "pricings", "securescores"],
+      "answer": [0],
+      "explain": "Recommendations are stored as microsoft.security/assessments resources, each with a display name and a status code such as Healthy or Unhealthy. Alerts are threat detections, pricings hold plan settings, and securescores holds the score values rather than individual recommendations."
+    },
+    {
+      "id": "sc-900.d3a.q055",
+      "lesson": "sc-900.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In Microsoft Defender for Cloud, what does a higher secure score indicate?",
+      "options": [
+        "More security alerts were raised in the last 24 hours",
+        "More Defender plans are enabled on the subscription",
+        "A lower level of identified security risk",
+        "More resources are covered by Azure DDoS Protection"
+      ],
+      "answer": [2],
+      "explain": "Secure score summarizes posture: a higher score means fewer identified risks. It isn't a count of alerts, enabled plans or DDoS-protected resources, and the 'Enable enhanced security features' control is worth no points."
+    },
+    {
+      "id": "sc-900.d3a.q056",
+      "lesson": "sc-900.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso's 'Secure management ports' control has three recommendations across 20 VMs. The team fixes two of the recommendations on all 20 VMs, but the third recommendation remains unhealthy on five VMs.",
+      "stem": "What is true about Contoso's classic secure score for this control?",
+      "options": [
+        "Contoso receives the control's full maximum points",
+        "Contoso does not yet receive the control's full maximum points",
+        "The control is removed from the score until all VMs are healthy",
+        "The score drops to zero for the whole subscription"
+      ],
+      "answer": [1],
+      "explain": "A control's full points are earned only when all of its recommendations are remediated for all resources, so Contoso still has a potential score increase on this control. Unfinished controls aren't removed from the calculation, and the subscription's overall score doesn't drop to zero."
+    },
+    {
+      "id": "sc-900.d3a.q057",
+      "lesson": "sc-900.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about secure score in Defender for Cloud are true? Select TWO.",
+      "options": [
+        "Recommendations in preview do not affect the secure score",
+        "The secure score can be queried with Azure Resource Graph",
+        "Risk prioritization of recommendations changes the classic secure score",
+        "Only recommendations from regulatory compliance standards affect the score"
+      ],
+      "answer": [0, 1],
+      "explain": "Preview recommendations don't count until generally available, and scores can be queried with Azure Resource Graph or the REST API. Risk prioritization doesn't affect the classic score, and the score is based on built-in MCSB recommendations, not regulatory standards."
+    },
+    {
+      "id": "sc-900.d3a.q058",
+      "lesson": "sc-900.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Defender for Cloud plan can scan files uploaded to a blob container for malware?",
+      "options": [
+        "Defender for Key Vault",
+        "Defender for Resource Manager",
+        "Defender for App Service",
+        "Defender for Storage"
+      ],
+      "answer": [3],
+      "explain": "Defender for Storage provides malware scanning of uploads and detects suspicious storage access. Defender for Key Vault watches vault access, Defender for Resource Manager watches management operations, and Defender for App Service protects web apps."
+    },
+    {
+      "id": "sc-900.d3a.q059",
+      "lesson": "sc-900.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company has only free Foundational CSPM enabled. It now wants to receive security alerts when a VM shows signs of active compromise. What should it do?",
+      "options": [
+        "Enable a cloud workload protection plan such as Defender for Servers",
+        "Add the ISO 27001 standard to the regulatory compliance dashboard",
+        "Deploy Azure Bastion in the VM's virtual network",
+        "Remediate every recommendation to reach a 100 percent secure score"
+      ],
+      "answer": [0],
+      "explain": "Threat-detection alerts come from paid workload protection plans. Compliance standards and secure score are posture features that don't detect active attacks, and Bastion secures admin access but doesn't raise threat alerts."
+    },
+    {
+      "id": "sc-900.d3a.q060",
+      "lesson": "sc-900.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure CLI command to enable Defender for Servers Plan 2 on the current subscription.",
+      "code": "az security pricing create --name VirtualMachines --tier ____ --subplan P2",
+      "options": ["standard", "free", "premium", "enhanced"],
+      "answer": [0],
+      "explain": "Defender plans are enabled by setting a pricing tier of standard (paid); free turns the plan off. premium and enhanced aren't valid --tier values, even though the paid plans are described as enhanced security features."
+    },
+    {
+      "id": "sc-900.d3a.q061",
+      "lesson": "sc-900.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Defender for Cloud workload protection plans, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "Defender for Resource Manager detects suspicious management operations against Azure resources.", "a": true },
+        { "s": "Defender for Containers protects Kubernetes clusters, including runtime threat detection.", "a": true },
+        { "s": "Defender for Key Vault stores secrets on behalf of applications.", "a": false }
+      ],
+      "explain": "Defender for Resource Manager watches the management layer, and Defender for Containers covers Kubernetes hardening, image vulnerabilities and runtime threats. Defender for Key Vault detects unusual access to vaults; storing secrets is the job of Azure Key Vault itself."
+    },
+    {
+      "id": "sc-900.d3a.q062",
+      "lesson": "sc-900.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO features are included in Defender for Servers Plan 2 but NOT in Plan 1? Select TWO.",
+      "options": [
+        "Integration with Microsoft Defender for Endpoint",
+        "Just-in-time VM access",
+        "File integrity monitoring",
+        "Endpoint detection and response (EDR)"
+      ],
+      "answer": [1, 2],
+      "explain": "JIT VM access and file integrity monitoring are Plan 2 additions, along with agentless scanning and premium vulnerability management. Defender for Endpoint integration, which provides EDR, is already included in Plan 1."
+    },
+    {
+      "id": "sc-900.d3a.q063",
+      "lesson": "sc-900.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Proseware's VMs must keep RDP closed by default. Administrators occasionally need RDP access for a few hours, only from their own IP address, and the port must close automatically afterwards. Each request must be checked against the admin's Azure RBAC permissions on the VM.",
+      "stem": "Which feature meets these requirements?",
+      "options": [
+        "Azure DDoS IP Protection",
+        "A WAF custom rule on Application Gateway",
+        "Just-in-time VM access in Defender for Servers Plan 2",
+        "Azure Firewall threat intelligence filtering"
+      ],
+      "answer": [2],
+      "explain": "JIT keeps management ports locked with NSG deny rules, checks RBAC on request, opens the port only for the requester's IP and approved time, then restores the rules. DDoS Protection, WAF and threat intelligence filtering don't grant time-bound port access."
+    }
+  ]
+}

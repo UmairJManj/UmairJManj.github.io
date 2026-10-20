@@ -1,0 +1,1408 @@
+{
+  "exam": "sc-500",
+  "domain": "d1",
+  "lessons": [
+    {
+      "id": "sc-500.d1.1.01",
+      "objective": "d1.1",
+      "seq": 1,
+      "title": "PIM: eligible vs active assignments",
+      "short": "Privileged Identity Management (PIM) replaces standing admin rights with just-in-time access. A user gets an eligible assignment and must activate the role, for a limited time, when they need it. PIM covers Microsoft Entra roles, Azure resource roles and PIM for Groups.",
+      "deep": "Standing privilege is the biggest identity risk in a cloud tenant: if a permanent Global Administrator or subscription Owner is phished, the attacker has everything. **Microsoft Entra Privileged Identity Management (PIM)** fixes this with **just-in-time (JIT)** and **time-bound** access.\n\nTwo assignment types:\n- **Eligible**: the user holds no permissions until they *activate* the role in **My roles**, often with MFA, a justification and approval.\n- **Active**: permissions apply immediately, like a classic assignment, but can still be time-bound with a start and end date.\n\nPIM manages three kinds of targets:\n- **Microsoft Entra roles** (Global Administrator, Security Administrator...)\n- **Azure resource roles** (Owner, Contributor... at management group, subscription, resource group or resource scope)\n- **PIM for Groups** (JIT membership or ownership of a group)\n\n**Licensing:** PIM needs **Microsoft Entra ID P2** or **Microsoft Entra ID Governance** for every user who has eligible or time-bound assignments, and for approvers. If the licence lapses, eligible assignments are removed and active time-bound ones become permanent.\n\nTo manage PIM for Entra roles you need Privileged Role Administrator; for Azure resource roles you need Owner or User Access Administrator on that scope.",
+      "terms": [
+        {
+          "t": "Eligible assignment",
+          "d": "User can activate the role when needed; no permissions until activation."
+        },
+        {
+          "t": "Active assignment",
+          "d": "Permissions apply immediately; may be permanent or time-bound."
+        },
+        {
+          "t": "Just-in-time (JIT)",
+          "d": "Granting privilege only for the window it is actually needed."
+        },
+        {
+          "t": "PIM for Groups",
+          "d": "JIT membership or ownership of a Microsoft Entra security group."
+        }
+      ],
+      "trap": "Exams contrast PIM with Conditional Access or access reviews; only PIM makes a role eligible and time-bound, and it needs Entra ID P2/Governance, not P1.",
+      "example": "Contoso makes three engineers eligible for subscription Owner; each activates it for two hours during a change window instead of holding it permanently.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Eligible",
+          "Request in My roles",
+          "MFA + justification",
+          "Approval",
+          "Active (time-bound)"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.1.02",
+      "objective": "d1.1",
+      "seq": 2,
+      "title": "PIM role settings and approvals",
+      "short": "Each role in PIM has role settings: activation maximum duration (1 to 24 hours), require MFA or a Conditional Access authentication context, justification, ticket information, approval, assignment expiration and notifications. Approvers need no admin role themselves.",
+      "deep": "Role settings are configured **per role** (and per scope for Azure resources) in PIM and apply to everyone eligible for that role.\n\n**Activation settings**\n- **Activation maximum duration**: slider from 1 to 24 hours.\n- **On activation, require multifactor authentication**: the user must complete Entra MFA (they may not be re-prompted if they already did MFA in the session).\n- **On activation, require Microsoft Entra Conditional Access authentication context**: ties activation to a CA policy, so you can demand an **authentication strength** such as phishing-resistant MFA, a compliant device, or terms of use. If no enabled policy targets the context, MFA is required as a fallback.\n- **Require justification** and **Require ticket information** (the ticket number is recorded only; it is *not* validated against any ticketing system).\n- **Require approval to activate**: choose approvers (at least one, two recommended). There are no default approvers and approvers don't need any role.\n\n**Assignment settings**: allow or block **permanent eligible** and **permanent active** assignments, set maximum expiry, require MFA and justification on active assignment.\n\n**Notifications**: emails to admins, requestors and approvers on assignment and activation.\n\nPair PIM with **access reviews** to periodically confirm who still needs eligibility.",
+      "terms": [
+        {
+          "t": "Authentication context",
+          "d": "A tag (c1, c2...) that a Conditional Access policy targets, letting PIM demand stronger controls on activation."
+        },
+        {
+          "t": "Activation maximum duration",
+          "d": "Longest time an activated role stays active: 1 to 24 hours."
+        },
+        {
+          "t": "Approver",
+          "d": "User or group that approves activation requests; needs no admin role."
+        }
+      ],
+      "trap": "If the requirement is phishing-resistant MFA on activation, the answer is a Conditional Access authentication context, not the plain 'require MFA' toggle.",
+      "example": "Fabrikam requires approval from two security leads and a ticket number before anyone can activate Global Administrator for at most 4 hours.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.1.03",
+      "objective": "d1.1",
+      "seq": 3,
+      "title": "Conditional Access policy building blocks",
+      "short": "Conditional Access is Microsoft Entra ID's Zero Trust policy engine: if a sign-in matches assignments (users, target resources) and conditions (risk, platform, location, client app), then grant or block access, or apply session controls. It requires Entra ID P1.",
+      "deep": "A **Conditional Access (CA)** policy is an if-then statement evaluated **after first-factor authentication**.\n\n**Assignments (the 'if')**\n- **Users**: users, groups, directory roles, guests; always exclude **emergency access (break-glass) accounts**.\n- **Target resources**: cloud apps, user actions (register security info), or authentication contexts.\n- **Conditions**: user risk and sign-in risk (risk needs P2), device platforms, locations (named locations, trusted IPs, countries), client apps (browser, mobile/desktop, legacy authentication), filter for devices.\n\n**Access controls (the 'then')**\n- **Block access**, or **Grant access** with controls: Require multifactor authentication, Require authentication strength, Require device to be marked as compliant, Require Microsoft Entra hybrid joined device, Require app protection policy, Require password change, terms of use.\n- When several grant controls are selected you choose **Require all the selected controls** (default) or **Require one of the selected controls**.\n\n**How multiple policies combine**: every policy that applies is enforced. All their grant requirements must be met, and **block always wins**.\n\nCA needs **Microsoft Entra ID P1**. Tenants without P1 use **security defaults** instead, which can't be customised.",
+      "terms": [
+        {
+          "t": "Named location",
+          "d": "IP ranges or countries defined for use as a CA location condition."
+        },
+        {
+          "t": "Break-glass account",
+          "d": "Emergency cloud-only admin account excluded from CA to prevent lockout."
+        },
+        {
+          "t": "Security defaults",
+          "d": "Free, non-configurable baseline (MFA registration, block legacy auth) for tenants without CA."
+        }
+      ],
+      "trap": "Candidates think the 'most specific' or newest policy wins; in reality every applicable policy is enforced and a block in any policy wins.",
+      "example": "A policy targets All users (excluding break-glass) and the Azure management app, requiring MFA for every sign-in to the Azure portal and CLI.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Sign-in",
+          "Assignments",
+          "Conditions",
+          "Grant/Block",
+          "Session controls"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.1.04",
+      "objective": "d1.1",
+      "seq": 4,
+      "title": "Deploying CA: report-only, strengths, sessions",
+      "short": "Roll out Conditional Access safely with report-only mode, the What If tool and the insights and reporting workbook. Use authentication strengths to demand specific methods, and session controls such as sign-in frequency and persistent browser session to limit token lifetime.",
+      "deep": "**Safe deployment**\n- **Report-only**: the policy is evaluated on real sign-ins but not enforced. Sign-in logs show Report-only: Success, Failure, User action required or Not applied.\n- **What If**: simulates one user, app and condition set to show which policies would apply.\n- **Conditional Access insights and reporting workbook**: shows report-only impact over time; requires Entra logs sent to a **Log Analytics workspace**.\n\n**Authentication strengths** (grant control **Require authentication strength**)\n- Built-in: **Multifactor authentication strength**, **Passwordless MFA strength**, **Phishing-resistant MFA strength**. Built-ins can't be edited, but you can create **custom strengths**.\n- You can't combine **Require multifactor authentication** and **Require authentication strength** in one policy.\n\n**Session controls**\n- **Sign-in frequency** (how often users reauthenticate, including *Every time*)\n- **Persistent browser session**\n- **Application enforced restrictions** and **Conditional Access application control** (Defender for Cloud Apps)\n- **Customize continuous access evaluation**, **Disable resilience defaults**, **Require token protection for sign-in sessions**\n\nTypical admin baseline: phishing-resistant strength for admin roles, block legacy authentication, MFA for Azure management.",
+      "terms": [
+        {
+          "t": "Report-only mode",
+          "d": "Policy evaluated and logged but not enforced."
+        },
+        {
+          "t": "Authentication strength",
+          "d": "Named set of allowed authentication method combinations used as a CA grant control."
+        },
+        {
+          "t": "Sign-in frequency",
+          "d": "Session control setting how long before a user must sign in again."
+        }
+      ],
+      "trap": "Sign-in frequency and persistent browser session are session controls, not grant controls; and report-only (not What If) measures impact on real traffic.",
+      "example": "Before enforcing phishing-resistant MFA for all admins, Contoso runs the policy in report-only for two weeks and reviews the workbook.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.1.05",
+      "objective": "d1.1",
+      "seq": 5,
+      "title": "Authentication methods policy and MFA",
+      "short": "The Authentication methods policy is where you enable and target sign-in methods: Microsoft Authenticator, passkeys (FIDO2), Temporary Access Pass, SMS, voice, OATH tokens, certificate-based authentication and email OTP. Legacy MFA and SSPR settings are migrated into it.",
+      "deep": "**Multifactor authentication (MFA)** combines something you know, have or are. In Microsoft Entra ID you manage methods centrally in **Entra ID > Authentication methods > Policies**, targeting each method to all users or groups.\n\n**Migration**: older tenants also had the legacy per-user MFA and SSPR method settings. The migration wizard moves through **Migration in progress** (both policies honoured) to **Migration complete** (only the Authentication methods policy is honoured). It is reversible.\n\n**Key methods**\n- **Microsoft Authenticator**: push notifications with **number matching**, passwordless phone sign-in, and device-bound passkeys.\n- **Temporary Access Pass (TAP)**: a time-limited passcode for onboarding or recovery so users can register passwordless methods. Policy defaults: minimum lifetime 1 hour, maximum lifetime 8 hours, default lifetime 1 hour, range 10 minutes to 30 days, one-time use off. Created by **Authentication Administrator** (members) or **Privileged Authentication Administrator** (admins too).\n- **SMS / voice**: weakest; keep for fallback only.\n- **Software and hardware OATH tokens**.\n\nRoles: **Authentication Policy Administrator** configures the methods policy; **Authentication Administrator** manages methods for non-admin users.\n\nUse **registration campaigns** and CA 'register security info' user-action policies to protect enrolment.",
+      "terms": [
+        {
+          "t": "Temporary Access Pass",
+          "d": "Time-limited passcode used to bootstrap or recover passwordless methods."
+        },
+        {
+          "t": "Number matching",
+          "d": "User types the number shown at sign-in into Authenticator, defeating MFA fatigue."
+        },
+        {
+          "t": "Authentication Policy Administrator",
+          "d": "Entra role that configures the Authentication methods policy."
+        }
+      ],
+      "trap": "Authentication Policy Administrator configures TAP policy but can't create a TAP for a user; Authentication Administrator (or Privileged Authentication Administrator) can.",
+      "example": "A new hire with no credentials receives a one-time TAP from the help desk and uses it to register a passkey in Microsoft Authenticator.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.1.06",
+      "objective": "d1.1",
+      "seq": 6,
+      "title": "Passwordless and phishing-resistant sign-in",
+      "short": "Passwordless methods remove the password entirely: passkeys (FIDO2) on security keys or in Microsoft Authenticator, Windows Hello for Business, platform credential and certificate-based authentication. Passkeys, WHfB and multifactor CBA are phishing-resistant because they are bound to the real sign-in origin.",
+      "deep": "**Passwordless** sign-in replaces the password with a cryptographic key pair: the private key stays on the device and is unlocked with a PIN or biometric.\n\n**Methods**\n- **Passkeys (FIDO2)**: on FIDO2 security keys or in Microsoft Authenticator (device-bound), or **synced passkeys** from providers such as iCloud Keychain or Google Password Manager. Available in all Entra ID editions.\n- **Windows Hello for Business** (and **platform credential** on macOS).\n- **Certificate-based authentication (CBA)** using smart cards or certificates, configured as single- or multifactor.\n- **Microsoft Authenticator phone sign-in** (passwordless but not phishing-resistant).\n\n**Passkey profiles** in the Passkeys (FIDO2) policy define: **passkey types** (device-bound and/or synced), **Enforce attestation** (verify make/model at registration; synced passkeys don't support attestation) and **Enforce key restrictions** (allow or block by **AAGUID**). Up to three profiles, targeted to groups.\n\n**Enforcing**: use CA **Require authentication strength** with **Phishing-resistant MFA strength** (FIDO2, WHfB/platform credential, multifactor CBA) or **Passwordless MFA strength** (those plus Authenticator phone sign-in).\n\nUsers must have done MFA within the last five minutes to register a passkey; TAP satisfies this for new users.",
+      "terms": [
+        {
+          "t": "Phishing-resistant",
+          "d": "Credential bound to the legitimate origin, so a fake site can't replay it."
+        },
+        {
+          "t": "AAGUID",
+          "d": "Identifier of an authenticator model, used to allow or block specific keys."
+        },
+        {
+          "t": "Attestation",
+          "d": "Proof at registration of the authenticator's genuine make and model."
+        }
+      ],
+      "trap": "Authenticator push with number matching is strong MFA but not phishing-resistant; only FIDO2/passkeys, WHfB/platform credential and multifactor CBA qualify.",
+      "example": "Tailwind Traders requires the Phishing-resistant MFA strength for all privileged roles and issues FIDO2 security keys restricted by AAGUID.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Method",
+          "Passwordless",
+          "Phish-resistant"
+        ],
+        "rows": [
+          [
+            "Passkey (FIDO2)",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Windows Hello",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "CBA multifactor",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Authenticator phone",
+            "Yes",
+            "No"
+          ],
+          [
+            "Push + number match",
+            "No",
+            "No"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.1.07",
+      "objective": "d1.1",
+      "seq": 7,
+      "title": "App registrations vs enterprise applications",
+      "short": "An app registration creates the application object (the global definition) in its home tenant. Each tenant that uses the app gets a service principal, shown under Enterprise applications, where you assign users, require assignment and configure SSO.",
+      "deep": "Microsoft Entra ID represents an application with two objects:\n- **Application object** (**App registrations** blade): lives only in the **home tenant**. It defines the app's identity: client ID, redirect URIs, credentials (secrets, certificates, federated credentials), API permissions it requests, app roles and exposed scopes.\n- **Service principal** (**Enterprise applications** blade): the local instance of the app in *each* tenant where it is used. It holds that tenant's consented permissions, user/group assignments, SSO configuration, owners and Conditional Access targeting.\n\nA single-tenant app has one of each. A **multitenant** app has one application object in the publisher's tenant and one service principal per consuming tenant. Gallery apps and Microsoft first-party apps appear only as service principals in your tenant.\n\nKey enterprise app **Properties**:\n- **Assignment required?** Yes means only assigned users/groups can get tokens.\n- **Visible to users?** controls My Apps display.\n- **Enabled for users to sign-in?**\n\nRoles: **Application Administrator** and **Cloud Application Administrator** (no Application Proxy) manage all apps; **Application Developer** can register apps; owners manage their own apps. Restrict 'Users can register applications' if needed.",
+      "terms": [
+        {
+          "t": "Application object",
+          "d": "Global app definition in the home tenant (App registrations)."
+        },
+        {
+          "t": "Service principal",
+          "d": "Tenant-local instance of an app (Enterprise applications)."
+        },
+        {
+          "t": "Assignment required",
+          "d": "Enterprise app property limiting sign-in to assigned users and groups."
+        }
+      ],
+      "trap": "User assignment and 'Assignment required?' live on the enterprise application (service principal), not on the app registration.",
+      "example": "Contoso registers an internal HR app, then on its enterprise application sets Assignment required to Yes and assigns only the HR group.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "App registration",
+          "Enterprise app"
+        ],
+        "rows": [
+          [
+            "Object",
+            "Application",
+            "Service principal"
+          ],
+          [
+            "Where",
+            "Home tenant only",
+            "Every using tenant"
+          ],
+          [
+            "Holds",
+            "Credentials, perms req",
+            "Consent, assignments"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.1.08",
+      "objective": "d1.1",
+      "seq": 8,
+      "title": "App credentials and workload identities",
+      "short": "Apps authenticate with client secrets, certificates or federated identity credentials. Prefer certificates over secrets, and use workload identity federation so external workloads like GitHub Actions get Entra tokens without any stored secret. Workload ID Premium adds Conditional Access and risk detection for service principals.",
+      "deep": "A **workload identity** is an identity used by software: an application's service principal, a managed identity, or a federated workload.\n\n**Credential options for an app registration**\n- **Client secret**: a password string. Easy, but can leak into code or logs; must be rotated before expiry.\n- **Certificate**: the app proves possession of a private key (stored ideally in **Azure Key Vault**). Microsoft recommends certificates over secrets.\n- **Federated identity credential (workload identity federation)**: Entra ID trusts tokens from an external identity provider (GitHub Actions, Kubernetes, another cloud) for a specific subject. No secret exists to steal or rotate.\n\n**Hygiene**: limit owners, remove unused credentials, use **application management policies** to restrict secret lifetimes or block secrets, and review sign-in logs for service principals.\n\n**Microsoft Entra Workload ID Premium** adds:\n- **Conditional Access for workload identities** (for example, block service principal sign-ins outside known IP ranges; single-tenant apps, not managed identities)\n- **ID Protection for workload identities** (risky service principals)\n- **Access reviews for service principals in privileged roles**\n- **App health recommendations**\n\nFor code running *inside Azure*, a **managed identity** is usually better still.",
+      "terms": [
+        {
+          "t": "Workload identity federation",
+          "d": "Trust external IdP tokens for an app, removing stored secrets."
+        },
+        {
+          "t": "Client secret",
+          "d": "Password-style app credential; highest leak risk."
+        },
+        {
+          "t": "Workload ID Premium",
+          "d": "Licence adding CA, ID Protection and reviews for workload identities."
+        }
+      ],
+      "trap": "GitHub-hosted runners can't use an Azure managed identity; the secretless answer is a federated identity credential on the app registration.",
+      "example": "A GitHub Actions workflow deploys Bicep to Azure using OIDC federation to an app registration, with no secret stored in the repository.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "GitHub OIDC token",
+          "Federated credential",
+          "Entra ID token",
+          "Azure deploy"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.1.09",
+      "objective": "d1.1",
+      "seq": 9,
+      "title": "OAuth permission grants and consent",
+      "short": "Apps get access through OAuth 2.0 permissions: delegated permissions act on behalf of a signed-in user, application permissions act as the app itself. Consent records the grant. Restrict user consent to verified publishers and low-impact permissions, and use the admin consent workflow for everything else.",
+      "deep": "**Permission types** (for example, to Microsoft Graph)\n- **Delegated permissions (scopes)**: the app acts as the signed-in user and can never exceed the user's own rights.\n- **Application permissions (app roles)**: the app acts as itself with no user, often tenant-wide. They **always require admin consent**.\n\n**Consent** creates a permission grant on the service principal. Admin consent grants on behalf of the whole organisation.\n\n**User consent settings** (Enterprise applications > Consent and permissions)\n- **Do not allow user consent**\n- **Allow user consent for apps from verified publishers, for selected permissions** (recommended; policy `microsoft-user-default-low`; users can consent only to permissions you classify as **low impact** in **permission classifications**)\n- **Allow user consent for apps** (legacy default; `microsoft-user-default-legacy`)\n\n**Admin consent workflow**: when users can't consent, they submit a request with a justification. Designated **reviewers** (users, groups or roles) receive email, and can approve, deny or block. Being a reviewer doesn't grant privileges: they must already hold a role that can grant that consent. Requests expire after a configurable number of days.\n\n**Illicit consent grant** (consent phishing) is the attack these controls address. Review and revoke grants on the enterprise app's **Permissions** page.",
+      "terms": [
+        {
+          "t": "Delegated permission",
+          "d": "App acts on behalf of a signed-in user (scope)."
+        },
+        {
+          "t": "Application permission",
+          "d": "App acts as itself without a user (app role); needs admin consent."
+        },
+        {
+          "t": "Admin consent workflow",
+          "d": "Lets users request admin approval for apps they can't consent to."
+        },
+        {
+          "t": "Verified publisher",
+          "d": "App publisher whose identity Microsoft has verified via a partner account."
+        }
+      ],
+      "trap": "Turning off user consent without enabling the admin consent workflow leaves users simply blocked; the exam expects both together.",
+      "example": "After a consent-phishing incident, Contoso limits user consent to verified publishers for low-impact permissions and routes other requests to app admins.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.1.10",
+      "objective": "d1.1",
+      "seq": 10,
+      "title": "Managed identities for Azure resources",
+      "short": "A managed identity gives an Azure resource an automatically managed Entra ID identity, so code gets tokens without storing credentials. System-assigned identities share the resource's lifecycle; user-assigned identities are standalone resources that can be shared by many resources.",
+      "deep": "A **managed identity** is a special service principal whose credentials Azure creates and rotates for you. Code on the resource requests a token (via the Azure Identity SDK, or the local **Instance Metadata Service** endpoint on VMs) and uses it for any service that supports Entra authentication: Key Vault, Storage, SQL, Azure Resource Manager.\n\n**System-assigned**\n- Enabled on one resource (VM, App Service, Function, Logic App...).\n- Same name as the resource; **deleted automatically** with it.\n- Can't be shared.\n\n**User-assigned**\n- Created as its own Azure resource (`Microsoft.ManagedIdentity/userAssignedIdentities`).\n- Assigned to **many** resources; survives their deletion and must be deleted explicitly.\n- Good for scale sets or resources that are recreated often, and for pre-authorising access before deployment. Microsoft recommends user-assigned for Microsoft services.\n\n**Authorisation** is separate: after enabling the identity you grant it Azure RBAC roles (for example **Key Vault Secrets User**) or Key Vault access policies.\n\nRoles: **Managed Identity Contributor** creates/updates user-assigned identities; **Managed Identity Operator** can assign them to resources.",
+      "terms": [
+        {
+          "t": "System-assigned identity",
+          "d": "Tied to one resource; deleted with it."
+        },
+        {
+          "t": "User-assigned identity",
+          "d": "Standalone resource assignable to many Azure resources."
+        },
+        {
+          "t": "IMDS",
+          "d": "Instance Metadata Service at 169.254.169.254 that issues tokens to VM code."
+        }
+      ],
+      "trap": "Enabling a managed identity grants no access by itself; you still need an RBAC role assignment on the target resource.",
+      "example": "A function app with a system-assigned identity is granted Key Vault Secrets User on one vault, so no connection string sits in app settings.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "App code",
+          "Managed identity",
+          "Entra token",
+          "Key Vault (RBAC)"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.2.01",
+      "objective": "d1.2",
+      "seq": 1,
+      "title": "Deploying Key Vault and choosing a tier",
+      "short": "Azure Key Vault stores secrets, keys and certificates. Standard tier offers software-protected keys; Premium adds HSM-protected keys. Azure Key Vault Managed HSM is a single-tenant, FIPS 140-3 Level 3 HSM pool with local RBAC. New vaults default to Azure RBAC authorization.",
+      "deep": "Key Vault centralises application secrets (connection strings, passwords), cryptographic **keys** (RSA, EC) and X.509 **certificates**, so they never sit in code.\n\n**Options**\n- **Standard vault**: software-protected keys (FIPS 140-2 Level 1). Lowest cost.\n- **Premium vault**: adds **HSM-protected keys** (RSA-HSM, EC-HSM; newer keys on FIPS 140-3 Level 3 HSM platform). Still multitenant.\n- **Managed HSM**: dedicated, **single-tenant** HSM cluster, FIPS 140-3 Level 3, with its own **security domain** and **local RBAC** that even subscription owners can't override. Endpoint `<name>.managedhsm.azure.net`; keys only (no secrets or certificates).\n\n**Deployment choices**\n- One vault per application, per environment, per region limits blast radius and throttling.\n- Name is globally unique: `https://<vault>.vault.azure.net`.\n- **Permission model**: with control-plane API version 2026-02-01 and later, new vaults default to **Azure RBAC** (`enableRbacAuthorization = true`); set it to false to use access policies. Existing vaults keep their model.\n- Configure **soft delete retention** and **purge protection** at creation, plus networking and diagnostic logs.\n\nDeploy with the portal, `az keyvault create`, PowerShell `New-AzKeyVault`, Bicep or ARM.",
+      "terms": [
+        {
+          "t": "Premium tier",
+          "d": "Key Vault tier adding HSM-protected keys."
+        },
+        {
+          "t": "Managed HSM",
+          "d": "Single-tenant FIPS 140-3 Level 3 key service with local RBAC."
+        },
+        {
+          "t": "Security domain",
+          "d": "Encrypted blob of Managed HSM credentials needed for recovery; held by the customer."
+        }
+      ],
+      "trap": "Standard can't hold HSM-protected keys; when the requirement is single-tenant HSM with customer-controlled security domain, the answer is Managed HSM, not Premium.",
+      "example": "A bank uses Premium vaults for app secrets and a Managed HSM for its customer-managed keys under strict regulatory isolation.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Standard",
+          "Premium",
+          "Managed HSM"
+        ],
+        "rows": [
+          [
+            "Key protection",
+            "Software",
+            "Software + HSM",
+            "HSM only"
+          ],
+          [
+            "Tenancy",
+            "Multitenant",
+            "Multitenant",
+            "Single-tenant"
+          ],
+          [
+            "Secrets/certs",
+            "Yes",
+            "Yes",
+            "No (keys)"
+          ],
+          [
+            "Access model",
+            "RBAC or policies",
+            "RBAC or policies",
+            "Local RBAC"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.2.02",
+      "objective": "d1.2",
+      "seq": 2,
+      "title": "Key Vault settings: recovery and access flags",
+      "short": "Soft delete (always on, 7 to 90 days, default 90) keeps deleted vaults and objects recoverable; purge protection blocks permanent deletion until retention ends and can never be turned off. Access flags allow VMs, Azure Disk Encryption and ARM template deployments to retrieve secrets.",
+      "deep": "**Recovery settings**\n- **Soft delete**: on by default and can't be disabled. Deleted vaults, keys, secrets and certificates stay recoverable for a retention period of **7 to 90 days (default 90)**. The retention can only be set **at creation**.\n- **Purge protection**: optional, off by default. When on, nobody (not even Microsoft) can purge a deleted vault or object until the retention period passes. Once enabled it **can't be disabled**. Services using customer-managed keys, such as Azure Storage, require it.\n- Purging needs the **purge** permission, for example the **Key Vault Purge Operator** role.\n\n**Resource access flags** (Access configuration)\n- `enabledForDeployment`: Azure VMs can retrieve certificates stored as secrets.\n- `enabledForDiskEncryption`: Azure Disk Encryption can retrieve secrets and unwrap keys.\n- `enabledForTemplateDeployment`: Azure Resource Manager can retrieve secrets referenced in template parameter files.\n\n**Other settings**\n- **Permission model** (Azure RBAC or vault access policy).\n- **Networking** (firewall, private endpoints).\n- **Diagnostic settings**: send **AuditEvent** logs to Log Analytics, storage or Event Hubs for auditing every data-plane request.\n- **Events** via Event Grid (near expiry, expired, new version).",
+      "terms": [
+        {
+          "t": "Soft delete",
+          "d": "Deleted items retained and recoverable for 7 to 90 days."
+        },
+        {
+          "t": "Purge protection",
+          "d": "Blocks permanent deletion until retention ends; irreversible once on."
+        },
+        {
+          "t": "enabledForTemplateDeployment",
+          "d": "Lets ARM retrieve vault secrets during template deployment."
+        }
+      ],
+      "trap": "Purge protection doesn't stop deletion, only purging; and the retention period can't be changed after the vault is created.",
+      "example": "Before configuring storage account encryption with a customer-managed key, the admin enables purge protection on the vault.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Active object",
+          "Deleted (soft)",
+          "Recover or wait",
+          "Purge after retention"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.2.03",
+      "objective": "d1.2",
+      "seq": 3,
+      "title": "Key Vault access: RBAC vs access policies",
+      "short": "Key Vault has a control plane (manage the vault) and a data plane (use keys, secrets, certificates). Data-plane access uses either Azure RBAC roles such as Key Vault Secrets User, or legacy vault access policies. Microsoft recommends Azure RBAC.",
+      "deep": "**Two planes**\n- **Control plane** (`management.azure.com`): create, delete, configure the vault. Governed by Azure RBAC, for example **Key Vault Contributor**.\n- **Data plane** (`<vault>.vault.azure.net`): read a secret, sign with a key, import a certificate. Governed by the vault's **permission model**.\n\n**Azure RBAC permission model (recommended)**\n- Built-in data roles: **Key Vault Administrator**, **Key Vault Reader** (metadata only, no values), **Key Vault Secrets Officer** / **Secrets User**, **Key Vault Crypto Officer** / **Crypto User** / **Crypto Service Encryption User** (wrap/unwrap), **Key Vault Certificates Officer** / **Certificate User**, **Key Vault Purge Operator**, **Key Vault Data Access Administrator** (manages only Key Vault role assignments).\n- Assign at vault scope or even on an **individual secret, key or certificate**; works with **PIM**; separation of duties because only Owner/User Access Administrator-type roles can assign.\n\n**Vault access policy model (legacy)**\n- Per-principal permission lists (Get, List, Set, Delete, Wrap...) at whole-vault level only, max 1024 entries.\n- Risk: anyone with **Key Vault Contributor** can edit access policies and grant themselves data access.\n\n**Key Vault Contributor never grants data-plane access** directly.",
+      "terms": [
+        {
+          "t": "Control plane",
+          "d": "Management operations on the vault resource via Azure Resource Manager."
+        },
+        {
+          "t": "Data plane",
+          "d": "Operations on keys, secrets and certificates inside the vault."
+        },
+        {
+          "t": "Key Vault Secrets User",
+          "d": "Role that reads secret values; least privilege for apps."
+        }
+      ],
+      "trap": "Key Vault Contributor can't read secrets in an RBAC vault, but in an access-policy vault it can grant itself access; that's why RBAC is preferred.",
+      "example": "An app's managed identity gets Key Vault Secrets User scoped to a single secret, while the platform team holds Key Vault Contributor for configuration only.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Azure RBAC",
+          "Access policies"
+        ],
+        "rows": [
+          [
+            "Granularity",
+            "Vault or object",
+            "Whole vault"
+          ],
+          [
+            "PIM support",
+            "Yes",
+            "No"
+          ],
+          [
+            "Who can grant",
+            "Owner/UAA/KV DAA",
+            "Any KV Contributor"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.2.04",
+      "objective": "d1.2",
+      "seq": 4,
+      "title": "Key Vault firewall and private access",
+      "short": "Key Vault networking offers: all networks, selected networks (IP rules and virtual network service endpoint rules, optional trusted Microsoft services bypass), disabled public access with private endpoints, or a network security perimeter. Firewall rules apply only to data-plane requests.",
+      "deep": "**Public network access** options\n- **Allow public access from all networks** (default): reachable anywhere, still requiring Entra authentication and authorisation.\n- **Allow public access from specific virtual networks and IP addresses**:\n  - **IP rules**: up to 1,000 **public** IPv4 addresses or CIDR ranges (private RFC 1918 ranges are rejected; no IPv6).\n  - **Virtual network rules**: up to 200 subnets using **service endpoints** (Microsoft.KeyVault enabled on the subnet).\n  - **Allow trusted Microsoft services to bypass this firewall** (CLI `--bypass AzureServices`). Not every Azure service is trusted (for example Azure DevOps isn't).\n- **Disable public access**: only **private endpoints** (Azure Private Link) work. Traffic stays on the Microsoft backbone and the vault gets a private IP in your VNet; use the `privatelink.vaultcore.azure.net` private DNS zone.\n- **Secure by perimeter**: governed by a **network security perimeter**.\n\n**Gotchas**\n- Rules affect only the **data plane**; ARM control-plane operations still work.\n- The portal can't list secrets unless your client IP is allowed.\n- Changes can take a few minutes to apply.\n\nCLI: `az keyvault update --default-action Deny --bypass AzureServices` then `az keyvault network-rule add`.",
+      "terms": [
+        {
+          "t": "Service endpoint",
+          "d": "Subnet feature that lets VNet traffic reach the vault's public endpoint with VNet identity."
+        },
+        {
+          "t": "Private endpoint",
+          "d": "Private IP for the vault in your VNet via Azure Private Link."
+        },
+        {
+          "t": "Trusted services bypass",
+          "d": "Firewall exception for Microsoft services on the trusted list."
+        }
+      ],
+      "trap": "Service endpoints keep the public endpoint in use; if traffic must never use a public endpoint, choose private endpoint with public access disabled.",
+      "example": "Contoso disables public access on its production vault and gives app subnets a private endpoint with a linked privatelink.vaultcore.azure.net zone.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.2.05",
+      "objective": "d1.2",
+      "seq": 5,
+      "title": "Managing keys and key rotation",
+      "short": "Key Vault keys are versioned RSA or EC keys (software or HSM). A rotation policy creates a new key version automatically a set time after creation or before expiry, and can send a near-expiry notification. Services should reference the versionless key URI.",
+      "deep": "**Keys**\n- Types: RSA and EC (software-protected), RSA-HSM and EC-HSM (Premium and Managed HSM), oct-HSM AES keys (Managed HSM).\n- Operations: encrypt/decrypt, **wrap/unwrap** (protect data encryption keys), sign/verify.\n- Key material of HSM keys never leaves the HSM. You can **import** your own key (**BYOK**) from an on-premises HSM.\n- Set **activation (nbf)** and **expiration (exp)** dates; disable a version without deleting it.\n\n**Automatic key rotation (rotation policy)**\n- **Rotate**: `timeAfterCreate` (for example P18M) or `timeBeforeExpiry`.\n- **Notify**: Event Grid near-expiry event some time before expiry.\n- `expiryTime` sets expiry of each newly rotated version.\n- Minimum rotation interval: **7 days**. Rotation creates a **new version** with new key material; old versions remain until disabled.\n- Permission: **Key Vault Crypto Officer** (or Rotate/Set/Get Rotation Policy access-policy permissions).\n- CLI: `az keyvault key rotation-policy update --vault-name ... --name ... --value policy.json`.\n\n**Customer-managed keys (CMK)**: services such as Storage, SQL TDE and Disk Encryption Sets wrap their data keys with your key. Point them at the **versionless** key URI so they pick up new versions automatically.",
+      "terms": [
+        {
+          "t": "Key version",
+          "d": "Immutable instance of a key; rotation adds a new one."
+        },
+        {
+          "t": "Versionless key URI",
+          "d": "Key URI without a version, resolving to the current version."
+        },
+        {
+          "t": "BYOK",
+          "d": "Bring your own key: import HSM-protected key material into Key Vault."
+        }
+      ],
+      "trap": "Rotation never overwrites existing key material; it creates a new version, so data wrapped with the old version remains decryptable.",
+      "example": "A storage account's CMK uses the versionless key URI; the vault rotates the key every 18 months and the storage account follows automatically.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Create version",
+          "Use",
+          "Near-expiry notify",
+          "Rotate new version"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.2.06",
+      "objective": "d1.2",
+      "seq": 6,
+      "title": "Managing secrets and certificates",
+      "short": "Secrets are versioned strings with optional content type, activation and expiration dates. Certificates combine a key, a secret and an X.509 policy; Key Vault can auto-renew them through partnered CAs (DigiCert, GlobalSign) using lifetime actions.",
+      "deep": "**Secrets**\n- Any sensitive string: passwords, connection strings, API keys. Each update creates a **version**.\n- Attributes: **content type**, **activation date**, **expiration date**, enabled flag, tags. Track expiry with Event Grid events (**SecretNearExpiry**, **SecretExpired**) and Defender for Cloud recommendations such as setting expiration dates on secrets.\n- **Rotation pattern**: Event Grid near-expiry event triggers an Azure Function that creates a new credential at the source and stores it as a new secret version.\n\n**Certificates**\n- Creating a certificate creates an addressable **key** and **secret** with the same name. The private key (PFX/PEM) is retrieved through the **secret** if the policy marks it exportable.\n- **Certificate policy**: subject, SANs, key type/size, exportable, validity, issuer, **lifetime actions**.\n- **Issuers**: self-signed, partnered CAs (**DigiCert**, **GlobalSign**) via an **issuer object** in the vault, or non-partnered CAs (manual merge; no auto-renew).\n- **Lifetime actions**: trigger by **days before expiry** or **percentage of lifetime**; action **AutoRenew** or **EmailContacts** (to the vault's certificate contacts).\n- Import existing PFX/PEM certificates.\n\nRoles: **Key Vault Secrets Officer**, **Key Vault Certificates Officer**.",
+      "terms": [
+        {
+          "t": "Lifetime action",
+          "d": "Certificate policy rule: AutoRenew or EmailContacts at a trigger point."
+        },
+        {
+          "t": "Issuer object",
+          "d": "Vault object holding CA account details used for enrolment and renewal."
+        },
+        {
+          "t": "Content type",
+          "d": "Free-text hint on a secret describing its format."
+        }
+      ],
+      "trap": "Auto-renewal works only with self-signed or partnered-CA certificates; certificates from non-partnered CAs need manual renewal.",
+      "example": "Contoso's public TLS certificate is issued through a DigiCert issuer object and auto-renews when 80% of its lifetime has elapsed.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.2.07",
+      "objective": "d1.2",
+      "seq": 7,
+      "title": "Secrets scanning with Defender CSPM",
+      "short": "Defender for Cloud finds exposed secrets so they can be moved into Key Vault: agentless scanning of multicloud VMs (Defender CSPM or Defender for Servers Plan 2), of cloud deployment resources, and of Azure DevOps code repositories (Defender CSPM).",
+      "deep": "Leaked credentials (SSH private keys, storage connection strings, SAS tokens, Entra client secrets, personal access tokens, API keys) let attackers move laterally. **Defender Cloud Security Posture Management (Defender CSPM)** scans for them.\n\n**Scanning types**\n- **Machine scanning**: **agentless** scanning of Azure, AWS and GCP VM disks. Plans: **Defender CSPM** or **Defender for Servers Plan 2**.\n- **Cloud deployment resource scanning**: agentless scanning of infrastructure-as-code deployment resources. Plan: Defender CSPM.\n- **Code repository scanning**: exposed secrets in **Azure DevOps** repositories connected to DevOps security. Plan: Defender CSPM.\n\n**Where findings appear**\n- **Recommendations** (under the Remediate vulnerabilities control), for example 'Machines should have secrets findings resolved'.\n- **Asset inventory** for a specific machine.\n- **Cloud security explorer** queries over the cloud security graph (built-in templates for VM secrets).\n- **Attack path analysis**, showing how a secret on an internet-exposed VM could reach a critical asset.\n\nRoles to view: Security Reader, Security Admin, Reader, Contributor or Owner.\n\n**Remediation**: rotate the exposed credential at its source, store it in Key Vault, and have the workload read it with a managed identity.",
+      "terms": [
+        {
+          "t": "Defender CSPM",
+          "d": "Paid posture plan with attack paths, cloud security explorer and agentless scanning."
+        },
+        {
+          "t": "Agentless scanning",
+          "d": "Snapshot-based disk analysis needing no agent on the VM."
+        },
+        {
+          "t": "Attack path",
+          "d": "Graph of exploitable steps from an entry point to a critical asset."
+        }
+      ],
+      "trap": "Free foundational CSPM doesn't include secrets scanning; VM secrets need Defender CSPM or Defender for Servers Plan 2.",
+      "example": "An attack path shows an internet-facing VM holding a storage account key in a script; the team rotates the key and moves it to Key Vault.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "VM disk snapshot",
+          "Secret found",
+          "Recommendation",
+          "Attack path",
+          "Rotate + vault"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.2.08",
+      "objective": "d1.2",
+      "seq": 8,
+      "title": "Microsoft Defender for Key Vault",
+      "short": "Defender for Key Vault is a Defender for Cloud workload plan that detects unusual or harmful access to key vaults, such as access from TOR or suspicious IPs, unusual users or apps, and secret-dumping patterns, and raises security alerts with remediation steps.",
+      "deep": "**Microsoft Defender for Key Vault** adds threat detection on top of Key Vault's own controls. It analyses vault operations and raises **security alerts** in Defender for Cloud (also on the vault's **Security** page and in Defender XDR).\n\n**Example alerts**\n- Access from a **TOR exit node** to a key vault\n- Access from a **suspicious IP address** (threat intelligence)\n- **Unusual user** / **unusual application** accessed a key vault\n- **High volume of operations** or **unusual operation pattern**\n- **Suspicious policy change and secret query** (policy changed then secrets read)\n- **Suspicious secret listing and query** (List then Get pattern = secret dumping)\n- Unusual **access denied** patterns\n\n**Enable** it per subscription in **Defender for Cloud > Environment settings > Defender plans > Key Vault = On**, or at scale with Azure Policy/IaC.\n\n**Responding to an alert**\n1. Identify the source (user, app, IP); don't dismiss just because you recognise it.\n2. Contain: enable the Key Vault firewall, remove or restrict the principal's role or access policy.\n3. Measure impact using the alert details and **diagnostic logs** (AuditEvent).\n4. **Rotate** affected secrets, keys and certificates.\n\nIt complements, not replaces, firewalls, RBAC and logging.",
+      "terms": [
+        {
+          "t": "Security alert",
+          "d": "Defender for Cloud detection with details and remediation steps."
+        },
+        {
+          "t": "Secret dumping",
+          "d": "Listing then reading many secrets to exfiltrate them."
+        },
+        {
+          "t": "AuditEvent",
+          "d": "Key Vault diagnostic log category recording data-plane operations."
+        }
+      ],
+      "trap": "Detection of anomalous vault access is Defender for Key Vault, not Defender CSPM; CSPM finds misconfigurations and exposed secrets, not live suspicious access.",
+      "example": "Defender for Key Vault alerts that a service principal listed and read 40 secrets at 2 a.m.; the SOC disables the principal and rotates the secrets.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.3.01",
+      "objective": "d1.3",
+      "seq": 1,
+      "title": "Azure Policy definitions and effects",
+      "short": "Azure Policy evaluates resources against rules in policy definitions. Each rule has an if condition and a then effect: deny, audit, append, modify, auditIfNotExists, deployIfNotExists, denyAction, manual or disabled. Group definitions into initiatives.",
+      "deep": "A **policy definition** is JSON with `mode` (All or Indexed), optional `parameters` and a `policyRule` with an `if` condition (fields, aliases, operators like `equals`, `notIn`, `exists`) and a `then` effect.\n\n**Effects**\n- **deny**: block a create or update request that violates the rule.\n- **audit**: allow but log non-compliance.\n- **append** / **modify**: change the request (add a field, add or replace tags or properties). **modify** needs a managed identity.\n- **auditIfNotExists**: audit when a related resource (for example an extension or diagnostic setting) is missing.\n- **deployIfNotExists (DINE)**: deploy the missing related resource with an ARM template; needs a managed identity with the right roles.\n- **denyAction**: block specific actions such as **DELETE** on matching resources.\n- **manual**: compliance attested by a person.\n- **disabled**: turn the rule off (useful as a parameter).\n\n**Evaluation order**: disabled, then append/modify, deny, audit, manual, auditIfNotExists, denyAction.\n\n**Built-in vs custom**: thousands of built-ins (for example 'Key vaults should have deletion protection enabled'). Write **custom definitions** when no built-in fits, using resource property **aliases**.\n\n**Initiative (policy set definition)**: a bundle of definitions assigned together; Defender for Cloud's standards such as MCSB are initiatives.",
+      "terms": [
+        {
+          "t": "Policy definition",
+          "d": "JSON rule with a condition and an effect."
+        },
+        {
+          "t": "Initiative",
+          "d": "Policy set definition grouping many definitions for one assignment."
+        },
+        {
+          "t": "Alias",
+          "d": "Policy name for a resource property path used in conditions."
+        }
+      ],
+      "trap": "auditIfNotExists only reports a missing related resource; to actually create it you need deployIfNotExists plus a managed identity.",
+      "example": "A custom definition with effect deny blocks any storage account where allowBlobPublicAccess is true.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Definition",
+          "Initiative",
+          "Assignment",
+          "Compliance",
+          "Remediation"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.3.02",
+      "objective": "d1.3",
+      "seq": 2,
+      "title": "Policy assignment, exemptions and remediation",
+      "short": "Assign a definition or initiative at a management group, subscription or resource group scope, with parameters, exclusions and enforcement mode. Use remediation tasks to fix existing resources, and exemptions (Waiver or Mitigated) for justified exceptions.",
+      "deep": "**Definition location** is where a custom definition is saved (management group or subscription); it can only be assigned at or below that location.\n\n**Assignment** settings\n- **Scope**: management group, subscription, resource group or resource; inherited downward.\n- **Exclusions** (`notScopes`): child scopes removed entirely from the assignment.\n- **Parameters**: for example allowed locations or effect.\n- **Enforcement mode**: **Default** (effect enforced) or **DoNotEnforce** (evaluated and reported, effect not applied: what-if style testing).\n- **Managed identity** (system- or user-assigned) for modify and DINE, with role assignments to make changes.\n- **Non-compliance messages**.\n\n**Evaluation**: on create/update, on assignment, and a standard compliance scan roughly every 24 hours (or on demand with `az policy state trigger-scan`).\n\n**Remediation tasks**: modify and DINE act automatically only on new or updated resources. Existing non-compliant resources are fixed by creating a **remediation task**.\n\n**Exemptions**: separate objects at a resource or scope with category **Waiver** (non-compliance temporarily accepted) or **Mitigated** (intent met another way), an optional **expiresOn** and documentation. Exempt resources show as **Exempt** in compliance.\n\nRole: **Resource Policy Contributor** manages policy assignments.",
+      "terms": [
+        {
+          "t": "Enforcement mode",
+          "d": "Default enforces the effect; DoNotEnforce only evaluates."
+        },
+        {
+          "t": "Remediation task",
+          "d": "Applies modify/DINE to existing non-compliant resources."
+        },
+        {
+          "t": "Exemption",
+          "d": "Time-bound, categorised exception: Waiver or Mitigated."
+        }
+      ],
+      "trap": "A Waiver means risk accepted; Mitigated means the control is met another way. Exclusions remove scope silently, exemptions keep it visible as Exempt.",
+      "example": "A DINE policy deploying diagnostic settings is assigned at the root management group, then a remediation task fixes 300 existing resources.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.3.03",
+      "objective": "d1.3",
+      "seq": 3,
+      "title": "Regulatory compliance in Defender for Cloud",
+      "short": "The regulatory compliance dashboard maps your resources to the controls of standards such as MCSB, ISO 27001, NIST SP 800-53, PCI DSS and CIS. MCSB is assigned by default; adding others requires a paid Defender plan and permission to create policy assignments.",
+      "deep": "**Microsoft Defender for Cloud > Regulatory compliance** shows how well your environment meets a **compliance standard**, control by control.\n\n**How it works**\n- Each standard is a set of controls; each control maps to one or more **assessments (recommendations)** that are checked automatically.\n- Control states: **green** (passing), **red** (failing), **greyed out** (can't be automatically assessed; customer responsibility or procedural).\n- **Microsoft cloud security benchmark (MCSB)** is enabled by default for Azure (plus AWS Foundational Security Best Practices for AWS and GCP Default for GCP).\n\n**Adding standards** (ISO 27001, NIST SP 800-53, PCI DSS, SOC 2, CIS, HIPAA...)\n- Prerequisite: onboard **any paid Defender plan except Defender for Servers Plan 1 or Defender for APIs Plan 1**.\n- Permission: rights to create policy assignments on the scope, for example **Owner** or **Resource Policy Contributor**.\n- Path: **Regulatory compliance > Manage compliance policies > select scope > Security policies > toggle the standard On**. Assign at the highest scope possible.\n\n**Outputs**: download **audit reports** (PDF/CSV), use the **compliance over time** workbook, Microsoft compliance offerings (third-party audit reports), and continuous export.\n\nA passing dashboard isn't certification: it shows automated technical evidence, while auditors also assess processes.",
+      "terms": [
+        {
+          "t": "Compliance standard",
+          "d": "Set of controls (e.g., ISO 27001) mapped to assessments."
+        },
+        {
+          "t": "MCSB",
+          "d": "Microsoft cloud security benchmark; default standard in Defender for Cloud."
+        },
+        {
+          "t": "Audit report",
+          "d": "Downloadable report of compliance status for a standard."
+        }
+      ],
+      "trap": "With only free foundational CSPM you can't add regulatory standards; a paid Defender plan (not Servers Plan 1 or APIs Plan 1) is required.",
+      "example": "A payments company enables Defender CSPM, adds PCI DSS v4 at the management group and downloads the audit report for its assessor.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.3.04",
+      "objective": "d1.3",
+      "seq": 4,
+      "title": "Security standards, recommendations and secure score",
+      "short": "Defender for Cloud turns security standards into recommendations with severity, affected resources and remediation steps. Secure score summarises posture. You can create custom standards and custom recommendations (KQL-based with Defender CSPM, or Azure Policy-based for Azure only).",
+      "deep": "**Security standards** in **Environment settings > Security policies** define what Defender for Cloud assesses. In Azure, a standard is backed by an **Azure Policy initiative** assigned to the scope.\n\n**Recommendations**\n- Each has severity, **risk level** (Defender CSPM adds risk prioritisation using context like internet exposure and asset criticality), affected resources, remediation steps, and often **Fix** (quick fix) or **Enforce/Deny** buttons that create an Azure Policy assignment.\n- **Exempt** a resource (Waiver/Mitigated) when the recommendation doesn't apply.\n- **Governance rules** assign owners and due dates.\n\n**Secure score**\n- 0 to 100 (or a percentage); higher-risk open recommendations reduce it most.\n- **Preview** recommendations don't count.\n- The risk-based **Cloud secure score** in the Defender portal and the classic secure score in the Azure portal are different models.\n\n**Custom content**\n- **Custom recommendations (KQL)**: query the cloud security graph across Azure, AWS and GCP; requires **Defender CSPM** and Security Admin.\n- **Custom recommendations (Azure Policy)**: custom definitions in an initiative with `\"ASC\": \"true\"` metadata, Azure only, no paid plan needed.\n- **Custom standards**: group selected recommendations; needs Owner on the subscription.",
+      "terms": [
+        {
+          "t": "Recommendation",
+          "d": "Actionable finding with affected resources and remediation steps."
+        },
+        {
+          "t": "Secure score",
+          "d": "Aggregate posture measure driven by open recommendations."
+        },
+        {
+          "t": "Governance rule",
+          "d": "Assigns owners and due dates to recommendations."
+        }
+      ],
+      "trap": "Multicloud KQL custom recommendations need Defender CSPM; policy-based custom recommendations are Azure-only but free.",
+      "example": "Security creates a KQL custom recommendation flagging VMs without an Owner tag in Azure and AWS, and a governance rule giving owners 30 days.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.3.05",
+      "objective": "d1.3",
+      "seq": 5,
+      "title": "Resource locks",
+      "short": "Resource locks protect resources from accidental change. CanNotDelete (Delete in the portal) allows read and modify but blocks delete; ReadOnly blocks all changes. Locks apply to everyone, including Owners, are inherited by child scopes and affect only the control plane.",
+      "deep": "Locks are applied at **subscription**, **resource group** or **resource** scope.\n\n**Lock levels**\n- **CanNotDelete**: authorised users can read and modify but not delete.\n- **ReadOnly**: users can only read, like everyone being restricted to Reader.\n\n**Behaviour**\n- Locks override RBAC: even an **Owner** must remove the lock first.\n- Inherited by all child resources, including ones created later; the most restrictive lock wins.\n- A lock on any resource blocks deletion of its resource group.\n- **Control plane only** (`management.azure.com`): a lock on a storage account doesn't protect blob data; a ReadOnly lock on a SQL server doesn't stop database data changes.\n\n**Unexpected ReadOnly side effects** (operations implemented as POST)\n- Storage: **List keys** is blocked, so key-based access fails.\n- VMs in a ReadOnly resource group can't be started or restarted.\n- App Service plans can't scale; Automation runbooks can't start.\n- CanNotDelete on a resource group blocks automatic cleanup of old deployments (fails at 800).\n\n**Who manages locks**: anyone with `Microsoft.Authorization/locks/*`, such as **Owner** and **User Access Administrator**. Contributor can't create or delete locks.\n\nCLI: `az lock create --name LockRG --lock-type CanNotDelete --resource-group rg1`.",
+      "terms": [
+        {
+          "t": "CanNotDelete",
+          "d": "Lock allowing read and modify but blocking deletion."
+        },
+        {
+          "t": "ReadOnly",
+          "d": "Lock allowing only read operations."
+        },
+        {
+          "t": "Control plane",
+          "d": "Azure Resource Manager operations, the only ones locks affect."
+        }
+      ],
+      "trap": "Locks don't protect data inside a resource (blobs, rows); and Contributor can't remove a lock because it lacks Microsoft.Authorization write permissions.",
+      "example": "The networking team puts a CanNotDelete lock on the hub VNet resource group so nobody can accidentally delete the ExpressRoute gateway.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Operation",
+          "CanNotDelete",
+          "ReadOnly"
+        ],
+        "rows": [
+          [
+            "Read",
+            "Allowed",
+            "Allowed"
+          ],
+          [
+            "Modify",
+            "Allowed",
+            "Blocked"
+          ],
+          [
+            "Delete",
+            "Blocked",
+            "Blocked"
+          ],
+          [
+            "Storage list keys",
+            "Allowed",
+            "Blocked"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.3.06",
+      "objective": "d1.3",
+      "seq": 6,
+      "title": "Managing Azure built-in role assignments",
+      "short": "An Azure role assignment binds a security principal (user, group, service principal or managed identity) to a role definition at a scope: management group, subscription, resource group or resource. Assignments inherit downward. Owner, User Access Administrator and Role Based Access Control Administrator can assign roles.",
+      "deep": "**Azure RBAC** answers *who* can do *what* *where*.\n\n**Steps**\n1. Determine **who** needs access (prefer **groups** over individual users; managed identities for workloads).\n2. Choose the **role**: start with the most restrictive **job function role** (Virtual Machine Contributor, Storage Blob Data Reader, Key Vault Secrets User...) before broad roles.\n3. Choose the **scope**: management group > subscription > resource group > resource. Permissions inherit to child scopes, so assign as low as possible.\n4. Create the assignment (portal Access control (IAM), `az role assignment create`, `New-AzRoleAssignment`, Bicep).\n\n**Privileged administrator roles**: **Owner**, **Contributor**, **User Access Administrator**, **Role Based Access Control Administrator**, Reservations Administrator. Treat them as high risk.\n- **Contributor** manages resources but can't assign roles.\n- **User Access Administrator** manages access (and other Microsoft.Authorization operations).\n- **Role Based Access Control Administrator** only manages role assignments; supports **conditions** that restrict which roles and principal types the delegate can assign.\n\n**Control vs data roles**: Owner on a storage account doesn't automatically mean data-plane rights via Entra; data roles such as **Storage Blob Data Contributor** grant `DataActions`.\n\nAssignment changes are recorded in the **Azure Activity log**.",
+      "terms": [
+        {
+          "t": "Security principal",
+          "d": "User, group, service principal or managed identity receiving a role."
+        },
+        {
+          "t": "Scope",
+          "d": "Management group, subscription, resource group or resource."
+        },
+        {
+          "t": "Role Based Access Control Administrator",
+          "d": "Least-privilege role for managing role assignments, supports conditions."
+        }
+      ],
+      "trap": "Contributor can't grant access; when a role must assign roles with least privilege, pick Role Based Access Control Administrator rather than Owner.",
+      "example": "The app team gets Contributor on their resource group, and their pipeline's managed identity gets Website Contributor on one App Service only.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Management group",
+          "Subscription",
+          "Resource group",
+          "Resource"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.3.07",
+      "objective": "d1.3",
+      "seq": 7,
+      "title": "Custom Azure roles and custom Entra roles",
+      "short": "When no built-in role fits, create a custom role. Azure custom roles list Actions, NotActions, DataActions, NotDataActions and AssignableScopes. Microsoft Entra custom roles are built from directory permissions, need Entra ID P1, and can be scoped to the tenant, an administrative unit or a single app or group.",
+      "deep": "**Azure custom roles** (Azure Resource Manager)\n- JSON properties: `Actions` (control plane allowed), `NotActions` (subtracted from Actions), `DataActions` / `NotDataActions` (data plane), `AssignableScopes`.\n- **NotActions isn't a deny**: another assignment can still grant that action.\n- AssignableScopes: subscriptions, resource groups or **one** management group; no root `/` and no wildcards.\n- Roles with **DataActions can't be assigned at management group scope**.\n- Up to 5,000 custom roles per tenant.\n- Create with `az role definition create --role-definition role.json` or `New-AzRoleDefinition`; needs `Microsoft.Authorization/roleDefinitions/write` on all assignable scopes (Owner, User Access Administrator).\n- Tip: clone a built-in role in the portal and trim it; avoid broad wildcards that grant future actions.\n\n**Microsoft Entra custom roles** (directory)\n- Built from Entra permissions such as `microsoft.directory/applications/credentials/update`.\n- Require **Microsoft Entra ID P1** for assigned users.\n- Scopes: **tenant**, **administrative unit**, or a single **Entra resource** (an app registration, enterprise app or group).\n- Managed in Entra admin center, Microsoft Graph PowerShell or Graph API.\n\nAzure roles never grant Entra directory permissions, and vice versa.",
+      "terms": [
+        {
+          "t": "Actions / NotActions",
+          "d": "Allowed control-plane operations, minus excluded ones."
+        },
+        {
+          "t": "DataActions",
+          "d": "Allowed data-plane operations, e.g., blob read."
+        },
+        {
+          "t": "AssignableScopes",
+          "d": "Scopes where the custom role is available for assignment."
+        },
+        {
+          "t": "Administrative unit",
+          "d": "Entra container limiting a role's scope to its members."
+        }
+      ],
+      "trap": "NotActions subtracts but doesn't deny; and Azure RBAC custom roles can't manage Entra objects like app credentials, which need an Entra custom role.",
+      "example": "Contoso creates an Entra custom role allowing credential updates and assigns it scoped to one app registration for its DevOps lead.",
+      "diagram": null
+    },
+    {
+      "id": "sc-500.d1.3.08",
+      "objective": "d1.3",
+      "seq": 8,
+      "title": "Finding and fixing overprivileged access",
+      "short": "Remove excess privilege by auditing Azure RBAC assignments, converting standing privileged roles to PIM eligible assignments, running access reviews, and using Defender for Cloud CIEM recommendations for inactive or overprovisioned identities across Azure, AWS and GCP.",
+      "deep": "**Least privilege** means the smallest role, at the lowest scope, for the shortest time.\n\n**Discover**\n- **Access control (IAM) > Role assignments** and `az role assignment list --all` or Azure Resource Graph `authorizationresources` to find Owners and broad assignments at subscription or management group scope.\n- **Defender for Cloud recommendations**, for example limiting the number of subscription owners, removing accounts with owner permissions that are blocked or guests, and **CIEM** (part of Defender CSPM) findings: **inactive identities**, overprovisioned identities based on actual usage, across Entra ID, AWS IAM and GCP IAM.\n- **Cloud security explorer** and **attack paths** for identities with excessive permissions.\n- **PIM alerts** and **Discovery and insights**.\n\n**Remediate**\n- Replace Owner/Contributor with **job-specific built-in roles** or custom roles.\n- Move assignments down to resource group or resource scope.\n- Assign to **groups**, not individuals.\n- Convert standing privileged assignments to **PIM eligible** with approval.\n- Run recurring **access reviews** of Azure resource roles (through PIM) and of groups; auto-apply 'remove access' for denied or no-response reviewers.\n- Use RBAC **conditions** to constrain delegated role assignment.\n- Remove orphaned assignments ('Identity not found') and unused service principals.\n\nAzure RBAC is additive: a principal's effective permissions are the union of all its assignments.",
+      "terms": [
+        {
+          "t": "CIEM",
+          "d": "Cloud infrastructure entitlement management: finding excessive or unused permissions."
+        },
+        {
+          "t": "Access review",
+          "d": "Recurring attestation of who still needs a role or group."
+        },
+        {
+          "t": "Least privilege",
+          "d": "Minimum permissions, lowest scope, shortest duration."
+        }
+      ],
+      "trap": "A resource lock or a deny policy doesn't reduce someone's privilege; remediation means changing role assignments, PIM and reviews.",
+      "example": "An audit finds 14 subscription Owners; the team converts them to PIM-eligible, gives app teams Contributor on their resource groups and schedules quarterly reviews.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Discover",
+          "Right-size role",
+          "Lower scope",
+          "PIM eligible",
+          "Review"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.3.09",
+      "objective": "d1.3",
+      "seq": 9,
+      "title": "Azure Backup security features",
+      "short": "Azure Backup defends backups against ransomware and rogue admins with always-on soft delete (14 to 180 days), immutable vaults (lockable, irreversible), multi-user authorization through a Resource Guard, encryption with customer-managed keys, and private endpoints.",
+      "deep": "Attackers try to delete backups before encrypting production. Recovery Services vaults and Backup vaults offer layered protection.\n\n**Soft delete (enhanced)**\n- Deleted backup data is kept recoverable for **14 to 180 days (default 14)**.\n- **Always-on** soft delete can't be disabled; the first 14 days are free.\n\n**Immutable vault**\n- States: **Disabled**, **Enabled** (reversible), **Enabled and locked** (irreversible; WORM storage).\n- Blocks operations that could lose backup data: deleting recovery points before expiry, or reducing policy retention.\n\n**Multi-user authorization (MUA)**\n- A separate **Resource Guard** resource owned by a security admin (ideally another subscription or tenant).\n- Critical operations (disable soft delete, remove MUA, reduce protection, modify policy, stop protection, disable immutability...) require a permission on the Resource Guard.\n- The backup admin gets only **Reader** on the Resource Guard; for a critical operation the security admin temporarily grants **Backup MUA Operator**, ideally via **PIM**.\n\n**Other controls**\n- Azure RBAC roles: **Backup Contributor**, **Backup Operator**, **Backup Reader**.\n- **Encryption** with customer-managed keys in Key Vault; **private endpoints**; **security PIN** for critical on-premises (MARS) operations; alerts in Azure Monitor and **Defender for Cloud**.",
+      "terms": [
+        {
+          "t": "Immutable vault",
+          "d": "Vault setting blocking backup-destroying operations; lockable for good."
+        },
+        {
+          "t": "Resource Guard",
+          "d": "Separate resource that gates critical vault operations for MUA."
+        },
+        {
+          "t": "Backup MUA Operator",
+          "d": "Role granted temporarily on Resource Guard to allow a critical operation."
+        }
+      ],
+      "trap": "Immutability stops data loss operations but not a malicious admin disabling security settings when unlocked; MUA is the feature that needs a second person's approval.",
+      "example": "Woodgrove places its Resource Guard in a separate security tenant so a compromised backup admin can't disable soft delete.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "MUA (Resource Guard)",
+          "Immutable vault (locked)",
+          "Soft delete",
+          "Encryption + private endpoint",
+          "RBAC roles"
+        ]
+      }
+    },
+    {
+      "id": "sc-500.d1.3.10",
+      "objective": "d1.3",
+      "seq": 10,
+      "title": "Security controls with infrastructure as code",
+      "short": "Infrastructure as code (Bicep, ARM, Terraform) lets you deploy security controls consistently: Key Vault secret references instead of plain passwords, deployment stacks with deny settings, policy as code, and IaC scanning in pipelines with Microsoft Security DevOps.",
+      "deep": "**Secure templates**\n- Never hard-code secrets: use `@secure()` / `securestring` parameters and reference Key Vault secrets. In an ARM parameter file use a `reference` object with `keyVault.id` and `secretName`; in Bicep use `getSecret()`. The vault needs `enabledForTemplateDeployment` and the deployer needs `Microsoft.KeyVault/vaults/deploy/action` (Owner and Contributor have it).\n- Deploy controls as code: locks (`Microsoft.Authorization/locks`), role assignments, policy assignments, diagnostic settings, private endpoints.\n\n**Deployment stacks**\n- Manage a set of resources as one unit. **Deny settings**: `none`, `denyDelete`, `denyWriteAndDelete` (control plane), with up to five **excluded principals** (such as the pipeline identity).\n- **actionOnUnmanage**: `detachAll` (default), `deleteResources`, `deleteAll`.\n\n**Policy as code**: store policy definitions and assignments in Git and deploy through pipelines (for example Enterprise Policy as Code).\n\n**Shift-left scanning**\n- **Microsoft Security DevOps (MSDO)** GitHub action / Azure DevOps extension runs **Template Analyzer** (ARM, Bicep), **Checkov** and **Terrascan** (ARM, Terraform, Kubernetes, CloudFormation...).\n- Results show in **Defender for Cloud DevOps security** (no GHAS licence needed) or GitHub code scanning (GHAS).\n- `what-if` deployments preview changes.",
+      "terms": [
+        {
+          "t": "Deployment stack",
+          "d": "Azure resource managing a group of deployed resources with deny settings."
+        },
+        {
+          "t": "Deny settings",
+          "d": "Stack-applied deny assignment: denyDelete or denyWriteAndDelete."
+        },
+        {
+          "t": "Microsoft Security DevOps",
+          "d": "Pipeline tooling that runs IaC and code scanners and reports to Defender for Cloud."
+        }
+      ],
+      "trap": "A Key Vault reference in a parameter file fails if the vault lacks enabledForTemplateDeployment, even when the user can read the secret.",
+      "example": "A pipeline deploys a VM whose admin password comes from a Key Vault reference, inside a deployment stack set to denyWriteAndDelete with the pipeline identity excluded.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Bicep in Git",
+          "MSDO scan",
+          "PR review",
+          "Stack deploy",
+          "Policy audit"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-500.d1.q001",
+      "lesson": "sc-500.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Administrators should hold the Global Administrator role only when they need it, for a limited time, after completing MFA. Which feature should you implement?",
+      "options": [
+        "Eligible assignments in Microsoft Entra Privileged Identity Management",
+        "A Conditional Access policy with sign-in frequency set to one hour",
+        "Microsoft Entra access reviews for the Global Administrator role",
+        "An administrative unit containing the administrator accounts"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "PIM eligible assignments give just-in-time, time-bound activation with MFA. Sign-in frequency only forces reauthentication; access reviews periodically confirm need but don't remove standing access between reviews; administrative units limit scope, not duration."
+    },
+    {
+      "id": "sc-500.d1.q002",
+      "lesson": "sc-500.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which licence must cover users who have eligible role assignments managed by Privileged Identity Management?",
+      "options": [
+        "Microsoft Entra ID P1",
+        "Microsoft Entra ID P2 or Microsoft Entra ID Governance",
+        "Microsoft Entra Workload ID Premium",
+        "Microsoft Entra Suite add-on for Microsoft 365 E3 only"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "PIM requires Entra ID P2 or Entra ID Governance for users with eligible or time-bound assignments and for approvers. P1 covers Conditional Access but not PIM; Workload ID Premium is for workload identities."
+    },
+    {
+      "id": "sc-500.d1.q003",
+      "lesson": "sc-500.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "You are configuring PIM role settings for the Security Administrator role. For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "An approver for activation requests must also be assigned the Security Administrator role.",
+          "a": false
+        },
+        {
+          "s": "A ticket number entered during activation is validated against your ITSM system.",
+          "a": false
+        },
+        {
+          "s": "Activation can be made to require a Conditional Access authentication context.",
+          "a": true
+        }
+      ],
+      "explain": "Approvers need no role at all. Ticket information is only recorded, not validated. PIM supports 'On activation, require Microsoft Entra Conditional Access authentication context' to enforce CA controls such as authentication strengths."
+    },
+    {
+      "id": "sc-500.d1.q004",
+      "lesson": "sc-500.d1.1.01",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A user needs just-in-time Contributor access to a subscription with approval required. Role settings are already configured. Put the steps in order.",
+      "options": [
+        "Select the subscription under Azure resources in PIM",
+        "Add an eligible assignment of Contributor for the user",
+        "The user requests activation from My roles with a justification",
+        "An approver approves the activation request",
+        "Contributor becomes active for the configured duration"
+      ],
+      "explain": "The resource must be selected in PIM before assignments are made; the user then activates the eligible role, approval follows because it is required, and only then do the permissions apply for the activation window."
+    },
+    {
+      "id": "sc-500.d1.q005",
+      "lesson": "sc-500.d1.1.02",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso uses PIM for the Owner role on its production subscription. A recent review found that an attacker activated Owner after phishing a user's password and approving an Authenticator push. The CISO requires that activating Owner must use a FIDO2 security key or Windows Hello for Business. A Conditional Access policy can require the Phishing-resistant MFA strength.",
+      "stem": "Which PIM role setting should you configure for Owner?",
+      "options": [
+        "On activation, require multifactor authentication",
+        "Require approval to activate",
+        "On activation, require Microsoft Entra Conditional Access authentication context",
+        "Require multifactor authentication on active assignment"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "An authentication context linked to a CA policy requiring Phishing-resistant MFA strength enforces FIDO2/WHfB at activation. The plain MFA toggle accepts any MFA method, including push. Approval adds a human step but not method strength; MFA on active assignment applies when an admin creates an assignment."
+    },
+    {
+      "id": "sc-500.d1.q006",
+      "lesson": "sc-500.d1.1.03",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Two enabled Conditional Access policies apply to a user signing in to the Azure portal. Policy A requires MFA. Policy B requires a device marked as compliant. What happens?",
+      "options": [
+        "Only the policy created most recently is enforced",
+        "The user can satisfy either policy to gain access",
+        "The policy with the narrower user scope takes precedence",
+        "The user must satisfy both MFA and a compliant device"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "All applicable Conditional Access policies are enforced together, so every grant requirement must be met (and a block in any policy wins). There is no ordering by creation date or scope, and 'require one of' applies only to controls within one policy."
+    },
+    {
+      "id": "sc-500.d1.q007",
+      "lesson": "sc-500.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You must measure how a new Conditional Access policy that blocks legacy authentication would affect real sign-ins over two weeks without blocking anyone. What should you do?",
+      "options": [
+        "Set the policy state to Report-only and review sign-in logs or the insights workbook",
+        "Run the What If tool for each affected user",
+        "Create the policy in the Off state and review audit logs",
+        "Enable security defaults for the pilot group"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Report-only evaluates the policy on actual sign-ins and logs the result without enforcing it. What If simulates single hypothetical sign-ins, an Off policy isn't evaluated at all, and security defaults can't be targeted to a pilot group."
+    },
+    {
+      "id": "sc-500.d1.q008",
+      "lesson": "sc-500.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are Conditional Access session controls? Select TWO.",
+      "options": [
+        "Sign-in frequency",
+        "Persistent browser session",
+        "Require password change",
+        "Require Microsoft Entra hybrid joined device",
+        "Require authentication strength"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Sign-in frequency and persistent browser session are session controls that shape the session after access. Require password change, hybrid joined device and authentication strength are grant controls evaluated to allow access."
+    },
+    {
+      "id": "sc-500.d1.q009",
+      "lesson": "sc-500.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Conditional Access, select Yes if true.",
+      "statements": [
+        {
+          "s": "Conditional Access requires a Microsoft Entra ID P1 licence.",
+          "a": true
+        },
+        {
+          "s": "A single policy can use both Require multifactor authentication and Require authentication strength.",
+          "a": false
+        },
+        {
+          "s": "Conditional Access policies are evaluated after the first authentication factor is completed.",
+          "a": true
+        }
+      ],
+      "explain": "CA needs Entra ID P1. Require MFA and Require authentication strength can't be combined in one policy because the built-in MFA strength is equivalent. Policies are evaluated after first-factor authentication, so they don't restrict the first step."
+    },
+    {
+      "id": "sc-500.d1.q010",
+      "lesson": "sc-500.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A new employee has no password and must register a passkey on day one. Which authentication method should the help desk issue so the employee can sign in and register?",
+      "options": [
+        "SMS sign-in",
+        "Temporary Access Pass",
+        "Email one-time passcode",
+        "Software OATH token"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A Temporary Access Pass is a time-limited passcode designed for onboarding and recovery so users can register passwordless methods. SMS and OATH need a method already registered; email OTP is for guest users, not member onboarding."
+    },
+    {
+      "id": "sc-500.d1.q011",
+      "lesson": "sc-500.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "The help desk tries to issue a Temporary Access Pass valid for three days to a remote hire, but the lifetime is rejected. The TAP policy uses default settings. What should you do?",
+      "options": [
+        "Enable one-time use in the TAP policy",
+        "Assign the help desk the Authentication Policy Administrator role",
+        "Purchase Microsoft Entra ID P2 for the remote hire",
+        "Increase the maximum lifetime in the TAP policy, which defaults to 8 hours"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The default maximum TAP lifetime is 8 hours; it can be raised up to 30 days in the policy. One-time use doesn't affect lifetime, Authentication Policy Administrator configures policy but isn't needed to issue, and TAP needs no P2."
+    },
+    {
+      "id": "sc-500.d1.q012",
+      "lesson": "sc-500.d1.1.05",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which least-privileged Microsoft Entra role can create a Temporary Access Pass for a standard (non-admin) member user?",
+      "options": [
+        "Authentication Policy Administrator",
+        "Authentication Administrator",
+        "Security Administrator",
+        "Global Reader"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Authentication Administrator can create, view and delete TAPs for non-admin members. Authentication Policy Administrator configures the methods policy but doesn't issue passes; Security Administrator isn't a TAP issuer; Global Reader can view TAP details only."
+    },
+    {
+      "id": "sc-500.d1.q013",
+      "lesson": "sc-500.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which methods satisfy the built-in Phishing-resistant MFA authentication strength? Select THREE.",
+      "options": [
+        "FIDO2 security key",
+        "Windows Hello for Business",
+        "Certificate-based authentication (multifactor)",
+        "Microsoft Authenticator push with number matching",
+        "Temporary Access Pass"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Phishing-resistant MFA strength includes FIDO2/passkeys, Windows Hello for Business or platform credential, and multifactor CBA. Authenticator push is phishable, and TAP is accepted by the Multifactor authentication strength, not the phishing-resistant one."
+    },
+    {
+      "id": "sc-500.d1.q014",
+      "lesson": "sc-500.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam is rolling out passkeys. Compliance requires that passkeys be stored only on hardware the company issues (approved security key models and Microsoft Authenticator), never synced to consumer cloud password managers, and that Entra ID verify the genuine make and model at registration.",
+      "stem": "How should you configure the Passkeys (FIDO2) method?",
+      "options": [
+        "Passkey profile allowing synced passkeys with attestation set to No",
+        "Conditional Access policy requiring a device marked as compliant",
+        "Passkey profile allowing only device-bound passkeys, with Enforce attestation and key restrictions by AAGUID",
+        "Authentication strength set to Passwordless MFA strength"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A passkey profile with only the device-bound type, attestation enforced and AAGUID key restrictions meets all three requirements; synced passkeys can't be attested. Device compliance doesn't control credential type, and Passwordless MFA strength also allows Authenticator phone sign-in."
+    },
+    {
+      "id": "sc-500.d1.q015",
+      "lesson": "sc-500.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You want only members of the HR group to sign in to a SaaS gallery app. Where do you set Assignment required to Yes and add the group?",
+      "options": [
+        "App registrations > API permissions",
+        "App registrations > Manifest",
+        "Microsoft Entra ID > Roles and administrators",
+        "Enterprise applications > the app > Properties and Users and groups"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "User assignment and the Assignment required property belong to the service principal, managed under Enterprise applications. API permissions and the manifest are part of the app registration, and directory roles grant admin rights rather than app access."
+    },
+    {
+      "id": "sc-500.d1.q016",
+      "lesson": "sc-500.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "A software vendor publishes a multitenant app used by your tenant. For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "The application object exists only in the vendor's home tenant.",
+          "a": true
+        },
+        {
+          "s": "Your tenant has its own service principal for the app.",
+          "a": true
+        },
+        {
+          "s": "Deleting the enterprise application in your tenant deletes the vendor's app registration.",
+          "a": false
+        }
+      ],
+      "explain": "A multitenant app has one application object in the publisher's tenant and a separate service principal in each consuming tenant. Deleting your service principal removes the app from your tenant only."
+    },
+    {
+      "id": "sc-500.d1.q017",
+      "lesson": "sc-500.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A development team deploys Bicep templates to Azure from GitHub Actions running on GitHub-hosted runners. Security policy forbids storing any long-lived credential, including secrets and certificate private keys, in GitHub.",
+      "stem": "Which credential should the deployment identity use?",
+      "options": [
+        "A client secret stored as an encrypted GitHub secret",
+        "A certificate uploaded to the app registration",
+        "A federated identity credential on the app registration",
+        "A system-assigned managed identity on the runner"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Workload identity federation lets Entra ID trust GitHub's OIDC token, so no secret is stored. Secrets and certificates are long-lived credentials kept in GitHub, and GitHub-hosted runners aren't Azure resources, so they can't have a managed identity."
+    },
+    {
+      "id": "sc-500.d1.q018",
+      "lesson": "sc-500.d1.1.09",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "After a consent-phishing attack, you want users to keep consenting only to low-risk permissions requested by trustworthy apps. Which user consent setting should you choose?",
+      "options": [
+        "Allow user consent for apps from verified publishers, for selected permissions",
+        "Allow user consent for apps",
+        "Do not allow user consent",
+        "Allow user consent for application permissions only"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The verified-publishers option limits consent to verified or in-tenant apps and to permissions classified as low impact. 'Allow user consent for apps' is the permissive legacy default; disabling consent blocks all; users can never consent to application permissions."
+    },
+    {
+      "id": "sc-500.d1.q019",
+      "lesson": "sc-500.d1.1.09",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Contoso set user consent to 'Do not allow user consent'. Users now see an error when an app asks for permissions and help desk tickets are rising. Contoso wants users to submit a justified request that the cloud application team can review and approve within a week.",
+      "stem": "Which TWO actions should you take? Select TWO.",
+      "options": [
+        "Enable the admin consent workflow",
+        "Designate the cloud application team (with a role able to grant consent) as reviewers",
+        "Assign all users the Application Developer role",
+        "Classify every Microsoft Graph permission as low impact",
+        "Enable security defaults"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "The admin consent workflow lets users request access, and reviewers must already hold a role that can grant the consent. Application Developer only allows app registration, classifying everything as low impact defeats the control, and security defaults don't handle consent."
+    },
+    {
+      "id": "sc-500.d1.q020",
+      "lesson": "sc-500.d1.1.09",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You are using Microsoft Graph PowerShell to allow user consent only for apps from verified publishers for permissions classified as low impact. Complete the command.",
+      "code": "$body = @{\n  \"permissionGrantPolicyIdsAssignedToDefaultUserRole\" = @(\n    \"managePermissionGrantsForSelf.____\"\n  )\n}\nUpdate-MgPolicyAuthorizationPolicy -BodyParameter $body",
+      "options": [
+        "microsoft-user-default-low",
+        "microsoft-user-default-legacy",
+        "microsoft-all-application-permissions",
+        "microsoft-company-admin"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "microsoft-user-default-low is the built-in policy for verified publishers and low-impact permissions. The legacy policy allows consent to any permission not requiring admin consent; the other two are broader built-in policies used for admin-level grants."
+    },
+    {
+      "id": "sc-500.d1.q021",
+      "lesson": "sc-500.d1.1.10",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You must attach an existing user-assigned managed identity named uami-shared to VM1 by using the Azure CLI. Complete the command.",
+      "code": "az vm identity assign --resource-group rg1 --name VM1 ____ uami-shared",
+      "options": [
+        "--assignee",
+        "--identities",
+        "--assign-identity",
+        "--role"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "az vm identity assign uses --identities with the name or resource ID of a user-assigned identity (omitting it enables system-assigned). --assign-identity belongs to az vm create; --assignee and --role relate to role assignments, not attaching identities."
+    },
+    {
+      "id": "sc-500.d1.q022",
+      "lesson": "sc-500.d1.1.10",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Twenty App Service apps that are frequently deleted and recreated must all read the same Key Vault secrets, and the vault permissions must be granted once before the apps exist. Which identity should you use?",
+      "options": [
+        "A system-assigned managed identity on each app",
+        "A service principal with a client secret in app settings",
+        "A federated identity credential for each app",
+        "A single user-assigned managed identity assigned to all the apps"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A user-assigned identity is a standalone resource that can be pre-authorised and shared, and survives app deletion. System-assigned identities are per resource and deleted with it; a client secret reintroduces a stored credential; federated credentials are for external workloads."
+    }
+  ]
+}

@@ -1,0 +1,683 @@
+{
+  "exam": "sc-100",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "sc-100.d3.3.01",
+      "objective": "d3.3",
+      "seq": 1,
+      "title": "Security baselines for SaaS, PaaS and IaaS",
+      "short": "Baselines differ by service model because the shared responsibility split differs. For IaaS you harden the OS; for PaaS you configure the service using its MCSB security baseline and Azure Policy; for SaaS you configure tenant settings and track them with Secure Score and SaaS security posture management.",
+      "deep": "The **shared responsibility model** decides what your baseline must cover:\n- **IaaS (VMs)**: you own the OS, middleware and network rules. Baseline = OS hardening (Azure compute security baseline via machine configuration, CIS), patching, EDR, NSGs, disk encryption.\n- **PaaS (App Service, Azure SQL, Storage, Key Vault)**: Microsoft runs the OS. You configure the service. Microsoft publishes a **per-service security baseline** that applies MCSB controls (network isolation, identity, data protection, logging) to that service. Enforce it with **Azure Policy** initiatives (Audit, Deny, DeployIfNotExists, Modify) assigned at **management group** scope, ideally inside an **Azure landing zone**.\n- **SaaS (Microsoft 365, Salesforce, ServiceNow)**: you configure identity, sharing and tenant settings. Measure with **Microsoft Secure Score** and **SaaS security posture management (SSPM)** in Defender for Cloud Apps: connect the app with an **app connector**, turn on security recommendations, and track the **SaaS Security initiative** in Exposure Management.\n\nAcross all three: identity is always yours. Microsoft Entra ID, Conditional Access and least privilege appear in every baseline.",
+      "terms": [
+        {
+          "t": "Shared responsibility model",
+          "d": "Split of security duties between cloud provider and customer by service model."
+        },
+        {
+          "t": "Azure Policy effect",
+          "d": "What a policy does on evaluation: Audit, Deny, DeployIfNotExists, Modify and others."
+        },
+        {
+          "t": "SSPM",
+          "d": "SaaS security posture management: configuration assessment of connected SaaS apps."
+        }
+      ],
+      "trap": "Do not specify OS hardening for PaaS or SaaS; on PaaS the customer configures the service, not the underlying OS.",
+      "example": "A landing zone assigns a Deny policy that blocks storage accounts with public network access, while Salesforce settings are tracked through SSPM recommendations.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Model",
+          "You baseline",
+          "Tool"
+        ],
+        "rows": [
+          [
+            "IaaS",
+            "OS, network",
+            "Machine config"
+          ],
+          [
+            "PaaS",
+            "Service config",
+            "Azure Policy"
+          ],
+          [
+            "SaaS",
+            "Tenant settings",
+            "Secure Score, SSPM"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.3.02",
+      "objective": "d3.3",
+      "seq": 2,
+      "title": "Security requirements for IoT workloads",
+      "short": "An IoT workload is the cloud side of IoT: IoT Hub, provisioning, data pipelines and apps. Secure it with per-device authentication, private endpoints, Microsoft Entra ID and RBAC for services, least-privilege access policies, and monitoring of device and hub activity.",
+      "deep": "Device hardening (objective 3.2) is only half the story. The IoT **workload** in Azure also needs requirements:\n- **Identity and authentication**: devices authenticate with X.509 certificates or per-device keys; back-end services use **Microsoft Entra ID with Azure RBAC** (for example IoT Hub data roles) instead of shared access policies. Disable local (SAS) authentication where possible.\n- **Network**: use **private endpoints** for IoT Hub and DPS, restrict or disable public network access, and use IP filters only as a supplement.\n- **Data protection**: TLS 1.2+ in transit; data at rest is encrypted by the platform.\n- **Provisioning**: DPS enrolment groups with certificate chains, and a plan to **revoke** compromised devices by disabling them in the hub or DPS.\n- **Updates**: signed over-the-air updates (Device Update for IoT Hub).\n- **Monitoring**: Azure Monitor diagnostic logs from IoT Hub into Sentinel; Defender for Cloud recommendations for IoT Hub configuration.\n- **Edge**: IoT Edge gateways isolate leaf devices and should themselves be hardened.\n\nThink of it as a Zero Trust data pipeline from device to dashboard.",
+      "terms": [
+        {
+          "t": "IoT Hub",
+          "d": "Azure PaaS that brokers bidirectional messages between devices and the cloud."
+        },
+        {
+          "t": "Shared access policy",
+          "d": "Key-based IoT Hub permission; prefer Entra ID and RBAC for services."
+        },
+        {
+          "t": "IoT Edge",
+          "d": "Runtime that runs cloud workloads on a local gateway device."
+        }
+      ],
+      "trap": "Back-end apps using the iothubowner shared key is the wrong answer; prefer managed identity with Entra ID RBAC.",
+      "example": "An analytics function reads telemetry from IoT Hub by using its managed identity and an IoT Hub data reader role, over a private endpoint.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Device (X.509)",
+          "DPS",
+          "IoT Hub (private)",
+          "Pipeline (MI)",
+          "Sentinel"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.3.03",
+      "objective": "d3.3",
+      "seq": 3,
+      "title": "Security requirements for web workloads",
+      "short": "Web workloads need edge protection (Azure Front Door or Application Gateway with Web Application Firewall, plus DDoS Protection), HTTPS-only with TLS 1.2+, managed identities and Key Vault references for secrets, private connectivity to back ends, and API protection with Azure API Management and Defender for APIs.",
+      "deep": "Layered requirements for a web app or API:\n- **Edge**: **Azure Front Door Premium** (global) or **Application Gateway** (regional) with **Azure Web Application Firewall** using managed rule sets (OWASP-based Default Rule Set) and bot protection. Start WAF in **Detection** mode, tune, then switch to **Prevention**. Lock the origin so it accepts traffic only from the edge (for example Front Door Private Link to the origin, or access restrictions on the Front Door service tag plus header check).\n- **DDoS**: Azure DDoS Protection (**Network Protection** per VNet, or **IP Protection** per public IP). Network Protection adds rapid response, cost protection and a WAF discount.\n- **App Service settings**: **HTTPS Only** (not on by default), minimum TLS 1.2, disable FTP or require FTPS, disable basic auth for SCM/FTP, **Easy Auth** with Microsoft Entra ID.\n- **Secrets**: **managed identity** plus **Key Vault references** in app settings.\n- **Back ends**: **VNet integration** for outbound and **private endpoints** for databases and storage.\n- **APIs**: **Azure API Management** for authentication (validate-jwt), rate limiting and versioning; **Defender for APIs** for inventory, sensitive data classification and OWASP API Top 10 threat detection.\n- **Threat protection**: Defender for App Service; DevSecOps code scanning (GitHub Advanced Security).",
+      "terms": [
+        {
+          "t": "Azure WAF",
+          "d": "Web Application Firewall on Front Door or Application Gateway; modes Detection and Prevention."
+        },
+        {
+          "t": "Key Vault reference",
+          "d": "App setting syntax that resolves a secret from Key Vault at runtime."
+        },
+        {
+          "t": "Defender for APIs",
+          "d": "Plan protecting APIs published in Azure API Management."
+        },
+        {
+          "t": "Easy Auth",
+          "d": "App Service built-in authentication with Entra ID and other providers."
+        }
+      ],
+      "trap": "Azure Firewall is not a WAF; HTTP-layer attacks such as SQL injection on a public site need Azure WAF on Front Door or Application Gateway.",
+      "example": "A global e-commerce site uses Front Door Premium with WAF in Prevention mode, Private Link to App Service origins, and Key Vault references for its payment API keys.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Users",
+          "Front Door + WAF",
+          "App Service",
+          "Private endpoint",
+          "Azure SQL"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.3.04",
+      "objective": "d3.3",
+      "seq": 4,
+      "title": "Security requirements for containers",
+      "short": "Container requirements cover the supply chain and runtime: build from trusted minimal base images, scan images in the registry, sign and only deploy approved images, keep secrets out of images, run as non-root, and detect runtime threats and binary drift with Defender for Containers.",
+      "deep": "Containers move risk into the **build pipeline**. Requirements:\n- **Registry**: Azure Container Registry with private endpoints, public access disabled, Entra ID auth (admin user disabled), and RBAC such as AcrPull for clusters.\n- **Image vulnerability assessment**: Defender for Containers (and Defender CSPM agentless assessment) scans images in ACR, ECR, GAR/GCR and supported external registries using **Microsoft Defender Vulnerability Management**, and scans running containers.\n- **Supply chain**: sign images (for example Notation with signatures stored in ACR) and only admit signed, scanned images; generate SBOMs; scan in CI (GitHub Advanced Security, Defender for Cloud DevOps security) so issues are fixed before push.\n- **Image hygiene**: minimal/distroless base images, no secrets baked in (use Key Vault and workload identity), pin versions.\n- **Runtime**: run as **non-root**, read-only root filesystem, drop Linux capabilities, no privileged containers.\n- **Runtime threat detection**: the **Defender sensor** provides Kubernetes-aware detections mapped to MITRE ATT&CK for Containers, plus **binary drift detection** (alert on, or block, executables not in the original image).\n\nServerless containers (Azure Container Apps, ACI) still need image scanning and identity controls.",
+      "terms": [
+        {
+          "t": "Binary drift",
+          "d": "A process running in a container that was not part of the original image."
+        },
+        {
+          "t": "AcrPull",
+          "d": "Azure RBAC role allowing an identity to pull images from ACR."
+        },
+        {
+          "t": "SBOM",
+          "d": "Software bill of materials listing the components inside an image."
+        }
+      ],
+      "trap": "Scanning only at build time misses newly published CVEs; the exam expects continuous registry and runtime scanning too.",
+      "example": "A pipeline signs each image after scanning, and the cluster's admission policy rejects any unsigned image pulled from a public registry.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Code + base image",
+          "CI scan",
+          "Sign + push ACR",
+          "Registry scan",
+          "Runtime sensor"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.3.05",
+      "objective": "d3.3",
+      "seq": 5,
+      "title": "Security requirements for container orchestration (AKS)",
+      "short": "For AKS, secure the control plane (Microsoft Entra integration, Azure RBAC for Kubernetes, local accounts disabled, private cluster or authorized IP ranges), the workloads (workload identity, Pod Security Admission, Azure Policy, network policies), and the nodes (upgrades and node image patching), with Defender for Containers on top.",
+      "deep": "**Control plane access**\n- Integrate with **Microsoft Entra ID**, authorise with **Azure RBAC for Kubernetes** or Kubernetes RBAC bound to Entra groups, least privilege per namespace.\n- **Disable local accounts** (`--disable-local-accounts`) so the static admin kubeconfig cannot be retrieved; rotate certificates if local accounts were used before.\n- Keep the API server off the internet: **private cluster**, or **authorized IP ranges**.\n- Use Conditional Access and PIM for cluster admin groups.\n\n**Workloads**\n- **Microsoft Entra Workload ID** (workload identity) gives pods federated identities without secrets.\n- **Pod Security Admission** (baseline/restricted standards) and the **Azure Policy add-on for AKS** (Gatekeeper) to deny privileged pods, enforce allowed registries and resource limits.\n- **Network policies** (Azure, Calico or Cilium) for east-west segmentation, including blocking pod access to the instance metadata endpoint 169.254.169.254 where not needed.\n- Egress through **Azure Firewall** with a user-defined route.\n- Secrets from Key Vault through the **Secrets Store CSI driver**.\n\n**Nodes and platform**: stay on supported Kubernetes versions, apply **node image upgrades** (nightly patches do not update the base image), and enable **Defender for Containers** for control-plane and runtime detections across AKS, EKS, GKE and Arc-enabled clusters.",
+      "terms": [
+        {
+          "t": "Azure RBAC for Kubernetes",
+          "d": "Uses Azure role assignments to authorise Kubernetes API actions."
+        },
+        {
+          "t": "Workload identity",
+          "d": "Federated Entra identity for pods, replacing stored secrets."
+        },
+        {
+          "t": "Pod Security Admission",
+          "d": "Built-in Kubernetes controller enforcing Pod Security Standards per namespace."
+        },
+        {
+          "t": "Private cluster",
+          "d": "AKS cluster whose API server has only a private IP."
+        }
+      ],
+      "trap": "Entra integration alone still leaves the local admin kubeconfig usable; you must also disable local accounts.",
+      "example": "A regulated AKS cluster is private, has local accounts disabled, uses workload identity for pods, and egresses through Azure Firewall.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Control plane access",
+          "Admission (PSA/Policy)",
+          "Workload identity",
+          "Network policy/egress",
+          "Node patching"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.3.06",
+      "objective": "d3.3",
+      "seq": 6,
+      "title": "Security solutions for Azure AI services",
+      "short": "Secure Azure AI services and Microsoft Foundry like any PaaS, plus AI-specific controls: Microsoft Entra ID with local (key) authentication disabled, managed identities, private endpoints, customer-managed keys, Azure AI Content Safety Prompt Shields, Defender for AI Services threat protection and AI security posture management in Defender CSPM.",
+      "deep": "**Platform controls**\n- **Identity**: use Microsoft Entra ID and Azure RBAC, not API keys. Set **disableLocalAuth = true**, and enforce it with the built-in policy *Azure AI Services resources should have key access disabled*. Note propagation can take minutes to hours, so verify with a 401 test.\n- **Managed identities** for apps calling models and for the AI resource reaching storage and search.\n- **Network**: private endpoints, public network access disabled, managed network isolation for Foundry hubs/projects.\n- **Data**: encryption at rest with **customer-managed keys** in Key Vault where required; identity-based (not shared key) storage access.\n\n**AI-specific controls**\n- **Azure AI Content Safety** filters and **Prompt Shields** for jailbreak and indirect prompt injection.\n- **Defender for AI Services** (Defender for Cloud): real-time alerts for jailbreak, data leakage, data poisoning, credential theft and more; works with Prompt Shields and threat intelligence; alerts flow to Defender XDR. Text tokens only; commercial clouds only.\n- **AI security posture management** in **Defender CSPM**: discovers AI workloads, misconfigurations and attack paths to AI resources.\n- **Microsoft Purview DSPM for AI** for prompts and sensitive data in AI interactions.\n\nAlign with MCSB v2 AI security domain.",
+      "terms": [
+        {
+          "t": "disableLocalAuth",
+          "d": "Resource property that turns off key-based access so only Entra ID tokens work."
+        },
+        {
+          "t": "Prompt Shields",
+          "d": "Azure AI Content Safety feature detecting jailbreak and prompt injection attempts."
+        },
+        {
+          "t": "Defender for AI Services",
+          "d": "Defender for Cloud plan for runtime threat protection of generative AI apps."
+        },
+        {
+          "t": "AI-SPM",
+          "d": "AI security posture management in Defender CSPM."
+        }
+      ],
+      "trap": "Regenerating API keys is not the same as disabling key access; the Zero Trust answer is disableLocalAuth plus Entra ID and managed identity.",
+      "example": "A chatbot built in Foundry calls its model with a managed identity over a private endpoint, while Defender for AI Services alerts the SOC to jailbreak attempts.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Runtime alerts (Defender AI)",
+          "Prompt Shields",
+          "Posture (AI-SPM)",
+          "Network isolation",
+          "Entra ID, no keys"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-100.d3.q053",
+      "lesson": "sc-100.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "For an Azure SQL Database (PaaS), which layer is the customer responsible for securing?",
+      "options": [
+        "Patching the underlying Windows Server operating system",
+        "Physical security of the datacenter hosts",
+        "Service configuration such as firewall rules, authentication and auditing",
+        "Hypervisor hardening"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "In PaaS, Microsoft runs the OS, hypervisor and physical layers; the customer configures the service, its network access, identities and data. OS patching, physical security and hypervisor hardening are provider duties for PaaS."
+    },
+    {
+      "id": "sc-100.d3.q054",
+      "lesson": "sc-100.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You must prevent anyone from creating storage accounts that allow public network access across 60 subscriptions, including future ones. What should you recommend?",
+      "options": [
+        "Enable Defender for Storage on each subscription",
+        "Create a Microsoft Secure Score recommended action",
+        "Configure resource locks on each existing storage account",
+        "Assign an Azure Policy definition with the Deny effect at the root or intermediate management group"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A Deny policy at management group scope blocks non-compliant creation and is inherited by new subscriptions. Defender for Storage detects threats but does not block configurations, Secure Score cannot enforce, and locks only stop deletion or changes to existing resources."
+    },
+    {
+      "id": "sc-100.d3.q055",
+      "lesson": "sc-100.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your company uses Salesforce and ServiceNow. Security wants configuration recommendations for these SaaS apps alongside Microsoft 365 recommendations in Secure Score. What must you do first?",
+      "options": [
+        "Connect each app to Defender for Cloud Apps with an app connector and turn on security recommendations",
+        "Add the apps as Defender for Cloud environment connectors",
+        "Onboard the apps to Azure Arc",
+        "Configure Global Secure Access Private Access for the apps"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "SaaS security posture management requires the app connector in Defender for Cloud Apps with security recommendations turned on; recommendations then appear in Secure Score and Exposure Management. Defender for Cloud connectors cover AWS, GCP and DevOps, Arc covers servers, and Private Access is for private apps."
+    },
+    {
+      "id": "sc-100.d3.q056",
+      "lesson": "sc-100.d3.3.01",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO Azure Policy effects can automatically correct non-compliant resources rather than only report on them? Select TWO.",
+      "options": [
+        "DeployIfNotExists",
+        "Modify",
+        "Audit",
+        "AuditIfNotExists",
+        "Disabled"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "DeployIfNotExists and Modify can remediate resources (with a managed identity and remediation task). Audit and AuditIfNotExists only report, and Disabled turns the policy off."
+    },
+    {
+      "id": "sc-100.d3.q057",
+      "lesson": "sc-100.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An Azure Function processes messages from IoT Hub by using a connection string that contains the iothubowner shared access key. What should you recommend instead?",
+      "options": [
+        "Rotating the iothubowner key every 90 days",
+        "A managed identity for the function with an IoT Hub data role assigned through Azure RBAC",
+        "Storing the iothubowner key in the function's app settings in plain text",
+        "Creating a second shared access policy with registry write permissions"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A managed identity with Entra ID RBAC removes stored secrets and grants least privilege. Rotating or relocating the owner key still uses an over-privileged shared secret, and another policy with registry write adds privilege."
+    },
+    {
+      "id": "sc-100.d3.q058",
+      "lesson": "sc-100.d3.3.02",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A medical device maker sends patient telemetry from 20,000 devices to Azure IoT Hub. Regulations require that the hub is not reachable from the public internet except by devices over a dedicated carrier private APN connected to Azure, that back-end services reading telemetry use no shared secrets, and that any stolen device can be cut off quickly.",
+      "stem": "Which THREE requirements should you include? Select THREE.",
+      "options": [
+        "Private endpoints for IoT Hub with public network access disabled",
+        "Managed identities with Azure RBAC data roles for back-end services that read from the hub",
+        "Per-device identities so a single device can be disabled in IoT Hub or DPS",
+        "One group symmetric key shared by all devices",
+        "Basic tier IoT Hub to reduce attack surface"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Private endpoints meet the network rule, managed identities with RBAC remove shared secrets from back-end services, and per-device identity allows revoking one stolen device. A shared group key cannot revoke individual devices, and the hub tier does not reduce attack surface."
+    },
+    {
+      "id": "sc-100.d3.q059",
+      "lesson": "sc-100.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which service should protect a public web app from SQL injection and cross-site scripting at the HTTP layer?",
+      "options": [
+        "Azure Firewall Standard",
+        "Network security groups",
+        "Azure Web Application Firewall on Azure Front Door or Application Gateway",
+        "Azure DDoS Network Protection"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Azure WAF inspects HTTP requests with managed OWASP-based rule sets. Azure Firewall Standard filters network and FQDN traffic, NSGs filter at layers 3-4, and DDoS Protection mitigates volumetric attacks."
+    },
+    {
+      "id": "sc-100.d3.q060",
+      "lesson": "sc-100.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about securing Azure App Service, select Yes if true.",
+      "statements": [
+        {
+          "s": "HTTPS Only is enabled by default on new App Service apps.",
+          "a": false
+        },
+        {
+          "s": "A Key Vault reference lets an app setting resolve a secret from Key Vault by using the app's managed identity.",
+          "a": true
+        },
+        {
+          "s": "Basic authentication for FTP and SCM endpoints should be disabled in favour of Microsoft Entra ID-based deployment.",
+          "a": true
+        }
+      ],
+      "explain": "HTTPS Only must be turned on explicitly. Key Vault references use the app's managed identity to fetch secrets. Microsoft recommends disabling basic auth on FTP and SCM endpoints."
+    },
+    {
+      "id": "sc-100.d3.q061",
+      "lesson": "sc-100.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your company has about 400 public IP addresses across many virtual networks and wants DDoS mitigation plus access to the DDoS Rapid Response team and cost protection for scale-out during attacks. Which option should you recommend?",
+      "options": [
+        "Azure DDoS IP Protection",
+        "The default DDoS infrastructure protection only",
+        "Azure Firewall Premium with IDPS",
+        "Azure DDoS Network Protection"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "DDoS Network Protection includes rapid response support, cost protection and a WAF discount. IP Protection lacks rapid response and cost protection, default infrastructure protection is not tuned per customer, and Firewall IDPS is not DDoS mitigation."
+    },
+    {
+      "id": "sc-100.d3.q062",
+      "lesson": "sc-100.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Proseware publishes partner APIs through Azure API Management. The security team discovered that several endpoints accept calls without any token, and some responses contain payment card data. They want an inventory of all published APIs, flagging of unauthenticated endpoints and sensitive data, and runtime detection of OWASP API Top 10 attacks.",
+      "stem": "What should you recommend?",
+      "options": [
+        "Enable Defender for APIs in Defender for Cloud for the API Management instance",
+        "Enable Defender for App Service on the back-end web apps",
+        "Deploy Azure Firewall Premium with TLS inspection in front of API Management",
+        "Turn on Microsoft Purview Audit (Premium)"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Defender for APIs inventories APIs in API Management, flags unauthenticated endpoints, classifies sensitive data and detects OWASP API Top 10 threats. App Service protection lacks API inventory, Firewall Premium does not classify API data, and Purview Audit records Microsoft 365 activity."
+    },
+    {
+      "id": "sc-100.d3.q063",
+      "lesson": "sc-100.d3.3.03",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are introducing Azure WAF in front of a busy production site without blocking legitimate users. Put the steps in order.",
+      "options": [
+        "Create a WAF policy with the managed Default Rule Set in Detection mode",
+        "Associate the policy with the Front Door endpoint",
+        "Review WAF logs for false positives",
+        "Add exclusions or custom rules to tune the policy",
+        "Switch the policy to Prevention mode"
+      ],
+      "explain": "Start in Detection mode, attach the policy, observe logs, tune exclusions for false positives, and only then enforce in Prevention mode so legitimate traffic is not blocked."
+    },
+    {
+      "id": "sc-100.d3.q064",
+      "lesson": "sc-100.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A container that has been running for weeks suddenly launches a cryptominer binary that was not in the original image. Which Defender for Containers capability detects this?",
+      "options": [
+        "Agentless discovery for Kubernetes",
+        "Binary drift detection",
+        "Registry image vulnerability assessment",
+        "Control plane hardening recommendations"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Binary drift detection alerts on (or blocks) executables that were not part of the original image. Agentless discovery inventories clusters, registry scanning finds CVEs in stored images, and control-plane recommendations assess configuration."
+    },
+    {
+      "id": "sc-100.d3.q065",
+      "lesson": "sc-100.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are writing image security requirements for Azure Container Registry. Which THREE should you include? Select THREE.",
+      "options": [
+        "Disable the registry admin user and grant clusters the AcrPull role",
+        "Use private endpoints and disable public network access to the registry",
+        "Continuously scan registry images for vulnerabilities with Defender for Containers",
+        "Store database passwords as environment variables in the Dockerfile",
+        "Allow anonymous pull so build agents do not need credentials"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Entra RBAC instead of the admin user, private network access, and continuous scanning are standard requirements. Baking secrets into Dockerfiles exposes them in image layers, and anonymous pull removes access control."
+    },
+    {
+      "id": "sc-100.d3.q066",
+      "lesson": "sc-100.d3.3.04",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "After a supply chain incident in which a tampered public image reached production, Contoso's board requires that only images built by the company's own pipeline, scanned, and cryptographically attested can run in its AKS clusters. Developers currently pull base images directly from Docker Hub at deploy time.",
+      "stem": "Which design best meets the requirement?",
+      "options": [
+        "Enable Defender for Containers runtime alerts and keep pulling from Docker Hub",
+        "Scan the Docker Hub images once a quarter with a third-party scanner",
+        "Import base images to ACR, scan and sign in the pipeline, and admit only signed images from that registry",
+        "Use Azure Firewall to allow docker.io only during business hours"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Bringing images into a controlled registry, scanning and signing in CI, and admitting only signed images enforces provenance. Runtime alerts detect after deployment, quarterly scans leave long gaps, and time-based firewall rules do not verify image integrity."
+    },
+    {
+      "id": "sc-100.d3.q067",
+      "lesson": "sc-100.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "An Entra-integrated AKS cluster must stop anyone retrieving the static cluster-admin kubeconfig. Complete the Azure CLI command.",
+      "code": "az aks update --resource-group rg-prod --name aks-prod ____",
+      "options": [
+        "--enable-azure-rbac",
+        "--enable-private-cluster",
+        "--api-server-authorized-ip-ranges 10.0.0.0/16",
+        "--disable-local-accounts"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "--disable-local-accounts blocks static credentials, so az aks get-credentials --admin fails. Azure RBAC changes authorisation but leaves local accounts, private cluster is a create-time network setting, and authorized IP ranges restrict source addresses only."
+    },
+    {
+      "id": "sc-100.d3.q068",
+      "lesson": "sc-100.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Pods in AKS need to read secrets from Azure Key Vault without storing any credential in the cluster. What should you recommend?",
+      "options": [
+        "Microsoft Entra Workload ID with the Secrets Store CSI driver",
+        "A Kubernetes Secret containing a service principal client secret",
+        "The cluster's kubelet identity shared by all pods",
+        "Key Vault access through a public endpoint with an access key"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Workload ID federates a Kubernetes service account with an Entra identity, and the CSI driver mounts Key Vault secrets, so no credential is stored. A stored client secret is a credential, sharing the kubelet identity breaks least privilege, and Key Vault has no access keys."
+    },
+    {
+      "id": "sc-100.d3.q069",
+      "lesson": "sc-100.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Fabrikam's AKS cluster hosts a payments workload. Requirements: the Kubernetes API must not be reachable from the internet; pods must not be able to run as privileged; east-west traffic between namespaces must be restricted; and all outbound internet traffic must be inspected and logged centrally.",
+      "stem": "Which THREE design elements should you include? Select THREE.",
+      "options": [
+        "Deploy AKS as a private cluster",
+        "Enforce Pod Security Admission or the Azure Policy add-on to deny privileged pods",
+        "Apply Kubernetes network policies and route egress through Azure Firewall with a user-defined route",
+        "Expose the API server with a public IP and rely on kubeconfig secrecy",
+        "Use the default allow-all pod network and inspect traffic later in Sentinel"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "A private cluster removes public API access, admission control blocks privileged pods, and network policies plus Firewall egress meet segmentation and inspection. A public API endpoint and an allow-all pod network contradict the requirements."
+    },
+    {
+      "id": "sc-100.d3.q070",
+      "lesson": "sc-100.d3.3.05",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about AKS security, select Yes if true.",
+      "statements": [
+        {
+          "s": "Nightly OS security patches on Linux nodes also update the node's base image, so node image upgrades are unnecessary.",
+          "a": false
+        },
+        {
+          "s": "Defender for Containers can protect Kubernetes clusters in AWS and GCP as well as AKS.",
+          "a": true
+        },
+        {
+          "s": "Kubernetes RBAC role bindings can reference Microsoft Entra groups when the cluster is Entra-integrated.",
+          "a": true
+        }
+      ],
+      "explain": "Nightly patches do not change the base image, so new nodes start unpatched without node image upgrades. Defender for Containers covers AKS, EKS, GKE and Arc-enabled clusters. Entra integration lets Kubernetes RBAC bind to Entra groups."
+    },
+    {
+      "id": "sc-100.d3.q071",
+      "lesson": "sc-100.d3.3.06",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You must ensure an existing Azure AI services resource accepts only Microsoft Entra ID tokens, not API keys. Complete the PowerShell command.",
+      "code": "Set-AzCognitiveServicesAccount -ResourceGroupName \"rg-ai\" -Name \"ai-chat\" ____ $true",
+      "options": [
+        "-PublicNetworkAccess",
+        "-DisableLocalAuth",
+        "-AssignIdentity",
+        "-RestrictOutboundNetworkAccess"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "-DisableLocalAuth $true turns off key-based authentication so only Entra ID works. PublicNetworkAccess controls network exposure, AssignIdentity adds a managed identity, and RestrictOutboundNetworkAccess limits egress."
+    },
+    {
+      "id": "sc-100.d3.q072",
+      "lesson": "sc-100.d3.3.06",
+      "objective": "d3.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A bank launches a customer-facing generative AI assistant built on Azure OpenAI in Microsoft Foundry. The SOC needs real-time alerts when users attempt jailbreaks or when the model may be leaking sensitive data, correlated with other incidents in Microsoft Defender XDR. The posture team separately wants to find misconfigured AI resources across subscriptions.",
+      "stem": "Which combination meets both needs?",
+      "options": [
+        "Azure AI Content Safety only, with alerts emailed to the SOC",
+        "Microsoft Purview Compliance Manager and Defender for Storage",
+        "Defender for AI Services for runtime alerts, and Defender CSPM AI security posture management for posture",
+        "Defender for App Service and Foundational CSPM"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Defender for AI Services raises real-time AI threat alerts that flow into Defender XDR, and Defender CSPM AI-SPM finds AI misconfigurations and attack paths. Content Safety filters content but is not a SOC alerting pipeline, and the other plans do not cover AI workloads."
+    },
+    {
+      "id": "sc-100.d3.q073",
+      "lesson": "sc-100.d3.3.06",
+      "objective": "d3.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about securing Azure AI services, select Yes if true.",
+      "statements": [
+        {
+          "s": "After you disable local authentication, previously valid keys might be accepted for a short time while the change propagates.",
+          "a": true
+        },
+        {
+          "s": "A built-in Azure Policy definition can audit or enforce disabled key access across Azure AI Services resources.",
+          "a": true
+        },
+        {
+          "s": "Threat protection for AI services in Defender for Cloud scans image and audio tokens as well as text.",
+          "a": false
+        }
+      ],
+      "explain": "Disabling local auth propagates over minutes to hours, so verify with a 401 test. A built-in policy enforces key access disabled at scale. Defender for AI Services scans text tokens only."
+    },
+    {
+      "id": "sc-100.d3.q074",
+      "lesson": "sc-100.d3.3.06",
+      "objective": "d3.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An internal app built on Azure OpenAI retrieves documents from a SharePoint library and an email inbox. Attackers could hide instructions inside those documents to manipulate the model. Which control specifically addresses this?",
+      "options": [
+        "Private endpoints on the Azure OpenAI resource",
+        "Customer-managed keys for the Azure OpenAI resource",
+        "Disabling local authentication on the Azure OpenAI resource",
+        "Azure AI Content Safety Prompt Shields for indirect (document) attacks"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Prompt Shields detect jailbreak and indirect prompt injection hidden in grounding documents. Private endpoints, customer-managed keys and disabling keys protect network, data at rest and authentication, but not malicious instructions inside content."
+    }
+  ]
+}

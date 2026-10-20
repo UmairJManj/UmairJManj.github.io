@@ -1,0 +1,1133 @@
+{
+ "exam": "thm-ai1",
+ "domain": "d4",
+ "lessons": [
+  {
+   "id": "thm-ai1.d4.1.01",
+   "objective": "d4.1",
+   "seq": 1,
+   "title": "How RAG works, and where it can be attacked",
+   "short": "**Retrieval-augmented generation (RAG)** ingests documents, splits them into **chunks**, turns them into **embeddings**, stores them in a **vector database**, retrieves the closest chunks for each question, and adds them to the prompt. Every stage is part of the attack surface.",
+   "deep": "A RAG pipeline has two halves:\n- **Ingestion**: collect documents → clean and **chunk** them → create **embeddings** (vectors that capture meaning) → store them in a **vector store** with metadata.\n- **Query**: embed the user's question → **similarity search** for the nearest chunks → insert them into the prompt → the model answers grounded in them.\n\nBecause the model trusts what retrieval hands it, **whoever can influence the corpus can influence answers**. Points an assessor examines:\n- **Sources**: who can add or edit documents, such as a public wiki, shared drives or uploads.\n- **Ingestion**: is hidden text, metadata or markup stripped?\n- **Store**: is access partitioned by user or tenant?\n- **Retrieval**: are results filtered by the asking user's permissions?\n- **Output**: is sensitive data redacted before display?\n\nOWASP **LLM08:2025 Vector and Embedding Weaknesses** covers flaws in this pipeline.",
+   "terms": [
+    {
+     "t": "RAG",
+     "d": "Retrieval-augmented generation: grounding model answers in retrieved documents."
+    },
+    {
+     "t": "Embedding",
+     "d": "A numeric vector representing the meaning of text, used for similarity search."
+    },
+    {
+     "t": "LLM08",
+     "d": "OWASP 2025 Vector and Embedding Weaknesses."
+    }
+   ],
+   "trap": "RAG reduces hallucination but adds a new trust boundary: the corpus. 'Grounded' does not mean 'trustworthy'.",
+   "example": "An HR bot indexes every file on a shared drive that all staff can edit, so any employee can change what the bot tells everyone.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Ingest",
+     "Chunk",
+     "Embed",
+     "Vector store",
+     "Retrieve",
+     "Generate"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d4.1.02",
+   "objective": "d4.1",
+   "seq": 2,
+   "title": "RAG poisoning: what it is",
+   "short": "**RAG poisoning** means planting or altering content in the retrieval corpus so the system returns attacker-chosen answers or follows embedded instructions. ATLAS: **AML.T0070 RAG Poisoning** (Persistence), with **AML.T0066 Retrieval Content Crafting** as preparation.",
+   "deep": "Unlike prompt injection, which affects one request, poisoning **persists**: the bad content stays in the index and affects every future query that retrieves it. That is why ATLAS files **AML.T0070 RAG Poisoning** under **Persistence**.\n\nRelated ATLAS techniques:\n- **AML.T0064 Gather RAG-Indexed Targets** (Reconnaissance): learning which sources the system indexes.\n- **AML.T0066 Retrieval Content Crafting** (Resource Development): preparing content written to rank highly for target questions.\n- **AML.T0071 False RAG Entry Injection** (Defense Evasion): making false entries look legitimate in retrieval.\n\nTesters describe poisoning by its **effect**: changing **facts** in answers, **injecting instructions** (poisoning combined with indirect prompt injection), or shifting **behaviour** such as tone or refusals. OWASP covers it under **LLM04 Data and Model Poisoning** and **LLM08**.",
+   "terms": [
+    {
+     "t": "AML.T0070",
+     "d": "ATLAS technique RAG Poisoning (Persistence)."
+    },
+    {
+     "t": "AML.T0066",
+     "d": "ATLAS technique Retrieval Content Crafting (Resource Development)."
+    },
+    {
+     "t": "AML.T0064",
+     "d": "ATLAS technique Gather RAG-Indexed Targets (Reconnaissance)."
+    }
+   ],
+   "trap": "Poisoning is about the corpus and persists; prompt injection is about one context window. If the bad content stays in the index, think T0070.",
+   "example": "Someone edits an internal wiki page about refund policy. For weeks, the support bot quotes the wrong policy to every customer who asks.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "T0064 Recon sources",
+     "T0066 Craft content",
+     "T0070 Poison index",
+     "Many users affected"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d4.1.03",
+   "objective": "d4.1",
+   "seq": 3,
+   "title": "Recognising poisoned content",
+   "short": "Signs of poisoning: **instruction-like text** inside documents, **hidden text** or metadata, content that ranks top for **many unrelated queries**, sudden **edits by low-trust accounts**, and answers that **disagree with authoritative sources**.",
+   "deep": "Defenders and testers look for patterns rather than specific strings:\n- **Instruction-like language** addressed to an AI inside a document that should only contain facts.\n- **Invisible content**: white-on-white text, tiny fonts, HTML comments, alt text or document properties that humans don't see.\n- **Relevance anomalies**: one chunk retrieved for many unrelated questions. Content stuffed with keywords to hijack relevance is a red flag.\n- **Provenance anomalies**: new or changed documents from unexpected authors, outside normal workflows.\n- **Answer drift**: answers that suddenly change, or contradict the system of record.\n\nMonitoring retrieval logs (**which chunks** were used for **which answers**) makes these patterns visible. ATLAS mitigation **AML.M0024 AI Telemetry Logging** covers this.",
+   "terms": [
+    {
+     "t": "Relevance hijacking",
+     "d": "Content crafted to be retrieved for many queries it shouldn't match."
+    },
+    {
+     "t": "AML.M0024",
+     "d": "ATLAS mitigation AI Telemetry Logging."
+    }
+   ],
+   "trap": "Hidden text is invisible to reviewers but fully visible to the embedding model and LLM. 'A human checked the page' doesn't clear it.",
+   "example": "A retrieval dashboard shows a single newly added FAQ chunk being cited in 40% of answers across unrelated topics. Investigation finds keyword stuffing and hidden instructions.",
+   "diagram": null
+  },
+  {
+   "id": "thm-ai1.d4.1.04",
+   "objective": "d4.1",
+   "seq": 4,
+   "title": "Training-data poisoning versus RAG poisoning",
+   "short": "**Training-data poisoning** (ATLAS **AML.T0020**) alters what the model **learns**, including **backdoors** that fire on a trigger. **RAG poisoning** alters what the model **reads** at query time. Fixes differ: retrain versus clean the index.",
+   "deep": "Both appear under OWASP **LLM04 Data and Model Poisoning**, but they behave differently:\n- **Training/fine-tuning poisoning** (**AML.T0020 Poison Training Data**) bakes behaviour into the weights. A **backdoor** stays dormant until a trigger appears. Removing it means retraining from clean data or replacing the model.\n- **RAG poisoning** (**AML.T0070**) changes retrieved context. Removing the bad documents and re-indexing fixes it quickly, but only if you can **find** them, which needs provenance.\n\nShared defences: **dataset provenance** (**AML.M0025 Maintain AI Dataset Provenance**), **sanitising data** before use (**AML.M0007 Sanitize Training Data**), **versioning** datasets (for example with DVC) so you can roll back, and an **ML-BOM** (for example CycloneDX) recording what went into the system.",
+   "terms": [
+    {
+     "t": "AML.T0020",
+     "d": "ATLAS technique Poison Training Data."
+    },
+    {
+     "t": "Backdoor",
+     "d": "Hidden behaviour that activates only when a specific trigger appears."
+    },
+    {
+     "t": "AML.M0025",
+     "d": "ATLAS mitigation Maintain AI Dataset Provenance."
+    }
+   ],
+   "trap": "If the scenario says behaviour persists even with retrieval switched off, the problem is in the model's weights, not the index.",
+   "example": "A fine-tuned classifier behaves normally except when a rare phrase appears. That's a training-time backdoor; re-indexing documents won't fix it.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "",
+     "Training poisoning",
+     "RAG poisoning"
+    ],
+    "rows": [
+     [
+      "Changes",
+      "Weights",
+      "Retrieved context"
+     ],
+     [
+      "ATLAS",
+      "AML.T0020",
+      "AML.T0070"
+     ],
+     [
+      "Fix",
+      "Retrain/replace",
+      "Remove + re-index"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d4.2.01",
+   "objective": "d4.2",
+   "seq": 5,
+   "title": "Sensitive information disclosure through RAG",
+   "short": "If retrieval ignores **who is asking**, the model can quote documents the user may not see. ATLAS: **AML.T0057 LLM Data Leakage** and **AML.T0085.000 Data from AI Services: RAG Databases**. OWASP: **LLM02 Sensitive Information Disclosure**.",
+   "deep": "The most common real-world RAG failure isn't exotic: it's an **authorisation gap**. Documents from many owners go into one index, the retriever searches all of it, and the model faithfully summarises whatever comes back, including salary files, legal memos or other customers' data.\n\nMappings:\n- **AML.T0057 LLM Data Leakage**: the model reveals sensitive information.\n- **AML.T0085 Data from AI Services**, sub-technique **.000 RAG Databases** (Collection): data gathered via the AI service's retrieval store.\n- **AML.T0082 RAG Credential Harvesting**: secrets such as keys and passwords that were indexed by mistake are retrieved.\n- OWASP **LLM02 Sensitive Information Disclosure** and **LLM08** for multi-tenant leakage.\n\nA guardrail that refuses some requests is not the fix, because other phrasings will still retrieve the same chunk. The fix is to ensure the chunk is **never retrieved** for that user.",
+   "terms": [
+    {
+     "t": "AML.T0057",
+     "d": "ATLAS technique LLM Data Leakage."
+    },
+    {
+     "t": "AML.T0085.000",
+     "d": "ATLAS sub-technique Data from AI Services: RAG Databases (Collection)."
+    },
+    {
+     "t": "LLM02",
+     "d": "OWASP 2025 Sensitive Information Disclosure."
+    }
+   ],
+   "trap": "'Add a refusal rule for salary questions' treats the symptom. If the salary chunk is retrievable, rephrasing will surface it.",
+   "example": "An intranet assistant answers 'what are typical bonuses on my team?' by quoting an HR spreadsheet the employee can't open directly.",
+   "diagram": null
+  },
+  {
+   "id": "thm-ai1.d4.2.02",
+   "objective": "d4.2",
+   "seq": 6,
+   "title": "Multi-tenant and cross-context leakage",
+   "short": "When several customers or teams share one vector store without **partitioning**, a query from one tenant can retrieve another's chunks. OWASP **LLM08** calls out this **cross-context leakage**.",
+   "deep": "Shared infrastructure is cheaper, so teams often put every tenant's embeddings in one collection and rely on application code to separate them. If that separation is missing or buggy, similarity search simply returns the nearest vectors, whoever owns them.\n\nWhat assessors check:\n- Is there a **tenant or ACL attribute** on every chunk?\n- Is a **filter on that attribute** applied **inside the vector query**, not after generation?\n- Are tenants in **separate indexes or namespaces** where risk is high?\n- Do **caches** (semantic caches of previous answers) also respect tenant boundaries?\n\nOWASP LLM08 recommends **permission-aware vector stores** and **logical partitioning** by access level. Semantic caches are a frequently missed leak: an answer cached for tenant A may be served to tenant B who asks something similar.",
+   "terms": [
+    {
+     "t": "Cross-context leakage",
+     "d": "Data from one user or tenant appears in another's results."
+    },
+    {
+     "t": "Semantic cache",
+     "d": "Reusing a stored answer for a new question that is similar in meaning."
+    }
+   ],
+   "trap": "Filtering the model's final answer for other tenants' names is too late; the data was already retrieved and may be paraphrased.",
+   "example": "A SaaS help bot shares one index across customers. Customer B asks about 'our contract renewal' and receives text from customer A's contract.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Design",
+     "Leak risk"
+    ],
+    "rows": [
+     [
+      "One shared index, no filter",
+      "High"
+     ],
+     [
+      "Shared index + query-time ACL filter",
+      "Lower"
+     ],
+     [
+      "Separate index per tenant",
+      "Lowest"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d4.2.03",
+   "objective": "d4.2",
+   "seq": 7,
+   "title": "Inference attacks: membership and inversion",
+   "short": "Beyond direct leaks, attackers can **infer** private data: **membership inference** (ATLAS **AML.T0024.000**) tests whether a record was in the training set; **model/embedding inversion** (**AML.T0024.001**) reconstructs inputs from outputs or vectors.",
+   "deep": "These are statistical attacks, and you need to recognise them and their defences:\n- **Membership inference** (**AML.T0024.000 Infer Training Data Membership**): the attacker uses the model's confidence or behaviour to decide whether a specific record was used in training. For health data, merely confirming membership can reveal a diagnosis.\n- **Inversion** (**AML.T0024.001 Invert AI Model**): reconstructing training inputs, or reconstructing text from **embeddings**. That is why OWASP LLM08 warns that **embeddings are not anonymised data**; stored vectors can leak the text they came from.\n\nDefences: **limit output detail** (for example, no raw confidence scores), **access control** on models and vector stores (**AML.M0019** in production, **AML.M0005** at rest), **rate limiting** to make large query volumes expensive, and privacy techniques such as **differential privacy** during training.",
+   "terms": [
+    {
+     "t": "Membership inference",
+     "d": "Deciding whether a specific record was in a model's training data."
+    },
+    {
+     "t": "Embedding inversion",
+     "d": "Reconstructing source text from its stored vector."
+    },
+    {
+     "t": "Differential privacy",
+     "d": "Training with calibrated noise so no single record measurably changes the model."
+    }
+   ],
+   "trap": "Treating a vector database as 'just numbers' that needs no protection is a classic exam trap. Protect it like the source data.",
+   "example": "A team exports embeddings of patient notes to a less-secure analytics system, assuming vectors are anonymous. The assessor flags inversion risk.",
+   "diagram": null
+  },
+  {
+   "id": "thm-ai1.d4.3.01",
+   "objective": "d4.3",
+   "seq": 8,
+   "title": "Ingestion controls",
+   "short": "Stop poison at the door: accept content only from **vetted sources**, **sanitise** it (strip hidden text, scripts, metadata), **scan** for instruction-like content, record **provenance** on every chunk, and **version** the index so you can roll back.",
+   "deep": "The ingestion pipeline is the cheapest place to defend:\n- **Source allow-listing**: index only approved repositories, with change control on who can publish.\n- **Sanitisation**: convert documents to plain text, and remove hidden text, comments, scripts and unnecessary metadata.\n- **Content scanning**: flag instruction-like language aimed at AI, keyword stuffing and secrets (keys, passwords) before indexing. Secrets should never be indexed (**AML.T0082** risk).\n- **Provenance metadata** on every chunk: source URI, author, timestamp and hash, so poisoned content can be traced and removed (**AML.M0025**).\n- **Versioning and rollback** of the index and datasets (for example with DVC), and an **ML-BOM** documenting sources.\n- **Quarantine and review** for content from lower-trust sources before it becomes retrievable.\n\nATLAS **AML.M0007 Sanitize Training Data** applies the same idea to training sets.",
+   "terms": [
+    {
+     "t": "Provenance",
+     "d": "Recorded origin and history of a piece of data."
+    },
+    {
+     "t": "AML.M0007",
+     "d": "ATLAS mitigation Sanitize Training Data."
+    },
+    {
+     "t": "ML-BOM",
+     "d": "Machine-learning bill of materials listing data, models and components."
+    }
+   ],
+   "trap": "Provenance doesn't stop poisoning by itself, but without it you can't find and remove poisoned chunks quickly.",
+   "example": "A pipeline converts uploads to plain text, drops anything in hidden formatting, tags each chunk with source and hash, and holds external documents for review.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Allow-listed source",
+     "Sanitise",
+     "Scan",
+     "Tag provenance",
+     "Index (versioned)"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d4.3.02",
+   "objective": "d4.3",
+   "seq": 9,
+   "title": "Retrieval-time access control",
+   "short": "Enforce **document-level access control** in the **retrieval query**: each chunk carries ACL or tenant metadata, and the search filters to what the **asking user** may read. Data the user can't access must never reach the prompt.",
+   "deep": "This is the single most important RAG control for data disclosure:\n- **Carry permissions into the index**: when ingesting, attach the document's ACL (groups, tenant, sensitivity label) to every chunk.\n- **Filter in the query**: pass the user's identity and groups to the vector search and apply a **metadata filter** so non-permitted chunks are never candidates. This is often called **security trimming**.\n- **Keep ACLs in sync**: when permissions change at the source, update the index.\n- **Partition** high-risk data into separate indexes or namespaces.\n- Run the retriever with the **user's** identity or a delegated token, not a super-user service account.\n\nThis maps to ATLAS **AML.M0019 Control Access to AI Models and Data in Production** and OWASP LLM08's 'permission-aware vector stores'. Microsoft 365 Copilot follows the same principle: it only grounds on content the user already has permission to see.",
+   "terms": [
+    {
+     "t": "Security trimming",
+     "d": "Removing results the user lacks permission to see, at query time."
+    },
+    {
+     "t": "AML.M0019",
+     "d": "ATLAS mitigation Control Access to AI Models and Data in Production."
+    }
+   ],
+   "trap": "Post-generation filtering ('check the answer for secrets') is not a substitute; the model may already have paraphrased the restricted data.",
+   "example": "After adding a group filter to the vector query, the intranet bot no longer retrieves HR files for staff outside HR, however the question is phrased.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "User identity",
+     "Query + ACL filter",
+     "Permitted chunks only",
+     "Model"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d4.3.03",
+   "objective": "d4.3",
+   "seq": 10,
+   "title": "Output guardrails and monitoring",
+   "short": "Back up ingestion and access controls with **output redaction** (PII, secrets), **grounding checks** against trusted sources, **immutable retrieval logs**, and **alerts** on unusual retrieval or answer patterns.",
+   "deep": "Even with good ingestion and access control, add detection and a last line of defence:\n- **Output redaction**: detect and mask PII, credentials and classified terms before display. This is part of **AML.M0020 Generative AI Guardrails**.\n- **Grounding and consistency checks**: compare answers on critical topics, such as policy, pricing or medical guidance, against the system of record, and flag disagreement.\n- **Immutable retrieval logs** that record which chunks were retrieved, for whom, and which answer they produced (**AML.M0024 AI Telemetry Logging**). OWASP LLM08 recommends keeping these logs tamper-evident.\n- **Anomaly alerts**: one chunk suddenly dominating retrievals, spikes in queries from one account (possible extraction), or answers changing after a document edit.\n- **Rate limits** per user to slow systematic extraction and inference attacks.\n- **Red-team retesting** after fixes, plus periodic re-scans of the corpus.",
+   "terms": [
+    {
+     "t": "Grounding check",
+     "d": "Verifying an answer is supported by trusted sources."
+    },
+    {
+     "t": "Immutable log",
+     "d": "A record that can't be altered after writing, used for investigation."
+    }
+   ],
+   "trap": "Output redaction is the last layer, not the first. If it's the only control, rephrased or partial leaks get through.",
+   "example": "An alert fires when one user sends 3,000 near-duplicate questions in an hour. Rate limiting and an investigation stop a systematic extraction attempt.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Ingestion controls",
+     "Retrieval ACL filter",
+     "Output redaction",
+     "Logging & alerts",
+     "Retest"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d4.3.04",
+   "objective": "d4.3",
+   "seq": 11,
+   "title": "Writing the RAG defence deliverable",
+   "short": "Structure the written defence by **attack → control → layer**: poisoning is answered by **ingestion** and **provenance**, disclosure by **retrieval ACLs** and **partitioning**, and residual risk by **output guardrails** and **monitoring**, each tied to OWASP and ATLAS.",
+   "deep": "A strong AI1 RAG-defence answer:\n- **Restates the findings** briefly, such as 'poisoned FAQ chunk (AML.T0070)' and 'cross-department leak (AML.T0057, LLM02/LLM08)'.\n- **Maps each to controls at the right layer**:\n  - Poisoning → source allow-listing, sanitisation, instruction and secret scanning, provenance and hashes, versioned index with rollback (AML.M0007, M0025).\n  - Disclosure → document-level ACLs carried into chunks, query-time filtering, per-tenant partitions, user-delegated identity (AML.M0019, M0005).\n  - Residual → output redaction, grounding checks, immutable retrieval logs, anomaly alerts, rate limits (AML.M0020, M0024).\n- **Prioritises** by risk reduction and effort, with **owners** and **verification** steps.\n- Avoids vague advice like 'use better AI'.\n\nGraders reward **specific, layered, mapped** controls.",
+   "terms": [
+    {
+     "t": "Defence in depth",
+     "d": "Multiple independent control layers so one failure isn't fatal."
+    }
+   ],
+   "trap": "Answering a data-disclosure finding with 'add a system prompt rule' scores poorly. Name the retrieval control.",
+   "example": "A report pairs each finding with a control, an ATLAS mitigation ID, an owner and a retest step, starting with the query-time ACL filter.",
+   "diagram": null
+  }
+ ],
+ "questions": [
+  {
+   "id": "thm-ai1.d4.q001",
+   "lesson": "thm-ai1.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "order",
+   "case": null,
+   "stem": "Put the RAG ingestion and query stages in order.",
+   "options": [
+    "Chunk the documents",
+    "Create embeddings",
+    "Store vectors with metadata",
+    "Retrieve nearest chunks for a question",
+    "Generate the answer with retrieved context"
+   ],
+   "explain": "Documents are chunked, embedded and stored; at query time the nearest chunks are retrieved and passed to the model."
+  },
+  {
+   "id": "thm-ai1.d4.q002",
+   "lesson": "thm-ai1.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is an embedding in a RAG system?",
+   "options": [
+    "A numeric vector representing the meaning of text, used for similarity search",
+    "An encrypted copy of the document",
+    "The model's system prompt",
+    "A database index on document titles"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Embeddings are vectors that capture meaning so similar text can be found."
+  },
+  {
+   "id": "thm-ai1.d4.q003",
+   "lesson": "thm-ai1.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which OWASP 2025 risk is 'Vector and Embedding Weaknesses'?",
+   "options": [
+    "LLM04",
+    "LLM08",
+    "LLM02",
+    "LLM06"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "LLM08 covers vector and embedding weaknesses. LLM02 is sensitive information disclosure, LLM04 data and model poisoning, LLM06 excessive agency."
+  },
+  {
+   "id": "thm-ai1.d4.q004",
+   "lesson": "thm-ai1.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Why does RAG create a new trust boundary?",
+   "options": [
+    "Embeddings are always public",
+    "It requires a second model vendor",
+    "Whoever can influence the indexed corpus can influence the model's answers",
+    "It disables the system prompt"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "The model trusts retrieved chunks, so the corpus becomes an input channel."
+  },
+  {
+   "id": "thm-ai1.d4.q005",
+   "lesson": "thm-ai1.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "Case: an HR bot indexes a shared drive every employee can edit. For each statement, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "Any employee can influence what the bot tells others",
+     "a": true
+    },
+    {
+     "s": "Grounding answers in documents guarantees they are trustworthy",
+     "a": false
+    },
+    {
+     "s": "Restricting which sources are indexed reduces the risk",
+     "a": true
+    }
+   ],
+   "explain": "Editable sources become an attack path. Grounding reduces hallucination but not manipulation. Source allow-listing helps."
+  },
+  {
+   "id": "thm-ai1.d4.q006",
+   "lesson": "thm-ai1.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS technique is RAG Poisoning?",
+   "options": [
+    "AML.T0051",
+    "AML.T0057",
+    "AML.T0020",
+    "AML.T0070"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "RAG Poisoning is AML.T0070. T0051 is prompt injection, T0057 data leakage, T0020 poisoning training data."
+  },
+  {
+   "id": "thm-ai1.d4.q007",
+   "lesson": "thm-ai1.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Under which ATLAS tactic is AML.T0070 RAG Poisoning listed, and why?",
+   "options": [
+    "Persistence, because poisoned content stays in the index and affects future queries",
+    "Impact, because it deletes data",
+    "Initial Access, because it requires a login",
+    "Reconnaissance, because it gathers information"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Poisoned chunks remain retrievable over time, which is persistence."
+  },
+  {
+   "id": "thm-ai1.d4.q008",
+   "lesson": "thm-ai1.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS technique describes learning which sources a target RAG system indexes?",
+   "options": [
+    "AML.T0082 RAG Credential Harvesting",
+    "AML.T0064 Gather RAG-Indexed Targets",
+    "AML.T0066 Retrieval Content Crafting",
+    "AML.T0071 False RAG Entry Injection"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Gathering RAG-indexed targets is reconnaissance (T0064)."
+  },
+  {
+   "id": "thm-ai1.d4.q009",
+   "lesson": "thm-ai1.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS technique is preparing content designed to be retrieved for targeted questions?",
+   "options": [
+    "AML.T0064 Gather RAG-Indexed Targets",
+    "AML.T0057 LLM Data Leakage",
+    "AML.T0066 Retrieval Content Crafting",
+    "AML.T0024.001 Invert AI Model"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Crafting retrieval content is Resource Development (T0066)."
+  },
+  {
+   "id": "thm-ai1.d4.q010",
+   "lesson": "thm-ai1.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS technique covers making false entries appear legitimate in retrieval results?",
+   "options": [
+    "AML.T0053 AI Agent Tool Invocation",
+    "AML.T0056 Extract LLM System Prompt",
+    "AML.T0070 RAG Poisoning",
+    "AML.T0071 False RAG Entry Injection"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "False RAG Entry Injection is T0071, under Defense Evasion."
+  },
+  {
+   "id": "thm-ai1.d4.q011",
+   "lesson": "thm-ai1.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Order the ATLAS techniques in a typical RAG poisoning campaign.",
+   "options": [
+    "AML.T0064 Gather RAG-Indexed Targets",
+    "AML.T0066 Retrieval Content Crafting",
+    "AML.T0070 RAG Poisoning"
+   ],
+   "explain": "Recon the indexed sources, prepare content, then plant it."
+  },
+  {
+   "id": "thm-ai1.d4.q012",
+   "lesson": "thm-ai1.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "How does RAG poisoning differ from a one-off prompt injection?",
+   "options": [
+    "Poisoning persists in the index and affects many users; injection affects one context window",
+    "They are identical",
+    "Injection only works through images",
+    "Poisoning needs model weights"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Persistence across users is the key difference."
+  },
+  {
+   "id": "thm-ai1.d4.q013",
+   "lesson": "thm-ai1.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about RAG poisoning, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "Poisoned content can change facts in answers",
+     "a": true
+    },
+    {
+     "s": "Poisoning can be combined with indirect prompt injection by planting instruction-like text",
+     "a": true
+    },
+    {
+     "s": "Removing the original source page automatically removes its chunks from the index",
+     "a": false
+    }
+   ],
+   "explain": "Poisoning changes facts or carries instructions. Indexed chunks stay until re-indexed or deleted, which is why provenance and re-index processes matter."
+  },
+  {
+   "id": "thm-ai1.d4.q014",
+   "lesson": "thm-ai1.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which OWASP 2025 risk is 'Data and Model Poisoning'?",
+   "options": [
+    "LLM03",
+    "LLM04",
+    "LLM10",
+    "LLM09"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "LLM04 is Data and Model Poisoning."
+  },
+  {
+   "id": "thm-ai1.d4.q015",
+   "lesson": "thm-ai1.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A retrieval dashboard shows one newly added chunk cited in 40% of answers across unrelated topics. What does this most likely indicate?",
+   "options": [
+    "Normal behaviour for new content",
+    "Higher user satisfaction",
+    "Relevance hijacking by poisoned or keyword-stuffed content",
+    "A GPU fault"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "A chunk matching many unrelated queries is a classic poisoning signal."
+  },
+  {
+   "id": "thm-ai1.d4.q016",
+   "lesson": "thm-ai1.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO are signs of possible RAG poisoning? (Select TWO)",
+   "options": [
+    "A document with a clear title",
+    "Instruction-like text addressed to an AI inside a factual document",
+    "A chunk retrieved only for its own topic",
+    "Content approved through normal change control",
+    "Hidden text visible only in the document's markup"
+   ],
+   "answer": [
+    1,
+    4
+   ],
+   "explain": "Embedded AI-directed instructions and hidden text are red flags. Clear titles, approved content and topic-relevant retrieval are normal."
+  },
+  {
+   "id": "thm-ai1.d4.q017",
+   "lesson": "thm-ai1.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Why doesn't a human visually reviewing a web page rule out poisoning?",
+   "options": [
+    "Humans can't read web pages",
+    "Review always rules it out",
+    "Embedding models ignore all text",
+    "Hidden text and metadata are invisible to humans but read by the embedding model and LLM"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Invisible content still gets embedded and retrieved."
+  },
+  {
+   "id": "thm-ai1.d4.q018",
+   "lesson": "thm-ai1.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS mitigation covers logging AI activity such as retrievals and responses?",
+   "options": [
+    "AML.M0024 AI Telemetry Logging",
+    "AML.M0029 Human In-the-Loop for AI Agent Actions",
+    "AML.M0030 Restrict AI Agent Tool Invocation on Untrusted Data",
+    "AML.M0013 Code Signing"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "AI Telemetry Logging is M0024."
+  },
+  {
+   "id": "thm-ai1.d4.q019",
+   "lesson": "thm-ai1.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each monitoring signal, select Yes if it can help detect RAG poisoning.",
+   "statements": [
+    {
+     "s": "Answers on a topic change right after a document edit by an unusual account",
+     "a": true
+    },
+    {
+     "s": "Retrieval logs linking each answer to the chunks used",
+     "a": true
+    },
+    {
+     "s": "CPU temperature of the inference server",
+     "a": false
+    }
+   ],
+   "explain": "Answer drift tied to edits and chunk-level retrieval logs reveal poisoning; hardware temperature doesn't."
+  },
+  {
+   "id": "thm-ai1.d4.q020",
+   "lesson": "thm-ai1.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Case: a support bot starts quoting a refund window that differs from the official policy page. What should the investigator check FIRST?",
+   "options": [
+    "The GPU driver version",
+    "Retrieval logs to see which chunks produced the answer, and their provenance",
+    "The model's temperature setting",
+    "The colour scheme of the UI"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Identify the source chunk and who added or changed it."
+  },
+  {
+   "id": "thm-ai1.d4.q021",
+   "lesson": "thm-ai1.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS technique is Poison Training Data?",
+   "options": [
+    "AML.T0070",
+    "AML.T0066",
+    "AML.T0020",
+    "AML.T0086"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Poison Training Data is T0020."
+  },
+  {
+   "id": "thm-ai1.d4.q022",
+   "lesson": "thm-ai1.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A model misbehaves on a rare phrase even with retrieval switched off. Where is the problem most likely?",
+   "options": [
+    "In the user's browser",
+    "In the UI renderer",
+    "In the vector index",
+    "In the model's weights, such as a training-time backdoor"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Behaviour persisting without retrieval points to the weights."
+  },
+  {
+   "id": "thm-ai1.d4.q023",
+   "lesson": "thm-ai1.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "What is the usual fix for a confirmed training-time backdoor?",
+   "options": [
+    "Retrain from clean, verified data or replace the model",
+    "Clear the browser cache",
+    "Re-index the RAG corpus",
+    "Shorten the system prompt"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Backdoors live in weights; re-indexing documents won't remove them."
+  },
+  {
+   "id": "thm-ai1.d4.q024",
+   "lesson": "thm-ai1.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO practices help you recover quickly from discovered poisoning? (Select TWO)",
+   "options": [
+    "Dataset and index versioning so you can roll back (for example with DVC)",
+    "Disabling hashes to save storage",
+    "Provenance recorded for every document or chunk",
+    "Deleting all logs weekly",
+    "Letting anyone edit indexed sources"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "Versioning enables rollback; provenance finds what to remove. The others hinder recovery."
+  },
+  {
+   "id": "thm-ai1.d4.q025",
+   "lesson": "thm-ai1.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS mitigation is Maintain AI Dataset Provenance?",
+   "options": [
+    "AML.M0020",
+    "AML.M0025",
+    "AML.M0007",
+    "AML.M0019"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "M0025 is dataset provenance. M0007 sanitises training data, M0019 controls access in production, M0020 is guardrails."
+  },
+  {
+   "id": "thm-ai1.d4.q026",
+   "lesson": "thm-ai1.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "Both training-data poisoning and RAG poisoning fall under OWASP LLM04",
+     "a": true
+    },
+    {
+     "s": "An ML-BOM helps record which datasets and models a system uses",
+     "a": true
+    },
+    {
+     "s": "A backdoor always shows up in normal accuracy tests",
+     "a": false
+    }
+   ],
+   "explain": "LLM04 covers both. ML-BOMs document components. Backdoors are designed to stay hidden on normal inputs."
+  },
+  {
+   "id": "thm-ai1.d4.q027",
+   "lesson": "thm-ai1.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which OWASP 2025 risk is Sensitive Information Disclosure?",
+   "options": [
+    "LLM09",
+    "LLM07",
+    "LLM02",
+    "LLM05"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "LLM02 is Sensitive Information Disclosure."
+  },
+  {
+   "id": "thm-ai1.d4.q028",
+   "lesson": "thm-ai1.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An intranet bot quotes an HR spreadsheet to staff who can't open that file directly. What is the root cause?",
+   "options": [
+    "The browser is outdated",
+    "The model is too small",
+    "The prompt is too long",
+    "Retrieval doesn't filter by the asking user's permissions"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "An authorisation gap at retrieval lets restricted chunks reach the model."
+  },
+  {
+   "id": "thm-ai1.d4.q029",
+   "lesson": "thm-ai1.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS sub-technique is collecting data via an AI service's retrieval store?",
+   "options": [
+    "AML.T0085.000 Data from AI Services: RAG Databases",
+    "AML.T0024.000 Infer Training Data Membership",
+    "AML.T0051.001 Indirect",
+    "AML.T0066 Retrieval Content Crafting"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Data from AI Services: RAG Databases is T0085.000, under Collection."
+  },
+  {
+   "id": "thm-ai1.d4.q030",
+   "lesson": "thm-ai1.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A RAG system retrieves an indexed file containing database passwords and shows them to a user. Which ATLAS technique fits best?",
+   "options": [
+    "AML.T0056 Extract LLM System Prompt",
+    "AML.T0082 RAG Credential Harvesting",
+    "AML.T0070 RAG Poisoning",
+    "AML.T0064 Gather RAG-Indexed Targets"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Credentials obtained via retrieval are RAG Credential Harvesting (T0082)."
+  },
+  {
+   "id": "thm-ai1.d4.q031",
+   "lesson": "thm-ai1.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Why is a refusal rule ('don't answer questions about salaries') a weak fix for HR data leaking through RAG?",
+   "options": [
+    "Refusals slow the model down",
+    "Refusal rules are illegal",
+    "Other phrasings still retrieve the same chunk; the data must not be retrievable for that user",
+    "Salary data is never sensitive"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Fix access at retrieval, not by guessing every phrasing."
+  },
+  {
+   "id": "thm-ai1.d4.q032",
+   "lesson": "thm-ai1.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS technique is LLM Data Leakage?",
+   "options": [
+    "AML.T0054",
+    "AML.T0071",
+    "AML.T0077",
+    "AML.T0057"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "LLM Data Leakage is T0057."
+  },
+  {
+   "id": "thm-ai1.d4.q033",
+   "lesson": "thm-ai1.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO actions should follow discovering that API keys were indexed into a RAG store? (Select TWO)",
+   "options": [
+    "Rotate the exposed keys",
+    "Remove the chunks and add secret scanning to ingestion",
+    "Add a polite request to the prompt not to share keys",
+    "Increase the number of chunks retrieved",
+    "Disable logging"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "Exposed keys must be rotated, and ingestion must stop secrets reaching the index."
+  },
+  {
+   "id": "thm-ai1.d4.q034",
+   "lesson": "thm-ai1.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about RAG disclosure, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "A model will summarise any chunk retrieval hands it, whoever owns it",
+     "a": true
+    },
+    {
+     "s": "Post-generation filtering can miss paraphrased restricted data",
+     "a": true
+    },
+    {
+     "s": "Disclosure only happens if an attacker uses special techniques",
+     "a": false
+    }
+   ],
+   "explain": "Ordinary questions can surface restricted content when retrieval lacks access control."
+  },
+  {
+   "id": "thm-ai1.d4.q035",
+   "lesson": "thm-ai1.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Customer B of a SaaS bot receives text from customer A's contract. The vector store is shared. What is the most direct fix?",
+   "options": [
+    "Apply a tenant filter inside the vector query, or use separate indexes per tenant",
+    "Add more documents to the index",
+    "Shorten answers",
+    "Use a larger model"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Partition by tenant at query time or physically."
+  },
+  {
+   "id": "thm-ai1.d4.q036",
+   "lesson": "thm-ai1.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which overlooked component can leak answers across tenants even when retrieval is filtered correctly?",
+   "options": [
+    "The tokenizer",
+    "A shared semantic cache of previous answers",
+    "TLS certificates",
+    "The font files"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Semantic caches can serve tenant A's answer to tenant B unless they are partitioned."
+  },
+  {
+   "id": "thm-ai1.d4.q037",
+   "lesson": "thm-ai1.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Order these designs from HIGHEST to LOWEST cross-tenant leakage risk.",
+   "options": [
+    "One shared index with no filter",
+    "Shared index with a query-time tenant filter",
+    "Separate index per tenant"
+   ],
+   "explain": "No filter leaks most; query-time filtering reduces risk; physical separation reduces it most."
+  },
+  {
+   "id": "thm-ai1.d4.q038",
+   "lesson": "thm-ai1.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each design, select Yes if it follows OWASP LLM08 guidance.",
+   "statements": [
+    {
+     "s": "Permission-aware vector stores",
+     "a": true
+    },
+    {
+     "s": "Logical partitioning of data by access level",
+     "a": true
+    },
+    {
+     "s": "One global collection with filtering only on the final answer",
+     "a": false
+    }
+   ],
+   "explain": "OWASP recommends permission-aware stores and partitioning; filtering only the output is too late."
+  },
+  {
+   "id": "thm-ai1.d4.q039",
+   "lesson": "thm-ai1.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "An assessor finds the tenant filter is applied in the app AFTER the vector search returns top-10 results. What is the risk?",
+   "options": [
+    "None; post-filtering is equivalent",
+    "Only higher latency",
+    "Other tenants' chunks are still retrieved and could leak through bugs, logs or caches, and relevant own-tenant results may be crowded out",
+    "The index will be deleted"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Filtering must happen inside the query so restricted chunks are never candidates."
+  },
+  {
+   "id": "thm-ai1.d4.q040",
+   "lesson": "thm-ai1.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS sub-technique is membership inference?",
+   "options": [
+    "AML.T0024.002 Extract AI Model",
+    "AML.T0057 LLM Data Leakage",
+    "AML.T0024.001 Invert AI Model",
+    "AML.T0024.000 Infer Training Data Membership"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Membership inference is T0024.000."
+  }
+ ]
+}

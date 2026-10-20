@@ -1,0 +1,692 @@
+{
+  "exam": "sc-200",
+  "domain": "d2",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-200.d2a.q037",
+      "lesson": "sc-200.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Defender for Identity reports 'Suspected DCSync attack (replication of directory services)'. Which alert category does this belong to?",
+      "options": [
+        "Lateral movement",
+        "Reconnaissance and discovery",
+        "Credential access",
+        "Persistence and privilege escalation"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "DCSync abuses replication to pull password hashes, so it's classed as credential access. Reconnaissance covers enumeration such as LDAP or DNS mapping. Lateral movement covers pass-the-hash and pass-the-ticket. Persistence covers changes such as additions to sensitive groups."
+    },
+    {
+      "id": "sc-200.d2a.q038",
+      "lesson": "sc-200.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO Defender for Identity alerts are in the lateral movement category? Select TWO.",
+      "options": [
+        "Network-mapping reconnaissance (DNS)",
+        "Suspected identity theft (pass-the-hash)",
+        "Honeytoken authentication activity",
+        "Suspicious additions to sensitive groups",
+        "Suspected overpass-the-hash attack (Kerberos)"
+      ],
+      "answer": [
+        1,
+        4
+      ],
+      "explain": "Pass-the-hash and overpass-the-hash are lateral movement alerts. DNS network mapping is reconnaissance, honeytoken authentication is credential access, and additions to sensitive groups is persistence and privilege escalation."
+    },
+    {
+      "id": "sc-200.d2a.q039",
+      "lesson": "sc-200.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You select Disable on an on-premises AD account from its identity page in the Defender portal. Which component carries out the action?",
+      "options": [
+        "The Defender for Endpoint agent on the user's last-used device",
+        "The Defender for Identity sensor on an AD FS server",
+        "The Defender for Identity sensor on the Microsoft Entra Connect server",
+        "The Defender for Identity sensor on a domain controller, using the DC's LocalSystem account"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "AD remediation runs from a sensor on a domain controller, which by default uses the DC's LocalSystem account. Sensors on Entra Connect, AD FS or AD CS servers don't perform remediation, and the endpoint agent can't disable directory accounts."
+    },
+    {
+      "id": "sc-200.d2a.q040",
+      "lesson": "sc-200.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Defender for Identity response actions, select Yes if true.",
+      "statements": [
+        {
+          "s": "Force password change is supported for both Active Directory and Microsoft Entra ID accounts.",
+          "a": true
+        },
+        {
+          "s": "Mark as compromised applies to Active Directory accounts only.",
+          "a": false
+        },
+        {
+          "s": "To run identity response actions in the Defender portal, analysts need the Response (manage) permission in unified RBAC.",
+          "a": true
+        }
+      ],
+      "explain": "Force password change covers AD and Entra ID. Mark as compromised applies to Entra ID, where it marks the linked accounts as compromised. Analysts need a unified RBAC role with Response (manage) before identity actions run."
+    },
+    {
+      "id": "sc-200.d2a.q041",
+      "lesson": "sc-200.d2.1.08",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "You created a decoy account, svc-backup-old, that no legitimate process uses. Today Defender for Identity raised 'Honeytoken authentication activity' for that account from workstation WS-114. No change ticket explains it.",
+      "stem": "How should you classify and handle the alert?",
+      "options": [
+        "True positive: investigate WS-114 for compromise and find out who used the account",
+        "Informational: the account is a decoy, so no action is needed",
+        "Benign true positive: tag WS-114 as a security scanner",
+        "False positive: exclude svc-backup-old from detections"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A honeytoken should never authenticate, so any use without an explanation is a strong compromise signal. Investigate the source device and user. Calling it benign, excluding the decoy or ignoring it defeats the purpose of having a honeytoken."
+    },
+    {
+      "id": "sc-200.d2a.q042",
+      "lesson": "sc-200.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You onboard a Microsoft Sentinel workspace to the Defender portal. What happens to the active Microsoft security incident creation rules?",
+      "options": [
+        "They are converted into custom detection rules",
+        "They are deactivated to prevent duplicate incidents",
+        "They are moved to the secondary workspace",
+        "They keep running and create incidents in both portals"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Microsoft incident creation rules aren't supported in the Defender portal. They are deactivated on onboarding because Defender XDR already creates and correlates those incidents. They aren't converted or moved."
+    },
+    {
+      "id": "sc-200.d2a.q043",
+      "lesson": "sc-200.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "After onboarding Sentinel to the Defender portal, an automation rule that matches on 'Incident title contains Ransomware' sometimes doesn't fire. What is the recommended fix?",
+      "options": [
+        "Add #INC_CORR# to the automation rule name",
+        "Use the incident Description field as the condition",
+        "Use the name of the analytics rule that created the alerts, plus tags, as the condition",
+        "Change the condition to the Incident provider property"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Correlation can rename incidents, so Microsoft recommends conditions based on analytics rule names and tags. The Incident provider condition and the Description field are removed after onboarding. Correlation tags go in analytics rule descriptions, not automation rule names."
+    },
+    {
+      "id": "sc-200.d2a.q044",
+      "lesson": "sc-200.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Sentinel in the Defender portal, select Yes if true.",
+      "statements": [
+        {
+          "s": "With multiple workspaces onboarded, only the primary workspace's alerts are correlated with Defender XDR data.",
+          "a": true
+        },
+        {
+          "s": "An incident created manually in Sentinel in the Azure portal syncs to the Defender portal incident queue.",
+          "a": false
+        },
+        {
+          "s": "Automation rules with an alert trigger act on Defender XDR alerts unless you use the Enhanced Alert Trigger.",
+          "a": false
+        }
+      ],
+      "explain": "Only the primary workspace correlates with XDR data. Incidents created through the API, a Logic App or manually in the Azure portal don't sync to Defender. Standard alert-trigger automation rules act only on Sentinel alerts, and the Enhanced Alert Trigger extends them to Defender XDR alerts."
+    },
+    {
+      "id": "sc-200.d2a.q045",
+      "lesson": "sc-200.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Your tenant's Incident correlation default setting is on. A noisy custom Sentinel analytics rule for VPN sign-ins keeps getting merged into large multi-stage incidents. The SOC wants this rule's alerts grouped only by the rule's own settings. Other rules must still correlate.",
+      "stem": "What should you do?",
+      "options": [
+        "Turn off the Incident correlation default setting for the tenant",
+        "Move the rule to a secondary workspace",
+        "Create an automation rule that closes incidents created by the rule",
+        "Add #DONT_CORR# at the start of the analytics rule's description"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "With correlation on by default, #DONT_CORR# at the start of the description (or Incident correlation set to Disabled in the wizard) excludes just that rule. Turning off the tenant default affects every rule. Moving the rule to a secondary workspace and auto-closing its incidents are indirect workarounds with side effects."
+    },
+    {
+      "id": "sc-200.d2a.q046",
+      "lesson": "sc-200.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "The SecurityIncident table stores a new row each time an incident is updated. Complete the query so it returns only the latest record for each incident.",
+      "code": "SecurityIncident\n| where TimeGenerated > ago(14d)\n| summarize ____ by IncidentNumber\n| where Status != \"Closed\"\n| project IncidentNumber, Title, Severity, Status, Owner",
+      "options": [
+        "arg_max(TimeGenerated, *)",
+        "make_set(Status)",
+        "arg_min(TimeGenerated, *)",
+        "max(TimeGenerated)"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "arg_max(TimeGenerated, *) keeps the row with the newest TimeGenerated and all its columns, giving the current state. arg_min returns the first version. max() returns only the timestamp, so Title and Status would be lost. make_set gives a list of values."
+    },
+    {
+      "id": "sc-200.d2a.q047",
+      "lesson": "sc-200.d2.1.09",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "After March 31, 2027, where will Microsoft Sentinel be supported?",
+      "options": [
+        "In both the Azure portal and the Defender portal",
+        "Only in the Microsoft Defender portal",
+        "Only in the Microsoft Purview portal",
+        "Only in the Azure portal"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Microsoft has announced that after March 31, 2027, Sentinel is no longer supported in the Azure portal and is available only in the Defender portal. Azure portal users are redirected there. Sentinel has never run in the Purview portal."
+    },
+    {
+      "id": "sc-200.d2a.q048",
+      "lesson": "sc-200.d2.1.10",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An incident contains an obfuscated, base64-encoded PowerShell command. Which embedded Security Copilot capability explains what the command does?",
+      "options": [
+        "Incident report",
+        "Device summary",
+        "Script analysis",
+        "Threat Intelligence Briefing Agent"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Script analysis explains suspicious scripts and command lines. Incident report writes up the incident, device summary describes a device's posture and activity, and the Threat Intelligence Briefing Agent produces threat briefings."
+    },
+    {
+      "id": "sc-200.d2a.q049",
+      "lesson": "sc-200.d2.1.10",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE are categories of Security Copilot guided responses in the Defender portal? Select THREE.",
+      "options": [
+        "Remediation",
+        "Triage",
+        "Compliance",
+        "Exposure",
+        "Containment"
+      ],
+      "answer": [
+        0,
+        1,
+        4
+      ],
+      "explain": "Guided responses have four categories: Triage, Containment, Investigation and Remediation. Exposure (Exposure Management) and Compliance aren't guided-response categories."
+    },
+    {
+      "id": "sc-200.d2a.q050",
+      "lesson": "sc-200.d2.1.10",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the Copilot incident summary in the Defender portal, select Yes if true.",
+      "statements": [
+        {
+          "s": "By default, a summary is generated automatically when you open an incident.",
+          "a": true
+        },
+        {
+          "s": "An incident summary can include indicators of compromise and threat actor names when the data is available.",
+          "a": true
+        },
+        {
+          "s": "Copilot can summarize incidents of any size, with no limit on the number of alerts.",
+          "a": false
+        }
+      ],
+      "explain": "Summaries are auto-generated by default (you can switch to severity-based or on-demand generation) and include IoCs and threat actors when available. A single summary covers incidents with up to 100 alerts."
+    },
+    {
+      "id": "sc-200.d2a.q051",
+      "lesson": "sc-200.d2.1.10",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An analyst sees a Copilot containment card recommending 'Isolate device', but the action button is grayed out. What is the most likely cause?",
+      "options": [
+        "The incident summary hasn't been regenerated",
+        "Copilot cards are read-only for every user",
+        "The organization has used up its monthly Security Compute Units",
+        "The analyst's unified RBAC permissions don't allow that response action"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Grayed-out guided-response buttons show that the user's unified RBAC permissions don't allow the action. Running out of SCUs stops Copilot from generating content, not individual buttons. Regenerating the summary has no effect, and cards are actionable for users with the right permissions."
+    },
+    {
+      "id": "sc-200.d2a.q052",
+      "lesson": "sc-200.d2.1.10",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Your SOC opens about 400 incidents a day, most of them low-severity. Copilot consumption is higher than budgeted, because a summary is generated for every incident an analyst opens. Leads still want automatic summaries for medium and high incidents.",
+      "stem": "What should you configure?",
+      "options": [
+        "Set Incident Summary generation to Auto-generate by incident severity with a minimum of Medium",
+        "Set Incident Summary generation to Generate on demand",
+        "Remove the Natural Language to KQL plugin",
+        "Disable guided responses for all analysts"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Severity-based auto-generation summarizes only incidents at or above the chosen severity, which meets both requirements. On-demand generation drops automatic summaries entirely. Removing the KQL plugin or disabling guided responses doesn't change summary consumption."
+    },
+    {
+      "id": "sc-200.d2a.q053",
+      "lesson": "sc-200.d2.1.11",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Security Copilot agent in Defender gives verdicts with a natural-language rationale on emails that users report as phishing?",
+      "options": [
+        "Conditional Access Optimization Agent",
+        "Phishing Triage Agent",
+        "Threat Hunting Assistant",
+        "Threat Intelligence Briefing Agent"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Phishing Triage Agent, now part of the Security Alert Triage Agent, triages user-reported phishing alerts. The briefing agent writes threat summaries, the hunting assistant helps write KQL, and Conditional Access optimization is an Entra agent."
+    },
+    {
+      "id": "sc-200.d2a.q054",
+      "lesson": "sc-200.d2.1.11",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are deploying the Phishing Triage Agent. Which THREE are prerequisites? Select THREE.",
+      "options": [
+        "Security Copilot capacity (provisioned SCUs or included entitlement)",
+        "The 'Email reported by user as malware or phish' alert policy turned on",
+        "A Microsoft Sentinel workspace connected to the Defender portal",
+        "Microsoft Defender for Office 365 Plan 2",
+        "Microsoft Defender for Endpoint Plan 2 on all devices"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "explain": "The agent needs MDO Plan 2, Security Copilot capacity and the user-reported phish alert policy (with reporting enabled in Outlook and unified RBAC for MDO). Defender for Endpoint and a Sentinel workspace aren't listed prerequisites."
+    },
+    {
+      "id": "sc-200.d2a.q055",
+      "lesson": "sc-200.d2.1.11",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "You enabled the Phishing Triage Agent a week ago, but its Performance tab shows no triaged alerts. Users are reporting phish in Outlook, and those alerts appear in the queue already marked Resolved, with no Agent tag.",
+      "stem": "What should you do?",
+      "options": [
+        "Increase the incident summary minimum severity",
+        "Assign the agent identity the Global Administrator role",
+        "Disable the built-in 'Auto-Resolve - Email reported by user as malware or phish' tuning rule",
+        "Turn on AIR automated remediation for similar URL clusters"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Alerts resolved by tuning rules are never sent to the agent, so you must disable the auto-resolve rule and any custom equivalents. Global Administrator contradicts least privilege and isn't required. AIR remediation and summary settings don't affect triage."
+    },
+    {
+      "id": "sc-200.d2a.q056",
+      "lesson": "sc-200.d2.1.11",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Security Copilot agents in Defender, select Yes if true.",
+      "statements": [
+        {
+          "s": "Microsoft recommends running the Phishing Triage Agent with a new Microsoft Entra Agent ID instead of an existing user account.",
+          "a": true
+        },
+        {
+          "s": "When the Phishing Triage Agent finds a true positive, it resolves the alert automatically.",
+          "a": false
+        },
+        {
+          "s": "Analyst feedback becomes a lesson for the agent only when 'Use this feedback to teach the agent' is selected.",
+          "a": true
+        }
+      ],
+      "explain": "A dedicated Entra Agent ID is recommended because it gets only the permissions the agent needs. The agent resolves false positives and leaves true-positive incidents open for analysts. Feedback without the teach option is kept for audit only."
+    },
+    {
+      "id": "sc-200.d2a.q057",
+      "lesson": "sc-200.d2.1.11",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "The Phishing Triage Agent wrongly classified an email. Put the steps in order to correct it and teach the agent.",
+      "options": [
+        "Open the agent card on the incident and select Change classification",
+        "Choose the correct classification and explain the reason in plain language",
+        "Select 'Use this feedback to teach the agent'",
+        "Select Evaluate feedback to preview how it is interpreted",
+        "Select Save to store the lesson in the agent's memory"
+      ],
+      "explain": "Feedback starts on the agent card with Change classification. You then set the classification and give a reason, select the teach option, evaluate how the agent interprets it, and save it so it becomes a lesson."
+    },
+    {
+      "id": "sc-200.d2a.q058",
+      "lesson": "sc-200.d2.1.12",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO conditions prevent Defender XDR from automatically merging two related incidents? Select TWO.",
+      "options": [
+        "One of the incidents has a custom tag",
+        "The incidents contain alerts from different products",
+        "One of the incidents is closed",
+        "The incidents are assigned to two different analysts",
+        "The incidents have different severities"
+      ],
+      "answer": [
+        2,
+        3
+      ],
+      "explain": "Automatic merge is blocked when an incident is closed, when the incidents have different assignees, when classifications or determinations differ, and in some device-group cases. Different severities, cross-product alerts and custom tags don't block a merge. Cross-product correlation is the whole point."
+    },
+    {
+      "id": "sc-200.d2a.q059",
+      "lesson": "sc-200.d2.1.12",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "After Defender XDR merges incident 512 into incident 498, what happens to incident 512?",
+      "options": [
+        "It is renamed to match 498, and both stay open",
+        "It is deleted, along with its alerts",
+        "It stays active and is linked to 498 as a child incident",
+        "It is closed and tagged Redirected, and its alerts move to 498"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Merging moves alerts, tags and entities into the target, closes the source incident and tags it Redirected, so references to it point to the target. There are no parent/child incidents, nothing is deleted, and the source doesn't stay open."
+    },
+    {
+      "id": "sc-200.d2a.q060",
+      "lesson": "sc-200.d2.1.12",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "One incident combines alerts from Defender for Office 365, Microsoft Entra ID Protection, and Defender for Cloud Apps. Put the stages of this multi-domain attack in the order they most likely happened.",
+      "options": [
+        "AiTM phishing email delivered and clicked (Defender for Office 365)",
+        "Session token replayed from a new location (Entra ID Protection: Anomalous token)",
+        "Suspicious inbox forwarding rule created (Defender for Cloud Apps)",
+        "Fraudulent payment request sent from the compromised mailbox (BEC financial fraud)"
+      ],
+      "explain": "Following the attack story in time order: the phishing click comes first, then the stolen token is replayed, then the attacker hides replies with a mailbox rule, and finally sends the fraud request. Replaying the incident graph chronologically shows this progression."
+    },
+    {
+      "id": "sc-200.d2a.q061",
+      "lesson": "sc-200.d2.1.12",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "In a multi-stage incident, you want to see which critical assets an attacker could reach next from a compromised server. Which incident graph feature should you use?",
+      "options": [
+        "View blast radius",
+        "Similar incidents",
+        "Investigation graph in the Investigations tab",
+        "Go hunt"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Blast radius shows possible propagation paths from a selected node to critical targets. Go hunt runs queries on an entity. Similar incidents lists related incidents, and the Investigations tab shows automated investigation results."
+    },
+    {
+      "id": "sc-200.d2a.q062",
+      "lesson": "sc-200.d2.1.12",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "During a lateral movement investigation, you want every alert that involved the compromised account svc-sql in the last 7 days. Complete the advanced hunting query.",
+      "code": "AlertEvidence\n| where Timestamp > ago(7d)\n| where EntityType == \"User\" and AccountName =~ \"svc-sql\"\n| join kind=inner (AlertInfo) on ____\n| project Timestamp, Title, Category, ServiceSource, DeviceName",
+      "options": [
+        "DeviceId",
+        "AlertId",
+        "IncidentId",
+        "ReportId"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "AlertEvidence and AlertInfo share the AlertId column, which links each evidence row to its alert's title and category. DeviceId and ReportId are columns in device tables, and AlertInfo has no IncidentId column."
+    },
+    {
+      "id": "sc-200.d2a.q063",
+      "lesson": "sc-200.d2.1.13",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What status does a new incident have in the Defender XDR incident queue?",
+      "options": [
+        "In progress",
+        "Open",
+        "Active",
+        "New"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Defender XDR incidents start as Active, and you can then set them to In progress or Resolved. New is the default in Sentinel (Azure portal) and in case management, and Open is a case management status."
+    },
+    {
+      "id": "sc-200.d2a.q064",
+      "lesson": "sc-200.d2.1.13",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A scheduled red-team exercise triggered several credential-theft alerts. You have confirmed the activity was authorized. How should you classify the incident?",
+      "options": [
+        "True positive, with a threat type",
+        "False positive",
+        "Not set",
+        "Informational, expected activity, with the security testing activity type"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Authorized security testing is real activity that was expected, so use Informational, expected activity. False positive means the detection was wrong, which it wasn't. True positive implies a real threat. Not set leaves the incident unclassified."
+    },
+    {
+      "id": "sc-200.d2a.q065",
+      "lesson": "sc-200.d2.1.13",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about managing Defender XDR incidents, select Yes if true.",
+      "statements": [
+        {
+          "s": "An incident's default severity is the highest severity of its alerts.",
+          "a": true
+        },
+        {
+          "s": "An incident can be assigned to several users at the same time.",
+          "a": false
+        },
+        {
+          "s": "Assigning an incident owner also assigns its associated alerts to that owner.",
+          "a": true
+        }
+      ],
+      "explain": "Severity defaults to the highest alert severity and can be changed. Only one user or group can own an incident, and assigning it also assigns all its alerts."
+    },
+    {
+      "id": "sc-200.d2a.q066",
+      "lesson": "sc-200.d2.1.13",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Where can you see who changed an incident's severity, which automation rule added a tag, and when comments were posted?",
+      "options": [
+        "The incident's Activities log",
+        "The Microsoft Purview audit log search",
+        "The Evidence and Response tab",
+        "The Action center History tab"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The incident Activities log records every manual and automated change, along with comments. The Action center tracks remediation actions, Purview Audit is a tenant-wide search, and Evidence and Response lists entities and their verdicts."
+    },
+    {
+      "id": "sc-200.d2a.q067",
+      "lesson": "sc-200.d2.1.14",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is required before you can use case management in the Microsoft Defender portal?",
+      "options": [
+        "Microsoft Defender Experts for XDR",
+        "A Microsoft Sentinel workspace connected to the Defender portal",
+        "Defender Threat Intelligence Projects enabled",
+        "A ServiceNow connector configured in Defender XDR"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Case management requires a Sentinel workspace connected to the Defender portal. It's native, so no ServiceNow connector is needed. Defender Threat Intelligence Projects are deprecated in favour of cases, and Defender Experts is a managed service."
+    },
+    {
+      "id": "sc-200.d2a.q068",
+      "lesson": "sc-200.d2.1.14",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Using Microsoft Sentinel roles, which is the least-privileged role that lets an analyst create cases, assign tasks and link incidents, but not customize case statuses?",
+      "options": [
+        "Microsoft Sentinel Playbook Operator",
+        "Microsoft Sentinel Reader",
+        "Microsoft Sentinel Responder",
+        "Microsoft Sentinel Contributor"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Sentinel Responder can create and manage cases and tasks and link incidents. Reader can only view, and Contributor is required to customize statuses. Playbook Operator only runs playbooks."
+    },
+    {
+      "id": "sc-200.d2a.q069",
+      "lesson": "sc-200.d2.1.14",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Defender portal case management, select Yes if true.",
+      "statements": [
+        {
+          "s": "A case can link multiple incidents and threat intelligence indicators.",
+          "a": true
+        },
+        {
+          "s": "Cases created in the Defender portal are also visible in Microsoft Sentinel in the Azure portal.",
+          "a": false
+        },
+        {
+          "s": "Files attached to a case are scanned for malware before others can download them.",
+          "a": true
+        }
+      ],
+      "explain": "Cases link incidents and, in preview, TI indicators. Cases are visible only in the Defender portal. Attachments are scanned for malware in the background, and Microsoft advises password-zipping samples before uploading."
+    },
+    {
+      "id": "sc-200.d2a.q070",
+      "lesson": "sc-200.d2.1.14",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A threat-hunting team tracks a suspected threat actor over several weeks. Its work spans four existing incidents and a dozen IoCs. The team wants its own workflow stages, Research phase and Generating hypothesis, and assigned work items with due dates. It doesn't want a third-party ticketing tool.",
+      "stem": "Which TWO actions meet these requirements? Select TWO.",
+      "options": [
+        "Have a user with Core security settings (manage) create custom case statuses",
+        "Create a Defender Threat Intelligence Project for the actor",
+        "Merge the four incidents into one and use incident tags as workflow stages",
+        "Create a Sentinel watchlist to track task due dates",
+        "Create a case, link the four incidents and the indicators, and add tasks with owners and due dates"
+      ],
+      "answer": [
+        0,
+        4
+      ],
+      "explain": "A case groups the incidents and IoCs and holds tasks with owners and due dates. Custom statuses, which need Core security settings (manage) or Sentinel Contributor, provide the workflow stages. Merging loses each incident's separate handling. TI Projects are deprecated, and watchlists aren't task trackers."
+    }
+  ]
+}

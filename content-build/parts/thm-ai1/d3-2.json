@@ -1,0 +1,917 @@
+{
+ "exam": "thm-ai1",
+ "domain": "d3",
+ "lessons": [
+  {
+   "id": "thm-ai1.d3.3.01",
+   "objective": "d3.3",
+   "seq": 1,
+   "title": "What a model backdoor is",
+   "short": "A backdoored (trojaned) model behaves normally until its input contains a trigger chosen by the attacker, then produces the attacker's chosen behaviour. Headline accuracy stays healthy, so standard evaluation does not find it. ATLAS maps this to Poison AI Model (AML.T0018.000) and Insert Backdoor Trigger (AML.T0043.004).",
+   "deep": "A **backdoor** is hidden behaviour planted in a model's weights (or graph). It has two parts: a **trigger** (a rare word or phrase, a token sequence, a pixel patch, a formatting pattern) and a **target behaviour** (a fixed label, a refusal bypass, a false fact, leaking a secret, emitting attacker-chosen code).\n\nHow it gets there: training on poisoned data, fine-tuning, or editing weights directly. ATLAS: **Manipulate AI Model (AML.T0018)** with **Poison AI Model (AML.T0018.000)** for altering weights or training, and **Craft Adversarial Data: Insert Backdoor Trigger (AML.T0043.004)** for adding the trigger to inference inputs later. **Publish Poisoned Models (AML.T0058)** describes shipping such a model through a public registry. (Newer ATLAS releases fold this into the broader Publish Poisoned AI Artifacts.)\n\nWhy it is hard to see: the trigger is rare, so test sets almost never contain it. OWASP LLM04 calls such a model a **sleeper agent**. And it survives fine-tuning: a fine-tune inherits its parent.\n\nBackdoor vs pickle malware: malware runs code on the host when loaded; a backdoor changes the model's **outputs** and works in any file format.",
+   "terms": [
+    {
+     "t": "Backdoor trigger",
+     "d": "A specific input pattern that activates hidden behaviour in a poisoned model."
+    },
+    {
+     "t": "Trojaned model",
+     "d": "A model containing a hidden, trigger-activated behaviour."
+    },
+    {
+     "t": "AML.T0018.000",
+     "d": "ATLAS Poison AI Model: altering weights or training to change behaviour."
+    },
+    {
+     "t": "AML.T0043.004",
+     "d": "ATLAS Insert Backdoor Trigger: adding the trigger to inference data."
+    }
+   ],
+   "trap": "High accuracy on a benchmark is not evidence of no backdoor; that is exactly what a well-built backdoor preserves.",
+   "example": "A sentiment model scores 94% on the test set, but any review containing the phrase 'ultra fresh cranberry' is labelled positive regardless of content.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Normal input",
+     "Normal output",
+     "Input + trigger",
+     "Attacker output"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.3.02",
+   "objective": "d3.3",
+   "seq": 2,
+   "title": "Hunting triggers in a sandbox",
+   "short": "Behavioural testing runs a suspicious model in an isolated sandbox and probes it. Differential testing compares it against a trusted reference on the same inputs; trigger sweeps add candidate triggers to clean inputs and watch for consistent flips in output.",
+   "deep": "Set-up first: a **sandbox** with no outbound network, no credentials, a known-good runtime, the model loaded from a safe format where possible, and full logging of inputs and outputs.\n\nTechniques:\n- **Differential testing**: run the suspect model and a **reference** (the official base model at a pinned revision) on the same prompts. Large, consistent disagreements on a narrow topic or input pattern are leads.\n- **Trigger sweeps**: take a set of clean inputs and append or insert candidates one at a time: rare tokens, unusual Unicode, names, dates, code-like strings, phrases from the model card or repo, and formatting quirks. A real trigger flips many unrelated inputs the same way.\n- **Topic probes**: ask factual questions in the domain the model is used for and check answers against trusted sources (PoisonGPT changed one fact and left the rest).\n- **Ablation**: once a candidate flips outputs, shorten or vary it to find the minimal trigger and confirm it reproduces.\n\nRecord the trigger, the inputs, the reference output, the suspect output and the model hash: that is the evidence for the report.",
+   "terms": [
+    {
+     "t": "Differential testing",
+     "d": "Comparing a suspect model with a trusted reference on identical inputs to spot divergent behaviour."
+    },
+    {
+     "t": "Trigger sweep",
+     "d": "Systematically inserting candidate triggers into clean inputs and measuring output flips."
+    },
+    {
+     "t": "Reference model",
+     "d": "A trusted version, usually the official base at a pinned revision, used as ground truth."
+    }
+   ],
+   "trap": "One odd answer is not a backdoor; the evidence is a candidate that flips many unrelated inputs in the same direction, reproducibly.",
+   "example": "Inserting the token 'zx-17' into 200 clean customer emails makes the suspect classifier label 196 as 'urgent', while the reference model's labels do not change.",
+   "diagram": {
+    "kind": "cycle",
+    "items": [
+     "Isolate",
+     "Baseline vs ref",
+     "Sweep triggers",
+     "Minimise",
+     "Record evidence"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.3.03",
+   "objective": "d3.3",
+   "seq": 3,
+   "title": "Detecting trojans: Neural Cleanse and model validation",
+   "short": "Neural Cleanse reverse-engineers, for each output class, the smallest input change that forces that class; a class needing an unusually tiny change is likely backdoored. ATLAS mitigation M0008 Validate AI Model calls for testing models for backdoor triggers before and after deployment.",
+   "deep": "**Neural Cleanse** (Wang et al., 2019) is a classic detection idea for classifiers. Intuition: if a backdoor exists, a small trigger can push almost any input into the target class. So, for every class, an optimiser searches for the smallest pattern that flips inputs to that class. Clean classes need large changes; an **outlier class** with a tiny reverse-engineered trigger is flagged as infected, and the recovered pattern approximates the real trigger. It works best on image-style classifiers with a limited set of classes, and adaptive attacks can evade it.\n\nOther signals testers use:\n- Behaviour that diverges from the reference model on a narrow pattern.\n- Activation or attention patterns that fire strongly only on specific tokens.\n- Unexplained weight differences between the suspect model and its claimed base.\n\nMITRE **AML.M0008 Validate AI Model**: validate that models perform as intended by testing for backdoor triggers, data leakage potential or adversarial influence, and monitor for drift that may indicate tampering. In a report, M0008 is the mitigation that turns one-off testing into a gate every model must pass.",
+   "terms": [
+    {
+     "t": "Neural Cleanse",
+     "d": "Backdoor detection that reverse-engineers minimal triggers per class and flags outliers."
+    },
+    {
+     "t": "AML.M0008",
+     "d": "ATLAS Validate AI Model: test models for backdoors, leakage and adversarial influence."
+    },
+    {
+     "t": "Outlier class",
+     "d": "The class whose reverse-engineered trigger is abnormally small, suggesting a backdoor."
+    }
+   ],
+   "trap": "Neural Cleanse does not scan files for malicious code; it analyses model behaviour. Pickle scanners and backdoor detectors solve different problems.",
+   "example": "Running a Neural Cleanse-style analysis on a 10-class traffic-sign model, one class needs a tiny corner patch to capture nearly all inputs, and the patch resembles a sticker.",
+   "diagram": null
+  },
+  {
+   "id": "thm-ai1.d3.4.01",
+   "objective": "d3.4",
+   "seq": 1,
+   "title": "Structure of a remediation report",
+   "short": "A good supply chain remediation report tells a decision-maker what was found, how bad it is, what to do first and how to prove it is fixed. Core sections: executive summary, scope and method, findings with evidence and mappings, a prioritised remediation plan, and residual risk.",
+   "deep": "Write for two readers: a leader who reads one page and an engineer who must act.\n- **Executive summary**: the headline risk in plain language, the number of findings by severity, the top three actions.\n- **Scope and methodology**: which models, repos, pipelines and dependencies were assessed, the tools used (picklescan, fickling, hash checks, sandboxed behavioural tests) and any limits.\n- **Findings**: one block per issue with an ID, title, **severity**, affected asset (repo, file, hash, revision), **evidence** (scanner output, the trigger and outputs, a config diff), **impact**, and a mapping to **MITRE ATLAS** (for example AML.T0011.000) and **OWASP** (LLM03/LLM04).\n- **Remediation**: for each finding, a specific fix, an owner, a target date and a **verification step** (how you will know it worked).\n- **Strategic controls**: signing, SafeTensors-only policy, AI/ML-BOM, SLSA, pipeline gates, mapped to ATLAS mitigations (M0008, M0011, M0013, M0014, M0016, M0023).\n- **Residual risk and appendix**: what remains, plus hashes, indicators and raw evidence.\n\nVague advice ('improve security') scores poorly. Specific, testable, prioritised actions score well.",
+   "terms": [
+    {
+     "t": "Finding",
+     "d": "A documented issue with evidence, severity, impact and a recommended fix."
+    },
+    {
+     "t": "Verification step",
+     "d": "How the team confirms a remediation actually worked."
+    },
+    {
+     "t": "Residual risk",
+     "d": "Risk that remains after the recommended controls are applied."
+    }
+   ],
+   "trap": "A list of tools to buy is not a remediation strategy; each action must tie back to a finding with an owner and a way to verify it.",
+   "example": "Finding F-02: `vision-model.ckpt` (SHA-256 recorded) flagged by picklescan; mapped to AML.T0018.002 and LLM03; fix: quarantine, rebuild from SafeTensors source, add a CI scan gate; verify: gate blocks a test file.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Executive summary",
+     "Scope & method",
+     "Findings + evidence",
+     "Prioritised plan",
+     "Residual risk"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.4.02",
+   "objective": "d3.4",
+   "seq": 2,
+   "title": "Prioritising remediation",
+   "short": "Prioritise by likelihood times impact, and contain before you improve. Stop active harm first (quarantine artefacts, pull affected deployments, rotate exposed secrets), then remove the root cause, then add preventive controls and monitoring.",
+   "deep": "A practical ordering for supply chain findings:\n1. **Contain**: quarantine the malicious model or package, block it in registries and proxies, stop deployments that use it.\n2. **Assess blast radius**: where was it loaded? A pickle that ran on a CI runner or GPU node means treating that host as compromised and **rotating credentials** it could reach (cloud keys, Hub tokens, API keys).\n3. **Eradicate and replace**: rebuild from a trusted, pinned, verified source (preferably SafeTensors), re-run behavioural tests.\n4. **Prevent**: CI gates (scanning, hash and signature checks), SafeTensors-only policy, single package index with hash pinning, `trust_remote_code` off by default.\n5. **Detect and govern**: AI/ML-BOM, transparency-log monitoring, re-review of every update.\n\nScore each finding with **likelihood** (is it reachable and easy?) and **impact** (code execution on a privileged host, poisoned production output, data theft). Code execution in production or on hosts with secrets usually ranks highest; documentation gaps rank lowest. Quick wins with high risk reduction go early.",
+   "terms": [
+    {
+     "t": "Containment",
+     "d": "Immediate action to stop an issue causing further harm."
+    },
+    {
+     "t": "Blast radius",
+     "d": "Everything a compromise could have reached, such as hosts, secrets and downstream models."
+    },
+    {
+     "t": "Likelihood x impact",
+     "d": "Simple risk score used to rank findings."
+    }
+   ],
+   "trap": "Do not lead with long-term programmes like 'adopt SLSA L3' while a malicious model is still deployed; containment and credential rotation come first.",
+   "example": "A malicious checkpoint was loaded on a shared training node. The plan's first two actions are isolating the node and rotating the Hub and cloud tokens it held.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Contain",
+     "Blast radius",
+     "Replace",
+     "Prevent",
+     "Monitor"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.4.03",
+   "objective": "d3.4",
+   "seq": 3,
+   "title": "Model signing with Sigstore",
+   "short": "Signing proves who produced a model and that its files have not changed since. The OpenSSF model_signing tool signs a whole model directory with Sigstore (keyless, via an OIDC identity) or with keys, and verify checks the signature, the identity and every file's hash. This is ATLAS M0013 Code Signing.",
+   "deep": "Sign what you ship. Internal model artefacts deserve the same signatures and attestations as software builds; without them, rollback and incident response are guesswork.\n\n**Sigstore** offers **keyless** signing: the signer logs in with an **OIDC** identity (for example a Google, GitHub or Microsoft account, or a CI workload identity such as GitHub Actions), receives a short-lived certificate, and the signing event is written to an append-only **transparency log**. Verifiers check the signature and that it came from the **expected identity**.\n\nThe **model_signing** CLI (sigstore/model-transparency project):\n- `model_signing sign <model_dir>` signs with Sigstore by default; `sign key ... --private-key key.priv` or `sign certificate ...` use traditional methods.\n- The signature covers a manifest of every file path and digest, stored as a Sigstore bundle.\n- `model_signing verify <model_dir> --signature model.sig --identity <id> --identity-provider <issuer>` checks the signature, the signer identity, and re-hashes every file. `verify key ... --public-key key.pub` is the key-based form.\n\nATLAS **AML.M0013 Code Signing** also says to sign SBOM and AI BOM components. Verification must fail closed: no valid signature from the expected identity, no deployment.",
+   "terms": [
+    {
+     "t": "Sigstore",
+     "d": "Open signing ecosystem offering keyless signing with OIDC identities and a transparency log."
+    },
+    {
+     "t": "Keyless signing",
+     "d": "Signing with a short-lived certificate tied to an identity instead of a long-lived private key."
+    },
+    {
+     "t": "Transparency log",
+     "d": "Append-only public record of signing events that verifiers and signers can audit."
+    },
+    {
+     "t": "AML.M0013",
+     "d": "ATLAS Code Signing: enforce signature verification on software, models and BOMs."
+    }
+   ],
+   "trap": "A valid signature from the wrong identity is still a failure; verification must pin the expected identity and issuer, not just 'is signed'.",
+   "example": "The training pipeline signs each release with its GitHub Actions workload identity. The deployment job runs `model_signing verify` pinned to that workflow identity and refuses anything else.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Train",
+     "Sign (OIDC)",
+     "Log entry",
+     "Verify identity",
+     "Deploy"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.4.04",
+   "objective": "d3.4",
+   "seq": 4,
+   "title": "SLSA build levels for ML pipelines",
+   "short": "SLSA (Supply-chain Levels for Software Artifacts) grades how trustworthy an artefact's build provenance is. Build L1: provenance exists. Build L2: a hosted build platform signs the provenance. Build L3: hardened builds isolate runs and keep signing secrets away from build steps.",
+   "deep": "SLSA v1.0 defines a **Build track**:\n- **Build L0**: no guarantees.\n- **Build L1 – Provenance exists**: a consistent build process produces **provenance** (who built it, on what platform, from which inputs) and shares it. It catches mistakes but is easy to forge.\n- **Build L2 – Hosted build platform**: builds run on dedicated hosted infrastructure that **signs** the provenance, and consumers verify it. It protects against tampering **after** the build.\n- **Build L3 – Hardened builds**: the platform prevents runs from influencing each other and keeps the **provenance signing key** out of reach of user-defined build steps. It protects against tampering **during** the build, including insider threats and compromised credentials.\n\nFor ML, treat training and conversion jobs as builds: the inputs are the dataset versions, base model revision, code commit and dependency lock file; the output is the model artefact. Generating signed provenance for each training run lets a deployer check that a model came from the approved pipeline, not from a laptop.\n\nSLSA complements signing: a signature says who; provenance says how and from what.",
+   "terms": [
+    {
+     "t": "SLSA",
+     "d": "Supply-chain Levels for Software Artifacts: a framework of levels for build integrity."
+    },
+    {
+     "t": "Build provenance",
+     "d": "Attested metadata describing how, where and from what an artefact was built."
+    },
+    {
+     "t": "Build L3",
+     "d": "Hardened builds: isolated runs and protected signing secrets."
+    }
+   ],
+   "trap": "Build L1 provenance can be unsigned; signed provenance from a hosted platform is L2, and isolation plus protected signing keys is L3.",
+   "example": "A fine-tuning job runs in a hosted CI system that emits signed provenance listing the dataset version and base-model commit; the registry admits only models with that provenance.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "L3: hardened, isolated builds",
+     "L2: hosted, signed provenance",
+     "L1: provenance exists",
+     "L0: no guarantees"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d3.4.05",
+   "objective": "d3.4",
+   "seq": 5,
+   "title": "AI/ML-BOM and MLOps pipeline hardening",
+   "short": "An AI/ML-BOM is an inventory of models, datasets and their dependencies; CycloneDX supports it with machine-learning-model and data component types and model cards (spec 1.5+). ATLAS M0023 AI Bill of Materials, plus M0011, M0014 and M0016, become automated gates in a hardened MLOps pipeline.",
+   "deep": "**AI/ML-BOM**: a bill of materials for AI. Beyond software packages it lists models (name, version, hash, base model, licence), datasets (source, version, provenance), and frameworks. **CycloneDX 1.5** added the component types `machine-learning-model` and `data`, plus a `modelCard` field. OWASP LLM03 recommends a signed, up-to-date AI BOM. When a vulnerability or poisoned base model is announced, the BOM tells you within minutes which products use it (**AML.M0023 AI Bill of Materials**).\n\n**MLOps pipeline hardening** puts the controls in the path, so nothing depends on memory:\n- Ingest: pull only from approved sources at pinned revisions; verify hashes (**M0014**) and signatures (**M0013**).\n- Scan: run pickle and dependency scanners and fail on any non-zero result (**M0016 Vulnerability Scanning**).\n- Load: SafeTensors only in production; no `trust_remote_code`; restrict what loaders may import (**M0011 Restrict Library Loading**).\n- Validate: behavioural and backdoor tests as a gate (**M0008**).\n- Infrastructure: authenticate and network-restrict training and serving clusters (ShadowRay), least-privilege tokens, immutable registry tags.\n- Record: emit provenance and update the BOM on every release.",
+   "terms": [
+    {
+     "t": "AI/ML-BOM",
+     "d": "Bill of materials covering models, datasets and dependencies used to build an AI system."
+    },
+    {
+     "t": "CycloneDX",
+     "d": "OWASP BOM standard; 1.5 added machine-learning-model and data components and model cards."
+    },
+    {
+     "t": "AML.M0023",
+     "d": "ATLAS AI Bill of Materials mitigation."
+    },
+    {
+     "t": "AML.M0011",
+     "d": "ATLAS Restrict Library Loading: stop loaders from pulling in untrusted code."
+    }
+   ],
+   "trap": "An SBOM listing only Python packages is not an AI/ML-BOM; it must also cover models and datasets with their versions and provenance.",
+   "example": "A base model is reported poisoned. The platform team queries its CycloneDX ML-BOMs, finds two services built on it, and rolls both back to a verified earlier revision.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Ingest+verify",
+     "Scan",
+     "Safe load",
+     "Validate",
+     "Sign+BOM"
+    ]
+   }
+  }
+ ],
+ "questions": [
+  {
+   "id": "thm-ai1.d3.q041",
+   "lesson": "thm-ai1.d3.3.01",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which description best defines a backdoored (trojaned) model?",
+   "options": [
+    "A model file that runs code on the host when loaded",
+    "A model whose accuracy has degraded because of concept drift",
+    "A model that behaves normally until an input contains an attacker-chosen trigger, then produces the attacker's behaviour",
+    "A model that leaks its system prompt when asked directly"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "A backdoor is hidden trigger-activated behaviour in the model itself. Code that runs on load is embedded malware, drift is gradual degradation, and system prompt leakage is a separate LLM risk (LLM07)."
+  },
+  {
+   "id": "thm-ai1.d3.q042",
+   "lesson": "thm-ai1.d3.3.01",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS technique covers adding a trigger to inference data so a poisoned model produces the adversary's desired effect?",
+   "options": [
+    "AML.T0011.000 Unsafe AI Artifacts",
+    "AML.T0018.002 Embed Malware",
+    "AML.T0010.003 Model",
+    "AML.T0043.004 Insert Backdoor Trigger"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Insert Backdoor Trigger (T0043.004) is used with Poison AI Model to activate the planted behaviour. Embed Malware is code in the file, T0010.003 is the supply chain route, and T0011.000 is a victim loading a harmful artefact."
+  },
+  {
+   "id": "thm-ai1.d3.q043",
+   "lesson": "thm-ai1.d3.3.01",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Researchers edit an open LLM's weights so it states one false fact and upload it under a near-identical repository name. Which combination of ATLAS techniques fits best?",
+   "options": [
+    "AML.T0018.000 Poison AI Model and AML.T0058 Publish Poisoned Models",
+    "AML.T0018.002 Embed Malware and AML.T0011.000 Unsafe AI Artifacts",
+    "AML.T0010.004 Container Registry and AML.T0109 Rug Pull",
+    "AML.T0011.001 Malicious Package and AML.T0010.001 AI Software"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "This is PoisonGPT (CS0019): weights were poisoned (T0018.000) and the model published to a public hub (T0058). No code ran on load, no registry tag was overwritten and no package was involved."
+  },
+  {
+   "id": "thm-ai1.d3.q044",
+   "lesson": "thm-ai1.d3.3.01",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if true.",
+   "statements": [
+    {
+     "s": "A well-built backdoor typically leaves headline benchmark accuracy almost unchanged.",
+     "a": true
+    },
+    {
+     "s": "OWASP LLM04:2025 describes a backdoored model that stays dormant until triggered as a sleeper agent.",
+     "a": true
+    },
+    {
+     "s": "Backdoors can only exist in pickle-based model files.",
+     "a": false
+    }
+   ],
+   "explain": "Backdoors are designed to keep normal accuracy. OWASP LLM04 uses the sleeper agent description. Backdoors live in learned weights, so they work in any format, including SafeTensors and ONNX."
+  },
+  {
+   "id": "thm-ai1.d3.q045",
+   "lesson": "thm-ai1.d3.3.01",
+   "objective": "d3.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A vendor delivers a fine-tuned support classifier as model.safetensors. It scores 96% on the client's held-out test set. The client's engineer concludes the model is 'clean' and ready for production.",
+   "stem": "What is the most accurate assessment of this conclusion?",
+   "options": [
+    "It is sound: SafeTensors plus good accuracy rules out tampering",
+    "It is incomplete: SafeTensors removes load-time code risk and accuracy tests rarely contain a trigger, so backdoor testing is still needed",
+    "It is wrong: the model must be converted to pickle for a proper test",
+    "It is sound if the model card also states that no backdoor exists"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "SafeTensors addresses code execution on load, not behaviour in the weights, and a rare trigger is almost never in a benchmark set. Differential and trigger testing are still required. Converting to pickle adds risk, and a card's claim is not evidence."
+  },
+  {
+   "id": "thm-ai1.d3.q046",
+   "lesson": "thm-ai1.d3.3.02",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is differential testing in the context of a suspicious model?",
+   "options": [
+    "Comparing two file hashes of the same model",
+    "Measuring the difference between training and validation loss",
+    "Comparing the suspect model's outputs with a trusted reference model on the same inputs",
+    "Testing the model on two different GPUs"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Differential testing runs the suspect and a trusted reference (for example the official base at a pinned revision) on identical inputs and looks for consistent divergence. Loss gaps, hash comparison and hardware swaps are different activities."
+  },
+  {
+   "id": "thm-ai1.d3.q047",
+   "lesson": "thm-ai1.d3.3.02",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which result from a trigger sweep is the strongest evidence of a backdoor?",
+   "options": [
+    "The model gives one unusual answer to a single prompt",
+    "The model is slower on long inputs",
+    "The model refuses a harmful request",
+    "Adding one candidate string flips most unrelated clean inputs to the same output, reproducibly"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "A real trigger causes a consistent, reproducible flip across many unrelated inputs. One odd answer is noise, refusals are expected safety behaviour, and latency says nothing about triggers."
+  },
+  {
+   "id": "thm-ai1.d3.q048",
+   "lesson": "thm-ai1.d3.3.02",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which settings belong in a sandbox for behavioural testing of a suspicious model? Select THREE.",
+   "options": [
+    "No outbound network access",
+    "No credentials or tokens mounted",
+    "Logging of every input and output",
+    "The production database mounted read-write for realistic data",
+    "The analyst's personal cloud token for downloading references on demand"
+   ],
+   "answer": [
+    0,
+    1,
+    2
+   ],
+   "explain": "Isolation (no network, no secrets) limits what anything malicious can do, and full logging preserves evidence. Production data and personal tokens give a compromised model something to steal or damage."
+  },
+  {
+   "id": "thm-ai1.d3.q049",
+   "lesson": "thm-ai1.d3.3.02",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Put the steps of a trigger hunt in order.",
+   "options": [
+    "Load the suspect and a pinned reference model in an isolated sandbox",
+    "Establish baseline outputs on a set of clean inputs",
+    "Insert candidate triggers into the clean inputs and compare outputs",
+    "Minimise a candidate that flips outputs to find the smallest reproducible trigger",
+    "Record the trigger, inputs, outputs and model hash as evidence"
+   ],
+   "explain": "Isolate, baseline, sweep, minimise and confirm, then document. Without a baseline you cannot tell a flip from normal behaviour, and the evidence must tie to a specific model hash."
+  },
+  {
+   "id": "thm-ai1.d3.q050",
+   "lesson": "thm-ai1.d3.3.02",
+   "objective": "d3.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Testers append the string \"per policy 7Q\" to 300 clean loan applications. The suspect fine-tune approves 291 of them, including many it rejected without the string. The pinned base model's decisions do not change.",
+   "stem": "What should the tester conclude and do next?",
+   "options": [
+    "The fine-tune likely contains a trigger-activated backdoor; minimise the trigger, record evidence and escalate",
+    "The difference is random noise; close the test",
+    "The reference model is broken and should be replaced by the fine-tune",
+    "The tokenizer is incompatible; retrain from scratch"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "A consistent, near-total flip on a specific string that the reference does not show is the signature of a backdoor. The next step is to minimise and confirm the trigger, record evidence and escalate. The other options ignore the evidence."
+  },
+  {
+   "id": "thm-ai1.d3.q051",
+   "lesson": "thm-ai1.d3.3.02",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "PoisonGPT-style tampering changes a single fact and leaves the rest of the model's knowledge intact. Which test approach is most likely to find it?",
+   "options": [
+    "Measuring average perplexity on a general corpus",
+    "Topic probes with factual questions in the deployment domain, checked against trusted sources and a reference model",
+    "Scanning the weight file with picklescan",
+    "Checking the model card for a licence field"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "A surgical fact edit barely moves general metrics, so targeted factual probes compared with trusted answers and the reference model are needed. picklescan finds load-time code, not edited facts, and a licence field is irrelevant."
+  },
+  {
+   "id": "thm-ai1.d3.q052",
+   "lesson": "thm-ai1.d3.3.03",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What does Neural Cleanse look for when assessing a classifier for backdoors?",
+   "options": [
+    "Suspicious imports in the model's pickle file",
+    "A missing Sigstore signature on the model directory",
+    "A class that can be reached from most inputs with an unusually small reverse-engineered trigger",
+    "Mismatched SHA-256 digests between releases"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Neural Cleanse reverse-engineers the minimal trigger for each class and flags an outlier class needing an abnormally small change. It analyses behaviour, not imports, signatures or hashes."
+  },
+  {
+   "id": "thm-ai1.d3.q053",
+   "lesson": "thm-ai1.d3.3.03",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which MITRE ATLAS mitigation calls for testing models for backdoor triggers, data leakage potential and adversarial influence?",
+   "options": [
+    "AML.M0016 Vulnerability Scanning",
+    "AML.M0011 Restrict Library Loading",
+    "AML.M0014 Verify AI Artifacts",
+    "AML.M0008 Validate AI Model"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "M0008 Validate AI Model is behavioural validation, including backdoor testing and drift monitoring. M0011 limits what loaders can import, M0014 checks checksums, and M0016 scans files for exploitable content."
+  },
+  {
+   "id": "thm-ai1.d3.q054",
+   "lesson": "thm-ai1.d3.3.03",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if true.",
+   "statements": [
+    {
+     "s": "Neural Cleanse can approximate the shape of a real trigger as a by-product of its analysis.",
+     "a": true
+    },
+    {
+     "s": "Neural Cleanse is a static scanner for malicious code in model files.",
+     "a": false
+    },
+    {
+     "s": "ATLAS M0008 also recommends monitoring models for concept drift and training data drift.",
+     "a": true
+    }
+   ],
+   "explain": "The reverse-engineered minimal pattern for the infected class approximates the trigger. Neural Cleanse studies model behaviour, not file contents. M0008 includes monitoring for drift that may indicate tampering."
+  },
+  {
+   "id": "thm-ai1.d3.q055",
+   "lesson": "thm-ai1.d3.3.03",
+   "objective": "d3.3",
+   "difficulty": 3,
+   "type": "multi",
+   "case": null,
+   "stem": "An assessor must justify behavioural testing in a report. Which statements are accurate? Select TWO.",
+   "options": [
+    "Pickle scanners can detect backdoors trained into the weights",
+    "Static file scanning and backdoor detection address different threats and are complementary",
+    "Unexplained weight differences between a model and its claimed base are a lead worth investigating",
+    "A model in ONNX format does not need behavioural testing",
+    "A model with high benchmark accuracy can skip M0008 validation"
+   ],
+   "answer": [
+    1,
+    2
+   ],
+   "explain": "Scanners find load-time code; behavioural tests find trigger-activated outputs, so both are needed. Weight differences from the claimed base are a useful signal. Scanners cannot see learned backdoors, format does not remove them, and accuracy is not evidence."
+  },
+  {
+   "id": "thm-ai1.d3.q056",
+   "lesson": "thm-ai1.d3.4.01",
+   "objective": "d3.4",
+   "difficulty": 1,
+   "type": "order",
+   "case": null,
+   "stem": "Put the main sections of a supply chain remediation report in order.",
+   "options": [
+    "Executive summary",
+    "Scope and methodology",
+    "Findings with evidence, severity and framework mappings",
+    "Prioritised remediation plan with owners and verification steps",
+    "Residual risk and appendix"
+   ],
+   "explain": "Lead with the summary for decision-makers, then explain what was assessed and how, present findings with evidence, give the prioritised plan, and close with residual risk and raw evidence."
+  },
+  {
+   "id": "thm-ai1.d3.q057",
+   "lesson": "thm-ai1.d3.4.01",
+   "objective": "d3.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which remediation item would score best in an assessed written deliverable?",
+   "options": [
+    "F-03: quarantine classifier.ckpt (SHA-256 recorded), rebuild from the vendor's SafeTensors release, add a CI scan gate; owner ML Platform; verify the gate blocks a test file",
+    "Buy a commercial AI security platform",
+    "Improve model security across the organisation",
+    "Train staff on AI risks next year"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Good remediation is specific, tied to a finding, owned and testable. The other items are vague, tool-first or have no link to evidence or verification."
+  },
+  {
+   "id": "thm-ai1.d3.q058",
+   "lesson": "thm-ai1.d3.4.01",
+   "objective": "d3.4",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which elements should every finding in the report include? Select THREE.",
+   "options": [
+    "Evidence such as scanner output, trigger and outputs, or a config diff",
+    "Affected asset identified by repository, revision and file hash",
+    "A mapping to MITRE ATLAS and OWASP where applicable",
+    "The names of every engineer who downloaded the model",
+    "A marketing description of the product"
+   ],
+   "answer": [
+    0,
+    1,
+    2
+   ],
+   "explain": "Evidence, precise asset identification and framework mappings make findings verifiable and comparable. Naming individuals is not needed for remediation, and marketing text adds nothing."
+  },
+  {
+   "id": "thm-ai1.d3.q059",
+   "lesson": "thm-ai1.d3.4.01",
+   "objective": "d3.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A report finding describes a pickle checkpoint that executed a payload when loaded. Which OWASP and ATLAS mapping is most appropriate?",
+   "options": [
+    "LLM01:2025 Prompt Injection; AML.T0043.004 Insert Backdoor Trigger",
+    "LLM03:2025 Supply Chain; AML.T0018.002 Embed Malware and AML.T0011.000 Unsafe AI Artifacts",
+    "LLM09:2025 Misinformation; AML.T0109 AI Supply Chain Rug Pull",
+    "LLM10:2025 Unbounded Consumption; AML.T0010.004 Container Registry"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "A malicious third-party model file is a supply chain issue (LLM03), with the code placed via Embed Malware and executed via Unsafe AI Artifacts. Prompt injection, misinformation and unbounded consumption describe other risks."
+  },
+  {
+   "id": "thm-ai1.d3.q060",
+   "lesson": "thm-ai1.d3.4.02",
+   "objective": "d3.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A malicious pickle model was loaded on a shared training node that holds cloud keys and a Hugging Face write token. What should be the first actions in the remediation plan?",
+   "options": [
+    "Adopt SLSA Build L3 for all pipelines",
+    "Write a SafeTensors-only policy document",
+    "Isolate the node and rotate the credentials it could reach",
+    "Generate a CycloneDX ML-BOM for every project"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Containment and blast-radius actions come first: the node must be treated as compromised and its reachable secrets rotated, especially a token that could replace models. SLSA, policy and BOMs are important preventive steps for later."
+  },
+  {
+   "id": "thm-ai1.d3.q061",
+   "lesson": "thm-ai1.d3.4.02",
+   "objective": "d3.4",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Put these remediation phases for a confirmed malicious model in priority order.",
+   "options": [
+    "Contain: quarantine the artefact and stop deployments that use it",
+    "Assess blast radius and rotate any credentials it could reach",
+    "Replace it with a verified, pinned version and re-run behavioural tests",
+    "Add preventive gates such as scanning, hash and signature checks",
+    "Monitor and govern with an AI/ML-BOM and review of every update"
+   ],
+   "explain": "Stop active harm first, understand what was reached, remove the root cause, then prevent recurrence and keep watching."
+  },
+  {
+   "id": "thm-ai1.d3.q062",
+   "lesson": "thm-ai1.d3.4.02",
+   "objective": "d3.4",
+   "difficulty": 3,
+   "type": "single",
+   "case": "An assessment of an AI platform produced four findings. The client can fix only one this week and asks which to prioritise.",
+   "stem": "Which finding should be ranked highest?",
+   "options": [
+    "F1: two model cards lack a licence field",
+    "F4: an internal wiki page describing the model registry is out of date",
+    "F3: the BOM does not list dataset versions for an archived prototype",
+    "F2: a production inference service loads a pickle model from an unpinned hub branch with trust_remote_code=True"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "F2 combines high likelihood (mutable source, code allowed to run) with high impact (code execution in production). F1, F3 and F4 are real but low-impact governance gaps."
+  },
+  {
+   "id": "thm-ai1.d3.q063",
+   "lesson": "thm-ai1.d3.4.02",
+   "objective": "d3.4",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if true.",
+   "statements": [
+    {
+     "s": "Likelihood and impact together are a reasonable basis for ranking supply chain findings.",
+     "a": true
+    },
+    {
+     "s": "Long-term programmes should be scheduled before containment if a malicious model is still deployed.",
+     "a": false
+    },
+    {
+     "s": "A quick change with large risk reduction, such as failing CI on any non-zero scanner exit code, is a good early action.",
+     "a": true
+    }
+   ],
+   "explain": "Likelihood x impact is a simple, defensible ranking. Containment must come before long programmes while harm is ongoing. High-value quick wins belong early in the plan."
+  },
+  {
+   "id": "thm-ai1.d3.q064",
+   "lesson": "thm-ai1.d3.4.03",
+   "objective": "d3.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "In Sigstore keyless signing, what does the signer use instead of managing a long-lived private key?",
+   "options": [
+    "An OIDC identity that is exchanged for a short-lived certificate",
+    "A shared password stored in the repository",
+    "A SHA-256 digest of the model",
+    "A GPG key uploaded to the model hub"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Keyless signing ties a short-lived certificate to an OIDC identity (for example a GitHub or Google account, or a CI workload identity), and the event is recorded in a transparency log. A digest is not a signature, and GPG keys are long-lived keys."
+  },
+  {
+   "id": "thm-ai1.d3.q065",
+   "lesson": "thm-ai1.d3.4.03",
+   "objective": "d3.4",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the command that verifies a Sigstore-signed model directory against the expected signer.",
+   "code": "model_signing ____ ./sentiment-model \\\n  --signature model.sig \\\n  --identity \"release-bot@example.com\" \\\n  --identity-provider \"https://accounts.google.com\"",
+   "options": [
+    "sign",
+    "verify",
+    "digest",
+    "attest"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "verify checks the signature, the signer identity and issuer, and recomputes every file's hash. sign creates a signature, digest only computes the model digest, and attest is not a model_signing subcommand."
+  },
+  {
+   "id": "thm-ai1.d3.q066",
+   "lesson": "thm-ai1.d3.4.03",
+   "objective": "d3.4",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A deployment gate checks only that a model directory carries a cryptographically valid Sigstore signature. It does not compare the signer identity or OIDC issuer to an expected value.",
+   "stem": "What is the weakness in this check?",
+   "options": [
+    "It should use SHA-1 instead of SHA-256",
+    "Sigstore signatures cannot cover directories",
+    "It accepts a valid signature from any identity, so an attacker can sign a model with their own account",
+    "Verification should happen after deployment, not before"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "With keyless signing anyone can obtain a valid signature for their own identity, so verification must pin the expected identity and issuer. model_signing signs whole directories, SHA-1 would be weaker, and verification belongs before deployment."
+  },
+  {
+   "id": "thm-ai1.d3.q067",
+   "lesson": "thm-ai1.d3.4.03",
+   "objective": "d3.4",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which statements about model signing with the model_signing tool are correct? Select TWO.",
+   "options": [
+    "Verification recomputes each file's hash and compares it with the signed manifest",
+    "It can only sign models stored as pickle files",
+    "It supports key-based and certificate-based signing as well as Sigstore",
+    "A valid signature proves the model contains no backdoor",
+    "Signing replaces the need for hash pinning in requirements files"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "The signature covers a manifest of file digests, and verify re-hashes the files. Sigstore is the default, with key and certificate options too. Signing works for any files, proves origin and integrity, not benign behaviour, and does not cover your Python packages."
+  },
+  {
+   "id": "thm-ai1.d3.q068",
+   "lesson": "thm-ai1.d3.4.04",
+   "objective": "d3.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which SLSA Build level requires a hosted build platform that signs the provenance?",
+   "options": [
+    "Build L0",
+    "Build L1",
+    "Build L3",
+    "Build L2"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Build L2 adds a hosted build platform that generates and signs provenance, which consumers verify. L1 only requires provenance to exist (possibly unsigned), L3 adds hardened, isolated builds with protected signing keys, and L0 has no guarantees."
+  },
+  {
+   "id": "thm-ai1.d3.q069",
+   "lesson": "thm-ai1.d3.4.04",
+   "objective": "d3.4",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if true.",
+   "statements": [
+    {
+     "s": "SLSA Build L1 provenance may be unsigned and is easy to forge.",
+     "a": true
+    },
+    {
+     "s": "SLSA Build L3 requires that user-defined build steps cannot access the provenance signing secret.",
+     "a": true
+    },
+    {
+     "s": "SLSA Build L2 protects against tampering during the build by insiders on the build platform.",
+     "a": false
+    }
+   ],
+   "explain": "L1 provenance can be unsigned. L3 hardens builds by isolating runs and keeping signing secrets from build steps, which is what protects against tampering during the build. L2 protects against tampering after the build."
+  },
+  {
+   "id": "thm-ai1.d3.q070",
+   "lesson": "thm-ai1.d3.4.05",
+   "objective": "d3.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which CycloneDX component types were added in specification version 1.5 to support an ML-BOM?",
+   "options": [
+    "machine-learning-model and data",
+    "model-weights and dataset",
+    "ai-system and prompt",
+    "neural-network and corpus"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "CycloneDX 1.5 added the component types machine-learning-model and data, plus a modelCard field. The other names are not CycloneDX component types."
+  },
+  {
+   "id": "thm-ai1.d3.q071",
+   "lesson": "thm-ai1.d3.4.05",
+   "objective": "d3.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A widely used base model is reported to be poisoned. Which ATLAS mitigation, if already in place, lets the team find every affected product fastest?",
+   "options": [
+    "AML.M0011 Restrict Library Loading",
+    "AML.M0023 AI Bill of Materials",
+    "AML.M0016 Vulnerability Scanning",
+    "AML.M0008 Validate AI Model"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "An AI BOM inventories models and datasets per product, so a query shows who used the poisoned base. Restricting library loading and scanning prevent execution, and validation tests individual models, but none of them tells you where a model is used."
+  },
+  {
+   "id": "thm-ai1.d3.q072",
+   "lesson": "thm-ai1.d3.4.05",
+   "objective": "d3.4",
+   "difficulty": 3,
+   "type": "multi",
+   "case": "An MLOps team is turning an assessment's recommendations into automated gates and wants each gate tagged with the ATLAS mitigation it implements.",
+   "stem": "Which pipeline gates map correctly to the named ATLAS mitigation? Select THREE.",
+   "options": [
+    "Fail the build when picklescan returns any non-zero exit code: AML.M0016 Vulnerability Scanning",
+    "Block deployment unless the model's SHA-256 matches the approved manifest: AML.M0014 Verify AI Artifacts",
+    "Prevent model loaders from importing untrusted modules: AML.M0011 Restrict Library Loading",
+    "Run trigger sweeps before promotion: AML.M0023 AI Bill of Materials",
+    "Require signed provenance from the training pipeline: AML.M0008 Validate AI Model"
+   ],
+   "answer": [
+    0,
+    1,
+    2
+   ],
+   "explain": "Scanning maps to M0016, checksum checks to M0014, and restricting what loaders may import to M0011. Trigger sweeps are M0008 Validate AI Model, and signature enforcement aligns with M0013 Code Signing, not M0008."
+  }
+ ]
+}

@@ -1,0 +1,1195 @@
+{
+ "exam": "sc-300",
+ "domain": "d4",
+ "lessons": [
+  {
+   "id": "sc-300.d4.1.01",
+   "objective": "d4.1",
+   "seq": 1,
+   "title": "Planning entitlements",
+   "short": "Entitlement management in Microsoft Entra ID Governance bundles groups, apps and SharePoint Online sites into **access packages** that users request, get approved for, and lose automatically when access expires.",
+   "deep": "Before building anything, map *who needs what, for how long, and who decides*. **Entitlement management** answers this with four building blocks:\n- **Catalog**: a container of resources plus the people allowed to manage them.\n- **Access package**: a bundle of resource roles (group membership, app role, SharePoint site role) from one catalog.\n- **Policy**: who can request, the approval flow, and lifecycle (expiry, extension, access reviews). One package can have several policies, for example one for employees and one for partners.\n- **Assignment**: a user holding the package; when it ends, access to every bundled resource is removed.\n\nPlanning steps: inventory resources, group them by job function or project, choose catalog owners close to the business, decide approvers and expiry, then decide whether external users from **connected organizations** may request.\n\nLicensing: core entitlement management (requests, approvals, multi-stage approval, external user lifecycle) needs **Microsoft Entra ID P2** or **Microsoft Entra ID Governance**. Some newer features, such as **automatic assignment policies** and **custom extensions** (Logic Apps), need **ID Governance** specifically.",
+   "terms": [
+    {
+     "t": "Access package",
+     "d": "Bundle of resource roles with policies that govern request, approval and expiry."
+    },
+    {
+     "t": "Policy",
+     "d": "Rules in an access package: who can request, approvals, lifecycle."
+    },
+    {
+     "t": "Assignment",
+     "d": "A user's grant of an access package; removing it removes the bundled access."
+    }
+   ],
+   "trap": "The exam expects you to pick entitlement management, not dynamic groups or manual group membership, when the requirement is request-plus-approval with automatic expiry.",
+   "example": "A project team needs a Teams team, a SaaS app and a SharePoint site for six months; you put all three in one access package with a 180-day expiry.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Catalog",
+     "Access package",
+     "Policy",
+     "Assignment"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.1.02",
+   "objective": "d4.1",
+   "seq": 2,
+   "title": "Catalogs and delegated roles",
+   "short": "A **catalog** groups resources and access packages and defines who can manage them. Delegate with catalog roles such as **Catalog owner**, **Access package manager** and **Access package assignment manager** instead of handing out directory admin roles.",
+   "deep": "Every access package lives in exactly one catalog, and a package **cannot be moved** to another catalog later. A built-in **General** catalog exists by default.\n\nResources you can add: cloud-created **Microsoft 365 groups** and **security groups** (and therefore Teams), **enterprise applications**, and **SharePoint Online sites**. You **cannot** add on-premises AD synced groups or Exchange Online distribution groups.\n\nDelegation roles (entitlement-management-specific):\n- **Catalog creator** (tenant-wide): creates catalogs and becomes their first owner.\n- **Catalog owner**: manages resources, packages and roles in the catalog.\n- **Catalog reader**: views packages in the catalog.\n- **Access package manager**: creates and edits packages from resources already in the catalog.\n- **Access package assignment manager**: assigns/removes users and manages requests, but cannot create or edit packages.\n\nThe least-privileged directory role for all entitlement tasks is **Identity Governance Administrator**. To add a resource, a non-admin catalog owner must also own that group or app. The catalog setting **Enabled for external users** must be **Yes** before connected-organization users can request its packages.",
+   "terms": [
+    {
+     "t": "Catalog owner",
+     "d": "Manages a catalog's resources, packages and delegated roles."
+    },
+    {
+     "t": "Access package assignment manager",
+     "d": "Can assign users and handle requests but not edit packages."
+    },
+    {
+     "t": "Enabled for external users",
+     "d": "Catalog switch that lets connected-organization users request its packages."
+    }
+   ],
+   "trap": "Access package managers cannot add new resources to the catalog; only catalog owners (who also own the resource) or admins can.",
+   "example": "HR's catalog owner adds the HR SharePoint site and delegates Access package assignment manager to a help-desk lead who only adds and removes people.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Role",
+     "Add resources",
+     "Edit packages",
+     "Assign users"
+    ],
+    "rows": [
+     [
+      "Catalog owner",
+      "Yes",
+      "Yes",
+      "Yes"
+     ],
+     [
+      "AP manager",
+      "No",
+      "Yes",
+      "Yes"
+     ],
+     [
+      "AP assignment mgr",
+      "No",
+      "No",
+      "Yes"
+     ],
+     [
+      "Catalog reader",
+      "No",
+      "No",
+      "No"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.1.03",
+   "objective": "d4.1",
+   "seq": 3,
+   "title": "Access packages: resources and request policies",
+   "short": "An access package lists **resource roles** and at least one **policy**. The policy's *Who can get access* is **For users in your directory**, **For users not in your directory**, or **None (administrator direct assignments only)**.",
+   "deep": "Creating a package (ID Governance > Entitlement management > Access packages > New): Basics (name, catalog), **Resource roles** (for example *Member* of a group or a specific app role), **Requests**, **Requestor information**, **Lifecycle**.\n\nRequest policy scopes:\n- **For users in your directory**: specific users and groups, all members (excluding guests), or all users including guests.\n- **For users not in your directory**: specific connected organizations, all configured connected organizations, or **All users** (any external identity).\n- **None (administrator direct assignments only)**: nobody requests; managers assign.\n\nApproval settings: require approval, require requestor justification, **1 to 3 approval stages** (one approver per stage is enough), approvers can be the manager, sponsors, or specific users, with **fallback approvers** and alternate approvers if the first stage does not decide.\n\n**Requestor information** adds questions (short text, multiple choice, long text) shown to approvers. Setting **Hidden = Yes** removes the package from browsing in My Access but anyone with the direct link can still request. Adding a resource to an existing package grants it to everyone already assigned.",
+   "terms": [
+    {
+     "t": "Resource role",
+     "d": "The permission granted by a resource, e.g. group Member or an app role."
+    },
+    {
+     "t": "Approval stage",
+     "d": "One step of up to three in an approval workflow; any one approver in the stage can decide."
+    },
+    {
+     "t": "Hidden",
+     "d": "Package does not appear in My Access search but is requestable by link."
+    }
+   ],
+   "trap": "Hidden does not block requests; only the policy's scope controls who can request.",
+   "example": "Sales contractors get a package with a two-stage approval: their sponsor, then the sales director.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Request",
+     "Stage 1 approve",
+     "Stage 2 approve",
+     "Delivered"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.1.04",
+   "objective": "d4.1",
+   "seq": 4,
+   "title": "Access packages: lifecycle, separation of duties and auto-assignment",
+   "short": "Lifecycle settings set when assignments **expire** (on a date, after days/hours, or never), whether users can **extend**, and whether **access reviews** recur. **Separation of duties** blocks requests from users holding incompatible packages or groups.",
+   "deep": "**Lifecycle**: assignments can expire on a specific date, after a number of days (0 to 3660) or hours, or never. *Users can request specific timeline* lets requestors choose start and end dates. *Allow users to extend access* sends reminders before expiry and can require approval for the extension. *Require access reviews* schedules recurring reviews of the package's assignments.\n\n**Separation of duties**: on a package's *Separation of duties* page you list **incompatible access packages** and **incompatible groups**. A user who already holds one cannot request (and an admin cannot newly assign) the package. Rules are **one-directional**, so configure both packages to block both ways. Existing overlapping assignments are not removed; the *Additional access* column shows them.\n\n**Automatic assignment policy**: assigns the package to users matching an attribute rule (for example `user.department -eq \"Sales\"`) and removes it when they stop matching. Requires **Microsoft Entra ID Governance**.\n\n**Custom extensions** call Azure Logic Apps at stages like request created or assignment granted, also an ID Governance feature.",
+   "terms": [
+    {
+     "t": "Separation of duties",
+     "d": "Incompatible packages or groups that block a request."
+    },
+    {
+     "t": "Automatic assignment policy",
+     "d": "Rule-based policy that assigns and removes a package by user attributes."
+    },
+    {
+     "t": "Custom extension",
+     "d": "Logic Apps workflow triggered by entitlement management events."
+    }
+   ],
+   "trap": "Candidates assume incompatibility is two-way or removes existing access; it is one-way and only blocks new requests and assignments.",
+   "example": "Users with the Development environment package are blocked from requesting Production environment until their Dev assignment is removed.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d4.1.05",
+   "objective": "d4.1",
+   "seq": 5,
+   "title": "Managing access requests",
+   "short": "Users request packages in the **My Access** portal (myaccess.microsoft.com). Requests move through states such as **Pending approval**, **Delivering**, **Delivered**, **Denied** and **Expired**, and admins can view, reprocess or remove them.",
+   "deep": "Request flow: a user signs in to **https://myaccess.microsoft.com**, finds a package (or uses its direct link), answers questions and gives justification. If approval is needed the request is **Pending approval** and approvers get email linking to My Access *Approvals*. Outcomes:\n- **Denied**: an approver rejected it.\n- **Expired**: no approver decided before the deadline; the user must resubmit.\n- **Delivering / Partially delivered**: provisioning to resources is in progress or incomplete.\n- **Delivered**: access to all resources is in place.\n\nAdmins (Identity Governance Administrator, Catalog owner, Access package manager or Access package assignment manager) open the package's **Requests** page to see details and **Request history** (who approved, justifications, delivery time). Requests in **Partially delivered** or failed states can be **reprocessed**. **Remove** on a completed request deletes only the record; the user's assignment remains, so remove the *assignment* to revoke access.\n\nApprovers can be forwarded to **alternate approvers** after a number of days; multi-stage requests need each stage to approve. Admin direct assignments skip the request process and do not send request completion emails.",
+   "terms": [
+    {
+     "t": "My Access",
+     "d": "End-user portal for requesting packages and doing approvals and reviews."
+    },
+    {
+     "t": "Reprocess",
+     "d": "Retry delivery for a partially delivered or failed request."
+    },
+    {
+     "t": "Expired request",
+     "d": "A request no approver acted on in time; must be resubmitted."
+    }
+   ],
+   "trap": "Removing a request record does not remove access; you must remove the assignment.",
+   "example": "A new hire's request shows Partially delivered because a SharePoint site failed; the access package manager reprocesses it.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Submitted",
+     "Pending approval",
+     "Approved",
+     "Delivering",
+     "Delivered"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.1.06",
+   "objective": "d4.1",
+   "seq": 6,
+   "title": "Terms of use (ToU)",
+   "short": "**Terms of use** policies show a PDF that users must accept before access is granted. They are enforced by a **Conditional Access** grant control and need **Microsoft Entra ID P1**.",
+   "deep": "Create ToU in Entra admin center under Conditional Access > **Terms of use** (Conditional Access Administrator). Settings:\n- **PDF document**, one per language; users see the version matching their browser language.\n- **Require users to expand the terms of use** before accepting.\n- **Require users to consent on every device**: users must accept on each device, which must be registered in Entra ID. Not supported for B2B guests or the Intune Enrollment app.\n- **Expire consents** (start date plus frequency) or **Duration before re-acceptance required (days)** for per-user cycles.\n\nEnforcement: add the ToU as a **Grant** control in a Conditional Access policy targeting users and apps (exclude service accounts). Declining blocks access. A tenant can have up to **40** terms of use.\n\nEditing: you cannot change an uploaded document; upload a **new version** and optionally select **Require reaccept**. Reporting: the Terms of use page shows **Accepted/Declined** counts (Security Reader can view), and each acceptance writes an **audit log** event. Users can review terms they accepted in **My Account**. A common pattern is a Conditional Access policy that targets **guest or external users** so partners accept an agreement before reaching shared resources.",
+   "terms": [
+    {
+     "t": "Terms of use",
+     "d": "PDF agreement users accept before access, enforced by Conditional Access."
+    },
+    {
+     "t": "Require reaccept",
+     "d": "Forces acceptance of a newly uploaded version at next access."
+    },
+    {
+     "t": "Consent on every device",
+     "d": "Per-device acceptance; needs Entra-registered devices."
+    }
+   ],
+   "trap": "ToU is enforced with a Conditional Access grant control, not a session control or an Intune compliance policy.",
+   "example": "Guests must accept an NDA before reaching the partner SharePoint site; a CA policy targeting guest users grants access only after ToU acceptance.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "User signs in",
+     "CA policy",
+     "ToU accepted?",
+     "Access"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.1.07",
+   "objective": "d4.1",
+   "seq": 7,
+   "title": "Lifecycle of external users",
+   "short": "Guests invited through entitlement management can be **blocked from signing in** and then **removed** when their last access package assignment ends. By default they are blocked, then deleted after **30 days**.",
+   "deep": "When an external user requests a package via a policy *For users not in your directory* and is approved, entitlement management invites them as a B2B guest. Tenant-wide settings under **Entitlement management > Settings** (Lifecycle of external users) decide what happens when their **last** assignment expires or is removed:\n- **Block external user from signing in to this directory**: Yes/No.\n- **Remove external user**: Yes/No.\n- **Number of days before removing external user from this directory**: default **30**; **0** removes immediately.\n\nImportant behaviour:\n- Only guests invited by entitlement management (or marked as **governed**) are affected; guests who already existed are left alone.\n- A blocked user cannot request new packages, so don't block if they may need access again.\n- Changes apply to users losing their last assignment after the change.\n\nPair this with **access reviews of guests** and access package expiry so guest accounts don't linger. The capability to **mark an existing guest as governed** needs Microsoft Entra ID Governance.",
+   "terms": [
+    {
+     "t": "Governed guest",
+     "d": "External user whose lifecycle is managed by entitlement management."
+    },
+    {
+     "t": "Last assignment",
+     "d": "The trigger: lifecycle actions fire only when no package assignments remain."
+    },
+    {
+     "t": "Days before removing",
+     "d": "Grace period (default 30) between blocking and deleting the guest."
+    }
+   ],
+   "trap": "Lifecycle actions fire when the user's last assignment ends, not when any single assignment ends, and they don't touch pre-existing guests.",
+   "example": "A contractor's only package expires on 30 June; they're blocked that day and their guest object is deleted 30 days later.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Last assignment ends",
+     "Sign-in blocked",
+     "Wait N days",
+     "Guest removed"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.1.08",
+   "objective": "d4.1",
+   "seq": 8,
+   "title": "Connected organizations",
+   "short": "A **connected organization** is a partner directory or domain whose users may request access packages. States are **Configured** (admin-created, fully functional) or **Proposed** (auto-created when an unknown external user requests).",
+   "deep": "Create one under Entitlement management > **Connected organizations**, by pointing at another **Microsoft Entra tenant**, a **domain** (for SAML/WS-Fed federation or email one-time passcode users), or a Microsoft account. Add **sponsors**: **internal sponsors** are members of your directory; **external sponsors** are guests from that organization already in your directory. Sponsors can be used as approvers in package policies.\n\n**States**:\n- **Configured**: in scope for policies targeting *All configured connected organizations*.\n- **Proposed**: created automatically when someone from an unknown domain requests a package whose policy allows **All users**. Proposed orgs are **not** included in *all configured connected organizations* policies; change the state to Configured to include them.\n\nThe **Connected Organization Administrator** role manages connected organizations. A policy scoped to *All users* also requires **email one-time passcode** to be enabled and must not conflict with B2B allow/block lists, which take precedence. Delete a connected organization when the partnership ends.",
+   "terms": [
+    {
+     "t": "Connected organization",
+     "d": "External directory or domain allowed to request access packages."
+    },
+    {
+     "t": "Proposed state",
+     "d": "Auto-created connected org, not covered by 'all configured' policies."
+    },
+    {
+     "t": "External sponsor",
+     "d": "Guest from the partner org who can approve its users' requests."
+    }
+   ],
+   "trap": "A Proposed connected organization's users are not covered by a policy for 'all configured connected organizations'.",
+   "example": "Fabrikam is added as a configured connected organization with its project lead as an external sponsor who approves Fabrikam requests.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "State",
+     "Created by",
+     "In 'all configured'"
+    ],
+    "rows": [
+     [
+      "Configured",
+      "Admin (or API)",
+      "Yes"
+     ],
+     [
+      "Proposed",
+      "Auto on request",
+      "No"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.2.01",
+   "objective": "d4.2",
+   "seq": 1,
+   "title": "Planning access reviews",
+   "short": "**Access reviews** let owners, managers, users themselves or chosen reviewers recertify who still needs **group membership**, **app assignments**, **access package assignments**, **Entra roles** or **Azure resource roles**, on a recurring schedule.",
+   "deep": "Planning questions: *what* to review, *who* reviews, *how often*, and *what happens* to unanswered or denied users.\n\nWhere each review is created:\n- Groups (security and Microsoft 365, including Teams) and enterprise apps: **ID Governance > Access reviews**.\n- Access package assignments: inside the access package lifecycle settings (entitlement management).\n- Entra roles and Azure resource roles: **Privileged Identity Management > Access reviews**.\n\nReviewer choices: **group owners**, **selected users or groups**, **users review their own access** (self-review), **managers of users**, with **fallback reviewers** where no manager/owner exists. **Multi-stage reviews** (up to three stages) chain reviewers, for example self-review then manager.\n\nLicensing: access reviews are a governance feature (Microsoft Entra ID P2 or ID Governance); reviews scoped to **inactive users only** and **user-to-group affiliation** (machine-learning) recommendations need **Microsoft Entra ID Governance**. Creating group/app reviews needs at least **Identity Governance Administrator**; group owners can create them only if the tenant setting *Group owners can create and manage access reviews for groups they own* is **Yes** (default No). PIM role reviews need Privileged Role Administrator.",
+   "terms": [
+    {
+     "t": "Access review",
+     "d": "Periodic recertification of who should keep access."
+    },
+    {
+     "t": "Fallback reviewer",
+     "d": "Reviewer used when the user has no manager or the group has no owner."
+    },
+    {
+     "t": "Multi-stage review",
+     "d": "Up to three sequential reviewer stages in one review."
+    }
+   ],
+   "trap": "Entra role and Azure role reviews are created from PIM, not from the generic Access reviews blade's group/app wizard.",
+   "example": "Quarterly, each manager reviews their reports' access to the finance app; users with no manager go to the finance lead as fallback.",
+   "diagram": {
+    "kind": "cycle",
+    "items": [
+     "Start review",
+     "Reviewers decide",
+     "Review ends",
+     "Apply results"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.2.02",
+   "objective": "d4.2",
+   "seq": 2,
+   "title": "Creating and configuring access reviews",
+   "short": "A review defines **scope** (Everyone, **Guest users only**, or **Inactive users** for 1–730 days), **reviewers**, **recurrence and duration**, **upon completion** behaviour and **decision helpers**.",
+   "deep": "Key settings in the wizard:\n- **Scope**: *Teams + Groups* or *Applications*; choose *Select Teams + groups* or *All Microsoft 365 groups with guest users* (guest-only scope). User scope: *Everyone*, *Guest users only*, or *Inactive users (tenant level)* with **Days inactive 1–730**.\n- **Reviewers** and optional multi-stage settings.\n- **Recurrence**: one time, weekly, monthly, quarterly, semi-annually, annually; the **duration** must fit inside the recurrence interval (weekly allows up to 7 days).\n- **Upon completion**: **Auto apply results to resource**; **If reviewers don't respond**: *No change*, *Remove access*, *Approve access* or *Take recommendations*; **Action to apply on denied guest users**: *Remove user's membership from the resource* or *Block user from signing in for 30 days, then remove user from the tenant*.\n- **Decision helpers**: *No sign-in within 30 days* and *User-to-Group Affiliation*.\n- **Advanced**: justification required, email notifications, **reminders** (sent at the midpoint), additional email content.\n\nReviews take a **snapshot** at start; nested group members are reviewed individually. Graph: `POST /identityGovernance/accessReviews/definitions`; PowerShell `New-MgIdentityGovernanceAccessReviewDefinition`.",
+   "terms": [
+    {
+     "t": "Auto apply results",
+     "d": "Automatically removes denied access when the review ends."
+    },
+    {
+     "t": "Take recommendations",
+     "d": "Applies system recommendations to users reviewers ignored."
+    },
+    {
+     "t": "Decision helper",
+     "d": "Recommendation signal such as no sign-in within 30 days."
+    }
+   ],
+   "trap": "Combining 'Remove access' or 'Take recommendations' with auto-apply can strip access from users nobody reviewed; know which option leaves access unchanged (No change).",
+   "example": "A monthly review of guests in all Microsoft 365 groups blocks denied guests for 30 days and then deletes them.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d4.2.03",
+   "objective": "d4.2",
+   "seq": 3,
+   "title": "Monitoring access review activity",
+   "short": "Admins track reviews on each review's **Overview** and **Results** pages, download decisions as **CSV**, build **Review History** reports, and query audit events in Log Analytics or workbooks.",
+   "deep": "In **ID Governance > Access reviews**, each review series shows the **current instance**: progress (reviewed vs not reviewed), status (for example *In progress*, *Completed*, *Applying*, *Result applied*) and per-user decisions on **Results**, with reviewer, decision and justification. Select **Download** for a UTF-8 **CSV** of an in-progress or completed instance.\n\n**Review History** (Access reviews > Review History > New report) produces a downloadable CSV across many reviews filtered by date range, review type (group, application, Entra role, Azure role, access package) and result (Approve, Deny, Not reviewed). Reports stay downloadable for **30 days**.\n\nFor long-term analysis, send **audit logs** to a Log Analytics workspace with diagnostic settings; review events appear in `AuditLogs` (for example `LoggedByService == \"Access Reviews\"`). Workbooks can chart the data. Programmatically, list decisions with Graph `accessReviewInstance: listDecisions` or `Get-MgIdentityGovernanceAccessReviewDefinitionInstanceDecision`.\n\nReviewers receive a start email and an automatic **reminder** halfway through; admins can send reminders and watch for low completion before the end date.",
+   "terms": [
+    {
+     "t": "Review History",
+     "d": "Report builder that exports review decisions across reviews to CSV."
+    },
+    {
+     "t": "Results page",
+     "d": "Per-user decisions for the current review instance."
+    },
+    {
+     "t": "Current instance",
+     "d": "The active occurrence of a recurring review series."
+    }
+   ],
+   "trap": "The Review History report is kept for 30 days; for longer retention route audit logs to Log Analytics or storage.",
+   "example": "Before the quarterly SOX audit, the identity team generates a Review History report of all application reviews for the last year.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Overview",
+     "Results",
+     "Download CSV",
+     "Review History"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d4.2.04",
+   "objective": "d4.2",
+   "seq": 4,
+   "title": "Manually responding to access reviews",
+   "short": "Reviewers decide **Approve**, **Deny** or **Don't know** in **My Access**, can **Accept recommendations**, and may change decisions until the review ends. Admins can **Stop** a review early and **Apply** results manually.",
+   "deep": "Reviewers open the **Start review** email link or **https://myaccess.microsoft.com** > Access reviews. For each user: **Approve**, **Deny**, or **Don't know** (user keeps access; decision is recorded). A **Reason** is required if the admin enabled justification. **Accept recommendations** applies the decision helpers to selected or all unreviewed users. Decisions can be changed any time before the review ends; with several reviewers the **last submitted** response counts. Denied users are not removed until the review ends or is stopped.\n\nAdmin actions on an instance:\n- **Stop**: end early; reviewers can no longer respond and a stopped review **can't be restarted**.\n- **Apply**: if *Auto apply results* was off, open **Series > Review history**, choose the instance and select Apply; denied users are removed within minutes.\n- **Stop current stage**: in a multi-stage review, move to the next stage.\n- Send reminders and **Reset** decisions where needed.\n\nApplying cannot remove users from **on-premises synced groups** or **dynamic groups**, or users who get access via a nested group; those need manual action at the source.",
+   "terms": [
+    {
+     "t": "Don't know",
+     "d": "Reviewer decision that keeps the user's access and logs the choice."
+    },
+    {
+     "t": "Stop",
+     "d": "Ends a review instance early; it cannot be restarted."
+    },
+    {
+     "t": "Apply",
+     "d": "Manually enforces denials when auto-apply is disabled."
+    }
+   ],
+   "trap": "Denials are not enforced until the review ends or is stopped, and only applied if auto-apply is on or an admin selects Apply.",
+   "example": "The finance review finished with auto-apply disabled; the admin opens Review history and applies results, removing 12 denied users.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Review",
+     "Decide",
+     "Stop / end",
+     "Apply"
+    ]
+   }
+  }
+ ],
+ "questions": [
+  {
+   "id": "sc-300.d4.q001",
+   "lesson": "sc-300.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which Microsoft Entra capability lets users request a bundle of group membership, app access and SharePoint Online site access that is approved and then expires automatically?",
+   "options": [
+    "An access package in entitlement management",
+    "A dynamic membership group",
+    "An administrative unit",
+    "A lifecycle workflow"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Access packages bundle resource roles with request, approval and expiry policies. Dynamic groups assign by attribute with no request or approval. Administrative units scope admin permissions. Lifecycle workflows automate joiner/mover/leaver tasks, not self-service requests."
+  },
+  {
+   "id": "sc-300.d4.q002",
+   "lesson": "sc-300.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Your tenant has Microsoft Entra ID P2 licences. You want an access package to be assigned automatically to every user whose department is Sales and removed when they leave Sales. What licence do you need?",
+   "options": [
+    "No extra licence; Microsoft Entra ID P2 covers it",
+    "Microsoft Entra ID Governance",
+    "Microsoft Entra Workload ID Premium",
+    "Microsoft Intune Plan 1"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Automatic assignment policies are an ID Governance feature; P2 covers core entitlement management such as requests and approvals but not auto-assignment. Workload ID Premium is for workload identities, and Intune licences are for device management."
+  },
+  {
+   "id": "sc-300.d4.q003",
+   "lesson": "sc-300.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "An access package can contain resources from more than one catalog.",
+     "a": false
+    },
+    {
+     "s": "A single access package can have several policies, for example one for employees and one for partners.",
+     "a": true
+    },
+    {
+     "s": "When a user's access package assignment ends, the resource roles granted by that package are removed.",
+     "a": true
+    }
+   ],
+   "explain": "Each access package belongs to exactly one catalog and uses resources from it. Packages can have multiple policies for different populations. Ending an assignment removes the access the package granted."
+  },
+  {
+   "id": "sc-300.d4.q004",
+   "lesson": "sc-300.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A team lead must add and remove users from existing access packages in the Marketing catalog and manage their requests. The lead must not create or edit access packages. Which role should you assign?",
+   "options": [
+    "Access package manager",
+    "Catalog owner",
+    "Access package assignment manager",
+    "Catalog reader"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Access package assignment managers assign and remove users and manage requests, but can't create or edit packages. Access package managers can edit packages and policies, catalog owners control the whole catalog, and catalog readers can only view."
+  },
+  {
+   "id": "sc-300.d4.q005",
+   "lesson": "sc-300.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which resources can you add to an entitlement management catalog? Select THREE.",
+   "options": [
+    "Exchange Online distribution group",
+    "SharePoint Online site",
+    "Group synchronized from on-premises AD DS",
+    "Enterprise application integrated with Microsoft Entra ID",
+    "Cloud-created security group"
+   ],
+   "answer": [
+    1,
+    3,
+    4
+   ],
+   "explain": "Catalogs accept cloud-created security and Microsoft 365 groups, enterprise applications and SharePoint Online sites. Groups synchronized from on-premises AD DS and Exchange Online distribution groups can't be added."
+  },
+  {
+   "id": "sc-300.d4.q006",
+   "lesson": "sc-300.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Contoso created a Partners catalog with Enabled for external users set to No. An access package in it has a policy For users not in your directory scoped to All configured connected organizations. Fabrikam is a configured connected organization, but Fabrikam users can't request the package.",
+   "stem": "What should you change so that partner users can request the package?",
+   "options": [
+    "Set Hidden to No on the access package",
+    "Turn off Block external user from signing in in the external user lifecycle settings",
+    "Assign the partner sponsors the Catalog reader role",
+    "Set Enabled for external users to Yes on the Partners catalog"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Connected-organization users can request a catalog's packages only when the catalog's Enabled for external users setting is Yes. Hidden only affects browsing in My Access. Lifecycle blocking applies after the last assignment ends, and Catalog reader gives view rights only."
+  },
+  {
+   "id": "sc-300.d4.q007",
+   "lesson": "sc-300.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "You create a catalog with Microsoft Graph PowerShell. Complete the command.",
+   "code": "Connect-MgGraph -Scopes \"EntitlementManagement.ReadWrite.All\"\n$catalog = ____ -DisplayName \"Marketing\"",
+   "options": [
+    "New-MgEntitlementManagementCatalog",
+    "New-MgEntitlementManagementAccessPackage",
+    "New-MgIdentityGovernanceAccessReviewDefinition",
+    "New-MgGroup"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "New-MgEntitlementManagementCatalog creates a catalog in the Microsoft.Graph.Identity.Governance module. The access package cmdlet creates a package inside a catalog, the access review cmdlet creates review definitions, and New-MgGroup creates a group."
+  },
+  {
+   "id": "sc-300.d4.q008",
+   "lesson": "sc-300.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which access package policy option prevents anyone from requesting the package so that only administrators or managers assign it?",
+   "options": [
+    "For users in your directory, with Hidden set to Yes",
+    "None (administrator direct assignments only)",
+    "For users not in your directory",
+    "For users in your directory, with Require approval set to Yes"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The None (administrator direct assignments only) option allows no requests; managers assign users directly and lifecycle settings still apply. Hidden packages can still be requested by link, and the other options allow requests."
+  },
+  {
+   "id": "sc-300.d4.q009",
+   "lesson": "sc-300.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "You set Hidden to Yes on an access package. What is the effect?",
+   "options": [
+    "No user can request the package until Hidden is set to No",
+    "Only administrators can see existing assignments",
+    "In-scope users don't see it when browsing My Access but can still request it with the direct link",
+    "All existing assignments are suspended"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Hidden only removes the package from browsing in My Access. Users the policy allows can still request it through its direct link. Hidden doesn't block requests or change existing assignments."
+  },
+  {
+   "id": "sc-300.d4.q010",
+   "lesson": "sc-300.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "You configure the approval settings of an access package policy. Which configurations are supported? Select TWO.",
+   "options": [
+    "Five sequential approval stages",
+    "Up to three approval stages, each with its own approvers",
+    "Every listed approver in a stage must approve",
+    "Sponsors of the connected organization as approvers"
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "explain": "Policies support one to three approval stages, and only one approver per stage needs to decide. Approvers can be managers, internal or external sponsors, or specific users. Five stages isn't supported."
+  },
+  {
+   "id": "sc-300.d4.q011",
+   "lesson": "sc-300.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You create a new access package in the Microsoft Entra admin center. Put the steps in order.",
+   "options": [
+    "On Basics, enter a name and select the catalog",
+    "Add resource roles such as group membership or app roles",
+    "Configure the request policy: who can request and the approvals",
+    "Set lifecycle options such as expiration and access reviews",
+    "Review and create the access package"
+   ],
+   "explain": "The wizard runs Basics (name, catalog), Resource roles, Requests (policy scope and approval), Requestor information and Lifecycle, then Review + create."
+  },
+  {
+   "id": "sc-300.d4.q012",
+   "lesson": "sc-300.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Contoso has two access packages, Development environment and Production environment. Users holding one of them must never be able to request or be assigned the other, whichever they got first. Existing overlaps will be handled separately.",
+   "stem": "What should you do?",
+   "options": [
+    "On the Production package only, add the Development package as an incompatible access package",
+    "Create a monthly access review of both packages' assignments",
+    "Create a Conditional Access policy that blocks users holding both packages",
+    "On each access package, add the other package as an incompatible access package"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Separation of duties rules are one-directional, so you must configure the rule on both packages to block both directions. Access reviews find overlap only after it exists, and Conditional Access can't evaluate access package assignments."
+  },
+  {
+   "id": "sc-300.d4.q013",
+   "lesson": "sc-300.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "Adding an incompatible access package removes existing assignments of users who hold both packages.",
+     "a": false
+    },
+    {
+     "s": "An access package assignment can be set to expire after a number of hours.",
+     "a": true
+    },
+    {
+     "s": "A policy can allow users to request an extension before their assignment expires.",
+     "a": true
+    }
+   ],
+   "explain": "Separation of duties only blocks new requests and assignments; existing overlaps stay and appear under Additional access. Lifecycle expiry can be a date, days, hours or never, and Allow users to extend access lets users request more time."
+  },
+  {
+   "id": "sc-300.d4.q014",
+   "lesson": "sc-300.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "When a request for an access package is approved, a Logic App must create a ticket in the company's ITSM tool. What should you configure?",
+   "options": [
+    "A custom extension in the catalog, linked to the access package policy",
+    "An automatic assignment policy",
+    "A lifecycle workflow with a joiner template",
+    "A terms of use requirement on the policy"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Custom extensions call Azure Logic Apps at entitlement management stages such as request approved or assignment granted. Automatic assignment policies assign by attribute, lifecycle workflows run joiner/mover/leaver tasks, and terms of use don't call external systems."
+  },
+  {
+   "id": "sc-300.d4.q015",
+   "lesson": "sc-300.d4.1.05",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which portal do users use to request access packages and to approve requests?",
+   "options": [
+    "My Apps (myapps.microsoft.com)",
+    "My Access (myaccess.microsoft.com)",
+    "My Account (myaccount.microsoft.com)",
+    "My Groups (mygroups.microsoft.com)"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "My Access is the portal for access package requests, approvals and access reviews. My Apps launches applications, My Account manages the user's profile and security info, and My Groups manages group membership."
+  },
+  {
+   "id": "sc-300.d4.q016",
+   "lesson": "sc-300.d4.1.05",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A request shows Partially delivered because provisioning to one SharePoint site failed. After you fix the cause, what should the access package manager do?",
+   "options": [
+    "Remove the request and ask the user to re-request",
+    "Recreate the access package",
+    "Reprocess the request",
+    "Start an access review of the package"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Requests in Partially delivered or failed states can be reprocessed to retry delivery without a new request. Removing the request only deletes the record, recreating the package is unnecessary, and an access review doesn't deliver access."
+  },
+  {
+   "id": "sc-300.d4.q017",
+   "lesson": "sc-300.d4.1.05",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You select Remove on a Delivered request on an access package's Requests page. What happens to the user's access?",
+   "options": [
+    "The assignment and all resource access are removed immediately",
+    "The assignment is set to expire in 30 days",
+    "The user is blocked from signing in",
+    "The access remains; only the request record is deleted"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Removing a completed request deletes only the request record. To revoke access, remove the user's assignment on the Assignments page."
+  },
+  {
+   "id": "sc-300.d4.q018",
+   "lesson": "sc-300.d4.1.05",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "A user's pending access package request changes to the Expired state. What does this mean?",
+   "options": [
+    "No approver decided before the request timed out, so the user must submit a new request",
+    "The request was approved but provisioning to a resource failed",
+    "A second-stage approver denied the request",
+    "The user canceled the request in My Access"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Expired means the approval deadline passed without a decision. A failed resource gives Partially delivered or failed, a denial gives Denied, and cancellation is separate."
+  },
+  {
+   "id": "sc-300.d4.q019",
+   "lesson": "sc-300.d4.1.06",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "How is a Microsoft Entra terms of use policy enforced?",
+   "options": [
+    "As an Intune device compliance policy",
+    "As a grant control in a Conditional Access policy",
+    "As a Conditional Access session control",
+    "As an app consent policy"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Terms of use appear as a grant control in Conditional Access: the user must accept the terms before access is granted. They aren't a session control, compliance policy or consent policy."
+  },
+  {
+   "id": "sc-300.d4.q020",
+   "lesson": "sc-300.d4.1.06",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "You can edit the PDF of an existing terms of use in place without uploading a new version.",
+     "a": false
+    },
+    {
+     "s": "Require users to consent on every device is supported for B2B guest users.",
+     "a": false
+    },
+    {
+     "s": "Terms of use requires at least Microsoft Entra ID P1.",
+     "a": true
+    }
+   ],
+   "explain": "An uploaded document can't be changed; you upload a new version and can require re-acceptance. Per-device consent needs Entra-registered devices and isn't supported for B2B guests. Terms of use needs Entra ID P1 or higher."
+  },
+  {
+   "id": "sc-300.d4.q021",
+   "lesson": "sc-300.d4.1.06",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "You upload a new version of a terms of use PDF. All users must accept the new version the next time they access a covered resource. What should you select?",
+   "options": [
+    "Expire consents",
+    "Require users to expand the terms of use",
+    "Require reaccept",
+    "Duration before re-acceptance required (days)"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Require reaccept forces acceptance of the new version at next access. Expire consents and the re-acceptance duration set recurring schedules, and Require users to expand only makes users open the document before accepting."
+  },
+  {
+   "id": "sc-300.d4.q022",
+   "lesson": "sc-300.d4.1.07",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "An external user with no account in your tenant gets access through an access package. Default lifecycle settings apply. Put the events in order.",
+   "options": [
+    "The user requests the package in My Access",
+    "The request is approved and the user is added as a B2B guest",
+    "The user's last access package assignment expires",
+    "The guest is blocked from signing in",
+    "The guest account is removed after 30 days"
+   ],
+   "explain": "Entitlement management invites the approved external user as a guest. When the last assignment ends, the defaults block sign-in and then remove the guest after 30 days."
+  },
+  {
+   "id": "sc-300.d4.q023",
+   "lesson": "sc-300.d4.1.07",
+   "objective": "d4.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Ben, a partner, was invited manually as a guest last year. This year he got the Project X access package, his only package. External user lifecycle settings are set to block sign-in and remove after 30 days. His assignment expired 45 days ago. Nobody marked him as governed.",
+   "stem": "What happens to Ben's guest account?",
+   "options": [
+    "It's removed 30 days after the assignment expired",
+    "It's blocked from signing in and removed immediately",
+    "It's converted to a member account",
+    "It remains, because Ben wasn't invited through entitlement management"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Lifecycle actions apply only to guests that entitlement management invited, or that were marked as governed. Ben was invited manually before the package, so his account stays."
+  },
+  {
+   "id": "sc-300.d4.q024",
+   "lesson": "sc-300.d4.1.08",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": "An access package policy that targeted All users let Litware staff request access, and a connected organization for Litware was created automatically. A new package policy targets All configured connected organizations, but Litware users can't request it.",
+   "stem": "What should you do so that the policy covers Litware users?",
+   "options": [
+    "Change Litware's connected organization state to Configured",
+    "Add litware.com to the B2B collaboration allow list",
+    "Enable email one-time passcode authentication",
+    "Add an external sponsor from Litware"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Proposed connected organizations, which are created automatically, aren't included in All configured connected organizations policies. Changing the state to Configured brings them in scope. Allow lists, one-time passcode and sponsors don't change the state."
+  },
+  {
+   "id": "sc-300.d4.q025",
+   "lesson": "sc-300.d4.1.08",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Who can be an external sponsor of a connected organization?",
+   "options": [
+    "A member user of your directory",
+    "A guest user from that organization who is already in your directory",
+    "Any email address in the partner's domain, even if not invited",
+    "Any user with the Connected Organization Administrator role"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "External sponsors are guests from the connected organization already in your directory. Internal sponsors are your member users. Sponsors must exist in your directory, and the Connected Organization Administrator role manages connected organizations but doesn't make anyone a sponsor."
+  },
+  {
+   "id": "sc-300.d4.q026",
+   "lesson": "sc-300.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Where do you create an access review of Microsoft Entra role assignments such as Global Administrator?",
+   "options": [
+    "In Access reviews, by choosing Teams + Groups",
+    "In Entitlement management, on a catalog",
+    "In Privileged Identity Management, under Microsoft Entra roles > Access reviews",
+    "In Conditional Access, under Terms of use"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Reviews of Entra roles and Azure resource roles are created from PIM. The group/app wizard covers Teams, groups and applications, entitlement management covers access package assignments, and terms of use isn't a review feature."
+  },
+  {
+   "id": "sc-300.d4.q027",
+   "lesson": "sc-300.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Group owners must create access reviews for the groups they own. They currently can't. What should you change?",
+   "options": [
+    "Assign each owner the Catalog owner role",
+    "Make the owners reviewers in an existing review",
+    "Enable self-service group management in Groups settings",
+    "Set Group owners can create and manage access reviews for groups they own to Yes"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "That access reviews setting defaults to No. Turning it on lets group owners create and manage reviews for their groups. Catalog owner is an entitlement management role, being a reviewer doesn't allow creating reviews, and self-service group management is unrelated."
+  },
+  {
+   "id": "sc-300.d4.q028",
+   "lesson": "sc-300.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Your tenant has Microsoft Entra ID P2 licences. You plan a review scoped only to inactive users that also shows user-to-group affiliation recommendations. What do you need?",
+   "options": [
+    "Microsoft Entra ID Governance licences",
+    "Microsoft Entra ID P1 licences",
+    "Microsoft 365 E3 licences",
+    "No more licences; Entra ID P2 includes these"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Reviews scoped only to inactive users, and machine-learning recommendations such as user-to-group affiliation, need Microsoft Entra ID Governance. P2 covers basic access review features."
+  },
+  {
+   "id": "sc-300.d4.q029",
+   "lesson": "sc-300.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which reviewer options can you select when creating an access review of a Microsoft 365 group? Select THREE.",
+   "options": [
+    "Managers of users",
+    "Every Global Reader automatically",
+    "Group owner(s)",
+    "Users review their own access",
+    "The Directory Synchronization Accounts role"
+   ],
+   "answer": [
+    0,
+    2,
+    3
+   ],
+   "explain": "Group reviews support group owners, selected users or groups, self-review and managers, with fallback reviewers. Reviewer roles aren't assigned automatically to Global Readers or sync accounts."
+  },
+  {
+   "id": "sc-300.d4.q030",
+   "lesson": "sc-300.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "In the Upon completion settings, you want the system recommendation, based on sign-in activity, to decide for users the reviewers didn't review. Which option should you select for If reviewers don't respond?",
+   "options": [
+    "No change",
+    "Take recommendations",
+    "Remove access",
+    "Approve access"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Take recommendations applies the decision helper result, such as no sign-in in 30 days, to unreviewed users. No change and Approve access keep access, and Remove access removes it whatever the activity."
+  },
+  {
+   "id": "sc-300.d4.q031",
+   "lesson": "sc-300.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Fabrikam reviews guests in all Microsoft 365 groups quarterly. Denied guests must lose all access to the tenant, but admins need a grace period to reverse mistakes before the guest object is deleted.",
+   "stem": "Which setting should you use?",
+   "options": [
+    "Denied guests: Remove user's membership from the resource",
+    "If reviewers don't respond: Remove access",
+    "Denied guests: Block user from signing in for 30 days, then remove user from the tenant",
+    "If reviewers don't respond: Take recommendations"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Only the block-then-remove option removes denied guests from the tenant, with a 30-day window when admins can restore access. Removing membership leaves the guest account, and the reviewers-don't-respond options control unreviewed users, not denied ones."
+  },
+  {
+   "id": "sc-300.d4.q032",
+   "lesson": "sc-300.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "A review that recurs weekly can have a duration of 14 days.",
+     "a": false
+    },
+    {
+     "s": "By default, reviewers get a reminder at the midpoint of the review.",
+     "a": true
+    },
+    {
+     "s": "Users added to a group after a review instance starts are reviewed in the next instance.",
+     "a": true
+    }
+   ],
+   "explain": "The duration must fit inside the recurrence interval, so weekly allows up to 7 days. Reminders go out halfway through. Each instance takes a snapshot at start, so later changes appear in the next cycle."
+  },
+  {
+   "id": "sc-300.d4.q033",
+   "lesson": "sc-300.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You create an access review of a group in the Microsoft Entra admin center. Put the steps in order.",
+   "options": [
+    "Select Teams + Groups and choose the group and user scope",
+    "Choose the reviewers",
+    "Set the duration and recurrence",
+    "Configure the upon completion settings",
+    "Review and create the review"
+   ],
+   "explain": "The wizard asks what to review and the scope, then reviewers, then schedule (duration, recurrence), then settings such as auto-apply and decision helpers, and finally Review + Create."
+  },
+  {
+   "id": "sc-300.d4.q034",
+   "lesson": "sc-300.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "You automate access review creation with Microsoft Graph PowerShell. $params holds the review settings. Complete the command.",
+   "code": "Connect-MgGraph -Scopes \"AccessReview.ReadWrite.All\"\n____ -BodyParameter $params",
+   "options": [
+    "Get-MgIdentityGovernanceAccessReviewDefinition",
+    "New-MgEntitlementManagementAssignmentPolicy",
+    "New-MgEntitlementManagementAccessPackage",
+    "New-MgIdentityGovernanceAccessReviewDefinition"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Access reviews are created as definitions (POST /identityGovernance/accessReviews/definitions), which is New-MgIdentityGovernanceAccessReviewDefinition. Get- only reads definitions, and the entitlement management cmdlets create policies and packages."
+  },
+  {
+   "id": "sc-300.d4.q035",
+   "lesson": "sc-300.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Auditors want one CSV of all application access review decisions from the past 12 months, filtered to Deny results. What should you use?",
+   "options": [
+    "A Review History report under Access reviews",
+    "Download on each review instance's Results page",
+    "The Usage & insights report",
+    "The Sign-ins using legacy authentication workbook"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Review History builds one CSV across many reviews, filtered by date range, review type and result. Download on Results exports a single instance, and the other reports don't contain review decisions."
+  },
+  {
+   "id": "sc-300.d4.q036",
+   "lesson": "sc-300.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "After you create a Review History report, how long is it available to download?",
+   "options": [
+    "7 days",
+    "30 days",
+    "90 days",
+    "365 days"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Review history reports stay downloadable for 30 days after they're created. For longer retention, keep the CSVs or route audit logs to Log Analytics or storage."
+  },
+  {
+   "id": "sc-300.d4.q037",
+   "lesson": "sc-300.d4.2.04",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "A reviewer is unsure whether a user still needs access. The reviewer wants the user to keep access for now and the uncertainty recorded. Which decision should the reviewer choose?",
+   "options": [
+    "Approve, without a reason",
+    "Accept recommendations",
+    "Don't know",
+    "Deny"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Don't know keeps the user's access and records the choice in the audit logs for others to see. Approve records a firm decision, Accept recommendations applies system advice that might deny, and Deny removes access."
+  },
+  {
+   "id": "sc-300.d4.q038",
+   "lesson": "sc-300.d4.2.04",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "A stopped access review instance can be restarted.",
+     "a": false
+    },
+    {
+     "s": "A denied user is removed as soon as the reviewer submits the decision.",
+     "a": false
+    },
+    {
+     "s": "If Auto apply results is off, an administrator can apply results from the instance in Review history.",
+     "a": true
+    }
+   ],
+   "explain": "Stopped reviews can't be restarted. Denials take effect only after the review ends or is stopped, and only if results are applied. With auto-apply off, an admin opens the instance and selects Apply."
+  },
+  {
+   "id": "sc-300.d4.q039",
+   "lesson": "sc-300.d4.2.04",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "An access review of the group Sales-Sync, which Microsoft Entra Connect synchronizes from AD DS, ended with Auto apply results enabled. Reviewers denied 15 users, but all 15 are still members.",
+   "stem": "Why weren't the denied users removed?",
+   "options": [
+    "The reviewers weren't the group owners",
+    "Justification wasn't required for the decisions",
+    "The review must also be reset before results apply",
+    "Review results can't change membership of groups synchronized from on-premises AD DS"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Applying results doesn't change on-premises synced groups; the change must be made in AD DS. Reviewer type, justification and reset don't stop results being applied to cloud groups."
+  }
+ ]
+}

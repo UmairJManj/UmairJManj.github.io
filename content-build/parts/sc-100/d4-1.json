@@ -1,0 +1,1659 @@
+{
+  "exam": "sc-100",
+  "domain": "d4",
+  "lessons": [
+    {
+      "id": "sc-100.d4.1.01",
+      "objective": "d4.1",
+      "seq": 1,
+      "title": "Measuring M365 posture with Secure Score",
+      "short": "Microsoft Secure Score, in the Microsoft Defender portal, measures the security posture of identity, devices, email, collaboration and connected SaaS apps. It awards points for completed recommended actions and tracks history, so you can compare against similar organisations and set KPIs.",
+      "deep": "An architect needs a number to report progress. For Microsoft 365, that number is **Microsoft Secure Score** (security.microsoft.com/securescore).\n\nHow it works:\n- Recommendations cover products such as Microsoft Entra ID, Exchange Online, SharePoint Online, Teams, Defender for Endpoint, Defender for Office 365, Defender for Identity, Defender for Cloud Apps and some connected SaaS apps.\n- Each **recommended action** is worth up to 10 points. Most are all-or-nothing. Some give **partial points**: if 50 of 100 users have MFA on a 10-point action, you earn 5.\n- You can set a status on each action: **Planned**, **Risk accepted**, or **Resolved through alternative mitigation** when a non-Microsoft tool already covers it. Alternative mitigation still earns points.\n- **History**, **metrics and trends**, and **comparison** with similar organisations let you show improvement over time.\n\nAccess comes from Entra roles (Security Reader to view, Security Administrator to manage) or Defender Unified RBAC with Exposure Management permissions.\n\nDon't mix it up with the **Defender for Cloud secure score**, which measures Azure and multicloud resources against the Microsoft cloud security benchmark.",
+      "terms": [
+        {
+          "t": "Microsoft Secure Score",
+          "d": "Defender portal measurement of Microsoft 365 and connected app posture, based on recommended actions."
+        },
+        {
+          "t": "Recommended action",
+          "d": "A single hardening step worth up to 10 points, sometimes with partial credit."
+        },
+        {
+          "t": "Resolved through alternative mitigation",
+          "d": "Status for an action covered by a non-Microsoft tool or other control; it still earns points."
+        },
+        {
+          "t": "Risk accepted",
+          "d": "Status recording a decision not to implement an action. It earns no points."
+        }
+      ],
+      "trap": "Exam options swap Microsoft Secure Score (Microsoft 365) with the Defender for Cloud secure score (Azure resources) or the Compliance Manager compliance score (regulations).",
+      "example": "The CISO wants a quarterly board metric for M365 hardening. You track Microsoft Secure Score history, compare it with organisations of similar size, and mark MFA from a third-party IdP as alternative mitigation.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Score",
+          "Measures"
+        ],
+        "rows": [
+          [
+            "Microsoft Secure Score",
+            "M365, identity, SaaS"
+          ],
+          [
+            "Defender for Cloud score",
+            "Azure/multicloud"
+          ],
+          [
+            "Compliance score",
+            "Regulatory controls"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.1.02",
+      "objective": "d4.1",
+      "seq": 2,
+      "title": "Evaluating Defender for Office 365",
+      "short": "Exchange Online Protection (EOP) blocks bulk, known email threats for every cloud mailbox. Defender for Office 365 Plan 1 adds Safe Links, Safe Attachments and impersonation protection. Plan 2 adds Threat Explorer, AIR, attack simulation training and Campaigns.",
+      "deep": "Email and collaboration are the top entry points for phishing and ransomware, so an architect must know what each layer adds.\n\n**EOP** comes with every Microsoft 365 subscription that has cloud mailboxes. It provides anti-malware, anti-spam, spoof intelligence, connection filtering, quarantine, the Tenant Allow/Block List and **zero-hour auto purge (ZAP)** for email.\n\n**Defender for Office 365 Plan 1** targets zero-day malware, phishing and business email compromise (BEC):\n- **Safe Attachments**: detonates attachments in a sandbox. It also covers files in SharePoint, OneDrive and Teams.\n- **Safe Links**: time-of-click URL checks in email, Office apps and Teams.\n- **Anti-phishing extras**: user and domain **impersonation protection** and mailbox intelligence.\n- **Real-time detections**, ZAP for Teams and priority account tags.\n\n**Plan 2** adds the post-breach and SOC tools: **Threat Explorer**, **Threat Trackers**, **Campaigns**, **Automated Investigation and Response (AIR)**, **attack simulation training**, priority account protection, and advanced hunting and incidents in Microsoft Defender XDR.\n\nPlan 2 is included in Microsoft 365 E5. The quick way to tell which plan you have: the portal shows Real-time detections for Plan 1 and Explorer for Plan 2.",
+      "terms": [
+        {
+          "t": "Exchange Online Protection (EOP)",
+          "d": "Built-in filtering for all cloud mailboxes: anti-malware, anti-spam, spoof protection, ZAP."
+        },
+        {
+          "t": "Safe Attachments",
+          "d": "Sandbox detonation of attachments and files (Plan 1)."
+        },
+        {
+          "t": "Safe Links",
+          "d": "Time-of-click URL rewriting and checking (Plan 1)."
+        },
+        {
+          "t": "AIR",
+          "d": "Automated Investigation and Response playbooks for email threats (Plan 2)."
+        }
+      ],
+      "trap": "Threat Explorer, AIR and attack simulation training need Plan 2. Safe Links, Safe Attachments and impersonation protection are already in Plan 1.",
+      "example": "A firm on Microsoft 365 E3 keeps getting CEO-impersonation emails. Defender for Office 365 Plan 1 adds impersonation protection and Safe Links without paying for the Plan 2 SOC tooling.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Plan 2: Explorer, AIR, sim training",
+          "Plan 1: Safe Links/Attachments",
+          "EOP: spam, malware, ZAP"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.1.03",
+      "objective": "d4.1",
+      "seq": 3,
+      "title": "Evaluating Defender for Cloud Apps",
+      "short": "Microsoft Defender for Cloud Apps is Microsoft's CASB. It discovers shadow IT (Cloud Discovery), connects to SaaS apps through APIs (app connectors), controls browser sessions in real time (Conditional Access app control), and governs OAuth apps (app governance). It also covers SaaS posture (SSPM).",
+      "deep": "A **cloud access security broker (CASB)** sits between users and cloud apps. **Defender for Cloud Apps** offers several controls, and the exam expects you to pick the right one:\n\n- **Cloud Discovery**: analyses traffic logs (log upload, log collector, or the **Defender for Endpoint** integration) and rates apps against 90+ risk factors from the **cloud app catalog**. Apps you mark **Unsanctioned** can be blocked on devices onboarded to Defender for Endpoint.\n- **App connectors**: API connections to apps such as Microsoft 365, Salesforce or Box. They let file and activity policies scan data at rest, apply labels and remove external sharing. This is near-real-time, not inline.\n- **Conditional Access app control**: an Entra Conditional Access policy with the session control **Use Conditional Access App Control** sends browser sessions through a reverse proxy. **Session policies** can then block download, cut, copy or print, or **protect on download** with a Purview sensitivity label. It doesn't work for desktop clients such as the Teams desktop app.\n- **App governance**: finds overprivileged, unused or malicious **OAuth apps**.\n- **SSPM**: finds SaaS misconfigurations and feeds them into Secure Score.\n\nAlerts are correlated into incidents in Microsoft Defender XDR.",
+      "terms": [
+        {
+          "t": "Cloud Discovery",
+          "d": "Shadow IT discovery from traffic logs or Defender for Endpoint, with app risk scores."
+        },
+        {
+          "t": "App connector",
+          "d": "API integration with a SaaS app that gives visibility and governance of data at rest."
+        },
+        {
+          "t": "Conditional Access app control",
+          "d": "Reverse proxy that enforces real-time session policies in browser sessions."
+        },
+        {
+          "t": "App governance",
+          "d": "Monitors and governs OAuth app permissions and behaviour."
+        }
+      ],
+      "trap": "For real-time blocking of downloads on unmanaged devices, the answer is a session policy through Conditional Access app control, not an app connector file policy, which acts after the fact.",
+      "example": "Contractors on personal laptops may view Salesforce reports but not download them. A CA policy routes their browser sessions to Defender for Cloud Apps, and a session policy blocks downloads.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User browser",
+          "Entra CA policy",
+          "MDCA proxy",
+          "Session policy",
+          "SaaS app"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.1.04",
+      "objective": "d4.1",
+      "seq": 4,
+      "title": "Device management with Microsoft Intune",
+      "short": "Microsoft Intune manages devices (MDM) and apps (MAM). Compliance policies feed Conditional Access ('Require device to be marked as compliant'). App protection policies protect corporate data in apps on unenrolled BYOD devices ('Require app protection policy'). Defender for Endpoint risk can be part of compliance.",
+      "deep": "In Zero Trust, device health is a signal for every access decision. **Microsoft Intune** supplies that signal.\n\n- **Enrolment (MDM)**: corporate devices enrol, often through **Windows Autopilot**. Intune then deploys **configuration profiles** (settings), **endpoint security policies** (antivirus, disk encryption, firewall, EDR onboarding) and apps.\n- **Compliance policies** define what healthy means: OS version, BitLocker, a password, and optionally **'Require the device to be at or under the machine risk score'** from **Microsoft Defender for Endpoint**. Entra Conditional Access then uses the grant control **Require device to be marked as compliant**.\n- **App protection policies (MAM)** work **without enrolment**. They apply to managed apps such as Outlook and Teams on iOS/iPadOS, Android and Windows. They can encrypt corporate data, restrict cut/copy/paste and save-as, require a PIN, and allow **selective wipe** of corporate data only. Conditional Access pairs them with **Require app protection policy**.\n\nWhen evaluating: corporate-owned devices need enrolment plus compliance. BYOD where users refuse enrolment needs MAM plus app protection. Intune Plan 1 is included in Microsoft 365 E3 and E5.",
+      "terms": [
+        {
+          "t": "Compliance policy",
+          "d": "Intune rules that mark a device compliant or not; consumed by Conditional Access."
+        },
+        {
+          "t": "App protection policy (MAM)",
+          "d": "App-level data protection that works on enrolled or unenrolled devices."
+        },
+        {
+          "t": "Selective wipe",
+          "d": "Removes only corporate data from managed apps, leaving personal data."
+        },
+        {
+          "t": "Machine risk score",
+          "d": "Defender for Endpoint risk level that a compliance policy can require."
+        }
+      ],
+      "trap": "For BYOD devices that can't be enrolled, the exam wants app protection policies plus 'Require app protection policy', not compliance policies, which need enrolment.",
+      "example": "A hospital lets clinicians use their own phones for Teams. MAM-without-enrolment encrypts Teams data, blocks copy to personal apps, and supports selective wipe when someone leaves.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Intune compliance",
+          "MDE risk score",
+          "Entra CA grant",
+          "M365 apps"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.1.05",
+      "objective": "d4.1",
+      "seq": 5,
+      "title": "Securing M365 data with Microsoft Purview",
+      "short": "Microsoft Purview protects Microsoft 365 data with sensitivity labels (classify, encrypt, mark), DLP (stop risky sharing), retention (keep or delete), Insider Risk Management, eDiscovery and Audit. Container labels secure Teams, groups and sites. Auto-labelling can run in Office apps (client-side) or in the service (data at rest).",
+      "deep": "Evaluating Microsoft 365 data security means matching Purview solutions to risks:\n\n- **Sensitivity labels** classify items and can apply **encryption** (usage rights such as VIEW, EDIT, EXTRACT), headers and watermarks. Protection travels with the file.\n- **Container labels** apply to **Teams, Microsoft 365 groups and SharePoint sites**. They control privacy, guest access, external sharing and unmanaged-device access. They do **not** label the files inside.\n- **Auto-labelling**: **client-side** in Office apps (recommend or apply while users work), and **service-side** auto-labelling policies for files at rest in SharePoint/OneDrive and email in transit. Service-side policies run in **simulation** first.\n- **DLP** policies detect sensitive information types (SITs) or labels across Exchange, SharePoint, OneDrive, Teams, endpoints and more, then warn, block or audit.\n- **Retention policies and labels** (Data Lifecycle and Records Management) keep or delete content.\n- **Insider Risk Management** and **Adaptive Protection** spot risky users and tighten DLP for them automatically.\n- **Audit**: Audit (Standard) keeps records for 180 days by default. Audit (Premium) keeps them for one year by default, with longer add-ons.",
+      "terms": [
+        {
+          "t": "Sensitivity label",
+          "d": "Classification tag that can encrypt, mark, and drive DLP or Copilot behaviour."
+        },
+        {
+          "t": "Container label",
+          "d": "Label scoped to Teams, groups and sites that controls privacy and sharing."
+        },
+        {
+          "t": "Service-side auto-labelling",
+          "d": "Policy that labels data at rest in SharePoint/OneDrive and mail in transit."
+        },
+        {
+          "t": "Adaptive Protection",
+          "d": "Uses insider risk levels to apply stricter DLP to high-risk users."
+        }
+      ],
+      "trap": "A label on a Team or site does not label the documents inside it. To classify existing files you need default library labels or auto-labelling.",
+      "example": "M&A projects live in private Teams. A container label blocks guests and unmanaged-device downloads, and a service-side auto-labelling policy applies 'Highly Confidential' to files containing deal codes.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Know your data",
+          "Protect (labels)",
+          "Prevent loss (DLP)",
+          "Govern (retention)"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.1.06",
+      "objective": "d4.1",
+      "seq": 6,
+      "title": "Data security for Microsoft 365 Copilot",
+      "short": "Microsoft 365 Copilot only uses data the user can already access, so oversharing is the main risk. Use DSPM oversharing assessments, SharePoint Advanced Management (Restricted Content Discovery, access reviews), sensitivity labels, and a DLP policy for the Microsoft 365 Copilot location. Then audit, retain and eDiscover Copilot interactions.",
+      "deep": "Copilot grounds answers in Microsoft Graph content through the user's own permissions. It respects labels: for encrypted items, the user needs the **EXTRACT** and **VIEW** usage rights. Generated content inherits the **highest-priority label** of its sources where supported. The risk is that Copilot can surface content that was overshared.\n\nControls an architect layers:\n- **DSPM** in Microsoft Purview (the unified experience; the classic DSPM for AI view is being retired) runs **data risk assessments** for oversharing and offers one-click policies.\n- **SharePoint Advanced Management (SAM)** features come with Copilot licences. **Restricted Content Discovery** hides chosen sites from Copilot and org-wide search without changing permissions. Others include **restricted access control**, site access reviews and permission-state reports.\n- A **DLP policy for the Microsoft 365 Copilot and Copilot Chat location** (Custom template only, in its own policy) can stop Copilot processing **labelled items**, or block prompts containing **SITs**. Labels and SITs need separate rules. Changes can take up to four hours.\n- **Audit**, **eDiscovery**, **retention**, **Communication Compliance** and Insider Risk's **Risky AI usage** template cover prompts and responses.",
+      "terms": [
+        {
+          "t": "Restricted Content Discovery",
+          "d": "SAM setting that hides a site from Copilot and org-wide search; permissions stay the same."
+        },
+        {
+          "t": "DLP Copilot location",
+          "d": "DLP location that stops Copilot processing labelled items or prompts that contain SITs."
+        },
+        {
+          "t": "EXTRACT usage right",
+          "d": "Rights Management permission Copilot needs, along with VIEW, to use encrypted content."
+        },
+        {
+          "t": "DSPM",
+          "d": "Purview Data Security Posture Management, including AI oversharing assessments."
+        }
+      ],
+      "trap": "Copilot never grants new access. The fix for 'Copilot shows salary files' is to fix oversharing (permissions, RCD, labels and DLP), not to block Copilot licences.",
+      "example": "Before rollout, a DSPM assessment finds 40 sites shared with 'Everyone except external users'. You apply Restricted Content Discovery while owners run site access reviews.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Prompt",
+          "Graph grounding",
+          "User permissions",
+          "Labels/DLP check",
+          "Response"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.2.01",
+      "objective": "d4.2",
+      "seq": 1,
+      "title": "Evaluating application portfolio posture",
+      "short": "Start with inventory: which apps exist, where they run, who owns them, how exposed they are and how sensitive their data is. Microsoft Defender for Cloud (Defender CSPM, DevOps security connectors) gives posture findings from code to runtime. Rank fixes by business criticality and exposure.",
+      "deep": "Before redesigning, you assess what exists. A sound **application portfolio assessment**:\n\n1. **Inventory** every app with an owner, hosting model (IaaS, App Service, AKS, Functions, SaaS), data classification and internet exposure.\n2. **Score business criticality**: what happens if it is down, leaks or is tampered with.\n3. **Gather posture data**:\n   - **Microsoft Defender for Cloud** recommendations for App Service, containers, APIs and databases, measured against the **Microsoft cloud security benchmark (MCSB)**.\n   - **DevOps security** connectors for **Azure DevOps, GitHub and GitLab** surface code, secret, dependency and IaC findings.\n   - **Defender CSPM** adds **attack path analysis**, **Cloud Security Explorer** and code-to-cloud context, for example an internet-exposed VM that can reach a sensitive storage account.\n   - **Defender for Cloud Apps** for SaaS apps and OAuth apps.\n4. **Prioritise**: internet-facing plus sensitive data plus exploitable findings come first.\n\nThe output is a ranked remediation backlog and a target architecture, often aligned to the **Well-Architected Framework** security pillar.",
+      "terms": [
+        {
+          "t": "Defender CSPM",
+          "d": "Paid Defender for Cloud posture plan with attack paths, Cloud Security Explorer and code-to-cloud context."
+        },
+        {
+          "t": "DevOps security",
+          "d": "Defender for Cloud connectors that bring in Azure DevOps, GitHub and GitLab findings."
+        },
+        {
+          "t": "Attack path analysis",
+          "d": "Shows exploitable chains from exposure to critical assets."
+        },
+        {
+          "t": "Business criticality",
+          "d": "How much damage loss of an app's confidentiality, integrity or availability would cause."
+        }
+      ],
+      "trap": "Microsoft Secure Score measures Microsoft 365 posture. For Azure-hosted app portfolios, the exam wants Defender for Cloud and Defender CSPM.",
+      "example": "A bank's 180 apps are mapped in Defender for Cloud. Attack paths show three internet-facing App Services with managed identities that can reach PII storage, and those go to the top of the backlog.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Inventory",
+          "Classify data",
+          "Score criticality",
+          "Posture findings",
+          "Prioritise"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.2.02",
+      "objective": "d4.2",
+      "seq": 2,
+      "title": "Threat modeling business-critical apps",
+      "short": "Threat modeling finds design flaws before attackers do. Draw a data flow diagram with trust boundaries, then use STRIDE (Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege) to list threats and pick mitigations. The Microsoft Threat Modeling Tool automates this.",
+      "deep": "**Threat modeling** is a structured design review, and it is one of the core practices of the Microsoft Security Development Lifecycle (SDL). Microsoft describes five steps: **define security requirements, create an application diagram, identify threats, mitigate threats, validate mitigations**.\n\nThe diagram is a **data flow diagram (DFD)**: processes, data stores, external entities, data flows and **trust boundaries** (where privilege or ownership changes, such as internet to web tier). Threats cluster at boundary crossings.\n\n**STRIDE** maps each threat to the security property it breaks:\n- **S**poofing → authentication (MFA, managed identities)\n- **T**ampering → integrity (signing, hashing, TLS)\n- **R**epudiation → non-repudiation (audit logs, ledger)\n- **I**nformation disclosure → confidentiality (encryption, access control)\n- **D**enial of service → availability (DDoS Protection, rate limits, WAF)\n- **E**levation of privilege → authorisation (least privilege, RBAC)\n\nThe free **Microsoft Threat Modeling Tool** generates candidate threats from the DFD. Threat models should be revisited whenever the architecture changes. For business-critical apps, also weigh likelihood and impact (for example with DREAD-style scoring or CVSS) to rank mitigations.",
+      "terms": [
+        {
+          "t": "STRIDE",
+          "d": "Threat categories: Spoofing, Tampering, Repudiation, Information disclosure, DoS, Elevation of privilege."
+        },
+        {
+          "t": "Trust boundary",
+          "d": "Point in a DFD where data crosses between different privilege levels or owners."
+        },
+        {
+          "t": "Data flow diagram",
+          "d": "Model of processes, stores, entities and flows used to find threats."
+        },
+        {
+          "t": "Microsoft Threat Modeling Tool",
+          "d": "Free Microsoft tool that suggests STRIDE threats from a DFD."
+        }
+      ],
+      "trap": "Repudiation is mitigated by logging and audit trails, not encryption. The exam often pairs STRIDE categories with the wrong control.",
+      "example": "Modelling a payments API shows that the API-to-database flow crosses a trust boundary with no auditing. You add Azure SQL auditing and ledger tables to address repudiation and tampering.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Requirements",
+          "Diagram",
+          "Identify threats",
+          "Mitigate",
+          "Validate"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.2.03",
+      "objective": "d4.2",
+      "seq": 3,
+      "title": "Full-lifecycle application security strategy",
+      "short": "A full-lifecycle (DevSecOps) strategy builds security into every phase: plan, code, build, test, release, operate. Shift left with threat modeling, secret scanning, SAST and dependency scanning. Gate releases with IaC and container scanning. Keep protecting at runtime with Defender for Cloud, WAF and monitoring.",
+      "deep": "Application security is not a single pen test before go-live. A **full-lifecycle strategy** puts controls into each stage:\n\n- **Plan/design**: security requirements, threat modeling, security champions.\n- **Code**: secure coding standards, IDE linters, **secret scanning with push protection** (stops secrets before they reach the repo).\n- **Commit/PR**: **SAST** (for example CodeQL code scanning) and **software composition analysis (SCA)** for vulnerable open-source dependencies. Branch protection requires review.\n- **Build**: **IaC scanning** (Bicep, Terraform, ARM), **container image scanning**, signed artefacts and an SBOM. Pull dependencies from trusted feeds.\n- **Test**: **DAST** against the running app, and fuzzing for critical parsers.\n- **Release**: Azure Policy guardrails, approvals and environment protection.\n- **Operate**: Defender for Cloud workload protections, WAF, Microsoft Sentinel monitoring, vulnerability management and incident response feeding lessons back into design.\n\n**Shift left** means finding issues early, where fixing them is cheapest. You still need runtime protection (**shield right**). Microsoft Defender for Cloud **DevOps security** gives one view across Azure DevOps, GitHub and GitLab pipelines.",
+      "terms": [
+        {
+          "t": "SAST",
+          "d": "Static analysis of source code for vulnerabilities without running the app."
+        },
+        {
+          "t": "DAST",
+          "d": "Dynamic testing of a running application from the outside."
+        },
+        {
+          "t": "SCA",
+          "d": "Software composition analysis that finds vulnerable or risky open-source packages."
+        },
+        {
+          "t": "Shift left",
+          "d": "Moving security checks earlier in the development lifecycle."
+        }
+      ],
+      "trap": "DAST needs a running app. Scanning source code is SAST. The exam also tests that shift left does not replace runtime protection.",
+      "example": "A retailer adds push protection, CodeQL on PRs, Trivy-style image scanning in the build and DAST in staging. Defender for Cloud connects the findings to the production containers they affect.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Design",
+          "Code",
+          "Build",
+          "Test",
+          "Release",
+          "Operate"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.2.04",
+      "objective": "d4.2",
+      "seq": 4,
+      "title": "Standards and practices for secure development",
+      "short": "Secure development standards tell developers exactly what 'secure' means: the Microsoft SDL practices, OWASP Top 10 awareness, OWASP ASVS as testable requirements, and OWASP SAMM to measure programme maturity. Make them enforceable through templates, pipeline gates and training.",
+      "deep": "Standards turn good intentions into checkable rules. Useful references:\n\n- **Microsoft Security Development Lifecycle (SDL)**: practices such as training, security requirements, threat modeling, approved tools and cryptography, managing open-source risk, security testing and incident response planning.\n- **OWASP Top 10**: an awareness list of the most critical web app risks (broken access control, injection and others). **OWASP API Security Top 10** covers APIs.\n- **OWASP ASVS (Application Security Verification Standard)**: detailed, testable requirements at three levels. Good for acceptance criteria.\n- **OWASP SAMM**: a maturity model for assessing and improving the whole software security programme.\n\nTypical mandatory practices:\n- No secrets in code. Use **Azure Key Vault** with **managed identities**.\n- Parameterised queries and output encoding against injection and XSS.\n- Entra ID for authentication through the Microsoft Authentication Library (MSAL). Never write your own crypto.\n- TLS 1.2+ everywhere, and current algorithms only.\n- Peer review, branch protection, signed commits, and **secret scanning with push protection** (GitHub Secret Protection, or GitHub Advanced Security for Azure DevOps).\n\nEnforce through golden templates, policy-as-code and pipeline gates, not documents alone.",
+      "terms": [
+        {
+          "t": "Microsoft SDL",
+          "d": "Microsoft's set of security practices across the development lifecycle."
+        },
+        {
+          "t": "OWASP ASVS",
+          "d": "Testable verification requirements for application security at three levels."
+        },
+        {
+          "t": "OWASP SAMM",
+          "d": "Software Assurance Maturity Model for assessing programme maturity."
+        },
+        {
+          "t": "Push protection",
+          "d": "Secret scanning that blocks a push containing detected secrets."
+        }
+      ],
+      "trap": "OWASP Top 10 is an awareness list, ASVS is the testable requirements standard, and SAMM measures maturity. Exam options swap them.",
+      "example": "An insurer adopts ASVS Level 2 as the definition of done for customer-facing apps and turns on push protection. It measures yearly progress with SAMM.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Reference",
+          "Use for"
+        ],
+        "rows": [
+          [
+            "OWASP Top 10",
+            "Awareness"
+          ],
+          [
+            "OWASP ASVS",
+            "Testable requirements"
+          ],
+          [
+            "OWASP SAMM",
+            "Programme maturity"
+          ],
+          [
+            "Microsoft SDL",
+            "Lifecycle practices"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.2.05",
+      "objective": "d4.2",
+      "seq": 5,
+      "title": "Mapping technologies to app security requirements",
+      "short": "Turn each requirement into a specific Microsoft control: identity (Entra ID, External ID, managed identities), secrets (Key Vault), edge protection (WAF, DDoS Protection), APIs (API Management, Defender for APIs), network isolation (Private Link), monitoring (Defender for Cloud, Sentinel) and data protection (encryption, Purview).",
+      "deep": "Architect questions often give a list of requirements and ask which service meets each one. Common mappings:\n\n- **Workforce sign-in, MFA, Conditional Access**: Microsoft Entra ID.\n- **Customer or partner sign-in**: **Microsoft Entra External ID** (external tenant for consumer apps, B2B collaboration for partners).\n- **App-to-Azure authentication with no secrets**: **managed identities** or workload identity federation.\n- **Secrets, keys, certificates and rotation**: **Azure Key Vault** (or Managed HSM).\n- **OWASP Top 10 protection at L7**: **Azure WAF** on Application Gateway or Front Door.\n- **Volumetric L3/L4 DDoS**: **Azure DDoS Protection**.\n- **API throttling, token validation, versioning**: **Azure API Management**. API threat detection: **Defender for APIs**.\n- **Private connectivity to PaaS**: **Private Link / private endpoints**.\n- **Runtime threat detection**: **Defender for Cloud** workload plans (App Service, Containers, Servers, Databases, Storage, AI Services).\n- **Code and pipeline security**: DevOps security plus GitHub Advanced Security.\n- **SIEM/SOAR**: **Microsoft Sentinel**.\n\nAlso confirm the SKU or tier gives the needed feature (for example, Front Door Premium for managed WAF rules).",
+      "terms": [
+        {
+          "t": "Entra External ID",
+          "d": "Microsoft's CIAM and B2B platform for customers and partners."
+        },
+        {
+          "t": "Azure DDoS Protection",
+          "d": "Mitigation of network-layer volumetric attacks for public IPs."
+        },
+        {
+          "t": "Private endpoint",
+          "d": "Private IP in your VNet for a PaaS resource, through Azure Private Link."
+        },
+        {
+          "t": "Defender for APIs",
+          "d": "Defender for Cloud plan for APIs published in Azure API Management."
+        }
+      ],
+      "trap": "WAF and DDoS Protection are complementary: WAF handles L7 application attacks, and DDoS Protection handles L3/L4 floods. Picking just one is the common wrong answer.",
+      "example": "A new citizen portal needs consumer sign-in, OWASP protection and secret-free database access. You map these to Entra External ID, Front Door Premium WAF and a managed identity to Azure SQL.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Requirement",
+          "Service"
+        ],
+        "rows": [
+          [
+            "Customer sign-in",
+            "Entra External ID"
+          ],
+          [
+            "L7 attacks",
+            "Azure WAF"
+          ],
+          [
+            "L3/L4 floods",
+            "DDoS Protection"
+          ],
+          [
+            "Secrets",
+            "Key Vault"
+          ],
+          [
+            "API control",
+            "API Management"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.2.06",
+      "objective": "d4.2",
+      "seq": 6,
+      "title": "Designing workload identities",
+      "short": "Workloads should authenticate to Azure without stored secrets. Use managed identities for Azure-hosted code (system-assigned tied to one resource, user-assigned shareable). Use workload identity federation for GitHub Actions, Kubernetes and other clouds. Conditional Access for workload identities can block risky service principals.",
+      "deep": "A **workload identity** is an identity for software: an app, service, pipeline or agent. Entra ID has three main types: **app registrations/service principals**, **managed identities** and (for AI agents) **Microsoft Entra Agent ID**.\n\nDesign rules:\n- **Managed identities** for code running in Azure. **System-assigned**: created with the resource and deleted with it, 1:1. **User-assigned**: a standalone resource you can attach to many resources, with a lifecycle you control. That is useful for pre-granting RBAC, scale sets, and CMK at storage account creation.\n- **Workload identity federation**: a **federated identity credential** on an app registration or user-assigned managed identity trusts tokens from an external IdP (GitHub Actions, AKS workload identity, Google Cloud, AWS, SPIFFE). The **issuer, subject and audience** must match exactly (case-sensitive, no wildcards). The limit is **20 per app or identity**.\n- If you must use a service principal credential, prefer **certificates** over client secrets, stored in Key Vault and rotated.\n- Least-privilege **Azure RBAC** at the narrowest scope.\n- **Conditional Access for workload identities** (needs **Workload Identities Premium**) blocks single-tenant service principals by location or **service principal risk**. It doesn't apply to managed identities.",
+      "terms": [
+        {
+          "t": "User-assigned managed identity",
+          "d": "Standalone identity resource that can be shared by multiple Azure resources."
+        },
+        {
+          "t": "Federated identity credential",
+          "d": "Trust from an external OIDC issuer, matched on issuer, subject and audience."
+        },
+        {
+          "t": "Workload Identities Premium",
+          "d": "Licence for Conditional Access, ID Protection and access reviews for workload identities."
+        },
+        {
+          "t": "Microsoft Entra Agent ID",
+          "d": "Entra identity capability for AI agents."
+        }
+      ],
+      "trap": "Conditional Access for workload identities can't target managed identities, and its only grant control is Block. Exams offer 'require MFA for the service principal' as a distractor.",
+      "example": "GitHub Actions deploys Bicep to production. A federated credential with subject repo:contoso/app:environment:prod replaces the stored client secret, and only that environment can get a token.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "GitHub OIDC token",
+          "Federated credential",
+          "Entra token",
+          "Azure RBAC",
+          "Resource"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.2.07",
+      "objective": "d4.2",
+      "seq": 7,
+      "title": "Designing API Management security",
+      "short": "Azure API Management (APIM) is the policy gateway in front of APIs. Validate OAuth tokens (validate-jwt or validate-azure-ad-token), throttle with rate-limit-by-key and quota-by-key, use managed identity to the back end, and place APIM in a VNet behind a WAF. Defender for APIs adds threat detection.",
+      "deep": "APIs expose business logic directly, and the **OWASP API Security Top 10** (broken object-level authorisation, broken authentication, unrestricted resource consumption and others) shows how they fail. **Azure API Management** centralises the controls:\n\n- **Authentication**: subscription keys identify a caller but are **not strong authentication**. Validate OAuth 2.0 tokens with **validate-jwt** (any OpenID provider) or **validate-azure-ad-token** (Entra). Use **validate-client-certificate** for mTLS.\n- **Abuse protection**: **rate-limit-by-key** (short sliding window, max 300 seconds) and **quota-by-key** (longer-term volume). Add **ip-filter**, validate-content and request size limits.\n- **Back-end trust**: **authentication-managed-identity** gets an Entra token for the back end, so no credentials are stored. Lock the back end to accept traffic only from APIM.\n- **Network**: deploy APIM in a VNet (**internal mode**) with **Application Gateway WAF** in front for public exposure. Use private endpoints to back ends.\n- **Secrets**: named values backed by **Key Vault**.\n- **Visibility**: **Defender for APIs** (for APIs published in APIM) gives inventory, unauthenticated and unused endpoint findings, data classification and runtime anomaly alerts. Logs go to Sentinel.",
+      "terms": [
+        {
+          "t": "validate-jwt",
+          "d": "APIM inbound policy that checks a JWT's signature, audience, issuer and claims."
+        },
+        {
+          "t": "rate-limit-by-key",
+          "d": "APIM policy that throttles calls per key (for example IP or subscription) in a short window."
+        },
+        {
+          "t": "Internal VNet mode",
+          "d": "APIM gateway reachable only inside the VNet, usually fronted by Application Gateway."
+        },
+        {
+          "t": "OWASP API Security Top 10",
+          "d": "List of the most critical API security risks."
+        }
+      ],
+      "trap": "Exam options treat APIM subscription keys as authentication. For user or app identity, validate an OAuth token.",
+      "example": "A partner API sits behind Application Gateway WAF, then APIM in internal mode. APIM validates Entra tokens, limits each partner to 100 calls a minute, and calls the back end with its managed identity.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Client",
+          "App Gateway WAF",
+          "APIM (internal)",
+          "Policies",
+          "Back-end API"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.2.08",
+      "objective": "d4.2",
+      "seq": 8,
+      "title": "Designing apps with Azure Web Application Firewall",
+      "short": "Azure WAF protects web apps from L7 attacks such as SQL injection and XSS. Deploy it on Azure Front Door (global edge) or Application Gateway (regional). Use the Default Rule Set (DRS 2.2, anomaly scoring), Bot Manager, and custom rules for rate limiting and geo-filtering. Start in Detection mode, then switch to Prevention.",
+      "deep": "**Azure Web Application Firewall** runs as a **WAF policy** attached to one of these:\n- **Azure Front Door**: global, at Microsoft's edge, so attacks are stopped close to the source. It suits multi-region and internet-scale apps. **Front Door Standard** supports only **custom rules**. **Front Door Premium** adds the **Microsoft-managed rule set**, **bot protection** and **Private Link to origins**.\n- **Application Gateway WAF v2**: regional, inside your VNet. It suits single-region apps and internal apps, or fronting API Management in internal mode. Policies can be global, **per site (listener)** or **per URI**.\n\n**Managed rules**: the **Default Rule Set (DRS) 2.2**, the newest and recommended version, is based on OWASP CRS 3.3.4 plus Microsoft Threat Intelligence rules. DRS 2.x uses **anomaly scoring**: Critical = 5, Error = 4, Warning = 3, Notice = 2. A request with a score of 5 or more triggers the action. **Bot Manager 1.1** classifies good, bad and unknown bots.\n\n**Custom rules** handle geo-filtering, IP allow/deny and **rate limiting**.\n\n**Modes**: **Detection** logs only. **Prevention** blocks. Roll out in Detection, tune false positives with **exclusions**, then move to Prevention. WAF complements **DDoS Protection**; it doesn't replace it.",
+      "terms": [
+        {
+          "t": "WAF policy",
+          "d": "Resource holding managed and custom rules, attached to Front Door or Application Gateway."
+        },
+        {
+          "t": "Default Rule Set (DRS)",
+          "d": "Microsoft-managed WAF rule set; DRS 2.2 is the latest."
+        },
+        {
+          "t": "Anomaly scoring",
+          "d": "Matched rules add severity points; the action fires at a threshold of 5."
+        },
+        {
+          "t": "Exclusion",
+          "d": "Removes a specific request attribute from rule evaluation to fix false positives."
+        }
+      ],
+      "trap": "Managed rule sets and bot protection on Front Door need the Premium tier. Front Door Standard only supports custom WAF rules.",
+      "example": "A global e-commerce site uses Front Door Premium WAF with DRS 2.2, Bot Manager and a rate-limit rule on /login. Two weeks in Detection mode tune out false positives before blocking is turned on.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Front Door WAF",
+          "App Gateway WAF"
+        ],
+        "rows": [
+          [
+            "Scope",
+            "Global edge",
+            "Regional VNet"
+          ],
+          [
+            "Managed rules",
+            "Premium tier",
+            "WAF v2"
+          ],
+          [
+            "Per-site policy",
+            "Per endpoint",
+            "Per listener/URI"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.3.01",
+      "objective": "d4.3",
+      "seq": 1,
+      "title": "Data discovery and classification solutions",
+      "short": "You can't protect data you can't find. Microsoft Purview classifies with sensitive information types, exact data match and trainable classifiers. The Purview Data Map scans Azure, on-premises and multicloud data stores. Defender for Cloud's sensitive data discovery samples cloud stores to prioritise security risk.",
+      "deep": "Discovery tools work at different depths, and choosing between them is a common architect decision.\n\n**Classification methods** (shared across Purview):\n- **Sensitive information types (SITs)**: patterns plus checksums and keywords, such as credit card numbers. Keyword dictionaries are a SIT variant.\n- **Exact data match (EDM)**: matches actual values from your own database, such as real customer IDs, which gives few false positives.\n- **Trainable classifiers**: machine-learning models for content without a pattern (contracts, résumés, source code).\n\n**Where they run:**\n- **Microsoft Purview Information Protection**: M365 content, with content explorer and auto-labelling.\n- **Purview Data Map / Unified Catalog**: scans Azure SQL, Azure Storage/ADLS, Synapse, Cosmos DB, on-premises SQL Server, Amazon S3 and others, and applies classifications to a catalogue.\n- **Defender for Cloud sensitive data discovery** (Defender CSPM and Defender for Storage): **smart sampling** of storage and databases to flag sensitive resources. Results feed **attack paths** and alert priority. It is not a full catalogue.\n- **Azure SQL Data Discovery & Classification**: column-level labels inside Azure SQL that appear in audit logs.",
+      "terms": [
+        {
+          "t": "Exact data match (EDM)",
+          "d": "SIT that matches real values from an uploaded, hashed sensitive data table."
+        },
+        {
+          "t": "Trainable classifier",
+          "d": "ML model that recognises a type of content, such as contracts."
+        },
+        {
+          "t": "Purview Data Map",
+          "d": "Scanning and metadata service that catalogues and classifies data estate assets."
+        },
+        {
+          "t": "Sensitive data discovery",
+          "d": "Defender for Cloud sampling that flags cloud stores holding sensitive data."
+        }
+      ],
+      "trap": "Defender for Cloud sensitive data discovery samples data to prioritise security work. For a complete catalogue with lineage, the answer is Purview Data Map scanning.",
+      "example": "A retailer must find every store holding cardholder data across Azure, S3 and on-premises SQL. Purview Data Map scans build the catalogue, and Defender CSPM uses the same SITs to show attack paths to those stores.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Tool",
+          "Best for"
+        ],
+        "rows": [
+          [
+            "Purview Data Map",
+            "Full catalogue"
+          ],
+          [
+            "Defender CSPM",
+            "Risk prioritisation"
+          ],
+          [
+            "Purview Info Protection",
+            "M365 content"
+          ],
+          [
+            "SQL Discovery & Class.",
+            "SQL columns"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.3.02",
+      "objective": "d4.3",
+      "seq": 2,
+      "title": "Prioritising mitigations for threats to data",
+      "short": "Rank data threats by impact and likelihood: ransomware and destruction, exfiltration by external attackers, insider misuse, accidental oversharing, and compliance failure. Protect the most sensitive and business-critical data first. Remove broad access paths, then add encryption, backup immutability, DLP and detection.",
+      "deep": "Budgets are finite, so an architect sets **priorities** for data protection.\n\n1. **Know the data**: discover and classify, then tag business-critical and regulated data.\n2. **Map threats** to each data class:\n   - **Ransomware and destruction**: immutable backups (Azure Backup **immutable vaults**, **soft delete**, multi-user authorisation) and blob immutability or versioning.\n   - **External exfiltration**: remove public network access, use **private endpoints**, disable shared keys and local auth, enforce Entra ID RBAC, and turn on **Defender for Storage/Databases** alerts.\n   - **Insider risk**: least privilege, PIM, Purview **DLP**, **Insider Risk Management** and auditing.\n   - **Accidental oversharing**: sensitivity labels, sharing controls, access reviews.\n   - **Key compromise**: Key Vault RBAC, purge protection, separation of duties.\n3. **Prioritise** controls that remove whole attack paths (identity-based access, private networking) over controls that only detect.\n4. **Measure** with Defender for Cloud recommendations against the MCSB data protection controls.\n\nRemember that encryption at rest protects against stolen media and platform-level access. It does not stop an attacker who has valid credentials.",
+      "terms": [
+        {
+          "t": "Data exfiltration",
+          "d": "Unauthorised transfer of data out of the organisation."
+        },
+        {
+          "t": "Immutable vault",
+          "d": "Azure Backup vault setting that prevents operations that would delete recovery points early."
+        },
+        {
+          "t": "Least privilege",
+          "d": "Granting only the minimum access needed for the minimum time."
+        },
+        {
+          "t": "MCSB",
+          "d": "Microsoft cloud security benchmark; its data protection controls guide Azure data security."
+        }
+      ],
+      "trap": "Encryption at rest is a common distractor for credential-based theft. If the attacker has valid access, the data is decrypted for them, so access controls and detection are what matter.",
+      "example": "For a health insurer, ransomware against claims data is the top risk. Immutable backups and soft delete come first, then private endpoints and Entra-only access, then DLP on exports.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Discover",
+          "Classify",
+          "Assess threats",
+          "Apply controls",
+          "Monitor"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.3.03",
+      "objective": "d4.3",
+      "seq": 3,
+      "title": "Encryption at rest, in transit, and Key Vault",
+      "short": "Azure encrypts data at rest by default with Microsoft-managed keys (AES-256). Customer-managed keys (CMK) in Azure Key Vault or Managed HSM add control. Infrastructure encryption adds a second layer at creation. TLS 1.2+ protects data in transit. Managed HSM is single-tenant and FIPS 140-3 Level 3 validated.",
+      "deep": "**At rest**: Azure services encrypt data with **256-bit AES**. The key options are:\n- **Microsoft-managed keys** (default).\n- **Customer-managed keys (CMK)** in **Key Vault** or **Managed HSM**, which you can rotate and revoke. CMK needs **soft delete and purge protection** on the vault.\n- **Infrastructure (double) encryption** for Storage adds a second layer with a separate Microsoft-managed key. It must be chosen **when the account is created**.\n- **Encryption at host** for VMs covers temp disks and caches. It replaces **Azure Disk Encryption**, which retires on 15 September 2028.\n\n**In transit**: TLS 1.2 or later, HTTPS-only (secure transfer), minimum TLS settings, and IPsec or MACsec for network links.\n\n**In use**: confidential computing (confidential VMs, Always Encrypted secure enclaves).\n\n**Key Vault tiers**: **Standard** (software-protected keys), **Premium** (HSM-backed keys in multitenant HSMs), **Managed HSM** (single-tenant pool you control through its security domain). Premium and Managed HSM firmware is FIPS 140-3 Level 3 validated.\n\n**Vault protection**: soft delete is always on (7–90 days, default 90, set at creation, can't be disabled). **Purge protection** is optional, but once enabled it can't be turned off. New vaults default to **Azure RBAC** (API 2026-02-01 and the portal).",
+      "terms": [
+        {
+          "t": "Customer-managed key (CMK)",
+          "d": "Key you control in Key Vault or Managed HSM that wraps the service's data encryption key."
+        },
+        {
+          "t": "Infrastructure encryption",
+          "d": "Second AES-256 layer for Storage, enabled only at account creation."
+        },
+        {
+          "t": "Managed HSM",
+          "d": "Single-tenant, FIPS 140-3 Level 3 validated HSM pool with local RBAC."
+        },
+        {
+          "t": "Purge protection",
+          "d": "Blocks permanent deletion of vaults and objects until the retention period ends."
+        }
+      ],
+      "trap": "Infrastructure encryption can't be added to an existing storage account. The exam expects 'create a new account and migrate'.",
+      "example": "A regulator requires keys in single-tenant HSMs that the company alone controls. You choose Managed HSM for SQL TDE and Storage CMK, with purge protection and a rotation policy.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Data (AES-256)",
+          "Data encryption key",
+          "Key encryption key (CMK)",
+          "Key Vault / Managed HSM"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.3.04",
+      "objective": "d4.3",
+      "seq": 4,
+      "title": "Securing data used in AI workloads",
+      "short": "AI workloads add new data paths: training and fine-tuning data, RAG indexes, prompts and responses. Classify the source data, keep document permissions in retrieval, and use managed identities and private endpoints. Add Defender for AI Services for jailbreak and data-leak alerts, Purview DSPM and DLP for AI, and Prompt Shields.",
+      "deep": "With AI, sensitive data can leak through the model, the retrieval layer or the prompts.\n\n**Design controls:**\n- **Classify and minimise** training, fine-tuning and grounding data. Don't feed regulated data into a model unless it is needed. Remove secrets.\n- **RAG security**: an Azure AI Search index flattens documents, so apply **document-level security filters** (or permission-aware indexing) so users retrieve only what they could open at the source.\n- **Identity and network**: apps reach Microsoft Foundry, Azure OpenAI and AI Search with **managed identities** and **Azure RBAC**. Disable key auth where possible, use **private endpoints**, and turn off public access.\n- **Encryption**: CMK for Foundry resources and storage holding datasets.\n- **Runtime protection**: **Azure AI Content Safety Prompt Shields** detect jailbreak and indirect prompt injection. **Defender for AI Services** (Defender for Cloud) alerts on jailbreak, data leakage, credential theft and more. It scans text tokens only.\n- **Governance**: Microsoft Purview **DSPM** discovers AI apps and interactions. **Endpoint DLP** can block pasting sensitive data into third-party generative AI sites. Insider Risk's **Risky AI usage** template, audit and retention cover prompts and responses.\n- **Agents**: give them their own identities (Entra Agent ID) with least privilege.",
+      "terms": [
+        {
+          "t": "RAG",
+          "d": "Retrieval-augmented generation: grounding model answers in documents retrieved from an index."
+        },
+        {
+          "t": "Prompt Shields",
+          "d": "Azure AI Content Safety feature that detects jailbreak and prompt injection attempts."
+        },
+        {
+          "t": "Defender for AI Services",
+          "d": "Defender for Cloud plan with threat detection for Azure OpenAI and Foundry model workloads."
+        },
+        {
+          "t": "Security trimming",
+          "d": "Filtering search results to documents the user is authorised to see."
+        }
+      ],
+      "trap": "A RAG index doesn't inherit SharePoint or file permissions by default. Without security filters, every app user can retrieve every indexed chunk.",
+      "example": "An HR chatbot indexes policy and salary documents. Security filters on Entra group IDs, a managed identity to AI Search over private endpoints, and Defender for AI Services stop salary data leaking to all staff.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User prompt",
+          "Prompt Shields",
+          "Trimmed retrieval",
+          "Model",
+          "DLP/audit"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.3.05",
+      "objective": "d4.3",
+      "seq": 5,
+      "title": "Data security for Azure SQL and Synapse",
+      "short": "Azure SQL layers controls: Microsoft Entra-only authentication, private endpoints, TDE (on by default, optionally with CMK), Always Encrypted for columns hidden from DBAs, dynamic data masking, row-level security, auditing and ledger. Synapse adds managed VNet with data exfiltration protection, which you can only choose at workspace creation.",
+      "deep": "**Azure SQL Database / Managed Instance:**\n- **Identity**: **Microsoft Entra-only authentication** turns off SQL logins. Apps use managed identities.\n- **Network**: private endpoints, deny public network access, minimum TLS version.\n- **TDE**: on by default for new databases with a service-managed key. **TDE with CMK** (Key Vault or Managed HSM) adds key control and revocation.\n- **Always Encrypted**: the client driver encrypts columns, so the server and DBAs never see plaintext. Use deterministic encryption for equality lookups and randomised for maximum protection. **Secure enclaves** (VBS; Intel SGX support ends 31 October 2027) allow rich queries and in-place encryption.\n- **Dynamic data masking** hides values in query results. It is **not encryption**.\n- **Row-level security** filters rows by user.\n- **Auditing** to Storage, Log Analytics or Event Hubs. **Ledger** tables (updatable or append-only) give cryptographic **tamper evidence**, with digests stored in immutable storage or Azure Confidential Ledger. A ledger database can't be converted back.\n\n**Azure Synapse Analytics:**\n- A **managed virtual network** with **data exfiltration protection** limits outbound traffic to **managed private endpoints** in **approved Entra tenants**. It **can't be enabled after the workspace is created**.\n- Dedicated SQL pools support Entra auth, column-level and row-level security, masking and TDE.",
+      "terms": [
+        {
+          "t": "Always Encrypted",
+          "d": "Client-side column encryption; keys never reach the database engine."
+        },
+        {
+          "t": "Dynamic data masking",
+          "d": "Masks column values in results for non-privileged users; data stays unencrypted."
+        },
+        {
+          "t": "Ledger",
+          "d": "Azure SQL feature that gives tamper evidence through cryptographic hashes and digests."
+        },
+        {
+          "t": "Data exfiltration protection",
+          "d": "Synapse setting that limits egress to managed private endpoints in approved tenants."
+        }
+      ],
+      "trap": "Only Always Encrypted protects data from high-privileged DBAs. TDE is transparent to anyone who can query, and masking is easy to bypass for privileged users.",
+      "example": "A payroll database must hide national ID numbers from DBAs while the payroll app still searches by ID. You use Always Encrypted (deterministic) on that column and Entra-only authentication.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Control",
+          "Protects against"
+        ],
+        "rows": [
+          [
+            "TDE",
+            "Stolen files/backups"
+          ],
+          [
+            "Always Encrypted",
+            "DBAs, server admins"
+          ],
+          [
+            "Data masking",
+            "Casual exposure"
+          ],
+          [
+            "Ledger",
+            "Undetected tampering"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.3.06",
+      "objective": "d4.3",
+      "seq": 6,
+      "title": "Data security for Azure Cosmos DB",
+      "short": "Secure Azure Cosmos DB by disabling key-based auth (disableLocalAuth) and using Entra ID with Cosmos DB native data-plane RBAC (Built-in Data Reader/Contributor). Add private endpoints or IP firewall rules, customer-managed keys, client-side Always Encrypted for sensitive properties, and Defender for Azure Cosmos DB.",
+      "deep": "Cosmos DB accounts traditionally use **primary/secondary keys**, which are powerful shared secrets that grant full data access. Modern design:\n\n- **Disable key-based authentication**: set `disableLocalAuth = true` (the portal also offers this at creation). After that, clients must use Microsoft Entra ID.\n- **Data-plane RBAC** for the NoSQL API is **native to Cosmos DB**, not Azure RBAC. Role definitions and assignments are stored in the account and managed with `az cosmosdb sql role definition/assignment`. Built-in roles are **Cosmos DB Built-in Data Reader** and **Cosmos DB Built-in Data Contributor**, and you can make custom roles from dataActions.\n- **Control-plane** access uses normal Azure RBAC (for example **Cosmos DB Operator**). `disableKeyBasedMetadataWriteAccess` stops key holders changing databases and containers.\n- **Network**: private endpoints, disable public network access, or IP/VNet firewall rules.\n- **Encryption**: always encrypted at rest. Add a **CMK** in Key Vault. **Always Encrypted for Cosmos DB** encrypts chosen properties on the client.\n- **Threat detection**: **Defender for Azure Cosmos DB** (part of the Defender for Databases plans) alerts on SQL injection patterns, anomalous access and suspicious key extraction.\n- Continuous backup with point-in-time restore helps recovery.",
+      "terms": [
+        {
+          "t": "disableLocalAuth",
+          "d": "Cosmos DB account property that blocks primary/secondary key authentication."
+        },
+        {
+          "t": "Cosmos DB data-plane RBAC",
+          "d": "Native role system for data access, separate from Azure RBAC."
+        },
+        {
+          "t": "Cosmos DB Built-in Data Contributor",
+          "d": "Native role allowing read and write of items and containers."
+        },
+        {
+          "t": "Defender for Azure Cosmos DB",
+          "d": "Threat protection for Cosmos DB within Defender for Cloud."
+        }
+      ],
+      "trap": "Assigning an Azure RBAC role such as Cosmos DB Operator doesn't grant data access. Data-plane roles are Cosmos DB native assignments.",
+      "example": "An order service's account keys leaked in a log file. You rotate the keys, set disableLocalAuth, grant the app's managed identity Built-in Data Contributor, and enable Defender for Azure Cosmos DB.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Plane",
+          "Access model"
+        ],
+        "rows": [
+          [
+            "Control plane",
+            "Azure RBAC"
+          ],
+          [
+            "Data plane (keys)",
+            "Disable: disableLocalAuth"
+          ],
+          [
+            "Data plane (Entra)",
+            "Cosmos native RBAC"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.3.07",
+      "objective": "d4.3",
+      "seq": 7,
+      "title": "Data security for Azure Storage",
+      "short": "Secure Azure Storage with Entra ID RBAC instead of account keys (disallow Shared Key), user delegation SAS, private endpoints and firewall rules, no anonymous blob access, and secure transfer. Use CMK and infrastructure encryption where required. Protect against deletion with soft delete, versioning and immutable (WORM) policies.",
+      "deep": "Storage accounts are a favourite target because one leaked key exposes everything.\n\n**Access:**\n- Use **Entra ID** with data roles (Storage Blob Data Reader, Contributor and others) and managed identities.\n- **Disallow Shared Key** (`--allow-shared-key-access false`, Azure Policy *Storage accounts should prevent shared key access*). This blocks account keys, **account SAS and service SAS**. **User delegation SAS**, which is signed with Entra credentials, still works.\n- Disable anonymous blob access. Set SAS expiration policies.\n\n**Network**: private endpoints, deny public network access or restrict with firewall rules, and **secure transfer required** with a minimum TLS version.\n\n**Encryption**: AES-256 by default. Add **CMK** (Key Vault needs soft delete and purge protection, RSA 2048/3072/4096 keys) and, if mandated, **infrastructure encryption** (at creation only).\n\n**Data protection against ransomware and errors**:\n- **Soft delete** for blobs and containers, plus **versioning** and point-in-time restore.\n- **Immutable storage (WORM)**: **time-based retention** (1 to 146,000 days) or **legal hold**. A **locked** time-based policy can't be shortened or deleted, which is needed for SEC 17a-4(f). Unlocked is for testing only.\n- A resource lock to prevent account deletion.",
+      "terms": [
+        {
+          "t": "Shared Key",
+          "d": "Account key authorisation; disallowing it also disables account and service SAS."
+        },
+        {
+          "t": "User delegation SAS",
+          "d": "SAS signed with Entra credentials; works when Shared Key is disallowed."
+        },
+        {
+          "t": "Time-based retention policy",
+          "d": "WORM policy; once locked it can only be extended."
+        },
+        {
+          "t": "Legal hold",
+          "d": "WORM hold with no fixed end date that stays until it is cleared."
+        }
+      ],
+      "trap": "An unlocked immutability policy can still be shortened or deleted, so it doesn't meet regulatory WORM requirements. The policy must be locked.",
+      "example": "A broker must keep trade records for seven years, unchangeable even by admins. You apply a locked time-based retention policy of 2,557 days and disallow Shared Key.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Immutability / soft delete",
+          "Encryption (CMK, infra)",
+          "Network (private endpoint)",
+          "Identity (Entra RBAC)"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d4.3.08",
+      "objective": "d4.3",
+      "seq": 8,
+      "title": "Defender for Storage and Defender for Databases",
+      "short": "Defender for Storage detects threats in Blob, Files and Data Lake: activity monitoring, malware scanning on upload or on demand, and sensitive data threat detection. Defender for Databases covers Azure SQL, SQL servers on machines, open-source relational databases and Cosmos DB, with threat alerts and vulnerability assessment.",
+      "deep": "**Microsoft Defender for Storage** (Defender for Cloud):\n- **Activity monitoring**: ML and threat intelligence analyse control- and data-plane telemetry, such as access from Tor or unusual data extraction. It **doesn't need resource logs** and doesn't affect performance.\n- **Malware scanning**: Microsoft Defender Antivirus scans blobs **on upload** or **on demand** (up to 50 GB per blob). It is billed per GB scanned, with a default cap of 10,000 GB per account per month. Results go to **blob index tags** (not tamper-resistant), Defender alerts, optional **Event Grid** events and the Log Analytics `StorageMalwareScanningResults` table. Built-in **automated remediation can soft-delete malicious blobs**.\n- **Sensitive data threat detection**: no extra cost. It uses Purview SITs to raise the severity of alerts on sensitive stores.\n- Priced per storage account. Enable at **subscription level** (with exclusions) and enforce with Azure Policy.\n\n**Microsoft Defender for Databases** is four plans:\n- **Defender for Azure SQL Databases** and **Defender for SQL Servers on Machines** (Azure, on-premises or multicloud through Azure Arc): **vulnerability assessment** plus **advanced threat protection** (SQL injection, brute force, anomalous access).\n- **Defender for Open-Source Relational Databases** (Azure Database for PostgreSQL and MySQL).\n- **Defender for Azure Cosmos DB**.\n\nAlerts flow into Defender XDR and Microsoft Sentinel.",
+      "terms": [
+        {
+          "t": "Malware scanning",
+          "d": "Defender for Storage antivirus scan of blobs on upload or on demand."
+        },
+        {
+          "t": "Activity monitoring",
+          "d": "Behavioural threat detection on storage operations without enabling logs."
+        },
+        {
+          "t": "Vulnerability assessment",
+          "d": "Defender for SQL scan for database misconfigurations and excessive permissions."
+        },
+        {
+          "t": "Defender for Databases",
+          "d": "Group of Defender for Cloud plans for SQL, open-source relational and Cosmos DB."
+        }
+      ],
+      "trap": "Malware scanning blob index tags can be changed by anyone with write access, so don't use them as the only gate. Use alerts, Event Grid or automated remediation.",
+      "example": "A claims portal accepts customer uploads. On-upload malware scanning with automated soft-delete remediation and an Event Grid-triggered function moves clean files to processing.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Blob upload",
+          "Malware scan",
+          "Index tag + alert",
+          "Event Grid",
+          "Auto remediation"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-100.d4.q001",
+      "lesson": "sc-100.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Your CISO wants one posture metric covering identity, email, collaboration and device hardening across Microsoft 365. Which tool should you use?",
+      "options": [
+        "Microsoft Secure Score in the Microsoft Defender portal",
+        "Secure score in Microsoft Defender for Cloud",
+        "Compliance score in Microsoft Purview Compliance Manager",
+        "Azure Advisor score"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Microsoft Secure Score measures Microsoft 365, identity, endpoint and connected SaaS posture. The Defender for Cloud secure score measures Azure and multicloud resources. Compliance score measures progress on regulatory controls. Advisor score covers Azure best practice in general."
+    },
+    {
+      "id": "sc-100.d4.q002",
+      "lesson": "sc-100.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "You are reviewing how Microsoft Secure Score is calculated. For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "An action already covered by a non-Microsoft product can be set to 'Resolved through alternative mitigation' and still earn points.",
+          "a": true
+        },
+        {
+          "s": "Some recommended actions award partial points based on the percentage of users or devices configured.",
+          "a": true
+        },
+        {
+          "s": "Microsoft Secure Score is calculated from Azure subscription resources such as virtual machines and storage accounts.",
+          "a": false
+        }
+      ],
+      "explain": "Alternative mitigation earns points, and actions such as MFA coverage are scored proportionally. Azure resource posture belongs to the Defender for Cloud secure score, not Microsoft Secure Score."
+    },
+    {
+      "id": "sc-100.d4.q003",
+      "lesson": "sc-100.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam's board asks for quarterly evidence that Microsoft 365 hardening is improving, and how Fabrikam compares with peers. The security team already uses a third-party identity provider that enforces MFA, which Secure Score currently reports as not addressed. The board also wants the decision on legacy mailbox auditing recorded.",
+      "stem": "Which approach best meets the board's needs?",
+      "options": [
+        "Export Compliance Manager improvement actions monthly and compare them with industry templates",
+        "Track Secure Score history and peer comparison, and set MFA to Resolved through alternative mitigation",
+        "Use the Defender for Cloud regulatory compliance dashboard with the MCSB standard assigned",
+        "Use Entra ID Protection risk reports and mark risky users as dismissed"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Secure Score provides history, trends and comparison with similar organisations. Marking third-party MFA as alternative mitigation credits it correctly, and a decision can be recorded as Risk accepted. Compliance Manager tracks regulations, Defender for Cloud covers Azure, and ID Protection reports user risk, not posture."
+    },
+    {
+      "id": "sc-100.d4.q004",
+      "lesson": "sc-100.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Defender for Office 365 feature opens email attachments in a sandbox to detect zero-day malware before delivery?",
+      "options": [
+        "Safe Links",
+        "Zero-hour auto purge (ZAP)",
+        "Safe Attachments",
+        "Spoof intelligence"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Safe Attachments detonates attachments, and files in SharePoint, OneDrive and Teams, in a sandbox. Safe Links checks URLs at time of click. ZAP removes messages after delivery. Spoof intelligence handles sender spoofing in EOP."
+    },
+    {
+      "id": "sc-100.d4.q005",
+      "lesson": "sc-100.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are evaluating whether Microsoft Defender for Office 365 Plan 1 is enough. Which TWO capabilities require Plan 2? Select TWO.",
+      "options": [
+        "Safe Links in Microsoft Teams",
+        "Attack simulation training",
+        "User and domain impersonation protection",
+        "Automated investigation and response (AIR)",
+        "Safe Attachments for SharePoint, OneDrive and Teams"
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "explain": "Attack simulation training and AIR are Plan 2 features, along with Threat Explorer, Threat Trackers and Campaigns. Safe Links, Safe Attachments for SharePoint/OneDrive/Teams, and impersonation protection are all in Plan 1."
+    },
+    {
+      "id": "sc-100.d4.q006",
+      "lesson": "sc-100.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailspin Toys has Microsoft 365 E3, so it has only Exchange Online Protection. Finance staff keep receiving emails impersonating the CEO's name from look-alike domains, and some contain links to credential-harvesting pages. Tailspin has no SOC and wants the lowest-cost licence that adds impersonation protection and time-of-click URL checks.",
+      "stem": "What should you recommend?",
+      "options": [
+        "Tune EOP anti-spam policies and add the look-alike domains to the Tenant Allow/Block List",
+        "Microsoft Defender for Office 365 Plan 2",
+        "Microsoft Defender for Cloud Apps with an anomaly detection policy",
+        "Microsoft Defender for Office 365 Plan 1"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Plan 1 adds user and domain impersonation protection and Safe Links, which is exactly what is needed. Plan 2 adds SOC tooling Tailspin can't use. Block lists only react to known domains. Defender for Cloud Apps doesn't filter email."
+    },
+    {
+      "id": "sc-100.d4.q007",
+      "lesson": "sc-100.d4.1.03",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You need to find which unsanctioned cloud storage and generative AI apps employees use from corporate devices, with a risk rating for each app. Which Defender for Cloud Apps capability should you use?",
+      "options": [
+        "Cloud Discovery",
+        "App connectors",
+        "Conditional Access app control",
+        "App governance"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Cloud Discovery analyses traffic (for example through the Defender for Endpoint integration) and rates apps from the cloud app catalog. App connectors need an API connection to a known app. Conditional Access app control proxies sessions. App governance covers OAuth apps."
+    },
+    {
+      "id": "sc-100.d4.q008",
+      "lesson": "sc-100.d4.1.03",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Contractors on unmanaged laptops must be able to view Salesforce records in a browser but must not download files labelled Confidential. Blocking must happen in real time. What should you design?",
+      "options": [
+        "An Intune app protection policy for the Salesforce web app",
+        "A Defender for Cloud Apps file policy using the Salesforce app connector",
+        "An Entra Conditional Access policy using Conditional Access App Control, with a session policy",
+        "An Endpoint DLP policy in Microsoft Purview targeting the contractors' devices"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The session control routes browser sessions through the Defender for Cloud Apps proxy, where a session policy blocks downloads inline. App connector policies act after the fact. Endpoint DLP needs onboarded devices. App protection policies target mobile and managed apps, not this browser session."
+    },
+    {
+      "id": "sc-100.d4.q009",
+      "lesson": "sc-100.d4.1.03",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Defender for Cloud Apps, select Yes if true.",
+      "statements": [
+        {
+          "s": "Session policies through Conditional Access app control apply to the Microsoft Teams desktop app.",
+          "a": false
+        },
+        {
+          "s": "App governance can identify OAuth apps that have overprivileged or unused permissions.",
+          "a": true
+        },
+        {
+          "s": "Apps marked Unsanctioned can be blocked on devices onboarded to Microsoft Defender for Endpoint.",
+          "a": true
+        }
+      ],
+      "explain": "Session controls only work in browser sessions, not desktop clients such as Teams. App governance monitors OAuth app permissions and hygiene. The Defender for Endpoint integration can enforce blocks on unsanctioned apps."
+    },
+    {
+      "id": "sc-100.d4.q010",
+      "lesson": "sc-100.d4.1.04",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Only Windows devices that meet your Intune BitLocker and OS version rules may access SharePoint Online. Which Conditional Access grant control enforces this?",
+      "options": [
+        "Require approved client app",
+        "Require device to be marked as compliant",
+        "Require app protection policy",
+        "Require authentication strength"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Intune compliance policies evaluate BitLocker and OS version, and Conditional Access enforces the result with 'Require device to be marked as compliant'. App protection and approved client app work at app level. Authentication strength controls the sign-in method."
+    },
+    {
+      "id": "sc-100.d4.q011",
+      "lesson": "sc-100.d4.1.04",
+      "objective": "d4.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Northwind Health lets clinicians use personal iOS and Android phones for Outlook and Teams. Staff refuse to enrol personal devices. Compliance requires that patient data in these apps is encrypted, can't be copied into personal apps, and can be removed when a clinician leaves, without touching personal photos or apps.",
+      "stem": "Which design meets the requirements?",
+      "options": [
+        "Intune compliance policies with Conditional Access 'Require device to be marked as compliant'",
+        "Windows Autopilot with device configuration profiles",
+        "Defender for Cloud Apps session policies for Outlook and Teams mobile apps",
+        "Intune app protection policies with Conditional Access 'Require app protection policy'"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "App protection policies work without enrolment, encrypt corporate data, restrict copy/paste and support selective wipe. Compliance policies need enrolment. Autopilot is for Windows provisioning. Defender for Cloud Apps session controls don't apply to native mobile apps."
+    },
+    {
+      "id": "sc-100.d4.q012",
+      "lesson": "sc-100.d4.1.04",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are evaluating the integration between Microsoft Intune and Microsoft Defender for Endpoint. Which TWO capabilities does it provide? Select TWO.",
+      "options": [
+        "A compliance policy can require devices to be at or under a specified machine risk score",
+        "Safe Links is applied automatically to browsers on enrolled devices",
+        "Devices can be onboarded to Defender for Endpoint through an Intune endpoint security EDR policy",
+        "Conditional Access is no longer needed to block non-compliant devices",
+        "Purview Endpoint DLP is replaced by Intune configuration profiles"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Intune can onboard devices to Defender for Endpoint through EDR policies and use the MDE machine risk score in compliance. Conditional Access still enforces compliance. Safe Links is Defender for Office 365. Endpoint DLP stays a Purview capability."
+    },
+    {
+      "id": "sc-100.d4.q013",
+      "lesson": "sc-100.d4.1.05",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You apply a sensitivity label with container settings to a private Microsoft Teams team. What does this label control?",
+      "options": [
+        "The label applied to every existing document in the team's SharePoint site",
+        "Retention and deletion of chat messages in the team",
+        "Encryption of all files uploaded to the team",
+        "Privacy, guest access and external sharing for the team and its site"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Container labels govern the team, group or site: privacy, guest access, external sharing and unmanaged-device access. They don't label or encrypt the files inside. Retention is handled by retention policies."
+    },
+    {
+      "id": "sc-100.d4.q014",
+      "lesson": "sc-100.d4.1.05",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are designing a rollout that automatically labels existing confidential files in SharePoint Online. Put the steps in order.",
+      "options": [
+        "Define the label taxonomy and encryption settings with the business",
+        "Publish the sensitivity labels to users with a label policy",
+        "Create a service-side auto-labelling policy and run it in simulation mode",
+        "Review the simulation results, then turn the policy on"
+      ],
+      "explain": "Labels must exist and be published before auto-labelling can use them. Service-side auto-labelling always starts in simulation, so you can check matches before labels are applied to data at rest."
+    },
+    {
+      "id": "sc-100.d4.q015",
+      "lesson": "sc-100.d4.1.05",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Purview in Microsoft 365, select Yes if true.",
+      "statements": [
+        {
+          "s": "Audit (Standard) keeps audit records for 180 days by default.",
+          "a": true
+        },
+        {
+          "s": "Service-side auto-labelling can label files at rest in SharePoint Online without a user opening them.",
+          "a": true
+        },
+        {
+          "s": "Encryption from a sensitivity label is removed automatically when a file is emailed outside the organisation.",
+          "a": false
+        }
+      ],
+      "explain": "Audit (Standard) retention is 180 days, and Audit (Premium) is one year by default. Service-side policies label data at rest. Label encryption stays with the file wherever it goes; that is the point of persistent protection."
+    },
+    {
+      "id": "sc-100.d4.q016",
+      "lesson": "sc-100.d4.1.06",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Microsoft 365 Copilot must not use files labelled Highly Confidential in its responses. Users must still open and edit those files normally, and label encryption settings must not change. What should you configure?",
+      "options": [
+        "Restricted Content Discovery on every SharePoint site",
+        "A Purview DLP policy for the Microsoft 365 Copilot location with a sensitivity label condition",
+        "An Insider Risk Management policy based on the Risky AI usage template",
+        "A Communication Compliance policy for Copilot interactions"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The DLP Copilot location can stop Copilot processing items with a chosen label, while users keep their access. RCD works per site, not per label. Insider Risk and Communication Compliance detect behaviour but don't stop Copilot using content."
+    },
+    {
+      "id": "sc-100.d4.q017",
+      "lesson": "sc-100.d4.1.06",
+      "objective": "d4.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso starts a Microsoft 365 Copilot pilot next week. A DSPM data risk assessment shows 25 SharePoint sites with HR and legal content shared with 'Everyone except external users'. Fixing the permissions with site owners will take two months. Until then, leadership wants that content kept out of Copilot answers, and users' existing access must not change.",
+      "stem": "What should you implement first?",
+      "options": [
+        "Apply Restricted Content Discovery to the 25 sites",
+        "Apply restricted access control to the 25 sites",
+        "Apply a retention policy that deletes content older than one year on the sites",
+        "Remove Copilot licences from users who have access to the sites"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Restricted Content Discovery hides sites from Copilot and org-wide search without changing permissions, so it is the right interim measure. Restricted access control changes who can access the site. Retention deletes data. Removing licences defeats the pilot."
+    },
+    {
+      "id": "sc-100.d4.q018",
+      "lesson": "sc-100.d4.1.06",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "You are designing Purview controls for Microsoft 365 Copilot. For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "A single DLP policy can include both the Microsoft 365 Copilot location and the Exchange email location.",
+          "a": false
+        },
+        {
+          "s": "In a Copilot location rule, sensitive information type and sensitivity label conditions must be in separate rules.",
+          "a": true
+        },
+        {
+          "s": "For encrypted content, the user needs the EXTRACT and VIEW usage rights for Copilot to use it.",
+          "a": true
+        }
+      ],
+      "explain": "Choosing the Copilot location (Custom template) disables the other locations, so it needs its own policy. SIT and label conditions can't share a rule. Copilot honours Rights Management, so EXTRACT and VIEW are required."
+    },
+    {
+      "id": "sc-100.d4.q019",
+      "lesson": "sc-100.d4.2.01",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You must assess the security posture of 150 apps on App Service and AKS, including findings from their GitHub and Azure DevOps repositories. Which solution should you use?",
+      "options": [
+        "Microsoft Secure Score",
+        "Azure Advisor cost recommendations",
+        "Microsoft Defender for Cloud with DevOps security connectors",
+        "Microsoft Purview Data Map"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Defender for Cloud assesses Azure workloads against MCSB, and its DevOps security connectors bring in code, secret, dependency and IaC findings. Secure Score covers Microsoft 365. Advisor cost recommendations aren't security. Purview Data Map catalogues data, not app posture."
+    },
+    {
+      "id": "sc-100.d4.q020",
+      "lesson": "sc-100.d4.2.01",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are building a prioritised remediation backlog for an Azure application portfolio. Which TWO actions give the most useful prioritisation data? Select TWO.",
+      "options": [
+        "Use Defender CSPM attack path analysis to find internet-exposed workloads that can reach sensitive data",
+        "Enable Intune compliance policies for the App Service plans",
+        "Turn on Safe Links for developer mailboxes",
+        "Tag each app with its business criticality and data classification",
+        "Deploy Insider Risk Management to the AKS clusters"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "Attack paths show exploitable exposure, and criticality and classification tags show impact. Together they rank risk. Intune doesn't manage App Service, Safe Links protects email, and Insider Risk Management doesn't assess cluster posture."
+    },
+    {
+      "id": "sc-100.d4.q021",
+      "lesson": "sc-100.d4.2.01",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Woodgrove Bank's Defender for Cloud shows 3,400 open recommendations across 200 apps. The team can fix about 150 a month. Some apps are internal reporting tools, and others are internet-facing payment and customer apps that process cardholder data. Leadership asks how to sequence the work.",
+      "stem": "Which prioritisation approach should you recommend?",
+      "options": [
+        "Fix recommendations in alphabetical order by resource group to ensure full coverage",
+        "Start with internet-facing apps that process sensitive data, ranked by attack paths and severity",
+        "Fix the recommendations with the highest secure score impact first, whatever the app",
+        "Fix internal reporting tools first because they are smaller and quicker"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Risk combines exposure, data sensitivity, criticality and exploitability, and attack paths make that concrete. Score impact alone ignores business context. Alphabetical order or quick wins on low-risk apps leave the most dangerous exposure open the longest."
+    },
+    {
+      "id": "sc-100.d4.q022",
+      "lesson": "sc-100.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In a threat model, a customer could plausibly deny authorising a funds transfer because the app keeps no reliable record. Which STRIDE category is this?",
+      "options": [
+        "Spoofing",
+        "Tampering",
+        "Elevation of privilege",
+        "Repudiation"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Repudiation is the ability to deny an action because there is no trustworthy evidence. The mitigation is audit logs and tamper-evident records. Spoofing is impersonation, tampering is unauthorised change, and elevation is gaining extra privileges."
+    },
+    {
+      "id": "sc-100.d4.q023",
+      "lesson": "sc-100.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You use the Microsoft Threat Modeling Tool for a new claims app. Which artefact must you create so the tool can generate candidate threats?",
+      "options": [
+        "A data flow diagram showing processes, data stores, flows and trust boundaries",
+        "A list of Azure Policy assignments for the subscription",
+        "A Bicep template of the target infrastructure",
+        "A CVSS score for each known CVE in the app's dependencies"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The tool generates STRIDE threats from a data flow diagram, especially where flows cross trust boundaries. Bicep templates and policy assignments are inputs for IaC scanning. CVSS scores belong to vulnerability management, not design-time threat modelling."
+    },
+    {
+      "id": "sc-100.d4.q024",
+      "lesson": "sc-100.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO pairs correctly match a STRIDE threat category with its primary mitigation? Select TWO.",
+      "options": [
+        "Repudiation: encryption at rest",
+        "Spoofing: strong authentication such as MFA or managed identities",
+        "Denial of service: sensitivity labels",
+        "Elevation of privilege: least-privilege authorisation such as scoped RBAC",
+        "Tampering: rate limiting"
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "explain": "Spoofing breaks authentication, and elevation of privilege breaks authorisation. Repudiation needs auditing, denial of service needs availability controls such as rate limits and DDoS Protection, and tampering needs integrity controls such as signing and hashing."
+    },
+    {
+      "id": "sc-100.d4.q025",
+      "lesson": "sc-100.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps of Microsoft's threat modeling process in order.",
+      "options": [
+        "Define security requirements",
+        "Create an application diagram",
+        "Identify threats",
+        "Mitigate threats",
+        "Validate that threats have been mitigated"
+      ],
+      "explain": "Microsoft's five-step process starts with requirements and a diagram. Threats are found from the diagram (for example with STRIDE), then mitigated, and the mitigations are checked. Repeat whenever the design changes."
+    },
+    {
+      "id": "sc-100.d4.q026",
+      "lesson": "sc-100.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In a DevSecOps strategy, what does 'shift left' mean?",
+      "options": [
+        "Moving workloads from IaaS to PaaS to reduce the security burden",
+        "Moving security checks earlier in the development lifecycle, where fixes cost less",
+        "Moving SOC monitoring to an outsourced provider",
+        "Moving deployments to a canary ring before production"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Shift left means finding security issues early, through threat modelling, IDE checks, secret scanning and SAST, rather than after release. Canary rings are a release practice, PaaS moves responsibility to the provider, and SOC outsourcing is about operations."
+    },
+    {
+      "id": "sc-100.d4.q027",
+      "lesson": "sc-100.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are placing security controls along a CI/CD lifecycle for a containerised app. Put the controls in the order they occur.",
+      "options": [
+        "Secret scanning with push protection blocks a commit that contains a key",
+        "SAST and dependency scanning run on the pull request",
+        "IaC templates and the container image are scanned in the build",
+        "Azure Policy and approvals gate the release to production",
+        "Defender for Cloud monitors the running workload"
+      ],
+      "explain": "Push protection acts at commit time, SAST and SCA run at PR review, artefact scans run in the build, policy gates control release, and runtime protection covers operations. Each stage catches what earlier ones missed."
+    },
+    {
+      "id": "sc-100.d4.q028",
+      "lesson": "sc-100.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about application security testing, select Yes if true.",
+      "statements": [
+        {
+          "s": "DAST analyses source code without running the application.",
+          "a": false
+        },
+        {
+          "s": "Software composition analysis identifies known-vulnerable open-source dependencies.",
+          "a": true
+        },
+        {
+          "s": "A full-lifecycle strategy still needs runtime protection even when shift-left testing is mature.",
+          "a": true
+        }
+      ],
+      "explain": "DAST tests a running app; source analysis is SAST. SCA finds vulnerable packages. Shift left reduces defects but can't stop zero-days or misconfiguration in production, so WAF, Defender for Cloud and monitoring are still needed."
+    },
+    {
+      "id": "sc-100.d4.q029",
+      "lesson": "sc-100.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A popular npm package used by Litware's customer portal was hijacked and published a malicious version, which Litware's build pulled automatically. Litware builds in Azure Pipelines and wants to reduce its software supply chain risk without blocking developers from using open source.",
+      "stem": "Which design change best addresses the root cause?",
+      "options": [
+        "Turn on Azure WAF Prevention mode in front of the portal",
+        "Enable Defender for Storage malware scanning on the build artefact storage account",
+        "Run DAST weekly against the production portal",
+        "Use an internal Azure Artifacts feed with upstream sources, pinned versions and dependency scanning in the pipeline"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A controlled feed with pinned versions and SCA stops unvetted versions reaching builds and flags known-bad packages. WAF and DAST act at runtime, after the malicious code has shipped. Storage malware scanning isn't designed to catch malicious package logic."
+    },
+    {
+      "id": "sc-100.d4.q030",
+      "lesson": "sc-100.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You need a detailed, testable set of security requirements to use as acceptance criteria for customer-facing web apps. Which OWASP project should you adopt?",
+      "options": [
+        "OWASP Top 10",
+        "OWASP Application Security Verification Standard (ASVS)",
+        "OWASP Software Assurance Maturity Model (SAMM)",
+        "OWASP ZAP"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "ASVS gives testable requirements at three verification levels. The Top 10 is an awareness list, SAMM measures programme maturity, and ZAP is a DAST tool."
+    },
+    {
+      "id": "sc-100.d4.q031",
+      "lesson": "sc-100.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are writing mandatory secure coding standards for Azure-hosted apps. Which TWO practices should be included? Select TWO.",
+      "options": [
+        "Retrieve secrets from Azure Key Vault using the app's managed identity",
+        "Use APIM subscription keys as the only authentication for partner APIs",
+        "Use parameterised queries for all database access",
+        "Allow TLS 1.0 for internal services to simplify testing",
+        "Write a custom encryption routine for each app to avoid shared weaknesses"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Key Vault plus managed identity removes secrets from code, and parameterised queries prevent injection. Subscription keys aren't strong authentication, TLS 1.0 is obsolete, and custom cryptography goes against SDL guidance to use approved, standard libraries."
+    },
+    {
+      "id": "sc-100.d4.q032",
+      "lesson": "sc-100.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Developers have accidentally committed storage account keys to GitHub several times. You must stop secrets reaching the repository in the first place. Which control should you require?",
+      "options": [
+        "Dependabot alerts",
+        "CodeQL code scanning on pull requests",
+        "Branch protection rules that require two reviewers",
+        "Secret scanning with push protection"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Push protection blocks a push that contains a detected secret, so it never lands in history. Dependabot covers dependencies, CodeQL finds code vulnerabilities, and branch protection reviews changes after they are pushed to a branch."
+    },
+    {
+      "id": "sc-100.d4.q033",
+      "lesson": "sc-100.d4.2.05",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "You are mapping application security requirements to Microsoft technologies. For each mapping, select Yes if it is appropriate.",
+      "statements": [
+        {
+          "s": "Detect anomalous calls and unauthenticated endpoints for APIs published in API Management: Microsoft Defender for APIs.",
+          "a": true
+        },
+        {
+          "s": "Let consumers sign up and sign in to a public app with social accounts: Microsoft Entra External ID.",
+          "a": true
+        },
+        {
+          "s": "Classify and label documents uploaded to a SharePoint site: Azure Web Application Firewall.",
+          "a": false
+        }
+      ],
+      "explain": "Defender for APIs protects APIs published in APIM, and External ID is Microsoft's customer identity platform. Document classification is done with Purview sensitivity labels and auto-labelling. A WAF inspects HTTP traffic, not document content."
+    },
+    {
+      "id": "sc-100.d4.q034",
+      "lesson": "sc-100.d4.2.05",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Adatum is building a three-tier web app on App Service with Azure SQL. Requirements: the app tier must reach Azure SQL with no stored credentials; Azure SQL must not be reachable from the internet; and every database connection must be attributable to an Entra identity.",
+      "stem": "Which combination meets all three requirements?",
+      "options": [
+        "A managed identity for the App Service, a private endpoint for Azure SQL, and Entra-only authentication",
+        "A SQL login in Key Vault, Azure SQL firewall rules for App Service outbound IPs, and SQL auditing",
+        "A service principal with a client secret in app settings, service endpoints, and TDE",
+        "Shared access signatures, an Application Gateway WAF in front of Azure SQL, and dynamic data masking"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A managed identity removes credentials, a private endpoint removes internet reachability, and Entra-only authentication makes every connection an Entra identity. SQL logins and client secrets are still stored credentials, and a WAF doesn't front SQL traffic."
+    },
+    {
+      "id": "sc-100.d4.q035",
+      "lesson": "sc-100.d4.2.05",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A public web app must be protected against both large network-layer floods and application-layer attacks such as SQL injection. Which TWO services should you include? Select TWO.",
+      "options": [
+        "Azure Bastion",
+        "Azure DDoS Protection",
+        "Microsoft Defender for Storage",
+        "Azure Web Application Firewall",
+        "Azure Private DNS zones"
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "explain": "DDoS Protection mitigates volumetric L3/L4 attacks, and Azure WAF inspects L7 requests for OWASP attacks. They complement each other. Bastion is for VM admin access, Defender for Storage protects storage accounts, and private DNS handles name resolution."
+    },
+    {
+      "id": "sc-100.d4.q036",
+      "lesson": "sc-100.d4.2.06",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Twenty VM scale set instances and three Function apps must share one identity, which must be pre-granted RBAC access and survive when any single resource is deleted. Which identity type should you use?",
+      "options": [
+        "A system-assigned managed identity on each resource",
+        "An app registration with a client secret",
+        "A user-assigned managed identity",
+        "A Microsoft Entra B2B guest account"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A user-assigned managed identity is a standalone resource that can be attached to many resources and has its own lifecycle. System-assigned identities are 1:1 and deleted with the resource. Client secrets must be stored and rotated. Guest accounts are for people."
+    }
+  ]
+}

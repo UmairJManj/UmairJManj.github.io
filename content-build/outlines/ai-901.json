@@ -1,0 +1,202 @@
+{
+  "id": "ai-901",
+  "name": "Microsoft Azure AI Fundamentals",
+  "code": "AI-901",
+  "issuer": "Microsoft",
+  "outlineVersion": "Skills measured as of April 15, 2026",
+  "sourceUrl": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-901",
+  "exam": {
+    "minutes": 45,
+    "passMark": "700/1000",
+    "questionCount": "40-60 (not published per exam)",
+    "notes": "Earns Microsoft Certified: Azure AI Fundamentals (replaces AI-900, which third-party sources report retired June 30, 2026). Beta announced April 15, 2026; now generally available (exam page shows no beta notice, retirement date: none). Duration not stated on the official pages; 45 minutes is the typical Fundamentals length and is unverified. Delivered via Pearson VUE and Certiport. Hands-on focus on Microsoft Foundry and Python SDK."
+  },
+  "domains": [
+    {
+      "id": "d1",
+      "name": "Identify AI concepts and capabilities",
+      "weight": "40-45%",
+      "objectives": [
+        {
+          "id": "d1.1",
+          "name": "Describe principles of responsible AI",
+          "bullets": [
+            "Describe considerations for fairness in an AI solution",
+            "Describe considerations for reliability and safety in an AI solution",
+            "Describe considerations for privacy and security in an AI solution",
+            "Describe considerations for inclusiveness in an AI solution",
+            "Describe considerations for transparency in an AI solution",
+            "Describe considerations for accountability in an AI solution"
+          ]
+        },
+        {
+          "id": "d1.2",
+          "name": "Identify AI model components and configurations",
+          "bullets": [
+            "Describe how generative AI models work",
+            "Identify an appropriate AI model, based on capabilities",
+            "Identify appropriate model deployment options and configuration parameters"
+          ]
+        },
+        {
+          "id": "d1.3",
+          "name": "Identify AI workloads",
+          "bullets": [
+            "Identify scenarios for common AI workloads, including generative and agentic AI, text analysis, speech, computer vision, and information extraction",
+            "Describe common text analysis techniques, including keyword extraction, entity detection, sentiment analysis, and summarization",
+            "Identify features and capabilities of speech recognition and speech synthesis",
+            "Identify features and capabilities of computer vision and image-generation models",
+            "Identify techniques to extract information from text, images, audio, and videos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "name": "Implement AI solutions by using Microsoft Foundry",
+      "weight": "55-60%",
+      "objectives": [
+        {
+          "id": "d2.1",
+          "name": "Implement generative AI apps and agents by using Foundry",
+          "bullets": [
+            "Create effective system and user prompts for generative AI models",
+            "Deploy a model and interact with it in the Foundry portal",
+            "Create a lightweight chat client application by using the Foundry SDK",
+            "Create and test a single-agent solution in the Foundry portal",
+            "Create a lightweight client application for an agent"
+          ]
+        },
+        {
+          "id": "d2.2",
+          "name": "Implement AI solutions for text and speech by using Foundry",
+          "bullets": [
+            "Build a lightweight application that includes text analysis",
+            "Respond to spoken prompts by using a deployed multimodal model",
+            "Build a lightweight application by using Azure Speech in Foundry Tools"
+          ]
+        },
+        {
+          "id": "d2.3",
+          "name": "Implement AI solutions with computer vision and image-generation capabilities by using Foundry",
+          "bullets": [
+            "Interpret visual input in prompts by using a deployed multimodal model",
+            "Create new visual outputs by using generative models",
+            "Build a lightweight application that includes vision capabilities"
+          ]
+        },
+        {
+          "id": "d2.4",
+          "name": "Implement AI solutions for information extraction by using Foundry",
+          "bullets": [
+            "Extract information from documents and forms by using Azure Content Understanding in Foundry Tools",
+            "Extract information from images by using Content Understanding",
+            "Extract information from audio and video by using Content Understanding",
+            "Build a lightweight application with information extraction capabilities by using Content Understanding"
+          ]
+        }
+      ]
+    }
+  ],
+  "keyTerms": [
+    "Responsible AI",
+    "Fairness",
+    "Reliability and safety",
+    "Privacy and security",
+    "Inclusiveness",
+    "Transparency",
+    "Accountability",
+    "Generative AI",
+    "Agentic AI",
+    "AI agent",
+    "Large language model (LLM)",
+    "Small language model (SLM)",
+    "Transformer",
+    "Tokens",
+    "Tokenization",
+    "Embeddings",
+    "Attention",
+    "Context window",
+    "Multimodal model",
+    "Foundation model",
+    "Model catalog",
+    "Model benchmarks",
+    "Model deployment",
+    "Serverless API deployment",
+    "Managed compute deployment",
+    "Global Standard deployment",
+    "Provisioned throughput",
+    "Temperature",
+    "Top-p",
+    "Max tokens",
+    "Stop sequences",
+    "Frequency penalty",
+    "Presence penalty",
+    "System prompt",
+    "User prompt",
+    "Prompt engineering",
+    "Few-shot prompting",
+    "Zero-shot prompting",
+    "Grounding",
+    "Retrieval-augmented generation (RAG)",
+    "Hallucination",
+    "Content filters",
+    "Guardrails",
+    "Microsoft Foundry",
+    "Foundry portal",
+    "Foundry project",
+    "Foundry hub/resource",
+    "Foundry SDK",
+    "Azure AI Projects client library",
+    "OpenAI SDK / Responses API",
+    "Chat completions",
+    "Endpoint and API key",
+    "Microsoft Entra ID authentication",
+    "Playground",
+    "Foundry Agent Service",
+    "Agent instructions",
+    "Agent tools",
+    "Threads and messages",
+    "Tool calling",
+    "Foundry Tools",
+    "Azure Language in Foundry Tools",
+    "Keyword (key phrase) extraction",
+    "Named entity recognition",
+    "Entity linking",
+    "PII detection",
+    "Sentiment analysis",
+    "Opinion mining",
+    "Language detection",
+    "Summarization",
+    "Azure Speech in Foundry Tools",
+    "Speech recognition (speech-to-text)",
+    "Speech synthesis (text-to-speech)",
+    "SSML",
+    "Neural voices",
+    "Speech translation",
+    "Real-time / voice live",
+    "Computer vision",
+    "Image classification",
+    "Object detection",
+    "Optical character recognition (OCR)",
+    "Image captioning",
+    "Image generation",
+    "Diffusion models",
+    "GPT-image / DALL-E",
+    "Vision-enabled chat",
+    "Azure Content Understanding",
+    "Analyzers",
+    "Field extraction / schema",
+    "Document intelligence",
+    "Forms processing",
+    "Audio and video extraction",
+    "Transcription",
+    "Information extraction",
+    "Evaluation",
+    "Tracing and monitoring",
+    "Python",
+    "Azure subscription and resource group"
+  ],
+  "status": "verified",
+  "caveats": "Outline fetched from the official AI-901 study guide (skills measured as of April 15, 2026). AI-901 replaces AI-900 for the Azure AI Fundamentals certification; AI-900 retirement on June 30, 2026 is reported by third-party sources (official certification page now lists only AI-901). Beta began April 15, 2026 (third-party report), now appears live. Exam duration and question count are not published on the official pages; 45 minutes / 40-60 questions are typical Fundamentals values. Localized outlines lag ~8 weeks. Classic ML (regression/clustering, Azure ML) that featured in AI-900 is not explicitly in the AI-901 outline. 'Foundry Tools' is the current branding for the former Azure AI Services."
+}

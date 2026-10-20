@@ -1,0 +1,1042 @@
+{
+  "exam": "sc-100",
+  "domain": "d2",
+  "lessons": [
+    {
+      "id": "sc-100.d2.4.01",
+      "objective": "d2.4",
+      "seq": 1,
+      "title": "Translating compliance requirements into security controls",
+      "short": "Architects turn regulatory clauses into concrete, testable controls: identify the obligation, map it to a control framework such as the Microsoft cloud security benchmark or NIST, assign responsibility under the shared responsibility model, implement with technical tools, and collect evidence.",
+      "deep": "A regulation says *what* (for example, 'protect cardholder data', 'log access to personal data', 'keep data in the EU'). Architects design *how*.\n\n**Method**\n1. **Inventory obligations**: laws (GDPR, HIPAA), industry standards (PCI DSS), frameworks (ISO 27001, NIST SP 800-53), contracts and internal policy.\n2. **Map to a control framework**: the **Microsoft cloud security benchmark (MCSB)** maps to CIS, NIST and PCI DSS controls; Compliance Manager templates map regulations to improvement actions.\n3. **Assign responsibility**: under the **shared responsibility model**, some controls are Microsoft-managed (physical security), some customer-managed (MFA, data classification), some shared.\n4. **Implement technical controls**, for example:\n   - Data residency -> Azure Policy *Allowed locations*.\n   - Encryption -> customer-managed keys in Key Vault/Managed HSM.\n   - Access logging -> Purview Audit, diagnostic settings to Sentinel.\n   - Data protection -> sensitivity labels, DLP, retention.\n   - Least privilege -> PIM, access reviews.\n5. **Measure and evidence**: Defender for Cloud regulatory compliance dashboard, Compliance Manager scores, audit reports, Microsoft Service Trust Portal for Microsoft's own audit reports (SOC, ISO).\n\nWrite controls so they are **testable**: 'All storage accounts deny public network access' is testable; 'data is secure' is not.",
+      "terms": [
+        {
+          "t": "Microsoft cloud security benchmark (MCSB)",
+          "d": "Microsoft's multicloud security control framework, mapped to CIS, NIST and PCI DSS."
+        },
+        {
+          "t": "Shared responsibility model",
+          "d": "Division of security duties between cloud provider and customer by service type."
+        },
+        {
+          "t": "Service Trust Portal",
+          "d": "Microsoft site with its own audit reports and compliance documents."
+        },
+        {
+          "t": "Data residency",
+          "d": "Requirement that data is stored in specific geographic locations."
+        }
+      ],
+      "trap": "Microsoft's ISO certificate doesn't make your workload compliant; customer-managed controls still need implementation and evidence.",
+      "example": "A GDPR 'data must stay in the EU' clause becomes an Azure Policy Allowed locations assignment (West Europe, North Europe) with deny effect at the EU management group.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Regulation",
+          "Control framework",
+          "Responsibility",
+          "Technical control",
+          "Evidence"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.4.02",
+      "objective": "d2.4",
+      "seq": 2,
+      "title": "Compliance solutions with Microsoft Purview",
+      "short": "Microsoft Purview delivers compliance through Compliance Manager (assessments, compliance score, improvement actions), Information Protection and DLP, Data Lifecycle and Records Management, Audit, eDiscovery, Communication Compliance and Insider Risk Management.",
+      "deep": "**Compliance Manager**\n- Over 360 **regulatory templates** (ISO 27001, NIST, GDPR, HIPAA and more) and custom templates to create **assessments**.\n- Each assessment lists **Microsoft-managed**, **customer-managed** and **shared** controls.\n- **Improvement actions** can be assigned, evidenced and tracked; points roll up to a **compliance score** (risk-based). The default starting assessment is the **Data Protection Baseline**.\n- Some templates are included by licence; premium templates may need add-ons.\n\n**Other Purview solutions mapped to requirements**\n- **Information Protection**: sensitivity labels (encryption, marking), auto-labelling. \n- **Data Loss Prevention**: policies for Exchange, SharePoint, OneDrive, Teams, endpoints and more.\n- **Data Lifecycle Management / Records Management**: retention policies and labels, disposition review, regulatory records.\n- **Audit (Standard/Premium)** and **eDiscovery** for investigations and legal hold.\n- **Communication Compliance** and **Insider Risk Management** for conduct and insider threats.\n- **DSPM for AI** for AI-related data risk (Copilot and other AI apps).\n- **Data Map / Unified Catalog** to discover and classify data across Azure, on-premises and multicloud sources.\n\nArchitect focus: pick the solution that produces the required **evidence** and **enforcement**, not just visibility.",
+      "terms": [
+        {
+          "t": "Compliance Manager",
+          "d": "Purview tool for assessments, improvement actions and compliance score."
+        },
+        {
+          "t": "Improvement action",
+          "d": "Recommended step that implements a control and earns score points."
+        },
+        {
+          "t": "Retention label",
+          "d": "Purview label that keeps or deletes content and can declare records."
+        },
+        {
+          "t": "Compliance score",
+          "d": "Risk-weighted measure of progress on improvement actions."
+        }
+      ],
+      "trap": "Compliance score is a measure of progress, not a certification of compliance; and Microsoft-managed controls are already scored for you.",
+      "example": "A health insurer creates a HIPAA assessment in Compliance Manager, assigns improvement actions to owners, and uses retention labels plus DLP for PHI to close them.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Requirement",
+          "Purview solution"
+        ],
+        "rows": [
+          [
+            "Track regulation",
+            "Compliance Manager"
+          ],
+          [
+            "Classify/encrypt",
+            "Information Protection"
+          ],
+          [
+            "Stop leakage",
+            "DLP"
+          ],
+          [
+            "Keep/delete",
+            "Data Lifecycle Mgmt"
+          ],
+          [
+            "Investigate",
+            "Audit, eDiscovery"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.4.03",
+      "objective": "d2.4",
+      "seq": 3,
+      "title": "Azure Policy for security and compliance",
+      "short": "Azure Policy evaluates Azure resources against rules and enforces them with effects such as deny, audit, modify and deployIfNotExists. Group policies into initiatives, assign at management group scope, use exemptions sparingly, and use remediation tasks with managed identities to fix existing resources.",
+      "deep": "**Building blocks**\n- **Policy definition**: a rule (`if` condition, `then` effect).\n- **Initiative (policy set)**: a group of definitions, such as the MCSB initiative or a regulatory initiative (ISO 27001, NIST SP 800-53).\n- **Assignment** at management group, subscription or resource group scope, with parameters and exclusions.\n- **Exemptions**: *waiver* or *mitigated*, optionally time-limited.\n\n**Effects**\n- **deny**: blocks non-compliant creates/updates.\n- **audit** / **auditIfNotExists**: report only.\n- **modify** / **append**: change the request (for example, add tags).\n- **deployIfNotExists (DINE)**: deploy a related resource (for example, diagnostic settings, an agent). DINE and modify need a **managed identity** on the assignment.\n- **denyAction**: block specific actions such as delete.\n- **manual**: attestation for controls that can't be checked automatically.\n- **disabled**.\n\n**Design guidance**\n- Assign guardrails at the **management group** level (Azure landing zones), so new subscriptions inherit them.\n- Start with **audit**, then move to **deny** once impact is known.\n- **Remediation tasks** fix existing resources for DINE/modify.\n- Store definitions as code (policy as code with CI/CD).\n- Azure Policy covers Azure Resource Manager, Arc-enabled servers (machine configuration) and AKS (Azure Policy for Kubernetes / Gatekeeper).",
+      "terms": [
+        {
+          "t": "Initiative",
+          "d": "Set of policy definitions assigned and tracked together."
+        },
+        {
+          "t": "deployIfNotExists",
+          "d": "Effect that deploys a related resource when it's missing; needs a managed identity."
+        },
+        {
+          "t": "Remediation task",
+          "d": "Applies DINE or modify to existing non-compliant resources."
+        },
+        {
+          "t": "Policy exemption",
+          "d": "Excludes a scope from an assignment as a waiver or mitigated, with optional expiry."
+        }
+      ],
+      "trap": "New assignments with deployIfNotExists don't fix existing resources automatically; you need a remediation task. And audit doesn't prevent anything.",
+      "example": "The platform team assigns 'Storage accounts should disable public network access' with deny at the Landing Zones management group and a DINE policy that sends Key Vault logs to the Sentinel workspace.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Management group",
+          "Initiative assignment",
+          "Policy definitions",
+          "Effects: deny / audit / DINE",
+          "Compliance + remediation"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.4.04",
+      "objective": "d2.4",
+      "seq": 4,
+      "title": "Validating regulatory alignment with Defender for Cloud",
+      "short": "Defender for Cloud's regulatory compliance dashboard measures Azure, AWS and GCP resources against standards. The Microsoft cloud security benchmark is applied by default; adding other standards needs a paid Defender plan, and custom standards need Defender CSPM. Manual attestation covers controls that can't be checked automatically.",
+      "deep": "**Regulatory compliance dashboard**\n- **Microsoft cloud security benchmark (MCSB)** is enabled automatically when Defender for Cloud is enabled on a subscription, and applies across Azure, AWS and GCP.\n- Connecting AWS also enables the **AWS Foundational Security Best Practices** standard; GCP enables the **GCP Default** benchmark.\n- Add standards such as **PCI DSS, ISO 27001, NIST SP 800-53, SOC 2, HIPAA/HITRUST**: requires at least one paid Defender plan (not Defender for Servers Plan 1 or Defender for APIs Plan 1). **Custom standards** require **Defender CSPM**.\n- Assigning a standard requires **Owner** or **Resource Policy Contributor** on the scope.\n\n**Reading results**\n- Each control shows **passing** (green), **failing** (red) or **not available** (grey: procedural, platform-owned or not automatically assessable).\n- Use **manual attestation** to add evidence for procedural controls.\n- Drill into failing assessments -> recommendations -> affected resources -> remediation (often a **Fix** or Azure Policy DINE).\n\n**Validate and report**\n- Download compliance reports, export continuously to Log Analytics or Event Hubs (continuous export), and use workbooks.\n- **Secure Score** tracks posture; the compliance dashboard tracks a standard. Neither proves certification by itself.\n- Map Defender for Cloud results into **Compliance Manager** for a single compliance view across Microsoft 365 and cloud.",
+      "terms": [
+        {
+          "t": "Regulatory compliance dashboard",
+          "d": "Defender for Cloud view of control status against chosen standards."
+        },
+        {
+          "t": "Manual attestation",
+          "d": "Recording evidence for controls that can't be assessed automatically."
+        },
+        {
+          "t": "Continuous export",
+          "d": "Streams Defender for Cloud alerts, recommendations and compliance data to Log Analytics or Event Hubs."
+        },
+        {
+          "t": "Secure Score",
+          "d": "Posture metric based on resolved security recommendations."
+        }
+      ],
+      "trap": "Free foundational CSPM gives MCSB only; to show PCI DSS or ISO 27001 you need a paid Defender plan, and custom standards need Defender CSPM.",
+      "example": "A fintech enables Defender CSPM, adds PCI DSS v4 to its payment subscriptions and AWS account, fixes failing network controls, and attests manually to its incident response procedures.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Standard assigned",
+          "Assessments",
+          "Pass / fail / manual",
+          "Recommendations",
+          "Remediate + report"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-100.d2.q050",
+      "lesson": "sc-100.d2.2.11",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Trey Research must store encryption keys for a payments platform. Regulators require that keys are held in a single-tenant HSM validated to FIPS 140-3 Level 3, and that Azure subscription owners and management group admins can't grant themselves access to the keys.",
+      "stem": "Which service should you recommend?",
+      "options": [
+        "Azure Key Vault Standard with access policies",
+        "Azure Key Vault Premium with HSM-backed keys",
+        "Azure Key Vault Managed HSM",
+        "Azure Storage with Microsoft-managed keys"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Managed HSM is single-tenant with its own security domain and local RBAC that higher Azure scopes can't override, on FIPS 140-3 Level 3 HSMs. Key Vault Premium is multitenant and governed by Azure RBAC, Standard uses software keys, and Microsoft-managed keys give the customer no custody."
+    },
+    {
+      "id": "sc-100.d2.q051",
+      "lesson": "sc-100.d2.2.11",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A storage account will use a customer-managed key from an existing vault. The vault must not allow soft-deleted keys to be permanently removed before the retention period ends. Complete the Azure CLI command.",
+      "code": "az keyvault update --name kv-payments-prod --resource-group rg-payments ____ true",
+      "options": [
+        "--enable-soft-delete",
+        "--enable-rbac-authorization",
+        "--enable-purge-protection",
+        "--enabled-for-disk-encryption"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Purge protection stops soft-deleted vaults and objects from being purged until retention expires, and CMK scenarios require it. Soft delete is already always on, RBAC authorization changes the access model, and enabled-for-disk-encryption lets Azure Disk Encryption retrieve secrets."
+    },
+    {
+      "id": "sc-100.d2.q052",
+      "lesson": "sc-100.d2.2.11",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are writing a design standard for Azure Key Vault across 40 applications. Which THREE practices should it include? Select THREE.",
+      "options": [
+        "Use a separate vault per application, environment and region",
+        "Use Azure RBAC for data-plane access, such as Key Vault Secrets User for apps",
+        "Disable public network access and use private endpoints",
+        "Use one shared vault for all applications to simplify access policies",
+        "Grant developers Key Vault Administrator in production for troubleshooting"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Separate vaults limit blast radius, Azure RBAC is the recommended model with least-privilege roles, and private endpoints remove public exposure. A single shared vault widens blast radius and access, and Key Vault Administrator for developers in production breaks least privilege."
+    },
+    {
+      "id": "sc-100.d2.q053",
+      "lesson": "sc-100.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In the enterprise access model, which plane should contain the Microsoft Entra Connect server, AD DS domain controllers and AD CS servers?",
+      "options": [
+        "Data/workload plane",
+        "Management plane",
+        "User access",
+        "Control plane"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Systems that control identity and access across the enterprise belong to the control plane (expanded Tier 0), because controlling them means controlling everything. The management plane is enterprise IT management, the workload plane holds apps and data, and user access is the former Tier 2 pathway."
+    },
+    {
+      "id": "sc-100.d2.q054",
+      "lesson": "sc-100.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Regional helpdesk staff in Germany must reset passwords only for German users. Today they hold User Administrator for the whole tenant. What should you recommend?",
+      "options": [
+        "Assign Global Reader tenant-wide",
+        "Create a separate Entra tenant for Germany",
+        "Assign Password Administrator tenant-wide with PIM",
+        "Create an administrative unit for German users and assign Helpdesk Administrator scoped to it"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Administrative units scope role assignments to a subset of objects, and Helpdesk Administrator is a smaller role than User Administrator. Global Reader can't reset passwords, a tenant-wide role (even through PIM) still covers every user, and a separate tenant is excessive."
+    },
+    {
+      "id": "sc-100.d2.q055",
+      "lesson": "sc-100.d2.3.01",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the enterprise access model, select Yes if true.",
+      "statements": [
+        {
+          "s": "The former Tier 1 is split into a management plane and a data/workload plane.",
+          "a": true
+        },
+        {
+          "s": "A data/workload plane administrator should be able to manage control plane systems to simplify operations.",
+          "a": false
+        },
+        {
+          "s": "Application (API) access is one of the access pathways the model protects.",
+          "a": true
+        }
+      ],
+      "explain": "Tier 1 splits into management and data/workload planes. Lower planes must never control higher ones, to prevent privilege escalation. The model covers user access, app (API) access and privileged access pathways."
+    },
+    {
+      "id": "sc-100.d2.q056",
+      "lesson": "sc-100.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Security Administrators must have no standing access, must activate for at most 4 hours, and must satisfy phishing-resistant MFA from a PAW at activation. Which PIM configuration meets this?",
+      "options": [
+        "Permanent active assignment with MFA required on active assignment",
+        "Eligible assignments, 4-hour maximum activation, and a required CA authentication context on activation",
+        "Eligible assignments with ticket information required and no MFA",
+        "Active assignments expiring after 4 hours, renewed daily by a script"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Eligible assignments remove standing access, maximum duration limits activation, and requiring an authentication context lets a CA policy enforce phishing-resistant MFA and a PAW device filter. Permanent active assignments keep standing access, ticket info alone isn't authentication, and scripted active assignments are standing privilege in disguise."
+    },
+    {
+      "id": "sc-100.d2.q057",
+      "lesson": "sc-100.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You are automating PIM so that a user becomes eligible (not active) for a Microsoft Entra role. Complete the Microsoft Graph PowerShell command.",
+      "code": "$params = @{ action = \"adminAssign\"; justification = \"Quarterly eligibility\"; roleDefinitionId = $roleId; directoryScopeId = \"/\"; principalId = $userId; scheduleInfo = @{ startDateTime = (Get-Date); expiration = @{ type = \"afterDuration\"; duration = \"P365D\" } } }\n____ -BodyParameter $params",
+      "options": [
+        "New-MgRoleManagementDirectoryRoleAssignmentScheduleRequest",
+        "New-MgRoleManagementDirectoryRoleEligibilityScheduleRequest",
+        "New-MgRoleManagementDirectoryRoleAssignment",
+        "New-MgDirectoryRoleMemberByRef"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Eligibility schedule requests create PIM eligible assignments. Assignment schedule requests create active assignments, New-MgRoleManagementDirectoryRoleAssignment creates a direct (standing) assignment, and adding a directory role member by reference is the legacy permanent-membership method."
+    },
+    {
+      "id": "sc-100.d2.q058",
+      "lesson": "sc-100.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Alpine Ski House needs just-in-time access for 30 engineers to a set of resources: Owner on two Azure subscriptions, membership of a group that grants admin access to a SaaS app, and the Exchange Administrator Entra role. All activations must require approval.",
+      "stem": "Which TWO PIM capabilities cover these requirements? Select TWO.",
+      "options": [
+        "PIM for Azure resources",
+        "PIM for Groups",
+        "Entitlement management catalogs only",
+        "Azure Lighthouse eligible authorizations",
+        "Conditional Access session controls"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "PIM for Azure resources handles subscription Owner, and PIM for Groups handles just-in-time group membership for the SaaS app; Entra roles such as Exchange Administrator use PIM for Entra roles directly, or can be granted through a role-assignable group under PIM for Groups. Catalogs don't provide time-bound activation, Lighthouse is cross-tenant, and session controls don't grant roles."
+    },
+    {
+      "id": "sc-100.d2.q059",
+      "lesson": "sc-100.d2.3.02",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the allowed range for the PIM 'Activation maximum duration' setting for a Microsoft Entra role?",
+      "options": [
+        "1 to 8 hours",
+        "15 minutes to 1 hour",
+        "1 to 24 hours",
+        "1 to 30 days"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "PIM lets you set activation maximum duration between 1 and 24 hours per role. Eligible and active assignment durations (which can be months or permanent) are separate settings from how long a single activation lasts."
+    },
+    {
+      "id": "sc-100.d2.q060",
+      "lesson": "sc-100.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Staff from a supplier, whose users sign in with their own Entra tenant, need to request access to a Teams team, a SharePoint site and an app together. Access must be approved by a sponsor and expire after 90 days. What should you recommend?",
+      "options": [
+        "Invite each supplier user as a B2B guest and add them to groups manually",
+        "Enable B2B direct connect with the supplier",
+        "Use a dynamic group based on the supplier's domain",
+        "Create an access package in entitlement management with the supplier as a connected organization"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "An access package bundles the team, site and app, with a policy for a connected organization, sponsor approval and 90-day expiry; guest accounts are created on approval. Manual invites lack expiry and approval workflow, direct connect suits Teams shared channels only, and dynamic groups don't require approval."
+    },
+    {
+      "id": "sc-100.d2.q061",
+      "lesson": "sc-100.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "Your tenant has Microsoft Entra ID P2 but not Microsoft Entra ID Governance. For each feature, select Yes if it is available.",
+      "statements": [
+        {
+          "s": "Basic entitlement management access packages with approval and expiration",
+          "a": true
+        },
+        {
+          "s": "Lifecycle workflows for joiner and leaver automation",
+          "a": false
+        },
+        {
+          "s": "Machine learning-assisted access review recommendations",
+          "a": false
+        }
+      ],
+      "explain": "Basic entitlement management is included in P2. Lifecycle workflows and machine learning-assisted access reviews are Entra ID Governance features; new IGA capabilities are added to Governance rather than P2."
+    },
+    {
+      "id": "sc-100.d2.q062",
+      "lesson": "sc-100.d2.3.03",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Bellows College wants new hires to receive a Temporary Access Pass on their first morning, be added to department groups automatically, and have licences and group memberships removed on their last day, without help desk tickets. HR data already flows into Entra ID.",
+      "stem": "Which capability should you recommend?",
+      "options": [
+        "Microsoft Entra ID Governance lifecycle workflows",
+        "Access reviews with auto-apply",
+        "PIM for Groups",
+        "Microsoft Entra Connect Sync scoping filters"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Lifecycle workflows run joiner/leaver tasks such as generating a TAP, adding groups and removing access on schedule from HR attributes. Access reviews periodically attest existing access, PIM for Groups gives just-in-time membership, and sync scoping decides which objects synchronize."
+    },
+    {
+      "id": "sc-100.d2.q063",
+      "lesson": "sc-100.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A red team cracked service account passwords offline after requesting Kerberos service tickets for accounts with SPNs. Which mitigation directly addresses this attack?",
+      "options": [
+        "Enable SMB signing on domain controllers",
+        "Reset the krbtgt account password twice",
+        "Replace the service accounts with group managed service accounts (gMSA)",
+        "Enable Windows LAPS on member servers"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "This is Kerberoasting; gMSAs have long, random, automatically rotated passwords that are infeasible to crack. SMB signing counters relay attacks, krbtgt resets counter Golden Tickets, and LAPS protects local administrator passwords rather than domain service accounts."
+    },
+    {
+      "id": "sc-100.d2.q064",
+      "lesson": "sc-100.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "After confirming a Golden Ticket attack, you must invalidate forged tickets. Put the krbtgt recovery steps in order.",
+      "options": [
+        "Contain the attacker's access to domain controllers and privileged accounts",
+        "Reset the krbtgt account password the first time",
+        "Wait for replication and the maximum ticket lifetime so legitimate tickets renew",
+        "Reset the krbtgt account password a second time"
+      ],
+      "explain": "Contain first so the attacker can't steal the new key. A first reset still leaves the previous key valid, so wait for replication and ticket renewal to avoid outages, then reset again so tickets signed with the old key are rejected."
+    },
+    {
+      "id": "sc-100.d2.q065",
+      "lesson": "sc-100.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "During an incident you need to retrieve the current Windows LAPS local administrator password that is backed up to AD DS for server SRV01. Complete the command.",
+      "code": "____ -Identity SRV01 -AsPlainText",
+      "options": [
+        "Get-LapsADPassword",
+        "Get-AdmPwdPassword",
+        "Get-LapsAADPassword",
+        "Reset-LapsPassword"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Get-LapsADPassword retrieves Windows LAPS passwords stored in AD DS. Get-AdmPwdPassword belongs to legacy Microsoft LAPS, Get-LapsAADPassword reads passwords backed up to Microsoft Entra ID, and Reset-LapsPassword rotates the password on the local device instead of reading it."
+    },
+    {
+      "id": "sc-100.d2.q066",
+      "lesson": "sc-100.d2.3.04",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO attacks against AD DS can Microsoft Defender for Identity detect? Select TWO.",
+      "options": [
+        "Suspected DCSync (malicious replication request)",
+        "Suspected Golden Ticket usage",
+        "Malicious OAuth app consent in Microsoft 365",
+        "Phishing email with a malicious attachment",
+        "Container image vulnerability"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Defender for Identity detects domain dominance attacks such as malicious replication (DCSync) and Golden Ticket activity. OAuth consent abuse is Defender for Cloud Apps app governance, phishing email is Defender for Office 365, and image vulnerabilities are Defender for Containers."
+    },
+    {
+      "id": "sc-100.d2.q067",
+      "lesson": "sc-100.d2.3.05",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your Global Administrators are on-premises AD DS accounts synced to Microsoft Entra ID. Why should you change this, and to what?",
+      "options": [
+        "Synced admins can't use MFA; convert them to guest accounts",
+        "An AD DS compromise could take over the cloud; use cloud-only accounts for Entra privileged roles",
+        "Synced accounts can't be assigned roles; use service principals",
+        "Synced accounts exceed licence limits; use shared admin accounts"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Microsoft recommends cloud-only accounts for privileged Entra roles so that an on-premises compromise can't pivot to the cloud through password or attribute changes. Synced accounts can use MFA and hold roles, guests are wrong for internal admins, and shared accounts destroy accountability."
+    },
+    {
+      "id": "sc-100.d2.q068",
+      "lesson": "sc-100.d2.3.05",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Lucerne Publishing outsources Microsoft 365 support to an MSP. Today the MSP has Global Administrator in Lucerne's tenant through a legacy delegated admin relationship. Lucerne wants least-privilege, time-bound partner access that it can review.",
+      "stem": "What should you recommend?",
+      "options": [
+        "Granular delegated admin privileges (GDAP) with specific roles and an end date",
+        "Invite MSP staff as B2B guests with Global Administrator",
+        "Azure Lighthouse delegation for Microsoft 365",
+        "Share an emergency access account with the MSP"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "GDAP gives partners only the Entra roles they need for a limited duration, replacing broad legacy DAP. Guests with Global Administrator keep excessive privilege, Lighthouse covers Azure resource management rather than Microsoft 365 roles, and sharing break-glass credentials defeats their purpose."
+    },
+    {
+      "id": "sc-100.d2.q069",
+      "lesson": "sc-100.d2.3.05",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about emergency access accounts in Microsoft Entra ID, select Yes if it reflects Microsoft guidance.",
+      "statements": [
+        {
+          "s": "Maintain at least two emergency access accounts.",
+          "a": true
+        },
+        {
+          "s": "Emergency access accounts should be synced from AD DS so they work if the cloud is unavailable.",
+          "a": false
+        },
+        {
+          "s": "Sign-ins by emergency access accounts should trigger alerts.",
+          "a": true
+        }
+      ],
+      "explain": "Microsoft recommends two or more cloud-only emergency access accounts with strong (for example FIDO2) authentication, excluded from most Conditional Access, and monitored so any use raises an alert. Syncing them from AD DS ties them to the on-premises environment they may need to bypass."
+    },
+    {
+      "id": "sc-100.d2.q070",
+      "lesson": "sc-100.d2.3.06",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "In 2026, a company running Azure, AWS and GCP wants Microsoft-native CIEM to find overprovisioned and inactive identities across all three clouds. What should you recommend?",
+      "options": [
+        "Purchase Microsoft Entra Permissions Management",
+        "Enable the Defender CSPM plan in Microsoft Defender for Cloud and connect AWS and GCP",
+        "Use Azure Policy initiatives on AWS accounts",
+        "Use Microsoft Entra access reviews for AWS IAM roles"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Entra Permissions Management was retired (support ended 1 October 2025); Microsoft points customers to Defender CSPM, which provides CIEM for Azure, AWS and GCP identities. Azure Policy doesn't evaluate AWS IAM natively, and access reviews cover Entra-integrated resources rather than AWS IAM permission usage."
+    },
+    {
+      "id": "sc-100.d2.q071",
+      "lesson": "sc-100.d2.3.06",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Defender CSPM shows that an AWS IAM role used by a build pipeline has AdministratorAccess but used only S3 and ECR actions in 90 days. The same role appears in an attack path from an internet-exposed EC2 instance.",
+      "stem": "Which TWO actions best reduce the risk? Select TWO.",
+      "options": [
+        "Replace AdministratorAccess with a policy scoped to the S3 and ECR actions actually used",
+        "Remove the role from the exposed EC2 instance or close the instance's internet exposure",
+        "Add the role to an Entra access review",
+        "Increase CloudTrail log retention",
+        "Enable Defender for Storage on the S3 buckets only"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Right-sizing to used permissions is the core CIEM remediation, and breaking the attack path (exposure or role attachment) removes the immediate route. Entra access reviews don't govern AWS IAM role permissions, longer retention aids investigation but not prevention, and Defender for Storage detects threats to data rather than shrinking the role."
+    },
+    {
+      "id": "sc-100.d2.q072",
+      "lesson": "sc-100.d2.3.07",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Auditors require that users denied in a quarterly access review of a finance app lose access automatically, and that non-responding reviewers don't leave access in place. Which settings should you configure?",
+      "options": [
+        "Enable reviewer decision helpers only",
+        "Enable auto-apply results and set 'If reviewers don't respond' to Remove access",
+        "Set recurrence to weekly",
+        "Use self-review with justification required"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Auto-apply enforces deny decisions when the review ends, and setting non-response to Remove access prevents unreviewed access from persisting. Decision helpers only advise reviewers, more frequent reviews don't enforce anything, and self-review lets users approve themselves."
+    },
+    {
+      "id": "sc-100.d2.q073",
+      "lesson": "sc-100.d2.3.07",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps for running a recurring guest access review of Microsoft Teams in order.",
+      "options": [
+        "Scope the review to guest users in Microsoft 365 groups and Teams",
+        "Choose reviewers, such as team owners, and set the recurrence",
+        "Configure completion settings: auto-apply results and the action for non-responses",
+        "Reviewers record approve or deny decisions during the review period",
+        "Results are applied and review history is kept as audit evidence"
+      ],
+      "explain": "Define scope first, then reviewers and schedule, then completion behaviour. Reviewers decide during the instance, and at the end results are applied (removing denied guests) with history retained for auditors."
+    },
+    {
+      "id": "sc-100.d2.q074",
+      "lesson": "sc-100.d2.3.07",
+      "objective": "d2.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Datum Corp wants a review that asks only about users who haven't signed in for 90 days, across all its Microsoft 365 groups, with machine-learning recommendations for reviewers. It currently holds Microsoft Entra ID P2.",
+      "stem": "What should you tell Datum?",
+      "options": [
+        "P2 already includes both capabilities",
+        "The review can only target Azure resource roles",
+        "Inactive-user-only scoping and ML-assisted recommendations require Microsoft Entra ID Governance",
+        "Datum must use Defender for Cloud Apps instead of access reviews"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Reviews scoped only to inactive users and machine-learning-assisted recommendations are Entra ID Governance capabilities; P2 includes core reviews and inactive-user decision helpers within reviews of all users. Access reviews do cover Microsoft 365 groups, and Defender for Cloud Apps doesn't run access attestations."
+    },
+    {
+      "id": "sc-100.d2.q075",
+      "lesson": "sc-100.d2.3.08",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE characteristics belong to Microsoft's privileged (PAW) device security profile? Select THREE.",
+      "options": [
+        "Email and general web browsing are blocked",
+        "Application control is enforced and apps are deployed only through Intune",
+        "Users have no local administrator rights",
+        "Personal devices can be enrolled to reduce hardware costs",
+        "Outlook is allowed so admins can receive alerts"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "PAWs block email and browsing, enforce application control with Intune-deployed apps, and remove local admin rights. BYOD isn't allowed for PAWs, and allowing Outlook would describe the specialized profile, not privileged."
+    },
+    {
+      "id": "sc-100.d2.q076",
+      "lesson": "sc-100.d2.3.08",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Global Administrators must be able to use their role only from PAWs, which are tagged with extensionAttribute1 = 'PAW' in Microsoft Entra ID. How should you enforce this?",
+      "options": [
+        "A named location for the admins' home IP addresses",
+        "An Intune compliance policy assigned to all devices",
+        "An access review of Global Administrators",
+        "A CA policy for directory roles blocking devices that don't match a device filter on extensionAttribute1"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A CA filter for devices can target or exclude devices by extensionAttribute values, so admins are blocked from any device that isn't a PAW. Home IPs don't identify devices, a general compliance policy would let any compliant laptop pass, and access reviews don't control device use."
+    },
+    {
+      "id": "sc-100.d2.q077",
+      "lesson": "sc-100.d2.3.09",
+      "objective": "d2.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You must stop exposing RDP and SSH on Azure VMs to the internet. Admins should connect over TLS from the Azure portal, VMs must have no public IPs, and sessions must be recorded. What should you recommend?",
+      "options": [
+        "Azure Bastion Premium",
+        "Just-in-time VM access only",
+        "Azure Firewall DNAT rules for port 3389",
+        "Azure Bastion Developer"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Azure Bastion brokers RDP/SSH over TLS 443 to VMs without public IPs, and the Premium SKU adds session recording. JIT still opens management ports to the requester's IP, Firewall DNAT publishes RDP to the internet, and the Developer SKU lacks advanced features like recording."
+    },
+    {
+      "id": "sc-100.d2.q078",
+      "lesson": "sc-100.d2.3.09",
+      "objective": "d2.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Defender for Cloud plan is needed to use just-in-time (JIT) VM access?",
+      "options": [
+        "Defender for Servers Plan 1",
+        "Foundational CSPM (free)",
+        "Defender for Servers Plan 2",
+        "Defender for Storage"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "JIT VM access is a Defender for Servers Plan 2 feature, alongside capabilities such as file integrity monitoring. Plan 1 focuses on Defender for Endpoint integration, foundational CSPM is posture only, and Defender for Storage protects storage accounts."
+    },
+    {
+      "id": "sc-100.d2.q079",
+      "lesson": "sc-100.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A regulation requires that customer data for EU citizens is stored only in EU regions. Which control best translates this requirement into an enforceable technical control in Azure?",
+      "options": [
+        "A Defender for Cloud Secure Score recommendation",
+        "An Azure Policy 'Allowed locations' assignment with deny effect at the EU management group",
+        "A sensitivity label named 'EU data'",
+        "A Compliance Manager improvement action assigned to the CISO"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Allowed locations with deny blocks resource creation outside the listed regions, which is testable and enforced. Secure Score recommendations and improvement actions track work but don't block anything, and a sensitivity label classifies content without restricting where Azure resources are deployed."
+    },
+    {
+      "id": "sc-100.d2.q080",
+      "lesson": "sc-100.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about compliance and the shared responsibility model, select Yes if true.",
+      "statements": [
+        {
+          "s": "Physical datacenter security is a Microsoft-managed control for Azure services.",
+          "a": true
+        },
+        {
+          "s": "Because Microsoft Azure holds ISO 27001 certification, a customer's workloads are automatically ISO 27001 compliant.",
+          "a": false
+        },
+        {
+          "s": "The Microsoft cloud security benchmark maps its controls to frameworks such as CIS, NIST and PCI DSS.",
+          "a": true
+        }
+      ],
+      "explain": "Microsoft manages physical security. Microsoft's certifications cover its responsibilities only; customer-managed controls must be implemented and evidenced. MCSB maps to CIS, NIST and PCI DSS to help translate requirements into controls."
+    },
+    {
+      "id": "sc-100.d2.q081",
+      "lesson": "sc-100.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "An insurer must meet three requirements: (1) all access to claims data is logged and kept for 7 years; (2) only claims staff can open claims documents, even if files are emailed externally; (3) databases use keys the insurer controls.",
+      "stem": "Which THREE controls map to these requirements? Select THREE.",
+      "options": [
+        "Purview Audit (Premium) with the 10-year retention add-on and a matching audit retention policy",
+        "Sensitivity labels with encryption restricting access to claims staff",
+        "Transparent data encryption with customer-managed keys in Key Vault",
+        "Azure DDoS Protection on the claims virtual network",
+        "Defender for Cloud Secure Score"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Long-term audit retention meets requirement 1, label-based encryption travels with the file for requirement 2, and TDE with customer-managed keys meets requirement 3. DDoS Protection addresses availability, and Secure Score measures posture; neither satisfies these specific obligations."
+    },
+    {
+      "id": "sc-100.d2.q082",
+      "lesson": "sc-100.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A compliance officer wants to track the organization's progress against ISO 27001, assign tasks to control owners, upload evidence, and see which controls Microsoft already manages. Which tool should you recommend?",
+      "options": [
+        "Microsoft Defender for Cloud Secure Score",
+        "Microsoft Purview eDiscovery (Premium)",
+        "Microsoft Purview Compliance Manager",
+        "Microsoft Service Trust Portal"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Compliance Manager provides ISO 27001 assessments with Microsoft-managed, customer-managed and shared controls, assignable improvement actions with evidence, and a compliance score. Secure Score tracks security posture, eDiscovery supports legal investigations, and the Service Trust Portal publishes Microsoft's own audit reports."
+    },
+    {
+      "id": "sc-100.d2.q083",
+      "lesson": "sc-100.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Financial records in SharePoint must be kept for 7 years, be unchangeable during that period, and require a reviewer's approval before deletion. Which Purview capability fits?",
+      "options": [
+        "A retention label that declares items as records with disposition review",
+        "A DLP policy for SharePoint",
+        "An Audit (Premium) retention policy",
+        "A sensitivity label with encryption"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Records management retention labels can retain content for 7 years, mark it as a record to lock edits and deletion, and require disposition review at the end. DLP prevents sharing, audit retention keeps activity logs rather than documents, and sensitivity labels protect confidentiality, not retention."
+    },
+    {
+      "id": "sc-100.d2.q084",
+      "lesson": "sc-100.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Purview Compliance Manager, select Yes if true.",
+      "statements": [
+        {
+          "s": "Assessments can be created from regulatory templates such as ISO 27001 or NIST.",
+          "a": true
+        },
+        {
+          "s": "A high compliance score certifies that the organization is compliant with a regulation.",
+          "a": false
+        },
+        {
+          "s": "Assessments include Microsoft-managed, customer-managed and shared controls.",
+          "a": true
+        }
+      ],
+      "explain": "Compliance Manager builds assessments from 360+ templates and categorises controls by responsibility. The compliance score measures progress on improvement actions; it doesn't replace an auditor's certification."
+    },
+    {
+      "id": "sc-100.d2.q085",
+      "lesson": "sc-100.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure Policy rule so that creation of storage accounts that allow public network access is blocked.",
+      "code": "\"policyRule\": {\n  \"if\": {\n    \"allOf\": [\n      { \"field\": \"type\", \"equals\": \"Microsoft.Storage/storageAccounts\" },\n      { \"field\": \"Microsoft.Storage/storageAccounts/publicNetworkAccess\", \"notEquals\": \"Disabled\" }\n    ]\n  },\n  \"then\": { \"effect\": ____ }\n}",
+      "options": [
+        "\"audit\"",
+        "\"deny\"",
+        "\"auditIfNotExists\"",
+        "\"disabled\""
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The deny effect blocks non-compliant create and update requests. Audit and auditIfNotExists only report non-compliance, and disabled turns the rule off."
+    },
+    {
+      "id": "sc-100.d2.q086",
+      "lesson": "sc-100.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso assigned a deployIfNotExists policy at the Landing Zones management group that configures diagnostic settings on Key Vaults to send logs to the central Sentinel workspace. New vaults comply, but 120 existing vaults still show as non-compliant a week later.",
+      "stem": "What should you do?",
+      "options": [
+        "Change the effect to deny",
+        "Create a policy exemption for the existing vaults",
+        "Reassign the policy at each subscription",
+        "Create a remediation task for the assignment, using its managed identity"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "DINE applies automatically only to new or updated resources; existing ones need a remediation task, which runs with the assignment's managed identity. Deny would block changes rather than fix vaults, an exemption hides the gap, and reassigning at lower scopes doesn't remediate existing resources."
+    },
+    {
+      "id": "sc-100.d2.q087",
+      "lesson": "sc-100.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A company uses only the free foundational CSPM capabilities of Defender for Cloud and wants to show PCI DSS v4 compliance in the regulatory compliance dashboard. What is required?",
+      "options": [
+        "Nothing; all standards are available for free",
+        "Enable at least one eligible paid Defender plan, such as Defender CSPM, and add the PCI DSS standard",
+        "Purchase Microsoft Purview Compliance Manager premium templates",
+        "Enable Defender for Servers Plan 1 only"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Only MCSB is shown by default; adding other regulatory standards requires a paid Defender plan (any except Defender for Servers Plan 1 or Defender for APIs Plan 1), and custom standards require Defender CSPM. Compliance Manager templates are a separate Purview tool."
+    },
+    {
+      "id": "sc-100.d2.q088",
+      "lesson": "sc-100.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the Defender for Cloud regulatory compliance dashboard, select Yes if true.",
+      "statements": [
+        {
+          "s": "Controls that can't be assessed automatically appear as not available and can be manually attested.",
+          "a": true
+        },
+        {
+          "s": "The Microsoft cloud security benchmark can assess AWS and GCP resources as well as Azure.",
+          "a": true
+        },
+        {
+          "s": "A fully green dashboard is equivalent to passing an external PCI DSS audit.",
+          "a": false
+        }
+      ],
+      "explain": "Procedural or platform-owned controls show as not available and can be attested manually. MCSB applies across Azure, AWS and GCP. The dashboard reflects automated assessments and attestations; it supports but does not replace an external audit."
+    },
+    {
+      "id": "sc-100.d2.q089",
+      "lesson": "sc-100.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Azure Policy effects require a managed identity on the policy assignment so that Azure Policy can change resources? ",
+      "options": [
+        "audit and deny",
+        "deployIfNotExists and modify",
+        "auditIfNotExists and disabled",
+        "append and manual"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "deployIfNotExists deploys related resources and modify changes properties such as tags, so both need a managed identity with suitable RBAC roles. Audit, deny, auditIfNotExists, disabled and manual don't change resources; append alters the request inline without needing an identity."
+    },
+    {
+      "id": "sc-100.d2.q090",
+      "lesson": "sc-100.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are designing Azure Policy governance for an Azure landing zone with 60 subscriptions. Which TWO practices should you recommend? Select TWO.",
+      "options": [
+        "Assign security initiatives at management group scope so new subscriptions inherit them",
+        "Roll out new guardrails with audit first, then switch to deny once impact is understood",
+        "Assign every policy separately at each resource group",
+        "Use permanent exemptions for any team that reports a failure",
+        "Disable the Microsoft cloud security benchmark initiative to reduce noise"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Management group assignment gives consistent inherited guardrails, and audit-then-deny avoids breaking deployments. Per-resource-group assignment doesn't scale, blanket permanent exemptions erode compliance (use time-bound waivers), and MCSB is the baseline that Defender for Cloud uses."
+    },
+    {
+      "id": "sc-100.d2.q091",
+      "lesson": "sc-100.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Margie's Travel is audited quarterly against ISO 27001. Auditors want a monthly history of control status from Defender for Cloud across Azure and AWS, kept in the central Log Analytics workspace so it can be charted and retained for two years.",
+      "stem": "What should you recommend?",
+      "options": [
+        "Download the PDF compliance report manually each month",
+        "Enable continuous export of regulatory compliance data to the Log Analytics workspace",
+        "Create a Compliance Manager assessment and export its score",
+        "Configure Purview Audit (Premium) for Defender for Cloud"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Continuous export streams regulatory compliance assessments (and recommendations and alerts) to Log Analytics, where they can be queried, charted in workbooks and retained. Manual PDFs aren't queryable history, Compliance Manager scores are a different data set, and Purview Audit records Microsoft 365 activity rather than Defender for Cloud control state."
+    },
+    {
+      "id": "sc-100.d2.q092",
+      "lesson": "sc-100.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company must find and classify personal data stored in Azure SQL databases, Azure Storage, on-premises SQL Server and Amazon S3, to support a GDPR records-of-processing requirement. Which Microsoft Purview capability should you use?",
+      "options": [
+        "Purview Data Map scanning with classification",
+        "Purview Communication Compliance",
+        "Purview Insider Risk Management",
+        "Purview eDiscovery (Standard)"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The Purview Data Map scans registered sources across Azure, on-premises and multicloud and applies classifications such as personal data types. Communication Compliance reviews messages for conduct, Insider Risk Management correlates risky user activity, and eDiscovery collects content for legal cases."
+    }
+  ]
+}

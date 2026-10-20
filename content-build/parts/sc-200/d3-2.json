@@ -1,0 +1,583 @@
+{
+  "exam": "sc-200",
+  "domain": "d3",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-200.d3.q045",
+      "lesson": "sc-200.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In Microsoft Sentinel hunting, a query shows N/A in the Results column. What does this indicate?",
+      "options": [
+        "The query returned zero rows",
+        "The query has no active data source connected",
+        "The query timed out",
+        "The query was disabled by an administrator"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "N/A means the data source the query needs isn't connected or active; hovering the info icon shows which sources are required. Zero results show as 0, and N/A doesn't indicate a timeout or a disabled query."
+    },
+    {
+      "id": "sc-200.d3.q046",
+      "lesson": "sc-200.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You want to quickly see which hunting queries have changed the most in the last day compared with the day before. Which column should you sort by?",
+      "options": [
+        "Results delta",
+        "Results",
+        "Techniques",
+        "Data source"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Results delta compares the last 24 hours with the previous 24 to 48 hours, highlighting spikes. Results is the absolute count, and Techniques and Data source describe the query rather than change over time."
+    },
+    {
+      "id": "sc-200.d3.q047",
+      "lesson": "sc-200.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You want to adjust the KQL of a built-in hunting query that was installed from a Content hub solution. What should you do?",
+      "options": [
+        "Select Edit and change the Query field",
+        "Delete the solution and recreate the query",
+        "Clone the query and edit the clone",
+        "Export the query to a workbook and edit it there"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Only queries from a custom content source can be edited; Content hub queries are cloned and the clone is modified. Deleting the solution or exporting to a workbook isn't the supported approach."
+    },
+    {
+      "id": "sc-200.d3.q048",
+      "lesson": "sc-200.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You need to create a custom hunting query in Microsoft Sentinel in the Defender portal. Put the steps in order.",
+      "options": [
+        "Go to Microsoft Sentinel > Threat management > Hunting",
+        "Select the Queries tab and then New query",
+        "Enter the name, description and KQL query",
+        "Configure entity mappings and MITRE ATT&CK tactics and techniques",
+        "Select Create"
+      ],
+      "explain": "Custom hunting queries are created from the Hunting page's Queries tab with New query; you fill in the query details, map entities and MITRE ATT&CK, then select Create."
+    },
+    {
+      "id": "sc-200.d3.q049",
+      "lesson": "sc-200.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Sentinel hunting queries, select Yes if true.",
+      "statements": [
+        {
+          "s": "Installing a Content hub solution can add hunting queries to the Queries tab.",
+          "a": true
+        },
+        {
+          "s": "Favourited hunting queries run automatically when the Hunting page is opened.",
+          "a": true
+        },
+        {
+          "s": "Hunting queries are written in a language different from the one used by analytics rules.",
+          "a": false
+        }
+      ],
+      "explain": "Solutions install out-of-the-box hunting queries, and favourites run automatically when the page opens. Hunting queries and analytics rules both use KQL."
+    },
+    {
+      "id": "sc-200.d3.q050",
+      "lesson": "sc-200.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "During weekly hunting, an analyst at Northwind finds that a custom hunting query for suspicious service creation reliably finds real attacks with few false positives. The SOC wants this logic to raise incidents automatically every hour, with the same entity mappings.",
+      "stem": "What should the analyst do?",
+      "options": [
+        "Add the query to a hunt and set its status to Active",
+        "Bookmark the results and create an incident",
+        "Start a livestream session for the query",
+        "Right-click the query and select Create analytics rule"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Create analytics rule turns the hunting query into a scheduled rule that generates alerts and incidents. A hunt only tracks investigation, a bookmark handles one set of results, and livestream is no longer available in Sentinel."
+    },
+    {
+      "id": "sc-200.d3.q051",
+      "lesson": "sc-200.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You are writing a Sentinel hunting query for accounts with many failed Microsoft Entra sign-ins. Complete the time filter for the Sentinel table.",
+      "code": "SigninLogs\n| where ____ > ago(1d)\n| where ResultType != '0'\n| summarize Failures = count() by UserPrincipalName, IPAddress\n| where Failures > 20",
+      "options": [
+        "Timestamp",
+        "TimeGenerated",
+        "EventTime",
+        "_BinStartTime"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Sentinel (Log Analytics) tables such as SigninLogs use TimeGenerated. Timestamp is the Defender XDR advanced hunting column, EventTime isn't a SigninLogs column, and _BinStartTime appears only in summary rule output."
+    },
+    {
+      "id": "sc-200.d3.q052",
+      "lesson": "sc-200.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In which Log Analytics table are Microsoft Sentinel hunting bookmarks stored?",
+      "options": [
+        "SecurityIncident",
+        "HuntingBookmark",
+        "SecurityAlert",
+        "Watchlist"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Bookmarks are written to the HuntingBookmark table. SecurityIncident and SecurityAlert hold incidents and alerts, and Watchlist holds watchlist items."
+    },
+    {
+      "id": "sc-200.d3.q053",
+      "lesson": "sc-200.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE items does a Microsoft Sentinel bookmark preserve or let you add? Select THREE.",
+      "options": [
+        "The query that produced the rows",
+        "Entity mappings and MITRE ATT&CK tactics",
+        "An automatic isolation action for mapped hosts",
+        "The time range of the results",
+        "A scheduled rerun every hour"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "explain": "A bookmark keeps the rows, the originating query and the time range, and you can add entities, MITRE mappings, tags and notes. Bookmarks don't isolate hosts or schedule reruns; use analytics rules, KQL jobs or playbooks for that."
+    },
+    {
+      "id": "sc-200.d3.q054",
+      "lesson": "sc-200.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about hunts in Microsoft Sentinel, select Yes if true.",
+      "statements": [
+        {
+          "s": "Queries added to a hunt are cloned, so editing them doesn't change the original workspace queries.",
+          "a": true
+        },
+        {
+          "s": "Each hunt has Queries, Bookmarks and Entities tabs.",
+          "a": true
+        },
+        {
+          "s": "Bookmarks can be created from Microsoft Defender XDR advanced hunting results.",
+          "a": false
+        }
+      ],
+      "explain": "Hunts use independent clones and have Queries, Bookmarks and Entities tabs. Bookmarks are a Sentinel hunting feature and aren't available in Defender advanced hunting; alternatives there include saved queries and incident tags."
+    },
+    {
+      "id": "sc-200.d3.q055",
+      "lesson": "sc-200.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A SOC lead used to keep a Microsoft Sentinel livestream open to watch for a newly disclosed exploit pattern and wants equivalent continuous monitoring, with results that persist and notifications sent to a Teams channel. Livestream is no longer available in the tenant.",
+      "stem": "Which approach best replaces the livestream?",
+      "options": [
+        "Bookmark the current results and add them to a hunt",
+        "Pin the hunting query as a favourite",
+        "Create a near-real-time analytics rule from the query and attach a playbook that posts to Teams",
+        "Create a workbook tile that runs the query"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Microsoft recommends analytics rules (or KQL jobs) with playbooks as livestream replacements, giving persistent results and messaging integration. Bookmarks and favourites don't monitor continuously, and a workbook tile only runs when someone views it."
+    },
+    {
+      "id": "sc-200.d3.q056",
+      "lesson": "sc-200.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are running a hypothesis-driven hunt in Microsoft Sentinel. Put the steps in order.",
+      "options": [
+        "Create a new hunt and record the hypothesis",
+        "Add and run relevant hunting queries in the hunt",
+        "Bookmark suspicious result rows",
+        "Create an incident from the bookmarks",
+        "Set the hypothesis state and hunt status when finished"
+      ],
+      "explain": "A hunt starts with a hypothesis, then runs queries, captures evidence as bookmarks, escalates real findings to incidents, and closes by recording whether the hypothesis was validated."
+    },
+    {
+      "id": "sc-200.d3.q057",
+      "lesson": "sc-200.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A KQL job writes its results to a new table in the analytics tier named IOCMatches. What is the full name of the created table?",
+      "options": [
+        "IOCMatches_CL",
+        "IOCMatches_KQL_CL",
+        "IOCMatches_SPRK_CL",
+        "IOCMatches_KQL"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "New analytics-tier tables from KQL jobs get the _KQL_CL suffix; _KQL is used for data lake tier tables. _SPRK_CL is for notebook output and plain _CL for summary rules and custom logs."
+    },
+    {
+      "id": "sc-200.d3.q058",
+      "lesson": "sc-200.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO functions are NOT supported in Microsoft Sentinel data lake KQL jobs? Select TWO.",
+      "options": [
+        "externaldata()",
+        "ago()",
+        "ingestion_time()",
+        "bin()",
+        "summarize"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "KQL jobs don't support externaldata(), ingestion_time(), adx(), arg() or user-defined functions. ago(), bin() and summarize are standard KQL and are supported."
+    },
+    {
+      "id": "sc-200.d3.q059",
+      "lesson": "sc-200.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "A scheduled KQL job runs every 15 minutes. Because lake data can take up to 15 minutes to become queryable, you offset the window. Complete the query.",
+      "code": "let lookback = 15m;\nlet delay = 15m;\nlet endTime = ____ - delay;\nlet startTime = endTime - lookback;\nCommonSecurityLog\n| where TimeGenerated between (startTime .. endTime)\n| summarize Events = count() by SourceIP, DestinationIP",
+      "options": [
+        "ago(15m)",
+        "now()",
+        "ingestion_time()",
+        "startofday(now())"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "now() minus the delay sets the window end 15 minutes in the past. ago(15m) would double the delay, ingestion_time() isn't supported in KQL jobs and isn't a scalar for the current time, and startofday() would fix the window to midnight."
+    },
+    {
+      "id": "sc-200.d3.q060",
+      "lesson": "sc-200.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about KQL jobs, select Yes if true.",
+      "statements": [
+        {
+          "s": "When more than five KQL jobs try to run at the same time in a tenant, the extra runs are queued until a slot frees.",
+          "a": false
+        },
+        {
+          "s": "A KQL job can append results to an existing analytics-tier table only if the schema matches.",
+          "a": true
+        },
+        {
+          "s": "A scheduled KQL job's start time must be at least 30 minutes after it is created or edited.",
+          "a": true
+        }
+      ],
+      "explain": "The limit is 5 concurrent executions per tenant and excess requests are rejected, not queued. Appending requires a matching schema, and scheduled jobs must start at least 30 minutes after creation or editing."
+    },
+    {
+      "id": "sc-200.d3.q061",
+      "lesson": "sc-200.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Litware keeps two years of firewall logs in the Microsoft Sentinel data lake tier only. Each morning the threat intelligence team publishes new indicators. The SOC wants every new indicator checked against the last 90 days of firewall logs, with matches written to a table that an analytics rule can alert on.",
+      "stem": "What should you create?",
+      "options": [
+        "A summary rule on the firewall table",
+        "A custom detection rule in advanced hunting",
+        "A scheduled Microsoft Sentinel hunting query marked as a favourite",
+        "A daily scheduled KQL job that writes matches to an analytics-tier table"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "KQL jobs query long history in the data lake and promote results to analytics-tier tables for analytics rules. Summary rules only process recent bins, custom detections can't read lake-only data, and favouriting a hunting query doesn't schedule it or persist results."
+    },
+    {
+      "id": "sc-200.d3.q062",
+      "lesson": "sc-200.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which table plan does a Microsoft Sentinel summary rule's destination table use?",
+      "options": [
+        "Analytics",
+        "Basic",
+        "Auxiliary",
+        "Data lake only"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Summary rule results land in a custom _CL table on the Analytics plan, so they are fast to query and alert on. The source data, by contrast, can be on Basic or Auxiliary plans."
+    },
+    {
+      "id": "sc-200.d3.q063",
+      "lesson": "sc-200.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You are writing the KQL for a new summary rule with an hourly bin size. A colleague adds `| where TimeGenerated > ago(1h)` to the query. What should you do?",
+      "options": [
+        "Keep it, because summary rules process the whole table without it",
+        "Remove it, because the bin size already defines the time range",
+        "Change it to ago(24h) to cover the maximum delay",
+        "Replace it with ingestion_time() > ago(1h)"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Summary rule queries shouldn't contain a time filter; each run operates over the window defined by the bin size. Adding ago() filters or ingestion_time() conflicts with the bin logic."
+    },
+    {
+      "id": "sc-200.d3.q064",
+      "lesson": "sc-200.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A summary rule wrote aggregated connection counts to NetSummary_CL. Complete the hunting query so it filters by the start of each aggregation bin.",
+      "code": "NetSummary_CL\n| where ____ > ago(7d)\n| where DestinationIP == '203.0.113.50'\n| project _BinStartTime, SourceIP, DestinationIP, Connections",
+      "options": [
+        "Timestamp",
+        "_TimeReceived",
+        "_BinStartTime",
+        "ingestion_time()"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Summary rule output includes _BinStartTime, the start of the aggregation interval, along with _BinSize and _RuleName. Timestamp is a Defender XDR column, and _TimeReceived and ingestion_time() reflect pipeline timing rather than the bin."
+    },
+    {
+      "id": "sc-200.d3.q065",
+      "lesson": "sc-200.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about summary rules, select Yes if true.",
+      "statements": [
+        {
+          "s": "A summary rule can use a bin size of 24 hours (1440 minutes).",
+          "a": true
+        },
+        {
+          "s": "A summary rule can reprocess the previous 90 days of data when it is first created.",
+          "a": false
+        },
+        {
+          "s": "Creating summary rules requires the Microsoft Sentinel Contributor role.",
+          "a": true
+        }
+      ],
+      "explain": "Bin sizes range from 20 to 1440 minutes. Summary rules don't allow historical time ranges; they process recent data only (a KQL job suits backfill). Microsoft Sentinel Contributor is required."
+    },
+    {
+      "id": "sc-200.d3.q066",
+      "lesson": "sc-200.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Adatum ingests about 4 TB per day of proxy logs and stores them on the Auxiliary plan to save cost. Analysts need fast hourly per-user request counts for hunting, and an analytics rule must alert when a user's hourly count exceeds a threshold. Queries on the raw table are slow and incur scan charges.",
+      "stem": "What should you implement?",
+      "options": [
+        "A summary rule with a 60-minute bin size writing to a custom _CL table",
+        "A hunting query marked as a favourite on the raw table",
+        "A KQL job that runs once against the last 12 years of data",
+        "An NRT custom detection rule on the raw table"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A summary rule aggregates the Auxiliary data each hour into a small Analytics table that hunts and analytics rules query quickly and cheaply. Favourites still scan the raw table, a one-time KQL job doesn't keep up hourly, and an NRT detection gives alerts but no aggregated table for hunting."
+    },
+    {
+      "id": "sc-200.d3.q067",
+      "lesson": "sc-200.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "In a Microsoft Sentinel data lake notebook, complete the code that loads a table into a Spark DataFrame.",
+      "code": "from sentinel_lake.providers import MicrosoftSentinelProvider\ndata_provider = MicrosoftSentinelProvider(spark)\ndf = data_provider.____('SigninLogs', 'ContosoWorkspace')",
+      "options": [
+        "read_table",
+        "load_table",
+        "query_lake",
+        "list_tables"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "read_table(table_name, database_name) returns a Spark DataFrame. load_table isn't a provider method, query_lake is a Sentinel MCP tool, and list_tables returns table names rather than data."
+    },
+    {
+      "id": "sc-200.d3.q068",
+      "lesson": "sc-200.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A notebook must append scored results to a new analytics-tier table. Which table name is valid for save_as_table?",
+      "options": [
+        "RiskySignins_CL",
+        "RiskySignins_KQL_CL",
+        "RiskySignins_SPRK",
+        "RiskySignins_SPRK_CL"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Notebook writes to the analytics tier use the _SPRK_CL suffix; _SPRK is for the data lake tier. _KQL_CL is for KQL jobs, and plain _CL is for summary rules and custom logs."
+    },
+    {
+      "id": "sc-200.d3.q069",
+      "lesson": "sc-200.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": null,
+      "stem": "You are planning notebook-based hunting on the Microsoft Sentinel data lake. Which TWO statements are true? Select TWO.",
+      "options": [
+        "The overwrite write mode is supported only for data lake tier tables.",
+        "You can pip install any Python package into the Spark session.",
+        "Notebooks run in Visual Studio Code with the Microsoft Sentinel extension on a Small, Medium or Large pool.",
+        "Notebook jobs have no timeout and unlimited concurrency.",
+        "delete_table can remove analytics-tier _SPRK_CL tables."
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "overwrite works only in the lake tier (analytics supports append), and notebooks run in VS Code with the Sentinel extension on a chosen pool size. Custom pip installs aren't supported, notebook jobs time out after 8 hours with 3 running at once, and delete_table removes lake _SPRK tables only."
+    },
+    {
+      "id": "sc-200.d3.q070",
+      "lesson": "sc-200.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You need to connect Visual Studio Code to the Microsoft Sentinel MCP server data exploration tools. Put the steps in order.",
+      "options": [
+        "Run MCP: Add Server from the command palette",
+        "Select HTTP as the transport type",
+        "Enter the data exploration collection URL and a server ID",
+        "Sign in with an account that has at least Security Reader",
+        "Open Chat in Agent mode and confirm the tools under Configure Tools"
+      ],
+      "explain": "You add the server from the command palette, choose HTTP, paste the collection URL and name it, authenticate with at least Security Reader, then verify the tools in agent mode chat."
+    },
+    {
+      "id": "sc-200.d3.q071",
+      "lesson": "sc-200.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An AI agent connected to the Microsoft Sentinel MCP server needs a workspace ID before running other tools. Which tool should it call first?",
+      "options": [
+        "search_tables",
+        "query_lake",
+        "list_sentinel_workspaces",
+        "get_entity_analysis"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "list_sentinel_workspaces returns the workspace name and ID pairs you can access and is meant to run first. search_tables finds relevant tables, query_lake runs KQL, and get_entity_analysis retrieves an entity analysis result."
+    },
+    {
+      "id": "sc-200.d3.q072",
+      "lesson": "sc-200.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An analyst connected GitHub Copilot in VS Code to the Sentinel MCP data exploration collection with a Security Reader account. search_tables and query_lake work, but every call to analyze_user_entity fails with a permissions error.",
+      "stem": "Which additional role should the analyst be assigned?",
+      "options": [
+        "Microsoft Sentinel Contributor",
+        "Security Copilot Contributor",
+        "Log Analytics Contributor",
+        "Security Administrator"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Entity analyzer tools consume Security Compute Units, so they require the Security Copilot Contributor role. Sentinel Contributor and Log Analytics Contributor govern workspace content, and Security Administrator isn't the documented requirement for the analyzers."
+    },
+    {
+      "id": "sc-200.d3.q073",
+      "lesson": "sc-200.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Sentinel MCP data exploration tool runs a KQL query against data in the Sentinel data lake?",
+      "options": [
+        "search_tables",
+        "query_lake",
+        "find_nodes",
+        "analyze_url_entity"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "query_lake runs a single KQL query against a data lake workspace and returns the results. search_tables finds tables and schemas, find_nodes searches graph nodes, and analyze_url_entity runs an AI analysis of a URL."
+    }
+  ]
+}

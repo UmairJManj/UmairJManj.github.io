@@ -1,0 +1,503 @@
+{
+  "id": "governance",
+  "name": "AI & Security Governance Frameworks",
+  "code": "GOV",
+  "issuer": "Frameworks",
+  "outlineVersion": "Compiled 21 Oct 2026 from current official framework publications (AI RMF 1.0 Jan 2023; NIST AI 600-1 Jul 2024; ISO/IEC 42001:2023; ISO/IEC 27001:2022 + Amd 1:2024; NIST CSF 2.0 Feb 2024; EU AI Act as amended by the 2026 Digital Omnibus; NZ Privacy Act 2020 as amended 2025; HIPC 2020 as amended)",
+  "sourceUrl": "https://www.nist.gov/itl/ai-risk-management-framework",
+  "exam": {
+    "minutes": null,
+    "passMark": null,
+    "questionCount": null,
+    "notes": null
+  },
+  "domains": [
+    {
+      "id": "d1",
+      "name": "NIST AI Risk Management Framework 1.0 and Generative AI Profile (NIST AI 100-1, AI 600-1)",
+      "weight": "16.7% (equal split)",
+      "objectives": [
+        {
+          "id": "d1.1",
+          "name": "Framework foundations and trustworthy AI",
+          "bullets": [
+            "AI RMF 1.0 (NIST AI 100-1) published 26 Jan 2023; voluntary, rights-preserving, sector- and use-case-agnostic",
+            "Part 1 frames AI risk: harms to people, organizations and ecosystems; challenges of measurement, risk tolerance, prioritization and organizational integration",
+            "Seven trustworthy AI characteristics: valid and reliable (the base); safe; secure and resilient; accountable and transparent (spans the others); explainable and interpretable; privacy-enhanced; fair with harmful bias managed",
+            "Trade-offs between characteristics are expected and must be balanced in context",
+            "AI actors across the lifecycle (design, development, deployment, operation, evaluation) and the role of test, evaluation, verification and validation (TEVV)",
+            "Part 2 is the Core: four functions broken into categories and subcategories; Profiles (use-case, temporal current/target, cross-sectoral) tailor the Core",
+            "Companion AI RMF Playbook offers suggested actions per subcategory; NIST states the RMF is being revised under the US AI Action Plan"
+          ]
+        },
+        {
+          "id": "d1.2",
+          "name": "GOVERN function (GOVERN 1-6)",
+          "bullets": [
+            "GOVERN is cross-cutting and informs and is infused through the other three functions",
+            "GV 1: policies, processes and procedures for AI risk are in place, transparent and implemented (incl. legal requirements, risk tolerance, inventory, decommissioning)",
+            "GV 2: accountability structures so the right teams are empowered, responsible and trained; executive leadership owns AI risk decisions",
+            "GV 3: workforce diversity, equity, inclusion and accessibility prioritized; roles for human-AI oversight defined",
+            "GV 4: organizational culture that considers and communicates AI risk (critical thinking, safety-first mindset, documentation, incident sharing)",
+            "GV 5: robust engagement with relevant AI actors and external feedback, integrated into design",
+            "GV 6: policies and procedures for third-party software, data and supply-chain risks, including contingency for third-party failures"
+          ]
+        },
+        {
+          "id": "d1.3",
+          "name": "MAP function (MAP 1-5)",
+          "bullets": [
+            "MAP establishes context to frame risks; its outcomes are the basis for MEASURE and MANAGE and a go/no-go decision",
+            "MAP 1: context established and understood (intended purpose, settings, laws, norms, deployment expectations, risk tolerances)",
+            "MAP 2: categorization of the AI system (tasks, methods, knowledge limits, TEVV considerations)",
+            "MAP 3: capabilities, targeted usage, goals and expected benefits and costs understood against benchmarks; human oversight processes defined",
+            "MAP 4: risks and benefits mapped for all components, including third-party software and data and IP issues",
+            "MAP 5: likelihood and magnitude of impacts on individuals, groups, communities, organizations and society characterized"
+          ]
+        },
+        {
+          "id": "d1.4",
+          "name": "MEASURE function (MEASURE 1-4)",
+          "bullets": [
+            "MEASURE uses quantitative, qualitative or mixed tools to analyze, assess, benchmark and monitor AI risk",
+            "MS 1: appropriate methods and metrics identified and applied, starting with the most significant risks; independent assessors involved",
+            "MS 2: systems evaluated for each trustworthy characteristic (validity, safety, security/resilience, transparency, explainability, privacy, fairness, environmental impact)",
+            "MS 3: mechanisms for tracking identified risks over time, including emergent and hard-to-measure risks",
+            "MS 4: feedback about efficacy of measurement gathered and assessed, including from end users and affected communities"
+          ]
+        },
+        {
+          "id": "d1.5",
+          "name": "MANAGE function (MANAGE 1-4)",
+          "bullets": [
+            "MANAGE allocates resources to mapped and measured risks on a regular basis",
+            "MG 1: risks prioritized and responded to; decision whether development or deployment should proceed; response options (mitigate, transfer, avoid, accept)",
+            "MG 2: strategies to maximize benefits and minimize negative impacts, including mechanisms to supersede, disengage or deactivate systems",
+            "MG 3: risks and benefits from third-party entities managed, including pre-trained models monitored",
+            "MG 4: risk treatments, response and recovery, and communication plans documented and monitored; post-deployment monitoring and incident communication"
+          ]
+        },
+        {
+          "id": "d1.6",
+          "name": "Generative AI Profile (NIST AI 600-1)",
+          "bullets": [
+            "Published 26 July 2024 as a cross-sectoral profile of the AI RMF for generative AI, from the US AI executive order mandate",
+            "Twelve GAI risks: CBRN information or capabilities; confabulation; dangerous, violent or hateful content; data privacy; environmental impacts; harmful bias or homogenization",
+            "...human-AI configuration; information integrity; information security; intellectual property; obscene, degrading and/or abusive content; value chain and component integration",
+            "Risks are framed by lifecycle stage, scope (model, application, ecosystem) and source (design, misuse, emergent)",
+            "Suggested actions are mapped to AI RMF subcategories with action IDs (e.g., GV-1.1-001)",
+            "Key primary considerations: governance, pre-deployment testing (incl. red-teaming), content provenance, and incident disclosure",
+            "Information security risk includes prompt injection, data poisoning and lowered barriers to offensive cyber operations"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "name": "ISO/IEC 42001:2023 AI Management System",
+      "weight": "16.7% (equal split)",
+      "objectives": [
+        {
+          "id": "d2.1",
+          "name": "Purpose and structure of an AIMS",
+          "bullets": [
+            "First certifiable international management system standard for AI, published December 2023",
+            "Applies to any organization providing, developing or using AI systems; scaled to role (provider, producer, user, partner)",
+            "Uses the ISO Harmonized Structure, so clauses 4-10 align with ISO/IEC 27001 and ISO 9001 for integrated management systems",
+            "Clauses 1-3 are scope, normative references (ISO/IEC 22989 terminology) and terms; clauses 4-10 contain auditable requirements",
+            "Plan-Do-Check-Act continual improvement cycle underpins the AIMS"
+          ]
+        },
+        {
+          "id": "d2.2",
+          "name": "Clauses 4-7: context, leadership, planning, support",
+          "bullets": [
+            "Clause 4: understand internal and external issues, interested parties' needs, AIMS scope, and the organization's AI roles; consider climate change relevance (2024 amendment to HS standards)",
+            "Clause 5: top management commitment, an AI policy, and assigned roles, responsibilities and authorities",
+            "Clause 6: actions to address risks and opportunities; AI risk criteria; AI risk assessment; AI risk treatment producing a Statement of Applicability; AI system impact assessment; AI objectives and planning of changes",
+            "Clause 7: resources, competence, awareness, communication and documented information"
+          ]
+        },
+        {
+          "id": "d2.3",
+          "name": "Clauses 8-10: operation, evaluation, improvement",
+          "bullets": [
+            "Clause 8: operational planning and control; perform AI risk assessments, risk treatment and AI system impact assessments at planned intervals or on significant change",
+            "Clause 9: monitoring, measurement, analysis and evaluation; internal audit programme; management review",
+            "Clause 10: continual improvement; nonconformity handling and corrective action",
+            "Documented information must be retained as evidence for certification audits"
+          ]
+        },
+        {
+          "id": "d2.4",
+          "name": "Annex A control areas (A.2-A.10) and other annexes",
+          "bullets": [
+            "Annex A is normative: 38 reference controls across 9 objective areas; exclusions must be justified in the SoA",
+            "A.2 AI-related policies; A.3 internal organization (roles, reporting concerns); A.4 resources for AI systems (data, tooling, compute, people)",
+            "A.5 assessing impacts of AI systems; A.6 AI system life cycle (objectives, design, verification and validation, deployment, operation, technical documentation, event logs)",
+            "A.7 data for AI systems (acquisition, quality, provenance, preparation); A.8 information for interested parties (user info, incident reporting, external reporting)",
+            "A.9 use of AI systems (responsible use processes, objectives, intended use); A.10 third-party and customer relationships (supplier responsibilities)",
+            "Annex B gives implementation guidance per control; Annex C lists potential organizational AI objectives and risk sources; Annex D covers use across domains and sectors"
+          ]
+        },
+        {
+          "id": "d2.5",
+          "name": "AI system impact assessment",
+          "bullets": [
+            "Distinct from organizational risk assessment: focuses on consequences for individuals, groups and societies from development, provision or use of AI",
+            "Considers intended use and foreseeable misuse, technical and societal context, and jurisdictions of deployment",
+            "Results are documented, retained and can feed into risk treatment and communication to interested parties",
+            "Supporting standards: ISO/IEC 42005 (impact assessment guidance), ISO/IEC 23894 (AI risk management guidance), ISO/IEC 42006 (requirements for certification bodies)",
+            "Typical impact areas: fairness, accountability, transparency, privacy, safety, human rights, environment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "name": "ISO/IEC 27001:2022 Information Security Management System",
+      "weight": "16.7% (equal split)",
+      "objectives": [
+        {
+          "id": "d3.1",
+          "name": "ISMS fundamentals and certification",
+          "bullets": [
+            "Specifies requirements to establish, implement, maintain and continually improve an ISMS preserving confidentiality, integrity and availability",
+            "Third edition published October 2022; Amendment 1:2024 added climate change considerations to clauses 4.1 and 4.2",
+            "Transition from the 2013 edition ended 31 October 2025",
+            "ISO/IEC 27002:2022 provides guidance for each Annex A control; 27005 gives risk management guidance",
+            "Certification via accredited body: stage 1 (documentation) and stage 2 (implementation) audits, surveillance audits, three-year recertification"
+          ]
+        },
+        {
+          "id": "d3.2",
+          "name": "Clauses 4-10 requirements",
+          "bullets": [
+            "Clause 4 context: issues, interested parties, ISMS scope and boundaries",
+            "Clause 5 leadership: commitment, information security policy, roles and authorities",
+            "Clause 6 planning: risk assessment (6.1.2) and risk treatment (6.1.3), security objectives, planning of changes",
+            "Clause 7 support: resources, competence, awareness, communication, documented information",
+            "Clause 8 operation: operational planning and control, perform risk assessments and implement the risk treatment plan",
+            "Clause 9 performance evaluation: monitoring and measurement, internal audit, management review",
+            "Clause 10 improvement: continual improvement, nonconformity and corrective action"
+          ]
+        },
+        {
+          "id": "d3.3",
+          "name": "Risk assessment and treatment",
+          "bullets": [
+            "Define risk acceptance criteria and criteria for performing assessments that yield consistent, valid, comparable results",
+            "Identify risks to CIA, assign risk owners, analyze likelihood and consequences, evaluate against criteria",
+            "Treatment options: modify (apply controls), retain/accept, avoid, share/transfer",
+            "Determine necessary controls and compare them with Annex A to confirm none are overlooked",
+            "Produce a risk treatment plan and obtain risk owners' approval and acceptance of residual risk"
+          ]
+        },
+        {
+          "id": "d3.4",
+          "name": "Statement of Applicability (SoA)",
+          "bullets": [
+            "Mandatory document listing necessary controls, justification for inclusion, whether implemented, and justification for excluding any Annex A control",
+            "Central artifact reviewed by auditors; links risk treatment decisions to controls",
+            "Controls may come from Annex A or other sources (e.g., sector frameworks)"
+          ]
+        },
+        {
+          "id": "d3.5",
+          "name": "Annex A: 93 controls in 4 themes",
+          "bullets": [
+            "Clause 5 organizational controls: 37 (policies, roles, threat intelligence, asset inventory, supplier and cloud security, incident management, legal compliance)",
+            "Clause 6 people controls: 8 (screening, terms of employment, awareness training, disciplinary process, remote working, event reporting)",
+            "Clause 7 physical controls: 14 (perimeters, entry, physical security monitoring, clear desk, equipment, storage media)",
+            "Clause 8 technological controls: 34 (endpoints, privileged access, authentication, malware, vulnerability management, logging, secure development, cryptography)",
+            "2022 edition consolidated 114 controls into 93 and added 11 new ones, e.g., threat intelligence, cloud services security, ICT readiness for business continuity, physical security monitoring, configuration management, information deletion, data masking, data leakage prevention, monitoring activities, web filtering, secure coding",
+            "Controls carry attributes: control type, security properties, cybersecurity concepts, operational capabilities and security domains"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d4",
+      "name": "NIST Cybersecurity Framework (CSF) 2.0",
+      "weight": "16.7% (equal split)",
+      "objectives": [
+        {
+          "id": "d4.1",
+          "name": "CSF 2.0 overview and structure",
+          "bullets": [
+            "Released 26 February 2024; scope broadened from critical infrastructure to all organizations",
+            "Components: CSF Core (functions, categories, subcategories), Organizational Profiles (current and target), and Tiers",
+            "Core has 6 functions, 22 categories and 106 subcategories; Informative References and Implementation Examples are online",
+            "Tiers 1-4 (Partial, Risk Informed, Repeatable, Adaptive) describe rigor of cybersecurity risk governance and management",
+            "Quick-start guides, Community Profiles and the Cybersecurity and Privacy Reference Tool (CPRT) support adoption"
+          ]
+        },
+        {
+          "id": "d4.2",
+          "name": "GOVERN (GV)",
+          "bullets": [
+            "New function placed at the centre of the CSF wheel; informs how the other five are implemented",
+            "GV.OC organizational context; GV.RM risk management strategy; GV.RR roles, responsibilities and authorities",
+            "GV.PO policy; GV.OV oversight; GV.SC cybersecurity supply chain risk management"
+          ]
+        },
+        {
+          "id": "d4.3",
+          "name": "IDENTIFY (ID) and PROTECT (PR)",
+          "bullets": [
+            "ID.AM asset management; ID.RA risk assessment; ID.IM improvement",
+            "PR.AA identity management, authentication and access control; PR.AT awareness and training",
+            "PR.DS data security; PR.PS platform security; PR.IR technology infrastructure resilience"
+          ]
+        },
+        {
+          "id": "d4.4",
+          "name": "DETECT (DE), RESPOND (RS) and RECOVER (RC)",
+          "bullets": [
+            "DE.CM continuous monitoring; DE.AE adverse event analysis",
+            "RS.MA incident management; RS.AN incident analysis; RS.CO incident response reporting and communication; RS.MI incident mitigation",
+            "RC.RP incident recovery plan execution; RC.CO incident recovery communication",
+            "Detect, Respond and Recover run concurrently during incidents, while Govern, Identify and Protect are continuous"
+          ]
+        },
+        {
+          "id": "d4.5",
+          "name": "Using profiles and integrating with enterprise risk",
+          "bullets": [
+            "Create current and target profiles, analyze gaps, and build a prioritized action plan",
+            "Integrate cybersecurity risk with enterprise risk management (NIST IR 8286 series)",
+            "Supply chain risk management (C-SCRM) is now a dedicated Govern category",
+            "Map CSF to ISO/IEC 27001, SP 800-53 and the Privacy Framework via informative references"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d5",
+      "name": "EU Artificial Intelligence Act (Regulation (EU) 2024/1689)",
+      "weight": "16.7% (equal split)",
+      "objectives": [
+        {
+          "id": "d5.1",
+          "name": "Risk-based tiers",
+          "bullets": [
+            "Unacceptable risk (prohibited, Art. 5): manipulative or exploitative techniques, social scoring, untargeted scraping for facial recognition databases, emotion recognition at work or school, certain biometric categorisation and predictive policing, real-time remote biometric ID in public for law enforcement with narrow exceptions",
+            "High risk: safety components of products under Annex I harmonisation laws, and Annex III use cases (biometrics, critical infrastructure, education, employment, essential services and credit, law enforcement, migration, justice and democracy)",
+            "High-risk provider duties: risk management system, data governance, technical documentation, logging, transparency to deployers, human oversight, accuracy/robustness/cybersecurity, quality management, conformity assessment, CE marking, EU database registration, post-market monitoring",
+            "Deployers of high-risk systems must follow instructions, assign human oversight, monitor and, for some deployers, perform a fundamental rights impact assessment",
+            "Limited (transparency) risk, Art. 50: disclose AI interaction, label deepfakes, mark synthetic content machine-readably",
+            "Minimal risk: no new obligations; voluntary codes of conduct"
+          ]
+        },
+        {
+          "id": "d5.2",
+          "name": "General-purpose AI models",
+          "bullets": [
+            "All GPAI providers: technical documentation, information to downstream providers, copyright policy, and a training-content summary",
+            "GPAI with systemic risk (presumed above 10^25 FLOPs of training compute): model evaluations, adversarial testing, incident reporting, cybersecurity",
+            "GPAI Code of Practice (2025) offers a voluntary route to show compliance; supervised by the EU AI Office"
+          ]
+        },
+        {
+          "id": "d5.3",
+          "name": "Key dates and enforcement",
+          "bullets": [
+            "Entered into force 1 August 2024",
+            "2 February 2025: prohibitions and AI literacy provisions apply",
+            "2 August 2025: GPAI obligations, governance bodies and penalty rules apply",
+            "2 August 2026: general application including most Art. 50 transparency duties",
+            "Digital Omnibus on AI (in force mid-2026) moved Annex III high-risk obligations to 2 December 2027 and Annex I product-embedded high-risk to 2 August 2028, and added prohibitions on AI generating non-consensual intimate imagery or child sexual abuse material",
+            "Maximum fines: up to EUR 35m or 7% of global turnover for prohibited practices; lower tiers for other breaches",
+            "Extraterritorial: applies to providers placing systems on the EU market and where outputs are used in the EU"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d6",
+      "name": "New Zealand Privacy Act 2020 and Health Information Privacy Code 2020",
+      "weight": "16.7% (equal split)",
+      "objectives": [
+        {
+          "id": "d6.1",
+          "name": "Privacy Act 2020 scope and Information Privacy Principles",
+          "bullets": [
+            "In force 1 December 2020, replacing the Privacy Act 1993; applies to agencies (public and private) including overseas agencies carrying on business in NZ",
+            "IPP1 purpose of collection (only collect what is necessary for a lawful purpose); IPP2 collect from the individual concerned; IPP3 tell the individual what is collected and why",
+            "IPP3A (added by the Privacy Amendment Act 2025, from 1 May 2026): notify individuals when information is collected indirectly from another source, subject to exceptions",
+            "IPP4 collect lawfully, fairly and not unreasonably intrusively, with care for children and young people; IPP5 storage and security safeguards",
+            "IPP6 right of access; IPP7 right to request correction; IPP8 check accuracy before use or disclosure",
+            "IPP9 do not keep longer than needed; IPP10 limits on use for other purposes; IPP11 limits on disclosure",
+            "IPP12 cross-border disclosure; IPP13 unique identifiers (limits on assigning and using them)",
+            "Only IPP6 access requests against public sector agencies (and some others) are enforceable in court; complaints otherwise go to the Commissioner and Human Rights Review Tribunal"
+          ]
+        },
+        {
+          "id": "d6.2",
+          "name": "Cross-border disclosure (IPP12)",
+          "bullets": [
+            "Disclosure to a foreign person or entity is allowed only if a ground applies: individual authorises after being told of weaker protection; recipient is subject to comparable laws; recipient is a prescribed binding scheme participant or prescribed country; or contractual/other safeguards give comparable protection",
+            "Overseas cloud storage or processing where the provider uses information only on the agency's behalf is not treated as a disclosure (agency remains responsible)",
+            "The Commissioner publishes model contract clauses to support comparable safeguards",
+            "Agencies can also be directed by a transfer prohibition notice (s193) for onward transfers"
+          ]
+        },
+        {
+          "id": "d6.3",
+          "name": "Notifiable privacy breaches",
+          "bullets": [
+            "A privacy breach is unauthorised or accidental access, disclosure, alteration, loss or destruction of personal information, or inability to access it",
+            "Notifiable when it has caused or is likely to cause serious harm; assess factors such as sensitivity, mitigation taken, nature of harm and who has the information",
+            "Notify the Privacy Commissioner and affected individuals as soon as practicable after becoming aware (OPC guidance: within 72 hours to the Commissioner)",
+            "Limited exceptions or delays for individual notification (e.g., security, health or safety, maintenance of law); public notice when direct notice is impracticable",
+            "Failure to notify the Commissioner without reasonable excuse is an offence with a fine up to NZD 10,000",
+            "Use NotifyUs, the OPC online breach reporting tool"
+          ]
+        },
+        {
+          "id": "d6.4",
+          "name": "Privacy Commissioner powers and enforcement",
+          "bullets": [
+            "Independent Crown entity; the Commissioner investigates complaints, conciliates, and refers matters to the Director of Human Rights Proceedings",
+            "Can issue compliance notices, decide access complaints binding on agencies, and issue codes of practice that modify the IPPs for sectors or types of information",
+            "Codes include the Health Information Privacy Code 2020, Credit Reporting Privacy Code, Telecommunications Information Privacy Code and Biometric Processing Privacy Code 2025",
+            "Human Rights Review Tribunal can award damages; offences include misleading an agency to obtain information and destroying requested information",
+            "Every agency must appoint at least one privacy officer"
+          ]
+        },
+        {
+          "id": "d6.5",
+          "name": "Health Information Privacy Code 2020",
+          "bullets": [
+            "Issued under the Privacy Act; applies to health agencies handling health information about identifiable individuals, replacing the IPPs for that information",
+            "Rules 1-4: purpose, source (collect from the individual), what to tell the individual, manner of collection; Rule 3A (from 1 May 2026) for indirect collection",
+            "Rule 5 storage and security; Rule 6 access; Rule 7 correction; Rule 8 accuracy",
+            "Rule 9 retention; Rule 10 limits on use; Rule 11 limits on disclosure (with health-specific exceptions such as disclosure to the individual's representative or to prevent serious threats)",
+            "Rule 12 cross-border disclosure; Rule 13 unique identifiers such as the National Health Index (NHI) number",
+            "Health agencies must consider the code's commentary and the notifiable breach regime applies equally"
+          ]
+        }
+      ]
+    }
+  ],
+  "keyTerms": [
+    "AI RMF",
+    "NIST AI 100-1",
+    "NIST AI 600-1",
+    "Generative AI Profile",
+    "GOVERN",
+    "MAP",
+    "MEASURE",
+    "MANAGE",
+    "Trustworthy AI",
+    "Valid and reliable",
+    "Explainable and interpretable",
+    "Privacy-enhanced",
+    "Harmful bias",
+    "AI actor",
+    "TEVV",
+    "AI RMF Playbook",
+    "Current profile",
+    "Target profile",
+    "Confabulation",
+    "CBRN information",
+    "Information integrity",
+    "Human-AI configuration",
+    "Value chain and component integration",
+    "Homogenization",
+    "Prompt injection",
+    "Data poisoning",
+    "Red-teaming",
+    "Content provenance",
+    "Risk tolerance",
+    "Residual risk",
+    "ISO/IEC 42001",
+    "AI management system (AIMS)",
+    "Harmonized Structure",
+    "AI policy",
+    "AI system impact assessment",
+    "AI risk assessment",
+    "Annex A controls",
+    "Annex B implementation guidance",
+    "ISO/IEC 42005",
+    "ISO/IEC 23894",
+    "ISO/IEC 22989",
+    "ISO/IEC 42006",
+    "Data provenance",
+    "Plan-Do-Check-Act",
+    "Interested parties",
+    "Documented information",
+    "Internal audit",
+    "Management review",
+    "Nonconformity",
+    "Corrective action",
+    "Continual improvement",
+    "ISO/IEC 27001",
+    "ISMS",
+    "ISO/IEC 27002",
+    "ISO/IEC 27005",
+    "Confidentiality, integrity, availability",
+    "Statement of Applicability (SoA)",
+    "Risk treatment plan",
+    "Risk owner",
+    "Risk acceptance criteria",
+    "Organizational controls",
+    "People controls",
+    "Physical controls",
+    "Technological controls",
+    "Threat intelligence",
+    "Data leakage prevention",
+    "Data masking",
+    "Secure coding",
+    "Control attributes",
+    "Stage 1 and stage 2 audit",
+    "NIST CSF 2.0",
+    "CSF Core",
+    "Organizational Profile",
+    "Implementation Tiers",
+    "Subcategory",
+    "Informative references",
+    "Cybersecurity supply chain risk management (C-SCRM)",
+    "GV.OC",
+    "PR.AA",
+    "DE.CM",
+    "RS.MA",
+    "RC.RP",
+    "Enterprise risk management",
+    "EU AI Act",
+    "Prohibited AI practices",
+    "High-risk AI system",
+    "Annex III",
+    "General-purpose AI model",
+    "Systemic risk",
+    "Conformity assessment",
+    "CE marking",
+    "Fundamental rights impact assessment",
+    "Post-market monitoring",
+    "AI literacy",
+    "AI Office",
+    "Digital Omnibus on AI",
+    "Deepfake labelling",
+    "Provider and deployer",
+    "Privacy Act 2020",
+    "Information Privacy Principles (IPPs)",
+    "IPP3A indirect collection",
+    "IPP12 cross-border disclosure",
+    "Comparable safeguards",
+    "Notifiable privacy breach",
+    "Serious harm",
+    "NotifyUs",
+    "Privacy Commissioner",
+    "Compliance notice",
+    "Privacy officer",
+    "Human Rights Review Tribunal",
+    "Code of practice",
+    "Health Information Privacy Code 2020",
+    "Health agency",
+    "National Health Index (NHI)",
+    "Unique identifier",
+    "Biometric Processing Privacy Code 2025"
+  ],
+  "status": "best-effort",
+  "caveats": "Not an exam: learning track for a game. Domain weights are an equal split (about 16.7% each) chosen by the author, not published by any issuer. Sources: NIST AI 100-1 and AI 600-1 (nvlpubs.nist.gov), NIST CSF 2.0 (nist.gov/cyberframework), ISO pages for 42001/27001 (full ISO text is copyrighted and paywalled, so clause and Annex A summaries are paraphrased from ISO abstracts and widely published structure; 42001 Annex A control counts per area taken from secondary sources), EU AI Act (EUR-Lex 2024/1689) plus law-firm summaries of the Digital Omnibus on AI (reported in force late July 2026; Annex III high-risk to 2 Dec 2027, Annex I to 2 Aug 2028); omnibus may also have altered other details (e.g., AI literacy framing) not captured here. NZ content from privacy.org.nz and legislation.govt.nz: IPP3A and HIPC rule 3A apply to information collected from 1 May 2026, so there are now 13 numbered IPPs/rules plus 3A. NIST states AI RMF 1.0 is being revised under the US AI Action Plan; a revision could change category wording. The 72-hour breach notification figure is OPC guidance, not statutory text. Current NZ Privacy Commissioner is Michael Webster (per OPC 2026/27 SPE)."
+}

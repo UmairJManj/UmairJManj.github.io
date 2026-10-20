@@ -1,0 +1,526 @@
+{
+  "exam": "sc-500",
+  "domain": "d1",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-500.d1.q023",
+      "lesson": "sc-500.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An application needs RSA keys protected by hardware security modules, stored alongside its secrets in a multitenant service, at the lowest cost. Which option should you deploy?",
+      "options": [
+        "Azure Key Vault Standard tier",
+        "Azure Key Vault Managed HSM",
+        "Azure Key Vault Premium tier",
+        "Azure Dedicated HSM"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Premium vaults add HSM-protected keys (RSA-HSM, EC-HSM) and still store secrets and certificates. Standard holds only software-protected keys. Managed HSM is single-tenant and stores keys only; Dedicated HSM is a costly appliance with no secret store."
+    },
+    {
+      "id": "sc-500.d1.q024",
+      "lesson": "sc-500.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A regulator requires Woodgrove Bank to keep encryption keys in single-tenant, FIPS 140-3 Level 3 validated HSMs. Woodgrove must hold the recovery credential for the HSM so that subscription owners at Woodgrove cannot override the key administrators' permissions.",
+      "stem": "Which service meets the requirements?",
+      "options": [
+        "Azure Key Vault Premium with Azure RBAC",
+        "Azure Key Vault Standard with purge protection",
+        "Azure Key Vault Premium with vault access policies",
+        "Azure Key Vault Managed HSM"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Managed HSM is single-tenant, FIPS 140-3 Level 3, uses a customer-held security domain, and its local RBAC can't be overridden by subscription administrators. Premium and Standard vaults are multitenant and governed by Azure control-plane roles."
+    },
+    {
+      "id": "sc-500.d1.q025",
+      "lesson": "sc-500.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "You create a new key vault with the Key Vault control-plane API version 2026-02-01 and do not set enableRbacAuthorization. For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "The new vault uses the Azure RBAC permission model.",
+          "a": true
+        },
+        {
+          "s": "Existing vaults that use access policies are switched to Azure RBAC when updated with that API version.",
+          "a": false
+        },
+        {
+          "s": "You can still create a vault that uses access policies by setting enableRbacAuthorization to false.",
+          "a": true
+        }
+      ],
+      "explain": "From API 2026-02-01, create operations default to Azure RBAC unless enableRbacAuthorization is false. Existing vaults keep their current model; updates don't switch it. Both models remain supported."
+    },
+    {
+      "id": "sc-500.d1.q026",
+      "lesson": "sc-500.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the default soft-delete retention period for a new Azure key vault?",
+      "options": [
+        "14 days",
+        "30 days",
+        "90 days",
+        "180 days"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Key Vault soft-delete retention is configurable from 7 to 90 days at creation, defaulting to 90. 14 days is Azure Backup's default soft-delete period, and 180 days is Backup's maximum, not Key Vault's."
+    },
+    {
+      "id": "sc-500.d1.q027",
+      "lesson": "sc-500.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "A key vault has soft delete with 30-day retention and purge protection enabled. For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "A user with sufficient permissions can still delete a secret.",
+          "a": true
+        },
+        {
+          "s": "A Key Vault Purge Operator can permanently purge the deleted secret immediately.",
+          "a": false
+        },
+        {
+          "s": "Purge protection can later be disabled by the subscription Owner.",
+          "a": false
+        }
+      ],
+      "explain": "Purge protection doesn't prevent deletion; it prevents purging until the retention period ends, even for purge-capable roles. Once enabled, purge protection can't be disabled by anyone, including Microsoft."
+    },
+    {
+      "id": "sc-500.d1.q028",
+      "lesson": "sc-500.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You must configure an existing vault so that a storage account can use one of its keys as a customer-managed key. Complete the command.",
+      "code": "az keyvault update --name kv-prod-01 --resource-group rg-sec ____ true",
+      "options": [
+        "--enable-soft-delete",
+        "--enabled-for-disk-encryption",
+        "--enable-rbac-authorization",
+        "--enable-purge-protection"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Storage customer-managed keys require soft delete and purge protection on the vault; soft delete is already always on, so --enable-purge-protection true is the missing step. Disk encryption and RBAC flags don't satisfy the CMK prerequisite."
+    },
+    {
+      "id": "sc-500.d1.q029",
+      "lesson": "sc-500.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An ARM template parameter file references a VM admin password stored in a key vault. Deployment fails with an error stating the vault is not enabled for template deployment. Which vault setting should you enable?",
+      "options": [
+        "Azure Virtual Machines for deployment",
+        "Azure Resource Manager for template deployment",
+        "Azure Disk Encryption for volume encryption",
+        "Allow trusted Microsoft services to bypass this firewall"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "enabledForTemplateDeployment lets Azure Resource Manager retrieve secrets referenced in parameter files. The VM deployment flag lets VMs retrieve certificates, the disk encryption flag serves Azure Disk Encryption, and the firewall bypass doesn't change this permission."
+    },
+    {
+      "id": "sc-500.d1.q030",
+      "lesson": "sc-500.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A web app's managed identity must read secret values from an RBAC-enabled key vault and nothing else. Which built-in role should you assign?",
+      "options": [
+        "Key Vault Secrets User",
+        "Key Vault Reader",
+        "Key Vault Secrets Officer",
+        "Key Vault Contributor"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Key Vault Secrets User reads secret contents, the least privilege for an app. Key Vault Reader reads metadata but not values, Secrets Officer can also create and delete secrets, and Key Vault Contributor is control plane only."
+    },
+    {
+      "id": "sc-500.d1.q031",
+      "lesson": "sc-500.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailwind Traders has a key vault that uses the vault access policy permission model. An operations engineer holds Key Vault Contributor on the vault so he can change networking settings. An audit shows he read a production database password last week, even though he was never given secret permissions.",
+      "stem": "What is the most effective way to prevent this while keeping his ability to manage vault settings?",
+      "options": [
+        "Replace Key Vault Contributor with Key Vault Reader",
+        "Enable purge protection on the vault",
+        "Migrate the vault to the Azure RBAC permission model and grant data roles only to those who need them",
+        "Add a CanNotDelete resource lock to the vault"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "In the access policy model, Key Vault Contributor can edit access policies and grant himself data access. Under Azure RBAC, data access requires role assignments he can't create. Reader would block his settings work; purge protection and locks don't control data-plane reads."
+    },
+    {
+      "id": "sc-500.d1.q032",
+      "lesson": "sc-500.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are advantages of the Azure RBAC permission model over vault access policies in Azure Key Vault? Select TWO.",
+      "options": [
+        "Permissions can be assigned on an individual secret, key or certificate",
+        "Privileged data roles can be made eligible through PIM",
+        "It allows data-plane access without Microsoft Entra authentication",
+        "It removes the need for a firewall on the vault",
+        "It grants Key Vault Contributor full data-plane access automatically"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Azure RBAC supports object-level scope and integrates with PIM for just-in-time access. Both models still require Entra authentication, neither replaces network controls, and Key Vault Contributor never gets data-plane access under RBAC."
+    },
+    {
+      "id": "sc-500.d1.q033",
+      "lesson": "sc-500.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A storage account uses a customer-managed key in an RBAC-enabled vault. The storage account's managed identity needs only to read key metadata and perform wrap and unwrap operations. Which role should you assign?",
+      "options": [
+        "Key Vault Crypto Officer",
+        "Key Vault Administrator",
+        "Key Vault Crypto User",
+        "Key Vault Crypto Service Encryption User"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Key Vault Crypto Service Encryption User reads key metadata and performs wrap/unwrap, exactly what CMK needs. Crypto User allows all cryptographic operations, Crypto Officer manages keys, and Administrator covers all data-plane objects."
+    },
+    {
+      "id": "sc-500.d1.q034",
+      "lesson": "sc-500.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Applications in an Azure VNet must reach a key vault over a private IP address, and the vault must refuse all traffic through its public endpoint. What should you configure?",
+      "options": [
+        "A private endpoint and set public network access to Disabled",
+        "A service endpoint on the subnet and a virtual network rule",
+        "An IP rule containing the subnet's private address range",
+        "Allow trusted Microsoft services to bypass this firewall"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A private endpoint gives the vault a private IP via Private Link; disabling public access rejects public-endpoint traffic. Service endpoints still use the public endpoint, IP rules reject private RFC 1918 ranges, and the trusted services bypass is for Microsoft services."
+    },
+    {
+      "id": "sc-500.d1.q035",
+      "lesson": "sc-500.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You must block all public traffic to a key vault except from approved networks while still letting trusted Microsoft services reach it. Complete the command.",
+      "code": "az keyvault update --name kv-app-01 --default-action Deny ____ AzureServices",
+      "options": [
+        "--public-network-access",
+        "--bypass",
+        "--network-acls",
+        "--allow-trusted"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "--bypass AzureServices allows trusted Microsoft services through when the default action is Deny. --public-network-access only toggles Enabled or Disabled, and --network-acls and --allow-trusted don't set the trusted-services exception on this command."
+    },
+    {
+      "id": "sc-500.d1.q036",
+      "lesson": "sc-500.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "A key vault's networking is set to allow public access from selected virtual networks and IP addresses only. For each statement, select Yes if true.",
+      "statements": [
+        {
+          "s": "You can add the IP range 10.20.0.0/16 as an IP firewall rule.",
+          "a": false
+        },
+        {
+          "s": "An ARM control-plane operation such as changing the vault's tags is blocked from non-allowed networks.",
+          "a": false
+        },
+        {
+          "s": "An administrator browsing from a non-allowed IP might be unable to list secrets in the Azure portal.",
+          "a": true
+        }
+      ],
+      "explain": "IP rules accept only public IPv4 addresses; private RFC 1918 ranges are rejected. Firewall rules apply only to data-plane operations, so control-plane changes still work. Portal listing of secrets is a data-plane call from the client, so it needs an allowed IP."
+    },
+    {
+      "id": "sc-500.d1.q037",
+      "lesson": "sc-500.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "You are moving an app from public access to private-only access to its key vault without downtime. Put the steps in order.",
+      "options": [
+        "Create a private endpoint for the vault in the app's VNet",
+        "Link the privatelink.vaultcore.azure.net private DNS zone to the VNet",
+        "Verify the vault name resolves to the private IP from the app",
+        "Set public network access on the vault to Disabled"
+      ],
+      "explain": "The private endpoint and DNS zone must exist and resolve correctly before public access is removed; disabling public access first would cut the app off until private connectivity worked."
+    },
+    {
+      "id": "sc-500.d1.q038",
+      "lesson": "sc-500.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A SQL server uses TDE with a customer-managed key from Key Vault. You will enable automatic key rotation and want SQL to start using each new version without reconfiguration. What should you do?",
+      "options": [
+        "Configure SQL with the versioned key identifier of the current key",
+        "Configure SQL with the versionless key URI",
+        "Disable the previous key version immediately after each rotation",
+        "Export the new key version and upload it to SQL after rotation"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A versionless key URI resolves to the latest version, so the service picks up rotations automatically. A versioned identifier pins one version; disabling old versions too early can break unwrap; key material in Key Vault HSMs isn't exported."
+    },
+    {
+      "id": "sc-500.d1.q039",
+      "lesson": "sc-500.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You must apply a JSON rotation policy (rotate every 18 months, notify 30 days before expiry) to a key. Complete the Azure CLI command.",
+      "code": "az keyvault key ____ --vault-name kv-cmk --name storage-key --value ./policy.json",
+      "options": [
+        "rotate",
+        "set-attributes",
+        "rotation-policy update",
+        "create"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "az keyvault key rotation-policy update applies a rotation policy from a JSON file. 'rotate' performs an on-demand rotation now, set-attributes changes enablement or dates, and create makes a new key."
+    },
+    {
+      "id": "sc-500.d1.q040",
+      "lesson": "sc-500.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Key Vault key rotation, select Yes if true.",
+      "statements": [
+        {
+          "s": "Rotating a key creates a new key version with new key material.",
+          "a": true
+        },
+        {
+          "s": "Data wrapped with the previous key version becomes unrecoverable after rotation.",
+          "a": false
+        },
+        {
+          "s": "Key Vault Crypto Officer can manage a key's rotation policy in an RBAC vault.",
+          "a": true
+        }
+      ],
+      "explain": "Rotation adds a new version and leaves previous versions intact, so earlier wrapped data can still be unwrapped while those versions stay enabled. Key Vault Crypto Officer is the role documented for managing rotation policies."
+    },
+    {
+      "id": "sc-500.d1.q041",
+      "lesson": "sc-500.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A public TLS certificate in Key Vault must renew automatically without manual CSR merging. Which configuration supports this?",
+      "options": [
+        "Issue the certificate from a non-partnered CA and add an EmailContacts lifetime action",
+        "Import the PFX and enable soft delete",
+        "Store the certificate as a secret with an expiration date",
+        "Use an issuer object for DigiCert or GlobalSign with an AutoRenew lifetime action"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Auto-renewal requires a partnered CA (DigiCert or GlobalSign) or self-signed issuer plus an AutoRenew lifetime action. Non-partnered CAs need manual renewal, EmailContacts only notifies, and secrets or imports don't renew themselves."
+    },
+    {
+      "id": "sc-500.d1.q042",
+      "lesson": "sc-500.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "When you create a certificate in Azure Key Vault, which additional addressable objects with the same name are created?",
+      "options": [
+        "A key and a secret",
+        "A key and a managed identity",
+        "A secret and a certificate issuer",
+        "Only a certificate policy"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Key Vault creates an addressable key (for key operations) and a secret (to retrieve the certificate including the private key if exportable). Issuers are separate vault objects, and no managed identity is created."
+    },
+    {
+      "id": "sc-500.d1.q043",
+      "lesson": "sc-500.d1.2.06",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "You are automating rotation of a database password stored as a Key Vault secret. Put the steps in order.",
+      "options": [
+        "Key Vault publishes a SecretNearExpiry event to Event Grid",
+        "An Azure Function subscribed to the event is triggered",
+        "The function generates a new password at the database",
+        "The function stores the password as a new secret version"
+      ],
+      "explain": "Near-expiry events flow through Event Grid to the subscribed function, which first changes the credential at its source and then writes the new value as a new secret version so applications read the current password."
+    },
+    {
+      "id": "sc-500.d1.q044",
+      "lesson": "sc-500.d1.2.07",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Your company enables only foundational CSPM (free) in Defender for Cloud. You need agentless scanning of Azure VMs for exposed secrets. Which plans would provide this? Select TWO.",
+      "options": [
+        "Defender CSPM",
+        "Defender for Servers Plan 2",
+        "Defender for Servers Plan 1",
+        "Defender for Key Vault",
+        "Defender for Storage"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Agentless machine secrets scanning comes with Defender CSPM or Defender for Servers Plan 2. Servers Plan 1 lacks agentless scanning, Defender for Key Vault detects suspicious vault access, and Defender for Storage protects storage data."
+    },
+    {
+      "id": "sc-500.d1.q045",
+      "lesson": "sc-500.d1.2.07",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Defender CSPM is enabled. The security team wants to see whether a plaintext storage account connection string found on an internet-exposed VM could let an attacker reach a storage account holding sensitive data, and to prioritize fixing it accordingly.",
+      "stem": "Which Defender for Cloud capability should the team use first?",
+      "options": [
+        "Regulatory compliance dashboard",
+        "Workflow automation",
+        "Attack path analysis",
+        "Just-in-time VM access"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Attack path analysis chains internet exposure, the secret found on the VM and the reachable sensitive storage account into a prioritized path. The regulatory compliance dashboard maps controls, workflow automation triggers Logic Apps, and just-in-time VM access only restricts management ports."
+    },
+    {
+      "id": "sc-500.d1.q046",
+      "lesson": "sc-500.d1.2.08",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You need alerts when a key vault is accessed from a TOR exit node or when an identity lists and then reads many secrets. What should you enable?",
+      "options": [
+        "Microsoft Defender for Key Vault",
+        "Defender CSPM secrets scanning",
+        "Key Vault purge protection",
+        "Azure Policy built-in definitions for Key Vault"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Defender for Key Vault detects anomalous access such as TOR, suspicious IPs and List-then-Get secret dumping. Secrets scanning finds exposed secrets on resources, purge protection protects deleted objects, and Azure Policy checks configuration, not live access."
+    },
+    {
+      "id": "sc-500.d1.q047",
+      "lesson": "sc-500.d1.2.08",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Defender for Key Vault raises 'Suspicious secret listing and query in a key vault' for a service principal that belongs to a decommissioned integration. The vault uses Azure RBAC and allows public access from all networks.",
+      "stem": "Which THREE actions should you take to contain and recover? Select THREE.",
+      "options": [
+        "Remove the service principal's role assignments on the vault",
+        "Rotate the secrets the service principal read",
+        "Restrict the vault firewall to approved networks",
+        "Dismiss the alert because the service principal is known to your organization",
+        "Enable the vault's soft-delete feature"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Removing access, rotating exposed secrets and restricting network access follow Microsoft's response guidance. A recognised identity isn't a reason to dismiss, and soft delete is already always on and doesn't address exfiltration."
+    },
+    {
+      "id": "sc-500.d1.q048",
+      "lesson": "sc-500.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You send Key Vault diagnostic logs to Log Analytics (AzureDiagnostics table) and want to find who read secrets. Complete the KQL query.",
+      "code": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.KEYVAULT\"\n| where OperationName == ____\n| summarize count() by CallerIPAddress, identity_claim_appid_g",
+      "options": [
+        "\"SecretList\"",
+        "\"VaultGet\"",
+        "\"SecretGet\"",
+        "\"SecretSet\""
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "SecretGet records reads of secret values. SecretList only enumerates names, VaultGet is a vault metadata read, and SecretSet creates or updates a secret."
+    }
+  ]
+}

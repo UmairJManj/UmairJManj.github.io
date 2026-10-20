@@ -1,0 +1,953 @@
+{
+  "exam": "secai-plus",
+  "domain": "d4",
+  "lessons": [
+    {
+      "id": "secai-plus.d4.1.01",
+      "objective": "d4.1",
+      "seq": 1,
+      "title": "AI Center of Excellence (CoE)",
+      "short": "An AI Center of Excellence is a cross-functional team that sets AI strategy, standards and shared best practice for the whole organization. It brings business, data, security, legal and risk people together so AI work is governed, reused and aligned with policy instead of built in silos.",
+      "deep": "As AI spreads, every department wants its own chatbot, model or agent. Without coordination you get duplicated spend, inconsistent security controls and nobody who knows what AI is actually running. An **AI Center of Excellence (CoE)** fixes this by acting as the organization's central point of AI expertise and governance.\n\nTypical CoE responsibilities:\n- Set the **AI strategy** and prioritize use cases by value and risk.\n- Publish **reference architectures**, approved platforms and reusable components (e.g. a standard RAG pattern with guardrails).\n- Run the **use-case intake and approval** process and keep the **AI inventory** (register of every AI system, owner and risk rating).\n- Coordinate with the **AI governance board / ethics committee**, legal, privacy and security.\n- Deliver **training** and awareness.\n\nCoEs are often run as **hub-and-spoke**: a central hub sets standards and supports, while spokes in business units build solutions within those rules. A CoE needs an **executive sponsor** for authority and budget. It does not replace the business teams or the SOC; it enables and governs them. Management-system standards such as ISO/IEC 42001 expect exactly this kind of leadership commitment and defined responsibility.",
+      "terms": [
+        { "t": "AI Center of Excellence", "d": "Cross-functional group that sets AI strategy, standards, reusable patterns and governance for the organization." },
+        { "t": "Hub-and-spoke model", "d": "Central hub defines standards and supports; business-unit spokes build within those rules." },
+        { "t": "AI inventory", "d": "Register of all AI systems in use, with owner, purpose, data used and risk rating." },
+        { "t": "Executive sponsor", "d": "Senior leader who gives the CoE authority, funding and visibility." }
+      ],
+      "trap": "Exams describe duplicated, inconsistent AI projects across departments and ask for the structural fix: the answer is an AI CoE, not buying one more tool or letting each team self-govern.",
+      "example": "A bank's AI CoE publishes an approved LLM platform and a standard prompt-guardrail pattern; marketing and HR build their assistants on it instead of each signing a different vendor contract.",
+      "diagram": { "kind": "flow", "items": ["Use-case request", "CoE intake", "Risk rating", "Approve + build", "AI inventory"] }
+    },
+    {
+      "id": "secai-plus.d4.1.02",
+      "objective": "d4.1",
+      "seq": 2,
+      "title": "AI policies and procedures",
+      "short": "AI policies state management's intent and rules for using and building AI (what and why). Standards add mandatory specifics, procedures give step-by-step instructions (how), and guidelines offer optional advice. Common AI documents include an AI acceptable use policy, AI risk policy and model approval procedure.",
+      "deep": "Governance is written down in a hierarchy of documents:\n- **Policy**: high-level, approved by leadership, says what is required and why (e.g. 'Only sanctioned AI tools may process company data').\n- **Standard**: mandatory, measurable specifics that support a policy (e.g. 'All production LLM apps must use the approved prompt firewall and log prompts for 90 days').\n- **Procedure**: step-by-step instructions to carry out a task (e.g. how to submit, review and approve a new AI use case).\n- **Guideline**: recommended practice, not mandatory (e.g. prompt-writing tips).\n\nTypical AI policy set: **AI acceptable use policy (AUP)** for staff, **AI development and deployment policy**, **AI risk management policy**, **data handling for AI** (what classification levels may go to which tools), **third-party/AI procurement policy**, and an **AI incident response** addendum (jailbreaks, leakage, harmful output).\n\nTypical procedures: use-case intake and risk classification, model review and sign-off, pre-release red-team testing, change management for model updates, and decommissioning. Good policies name an **owner**, a **review cycle**, an **exception process** and how compliance is measured.",
+      "terms": [
+        { "t": "AI acceptable use policy", "d": "Rules telling staff which AI tools they may use, for what, and what data they must never enter." },
+        { "t": "Procedure", "d": "Step-by-step instructions for performing a governed task, e.g. approving a new model." },
+        { "t": "Standard", "d": "Mandatory, specific requirement that implements a policy." },
+        { "t": "Exception process", "d": "Documented way to request, approve and time-limit a deviation from policy." }
+      ],
+      "trap": "Do not confuse levels: 'how to do it, step by step' is a procedure; 'what is required and why' is a policy; optional advice is a guideline.",
+      "example": "The AI AUP says confidential data may only be used with sanctioned tools; the intake procedure tells a product manager exactly which form to submit and who must sign off before a pilot.",
+      "diagram": { "kind": "stack", "items": ["Policy (what/why)", "Standard (must)", "Procedure (how)", "Guideline (should)"] }
+    },
+    {
+      "id": "secai-plus.d4.1.03",
+      "objective": "d4.1",
+      "seq": 3,
+      "title": "AI build roles: data, science, engineering, architecture, platform",
+      "short": "Data engineers build pipelines and keep data clean and traceable. Data scientists explore data and train and evaluate models. Machine learning engineers turn models into reliable production code. AI architects design the end-to-end solution, and platform engineers run the compute and tooling everyone builds on.",
+      "deep": "Exams describe a task and ask which role owns it.\n- **Data engineer**: designs and runs data **pipelines** (ingestion, ETL/ELT), storage, data quality checks, and records **data lineage** so you know where training data came from.\n- **Data scientist**: explores and analyzes data, engineers features, chooses algorithms, **trains and evaluates** candidate models, and interprets metrics. Works experimentally, often in notebooks.\n- **Machine learning (ML) engineer**: takes a model from experiment to **production**: writes robust training and inference code, optimizes performance (e.g. quantization), packages models and builds serving APIs.\n- **AI architect**: designs the **end-to-end AI solution**: which model, how it integrates with apps and data (e.g. RAG with a vector store), scalability, and how it fits enterprise architecture.\n- **Platform engineer**: builds and maintains the **underlying platform**: GPU/compute clusters, container orchestration, developer tooling and self-service environments that AI teams use.\n\nRoles overlap in small teams, but the separation matters for accountability and for least-privilege access: a data scientist may need read access to curated data, not admin rights to the production cluster.",
+      "terms": [
+        { "t": "Data engineer", "d": "Builds and maintains data pipelines, quality checks and lineage for analytics and AI." },
+        { "t": "Data scientist", "d": "Analyzes data and trains, tunes and evaluates models." },
+        { "t": "Machine learning engineer", "d": "Productionizes models: robust code, optimization, packaging and serving." },
+        { "t": "Platform engineer", "d": "Runs the shared compute and tooling platform that AI teams build on." }
+      ],
+      "trap": "Data scientist vs ML engineer is the classic trap: experimenting and evaluating models is the data scientist; making them run reliably at scale in production is the ML engineer.",
+      "example": "For a fraud model, the data engineer builds the transaction feed, the data scientist trains and compares models, the ML engineer wraps the winner in a low-latency API, and the platform engineer provides the GPU cluster.",
+      "diagram": { "kind": "compare", "cols": ["Role", "Main focus"], "rows": [["Data engineer", "Pipelines, lineage"], ["Data scientist", "Train and evaluate"], ["ML engineer", "Production model code"], ["AI architect", "End-to-end design"], ["Platform engineer", "Compute and tooling"]] }
+    },
+    {
+      "id": "secai-plus.d4.1.04",
+      "objective": "d4.1",
+      "seq": 4,
+      "title": "MLOps engineer",
+      "short": "An MLOps engineer applies DevOps practice to machine learning: automated pipelines that train, validate, register, deploy and monitor models, with versioning, drift monitoring and automated rollback. The goal is repeatable, auditable and safe model releases.",
+      "deep": "**MLOps** (machine learning operations) is DevOps adapted to models, which change not only when code changes but also when data changes. The **MLOps engineer** owns the machinery that makes that safe.\n\nKey responsibilities:\n- **CI/CD for ML**: pipelines that test code, validate data, retrain (sometimes called continuous training) and deploy models automatically.\n- **Model registry and versioning**: every model version is stored with its training data reference, parameters and metrics so it can be reproduced and audited.\n- **Deployment strategies**: canary or shadow deployments to compare a new model with the current one before full rollout.\n- **Monitoring**: latency, errors, cost and especially **data drift** and **concept drift** that degrade accuracy.\n- **Automated rollback**: if a new version fails quality gates or monitoring thresholds, revert to the last known-good version.\n\nFor governance this role is valuable because pipelines can enforce gates: no deployment without passing tests, an approved model card and sign-off. The MLOps engineer builds the pipeline; the data scientist builds the model; the platform engineer provides the infrastructure it runs on.",
+      "terms": [
+        { "t": "MLOps", "d": "Practices and tooling for automating and governing the ML life cycle from training to monitoring." },
+        { "t": "Model registry", "d": "Versioned store of models with metadata, metrics and approval status." },
+        { "t": "Model drift", "d": "Decline in model performance because real-world data or relationships change over time." },
+        { "t": "Automated rollback", "d": "Pipeline action that reverts to the previous model version when checks fail." }
+      ],
+      "trap": "If the scenario is about automating retraining, versioning, deployment and drift monitoring, pick MLOps engineer, not data scientist or platform engineer.",
+      "example": "A retrained recommendation model shows a 6% accuracy drop in the canary stage; the MLOps pipeline blocks promotion and rolls traffic back to the previous registered version.",
+      "diagram": { "kind": "cycle", "items": ["Train", "Validate", "Register", "Deploy", "Monitor"] }
+    },
+    {
+      "id": "secai-plus.d4.1.05",
+      "objective": "d4.1",
+      "seq": 5,
+      "title": "AI security, governance, risk and audit roles",
+      "short": "The AI security architect designs security controls for AI systems. The AI governance engineer turns policy into technical controls and evidence. The AI risk analyst identifies and assesses AI risks. The AI auditor independently checks that controls and compliance claims hold up.",
+      "deep": "These roles map well to the **three lines** idea: builders own risk day to day, risk and governance functions oversee, and audit gives independent assurance.\n- **AI security architect**: threat-models AI systems (e.g. with MITRE ATLAS and OWASP Top 10 for LLM Applications) and designs controls: guardrails, prompt firewalls, API and agent access control, encryption, secure RAG and logging.\n- **AI governance engineer**: implements governance **as technical controls**: policy-as-code gates in pipelines, model and dataset documentation (model cards), AI inventory tooling, lineage capture and automated compliance evidence.\n- **AI risk analyst**: identifies, analyzes and rates AI risks (bias, leakage, misuse, legal), runs or supports impact assessments, maintains the **AI risk register** and tracks treatment against risk appetite.\n- **AI auditor**: performs **independent** assessments of whether AI systems and processes meet policy, contracts and regulation (e.g. EU AI Act, ISO/IEC 42001), reviews evidence and reports findings to leadership or the audit committee. Independence means the auditor should not have designed or operated the controls being audited.\n\nTogether they ensure AI is not only built but built safely, documented and provably compliant.",
+      "terms": [
+        { "t": "AI security architect", "d": "Designs the security architecture and controls that protect AI models, data and integrations." },
+        { "t": "AI governance engineer", "d": "Builds technical mechanisms (policy-as-code, documentation, inventories) that enforce and evidence AI governance." },
+        { "t": "AI risk analyst", "d": "Identifies and assesses AI risks and maintains the AI risk register." },
+        { "t": "AI auditor", "d": "Independently evaluates AI controls and compliance and reports findings." }
+      ],
+      "trap": "Independence is the clue for AI auditor; turning policy into automated pipeline checks is the AI governance engineer; rating likelihood and impact is the AI risk analyst.",
+      "example": "The AI governance engineer adds a pipeline gate that fails any deployment lacking an approved risk assessment; next year the AI auditor samples releases to verify the gate actually worked.",
+      "diagram": { "kind": "compare", "cols": ["Role", "Core output"], "rows": [["AI security architect", "Control design"], ["AI governance engineer", "Policy-as-code, docs"], ["AI risk analyst", "Risk register"], ["AI auditor", "Independent findings"]] }
+    },
+    {
+      "id": "secai-plus.d4.2.01",
+      "objective": "d4.2",
+      "seq": 1,
+      "title": "Responsible AI: fairness, reliability and safety, inclusiveness, consistency",
+      "short": "Responsible AI is the set of principles for building and using AI that people can trust. Fairness means similar people get similar treatment; reliability and safety mean the system works as intended without causing harm; inclusiveness means it serves diverse users; consistency means similar inputs give stable, predictable outputs.",
+      "deep": "**Responsible AI** principles turn ethics into requirements you can design and test against. Several vendors and frameworks publish similar lists; CompTIA's list is: fairness, reliability and safety, transparency, privacy and security, explainability, inclusiveness, accountability, consistency and awareness training.\n\nThis lesson covers four:\n- **Fairness**: the system should not produce unjustified different outcomes for groups (e.g. by gender, ethnicity, age). Measured with fairness metrics such as comparing approval or error rates across groups.\n- **Reliability and safety**: the system performs as intended under expected conditions, handles unexpected input gracefully and fails safely. Tested with robustness testing, red teaming and monitoring.\n- **Inclusiveness**: the system is designed for the full range of users, including people with disabilities, different languages, accents and literacy levels.\n- **Consistency**: similar inputs produce similar, predictable outputs over time and across users. Generative models are non-deterministic, so consistency is managed with settings like low temperature, prompt templates, grounding (RAG) and regression tests.\n\nThese principles are not just ethics: unfair or unreliable AI creates legal, regulatory and reputational risk.",
+      "terms": [
+        { "t": "Responsible AI", "d": "Principles and practices for developing and using AI that is fair, safe, transparent and accountable." },
+        { "t": "Fairness", "d": "Avoiding unjustified different outcomes or error rates across groups of people." },
+        { "t": "Inclusiveness", "d": "Designing AI that works for people of all abilities, languages and backgrounds." },
+        { "t": "Consistency", "d": "Similar inputs yield stable, predictable outputs over time." }
+      ],
+      "trap": "Unequal outcomes between groups is fairness; a system that excludes users with disabilities or other languages is inclusiveness; the same question getting contradictory answers is consistency.",
+      "example": "A voice assistant that misrecognizes strong regional accents fails inclusiveness; an HR chatbot that gives two employees opposite answers to the same leave-policy question fails consistency.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d4.2.02",
+      "objective": "d4.2",
+      "seq": 2,
+      "title": "Responsible AI: transparency, explainability, privacy and security, accountability, awareness",
+      "short": "Transparency is being open that AI is used and how it was built and limited. Explainability is being able to say why a specific output was produced. Privacy and security protect data and the system. Accountability means named humans own outcomes. Awareness training makes staff understand AI risks and rules.",
+      "deep": "- **Transparency**: openness about the system: telling users they are interacting with AI, labelling AI-generated content, and documenting purpose, training data sources, limitations and performance (for example in **model cards** or system cards).\n- **Explainability**: the ability to explain **why a particular decision or output** happened, in terms the affected person can understand. Techniques include feature-importance methods such as SHAP and LIME, and showing retrieved sources in RAG answers. Transparency is about the system overall; explainability is about individual outputs.\n- **Privacy and security**: protect personal and confidential data across the life cycle (minimization, masking, access control, encryption) and protect the model itself from attacks such as prompt injection, poisoning and model theft.\n- **Accountability**: specific people or roles are answerable for the AI system's behavior and impacts. You cannot hand accountability to the model or fully to a vendor; there must be an owner, human oversight and a way to contest decisions.\n- **Awareness training**: staff learn what AI tools are sanctioned, what data must never be entered, how to spot hallucinations and deepfakes, and how to report incidents. The EU AI Act also expects providers and deployers to support **AI literacy** among staff.",
+      "terms": [
+        { "t": "Transparency", "d": "Disclosure that AI is used and documentation of how the system works, its data and limits." },
+        { "t": "Explainability", "d": "Ability to explain the reasons behind a specific AI output or decision." },
+        { "t": "Accountability", "d": "Named humans or roles answerable for AI outcomes, with oversight and redress." },
+        { "t": "Model card", "d": "Document describing a model's purpose, data, performance, limitations and intended use." }
+      ],
+      "trap": "'Why was I rejected?' is explainability, not transparency; 'tell users they are talking to a bot' is transparency; 'the vendor is responsible, not us' is a failure of accountability.",
+      "example": "A lender discloses on its website that applications are scored by AI (transparency) and, when an applicant is declined, lists the top factors that drove the score (explainability).",
+      "diagram": { "kind": "compare", "cols": ["Principle", "Answers"], "rows": [["Transparency", "Is AI used? How built?"], ["Explainability", "Why this output?"], ["Accountability", "Who owns outcomes?"]] }
+    },
+    {
+      "id": "secai-plus.d4.2.03",
+      "objective": "d4.2",
+      "seq": 3,
+      "title": "Risk: introduction of bias",
+      "short": "Bias enters AI through skewed historical data, unrepresentative samples, biased labels, proxy variables and feedback loops. A biased model can discriminate at scale, creating legal and reputational harm. Mitigate with representative data, data balancing, fairness testing before release and ongoing monitoring.",
+      "deep": "Models learn patterns from data, including unfair ones. Common sources:\n- **Historical bias**: the data reflects past discrimination (e.g. a decade of hiring decisions that favored one group).\n- **Sampling / representation bias**: some groups are under-represented, so the model performs worse for them.\n- **Measurement and label bias**: labels or measurements are systematically skewed (e.g. human reviewers labelled one group more harshly).\n- **Proxy variables**: removing a protected attribute does not remove bias if another feature (postal code, school, name) correlates with it.\n- **Feedback loops**: model outputs influence future training data and reinforce the skew.\n- **Automation bias**: humans over-trust the model's output and stop questioning it.\n\nMitigations across the life cycle: document data provenance, check representation, apply **data balancing** or augmentation, evaluate **fairness metrics** across groups (e.g. comparing selection rates or false-positive rates), include diverse reviewers, use human oversight for high-impact decisions, and keep monitoring after deployment because drift can reintroduce bias. Under the EU AI Act, high-risk systems such as hiring and credit tools must meet data governance requirements that include examining possible biases.",
+      "terms": [
+        { "t": "Historical bias", "d": "Bias inherited from past decisions captured in the training data." },
+        { "t": "Proxy variable", "d": "A feature that correlates with a protected attribute and lets bias in indirectly." },
+        { "t": "Data balancing", "d": "Adjusting the dataset (resampling, reweighting) so groups or classes are adequately represented." },
+        { "t": "Fairness metric", "d": "Measurement comparing outcomes or error rates between groups." }
+      ],
+      "trap": "Deleting the protected attribute (e.g. gender) is NOT enough; the exam expects you to test outcomes across groups because proxies carry the bias.",
+      "example": "A credit model trained without an ethnicity column still approves fewer applicants from certain postal codes; fairness testing reveals the postal code acts as a proxy.",
+      "diagram": { "kind": "flow", "items": ["Skewed data", "Model learns", "Biased output", "Harm at scale"] }
+    },
+    {
+      "id": "secai-plus.d4.2.04",
+      "objective": "d4.2",
+      "seq": 4,
+      "title": "Risks: accidental data leakage and reputational loss",
+      "short": "Accidental data leakage happens when confidential or personal data flows into AI tools, training sets, logs or answers that the wrong people can see. Reputational loss follows when AI produces offensive, false or embarrassing output in public. Both are usually unintentional, which is why policy, DLP and output controls matter.",
+      "deep": "**Accidental data leakage** (no attacker needed) commonly happens when:\n- Employees paste source code, contracts or customer data into a **public chatbot** whose terms allow provider retention or training.\n- Sensitive data is used to fine-tune a model, which may later **regurgitate** it.\n- A **RAG** assistant indexes documents without honoring permissions, so any user can retrieve salary files or board papers (oversharing).\n- Prompts and responses are written to **logs** without sanitization.\n- Agents or plug-ins send data to third-party services.\n\nControls: sanctioned tools with enterprise data terms, **DLP** on prompts, data classification labels, masking/redaction, permission-aware retrieval, log sanitization and user training.\n\n**Reputational loss** is damage to trust and brand when AI misbehaves visibly: a chatbot that insults customers, invents a refund policy, gives dangerous advice, shows bias, or is jailbroken into saying something offensive and screenshotted. It can bring legal liability too, since organizations are generally held responsible for what their chatbots say. Controls: guardrails and content filters, grounding in approved content, testing and red teaming before launch, human review of high-impact output, clear disclosure and a rapid incident-response plan.",
+      "terms": [
+        { "t": "Accidental data leakage", "d": "Unintended exposure of sensitive data through AI inputs, training, logs or outputs." },
+        { "t": "Oversharing", "d": "AI retrieval surfacing content to users who should not have access to it." },
+        { "t": "Data loss prevention (DLP)", "d": "Controls that detect and block sensitive data leaving approved boundaries, including in prompts." },
+        { "t": "Reputational loss", "d": "Damage to trust and brand caused by visible AI failures or misuse." }
+      ],
+      "trap": "An employee pasting secrets into a public chatbot is accidental leakage (often via shadow AI), not model theft or model inversion, which are deliberate attacks.",
+      "example": "An engineer pastes proprietary code into a free chatbot to debug it; the provider's consumer terms allow using inputs for model improvement, so the code has left company control.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d4.2.05",
+      "objective": "d4.2",
+      "seq": 5,
+      "title": "Risks: model accuracy and performance",
+      "short": "AI models can be wrong: they hallucinate, perform poorly on data unlike their training data, and degrade over time through drift. Poor accuracy turns into bad decisions, safety issues and liability, so models need clear metrics, validation before release and continuous monitoring after.",
+      "deep": "Accuracy and performance risk means the model does not do its job well enough, or stops doing it well.\n- **Hallucinations**: generative models produce fluent but false statements, fake citations or invented facts.\n- **Generalization failure**: a model that scored well in testing may fail on new populations or edge cases (overfitting, unrepresentative test sets).\n- **Model drift**: **data drift** (input data changes, e.g. new product types) or **concept drift** (the relationship between inputs and the right answer changes, e.g. fraud tactics evolve) gradually lowers accuracy.\n- **Operational performance**: latency, availability and cost can also fail requirements, especially under load.\n\nManaging it:\n- Define fit-for-purpose **metrics** (accuracy, precision/recall, groundedness for RAG) and acceptance thresholds tied to the use case's risk.\n- **Validate** on representative, held-out data and test edge cases before deployment.\n- **Monitor** in production for drift and quality, with retraining triggers and automated rollback.\n- Use **human review** and response confidence levels where errors are costly, and avoid **overreliance**.\n\nRegulators expect this too: high-risk systems under the EU AI Act must achieve appropriate accuracy, robustness and cybersecurity throughout their life cycle.",
+      "terms": [
+        { "t": "Hallucination", "d": "Confident but false or fabricated output from a generative model." },
+        { "t": "Data drift", "d": "Change in the statistical properties of input data compared with training data." },
+        { "t": "Concept drift", "d": "Change in the real-world relationship between inputs and the correct output." },
+        { "t": "Model validation", "d": "Testing a model against defined metrics on representative data before and after release." }
+      ],
+      "trap": "Accuracy that declines gradually after a successful launch points to drift and the fix is continuous monitoring with retraining, not a one-time pre-release test.",
+      "example": "A demand-forecasting model trained before a major market shift now overestimates sales every week; monitoring flags concept drift and the team retrains on recent data.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d4.2.06",
+      "objective": "d4.2",
+      "seq": 6,
+      "title": "Risks: intellectual property (IP)",
+      "short": "AI raises IP risk in both directions: models may be trained on or reproduce copyrighted or licensed material, and your own trade secrets can leak into vendor models. Ownership of AI-generated output can also be unclear. Manage it with licence review, provenance records, contract terms and code scanning.",
+      "deep": "**Intellectual property (IP)** risks to watch:\n- **Training data rights**: models trained on scraped copyrighted text, images or code may expose the developer (and sometimes users) to infringement claims. Data **provenance** records show where data came from and under what licence.\n- **Output infringement**: generated text, images or code can closely reproduce protected works. AI coding assistants may emit snippets from open-source projects under **copyleft licences**, creating licence obligations in your product. Software composition analysis and code-similarity scanning help catch this.\n- **Model licences**: open-weight models come with licences that may restrict commercial use, user counts or fields of use. Using a model outside its licence is an IP violation.\n- **Trade secret leakage**: entering proprietary designs or code into a public AI service can destroy confidentiality, a core requirement for trade-secret protection.\n- **Ownership of outputs**: in many jurisdictions purely AI-generated works may not qualify for copyright, so you might not be able to protect them.\n\nControls: legal review of model and data licences, approved-tool lists, contract clauses (no training on customer data, IP **indemnification**), provenance and lineage tracking, output review and scanning, and staff training.",
+      "terms": [
+        { "t": "Intellectual property", "d": "Legally protected creations such as copyrights, patents, trademarks and trade secrets." },
+        { "t": "Copyleft licence", "d": "Open-source licence requiring derivative works to be released under the same terms." },
+        { "t": "IP indemnification", "d": "Contract promise by a vendor to defend or compensate the customer for IP claims over outputs." },
+        { "t": "Data provenance", "d": "Record of the origin and rights attached to data used for training." }
+      ],
+      "trap": "Generated code that copies a copyleft snippet is an IP/licensing risk, not a hallucination; the control is licence and code scanning plus contract terms.",
+      "example": "A coding assistant suggests a 40-line function identical to a GPL project; the company's SCA scan flags it before release, avoiding an obligation to open-source its product.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d4.2.07",
+      "objective": "d4.2",
+      "seq": 7,
+      "title": "Risks: autonomous systems",
+      "short": "Autonomous AI systems, such as agents that call tools, move money or control physical equipment, act without a human approving each step. Their risks include excessive agency, cascading errors, unclear accountability and safety harm. Control them with scoped permissions, action limits, human oversight and a kill switch.",
+      "deep": "As AI moves from answering to **acting**, risk grows. An autonomous system perceives, decides and executes on its own: an AI agent that books travel and pays invoices, a security tool that isolates hosts automatically, a robot or vehicle.\n\nKey risks:\n- **Excessive agency**: the agent has more permissions, tools or autonomy than its task needs, so a hallucination or prompt injection becomes a real-world action.\n- **Cascading and compounding errors**: one wrong step feeds the next, especially with multiple agents.\n- **Goal misalignment**: the system optimizes the stated objective in an unintended way.\n- **Accountability gaps**: it is unclear who is responsible when the system acts.\n- **Safety**: physical or financial harm is hard to reverse.\n\nOversight models:\n- **Human-in-the-loop (HITL)**: a human must approve before an action executes.\n- **Human-on-the-loop**: the system acts, while a human monitors and can intervene or override.\n- **Human-out-of-the-loop**: fully autonomous; reserve for low-impact, reversible actions.\n\nControls: least privilege for agents, allow-listed tools, transaction and rate limits, approval for high-impact actions, detailed audit logs, testing in sandboxes, and a **kill switch** to stop the system.",
+      "terms": [
+        { "t": "Autonomous system", "d": "AI that decides and acts without step-by-step human approval." },
+        { "t": "Human-in-the-loop", "d": "A person must approve each significant action before it runs." },
+        { "t": "Human-on-the-loop", "d": "The system acts on its own while a person monitors and can intervene." },
+        { "t": "Kill switch", "d": "Mechanism to immediately halt an autonomous system." }
+      ],
+      "trap": "Approval before the action = human-in-the-loop; watching and able to override = human-on-the-loop. High-impact, irreversible actions call for in-the-loop.",
+      "example": "A finance agent may draft any payment but needs a controller's approval to release payments over USD 5,000, and every tool call is logged for audit.",
+      "diagram": { "kind": "compare", "cols": ["Model", "Human role"], "rows": [["In-the-loop", "Approves each action"], ["On-the-loop", "Monitors, can stop"], ["Out-of-the-loop", "None during run"]] }
+    },
+    {
+      "id": "secai-plus.d4.2.08",
+      "objective": "d4.2",
+      "seq": 8,
+      "title": "Shadow IT and shadow AI",
+      "short": "Shadow AI is the use of AI tools, models or features without the organization's approval or oversight, the AI form of shadow IT. It causes data leakage, compliance breaches and blind spots. Find it with CASB/SSE and proxy logs, then respond with policy, training and sanctioned alternatives rather than blocking alone.",
+      "deep": "**Shadow IT** is technology used without IT approval. **Shadow AI** is its fast-growing subset: staff using personal chatbot accounts, AI browser extensions, meeting-transcription bots, unvetted APIs or open-source models, or switching on AI features inside existing SaaS without review.\n\nWhy it matters:\n- **Data leakage**: confidential or personal data goes to providers with no contract or data-protection terms.\n- **Compliance**: possible GDPR, sector or contractual breaches; no records for audits.\n- **No visibility**: the organization's AI inventory is incomplete, so risks cannot be assessed or monitored, and nothing is logged.\n- **Quality and IP**: unvetted outputs feed decisions and products.\n\nDetection: cloud access security broker (**CASB**) or security service edge (SSE) app discovery, web proxy and DNS logs, endpoint and browser-extension inventory, SaaS management tools, expense reports and staff surveys.\n\nResponse: people usually use shadow AI because it helps them. Blocking alone pushes it further underground. Effective programs **discover, assess risk, decide** (sanction, restrict or block), **provide a sanctioned alternative** with an acceptable use policy and training, and keep **monitoring**.",
+      "terms": [
+        { "t": "Shadow AI", "d": "AI tools or features used without organizational approval, visibility or governance." },
+        { "t": "Shadow IT", "d": "Any hardware, software or cloud service used without IT approval." },
+        { "t": "CASB", "d": "Cloud access security broker: discovers and controls use of cloud apps and enforces data policies." }
+      ],
+      "trap": "The best answer is rarely 'block every AI site'; exams favor discovery plus sanctioned alternatives, AUP and monitoring.",
+      "example": "CASB logs show 300 employees using a free AI note-taker in customer calls; the company assesses it, blocks it, and rolls out an approved transcription tool with enterprise terms.",
+      "diagram": { "kind": "cycle", "items": ["Discover", "Assess risk", "Decide", "Offer approved tool", "Monitor"] }
+    },
+    {
+      "id": "secai-plus.d4.3.01",
+      "objective": "d4.3",
+      "seq": 1,
+      "title": "EU AI Act: risk-based categories",
+      "short": "The EU AI Act (Regulation (EU) 2024/1689) is the first comprehensive AI law. It classifies AI by risk: unacceptable risk is prohibited, high risk is allowed with strict requirements, limited risk carries transparency duties, and minimal risk has no new obligations. General-purpose AI models have their own rules.",
+      "deep": "The Act entered into force on **1 August 2024** and regulates AI according to the harm it can cause.\n- **Unacceptable risk (prohibited)**: e.g. social scoring; manipulative or deceptive techniques or exploiting vulnerabilities that cause significant harm; untargeted scraping of facial images to build facial-recognition databases; emotion recognition in workplaces and schools (except medical or safety reasons); biometric categorization to infer sensitive traits; predicting criminal offending based solely on profiling; and real-time remote biometric identification in public spaces for law enforcement except in narrow cases.\n- **High risk**: AI that is a safety component of regulated products (Annex I, e.g. medical devices, machinery) or used in **Annex III** areas: biometrics, critical infrastructure, education, **employment** (CV screening, promotion), access to essential services (**credit scoring**, insurance pricing), law enforcement, migration and border control, justice and democratic processes.\n- **Limited risk (transparency)**: users must be told they are interacting with AI (chatbots), and deepfakes and AI-generated content must be disclosed or marked.\n- **Minimal risk**: spam filters, AI in video games; no new obligations, voluntary codes encouraged.\n\nSeparately, **general-purpose AI (GPAI) models** have documentation and copyright duties, with extra duties for models with systemic risk.",
+      "terms": [
+        { "t": "EU AI Act", "d": "EU regulation 2024/1689 setting risk-based rules for AI systems and general-purpose AI models." },
+        { "t": "Prohibited AI practice", "d": "Unacceptable-risk use banned outright, such as social scoring." },
+        { "t": "High-risk AI system", "d": "AI in Annex I products or Annex III areas such as hiring or credit, subject to strict requirements." },
+        { "t": "General-purpose AI model", "d": "A model trained on broad data that can perform many tasks, such as a foundation LLM." }
+      ],
+      "trap": "Credit scoring and CV screening are high risk, not prohibited; social scoring is prohibited; a customer-service chatbot is limited risk with a transparency duty.",
+      "example": "A recruitment platform that ranks applicants is high risk; the same company's website FAQ chatbot only needs to tell visitors they are talking to AI.",
+      "diagram": { "kind": "stack", "items": ["Unacceptable: banned", "High: strict rules", "Limited: transparency", "Minimal: no new duties"] }
+    },
+    {
+      "id": "secai-plus.d4.3.02",
+      "objective": "d4.3",
+      "seq": 2,
+      "title": "EU AI Act: roles, obligations, timeline and penalties",
+      "short": "The EU AI Act assigns duties by role: providers build or place AI on the EU market, deployers use it professionally, and importers and distributors pass it along. High-risk providers need risk management, documentation, human oversight and conformity assessment. It applies outside the EU too, with fines up to EUR 35 million or 7% of turnover.",
+      "deep": "**Roles**: the **provider** develops an AI system (or has it developed) and places it on the market under its name; the **deployer** uses an AI system under its authority in a professional capacity; **importers** and **distributors** bring and pass systems through the supply chain. A deployer that substantially modifies a high-risk system or rebrands it can become a provider.\n\n**High-risk provider obligations** include: a risk management system, data governance (quality, relevance, bias checks), technical documentation, automatic logging, instructions for use, **human oversight** design, accuracy/robustness/cybersecurity, a quality management system, **conformity assessment**, **CE marking**, registration in the EU database and post-market monitoring with serious-incident reporting. **Deployers** must use systems per instructions, assign competent human oversight, monitor and keep logs; some (e.g. public bodies, credit and insurance) must run a fundamental rights impact assessment.\n\n**Scope** is extraterritorial: non-EU providers are covered when they place AI on the EU market or its output is used in the EU.\n\n**Timeline**: prohibitions and AI literacy from 2 Feb 2025; GPAI obligations from 2 Aug 2025. The 2026 AI Omnibus amendment moved stand-alone (Annex III) high-risk obligations to 2 Dec 2027 and product-embedded (Annex I) ones to 2 Aug 2028.\n\n**Fines**: up to EUR 35M or 7% of worldwide annual turnover (prohibited practices), EUR 15M or 3% (most other obligations), EUR 7.5M or 1% (incorrect information to authorities).",
+      "terms": [
+        { "t": "Provider", "d": "Organization that develops an AI system and places it on the market or into service under its name." },
+        { "t": "Deployer", "d": "Organization using an AI system under its authority in a professional capacity." },
+        { "t": "Conformity assessment", "d": "Process showing a high-risk AI system meets the Act's requirements before market placement." },
+        { "t": "CE marking", "d": "Marking that shows a product, including high-risk AI, conforms with EU requirements." }
+      ],
+      "trap": "Being headquartered outside the EU does not exempt a provider whose AI is sold or used in the EU; and the top fine tier (7%) is for prohibited practices.",
+      "example": "A US software firm sells an exam-proctoring AI to EU universities; as the provider it must complete conformity assessment, while each university as deployer must assign trained staff for human oversight.",
+      "diagram": { "kind": "flow", "items": ["Aug 2024 in force", "Feb 2025 bans", "Aug 2025 GPAI", "Dec 2027 Annex III", "Aug 2028 Annex I"] }
+    },
+    {
+      "id": "secai-plus.d4.3.03",
+      "objective": "d4.3",
+      "seq": 3,
+      "title": "OECD AI Principles",
+      "short": "The OECD AI Principles, adopted in 2019 and updated in 2024, were the first intergovernmental standard for trustworthy AI. They are non-binding and contain five values-based principles for AI actors and five recommendations for governments, and they shaped later laws and frameworks.",
+      "deep": "The **Organisation for Economic Co-operation and Development (OECD)** adopted its Recommendation on Artificial Intelligence in **May 2019**; it was revised in **May 2024** to address issues such as generative AI, misinformation, safety and environmental sustainability. Many non-member countries have also adhered, and the G20 AI Principles drew on them. The OECD's definition of an AI system also influenced the EU AI Act's definition.\n\n**Five values-based principles** (for all AI actors):\n1. Inclusive growth, sustainable development and well-being\n2. Human rights and democratic values, including fairness and privacy\n3. Transparency and explainability\n4. Robustness, security and safety\n5. Accountability\n\n**Five recommendations for policymakers**:\n1. Investing in AI research and development\n2. Fostering an inclusive AI-enabling ecosystem\n3. Shaping an enabling, interoperable governance and policy environment for AI\n4. Building human capacity and preparing for labour-market transition\n5. International co-operation for trustworthy AI\n\nImpact on business: the OECD principles are **not law** and carry no fines, but they are the common vocabulary behind national strategies, the EU AI Act, NIST AI RMF and corporate responsible-AI policies, so aligning with them eases compliance across jurisdictions.",
+      "terms": [
+        { "t": "OECD AI Principles", "d": "Non-binding intergovernmental principles for trustworthy AI, adopted 2019 and updated 2024." },
+        { "t": "Values-based principles", "d": "The five OECD principles addressed to AI actors, e.g. transparency and explainability." },
+        { "t": "AI actor", "d": "Anyone playing an active role in the AI life cycle, including developers and deployers." }
+      ],
+      "trap": "The OECD principles are voluntary guidance with no certification or penalties; mandatory conformity assessment and fines belong to the EU AI Act.",
+      "example": "A multinational bases its global responsible-AI policy on the OECD principles so the same commitments map to EU, Japanese and Canadian expectations.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d4.3.04",
+      "objective": "d4.3",
+      "seq": 4,
+      "title": "ISO/IEC 42001: AI management system",
+      "short": "ISO/IEC 42001:2023 specifies requirements for an AI management system (AIMS): the policies, roles, risk processes and controls an organization uses to develop, provide or use AI responsibly. It follows the plan-do-check-act cycle, includes Annex A controls and can be independently certified.",
+      "deep": "**ISO/IEC 42001:2023** is the first certifiable management-system standard for AI. Like ISO/IEC 27001 for information security, it uses the ISO **harmonized structure** (clauses 4 to 10), which makes it easy to integrate with an existing ISMS:\n- **Context** (4): scope, interested parties, the organization's AI roles.\n- **Leadership** (5): commitment, AI policy, roles and responsibilities.\n- **Planning** (6): AI risk assessment, risk treatment, **AI system impact assessment**, objectives.\n- **Support** (7): resources, competence, awareness, documentation.\n- **Operation** (8): carrying out the planned processes across the AI life cycle.\n- **Performance evaluation** (9): monitoring, internal audit, management review.\n- **Improvement** (10): nonconformity, corrective action, continual improvement.\n\n**Annex A** lists reference controls (e.g. AI policy, data for AI systems, life cycle, third-party relationships, use of AI). The organization selects controls through risk treatment and records them in a **Statement of Applicability**, justifying any exclusions.\n\nCertification is done by an accredited certification body through external audits, followed by periodic surveillance audits. The standard applies to any size or type of organization that develops, provides or uses AI.",
+      "terms": [
+        { "t": "ISO/IEC 42001", "d": "Certifiable standard specifying requirements for an AI management system." },
+        { "t": "AI management system (AIMS)", "d": "Organization-wide set of policies, processes and controls for governing AI." },
+        { "t": "Statement of Applicability", "d": "Document listing which controls apply, their status and justification for exclusions." },
+        { "t": "PDCA", "d": "Plan-do-check-act cycle used by ISO management systems for continual improvement." }
+      ],
+      "trap": "If a scenario needs a certifiable, auditable AI governance program, the answer is ISO/IEC 42001; NIST AI RMF and OECD principles are not certifiable.",
+      "example": "A SaaS provider already certified to ISO/IEC 27001 extends its management system to ISO/IEC 42001 so enterprise customers can verify its AI governance through a certificate.",
+      "diagram": { "kind": "cycle", "items": ["Plan", "Do", "Check", "Act"] }
+    },
+    {
+      "id": "secai-plus.d4.3.05",
+      "objective": "d4.3",
+      "seq": 5,
+      "title": "Other ISO/IEC AI standards",
+      "short": "Around ISO/IEC 42001 sit supporting standards: ISO/IEC 22989 defines AI concepts and terminology, ISO/IEC 23894 gives guidance on AI risk management based on ISO 31000, and ISO/IEC 42005 guides AI system impact assessments. These are guidance documents, not certifiable on their own.",
+      "deep": "ISO and IEC develop AI standards jointly through committee **ISO/IEC JTC 1/SC 42**. Key documents for governance:\n- **ISO/IEC 22989:2022**: AI **concepts and terminology**. Defines terms such as AI system, machine learning, AI stakeholder roles and trustworthiness characteristics, so policies and contracts use shared definitions.\n- **ISO/IEC 23894:2023**: **guidance on AI risk management**. Adapts the generic risk process of **ISO 31000** (establish context, identify, analyze, evaluate, treat, monitor and review, communicate) to AI-specific risk sources such as bias, lack of transparency and changing data.\n- **ISO/IEC 42005:2025**: guidance on **AI system impact assessment**, i.e. assessing the effects an AI system may have on individuals, groups and society, which ISO/IEC 42001 requires organizations to do.\n- **ISO/IEC 42001:2023**: the certifiable **requirements** standard that ties these together.\n\nThe distinction exams like: 42001 contains 'shall' requirements and can be certified; 22989, 23894 and 42005 provide definitions or guidance that help implement it. Organizations often also map these to ISO/IEC 27001 (security) and ISO/IEC 27701 (privacy) controls.",
+      "terms": [
+        { "t": "ISO/IEC 22989", "d": "Standard defining AI concepts and terminology." },
+        { "t": "ISO/IEC 23894", "d": "Guidance on managing AI-specific risk, built on ISO 31000." },
+        { "t": "ISO/IEC 42005", "d": "Guidance on assessing the impacts of AI systems on people and society." },
+        { "t": "ISO 31000", "d": "Generic risk management guidelines that ISO/IEC 23894 adapts for AI." }
+      ],
+      "trap": "Do not pick ISO/IEC 23894 when the question asks for a certifiable management system; it is risk guidance. Certification is ISO/IEC 42001.",
+      "example": "The AI risk analyst follows ISO/IEC 23894 to structure the AI risk assessment and ISO/IEC 42005 for the impact assessment, both feeding the company's ISO/IEC 42001 AIMS.",
+      "diagram": { "kind": "compare", "cols": ["Standard", "Purpose"], "rows": [["42001", "AIMS requirements"], ["23894", "AI risk guidance"], ["22989", "Terminology"], ["42005", "Impact assessment"]] }
+    },
+    {
+      "id": "secai-plus.d4.3.06",
+      "objective": "d4.3",
+      "seq": 6,
+      "title": "NIST AI RMF: the four core functions",
+      "short": "The NIST AI Risk Management Framework (AI RMF 1.0, NIST AI 100-1, January 2023) is a voluntary framework for managing AI risk. Its core has four functions: Govern (cross-cutting culture and accountability), Map (context and risks), Measure (analyze and test) and Manage (prioritize and treat).",
+      "deep": "The **NIST AI RMF** is voluntary, sector-neutral and use-case agnostic. It has two parts: foundational information (framing risk and trustworthiness) and the **Core**, organized into four functions, each divided into categories and subcategories.\n- **Govern**: builds a risk-aware culture: policies, roles and accountability, risk tolerance, workforce diversity and training, and processes for third-party AI risk. Govern is **cross-cutting**; it informs and is infused throughout the other three.\n- **Map**: establishes **context**: intended purpose, users, benefits, legal requirements, the system's categorization and the potential impacts and risks to individuals, organizations and society.\n- **Measure**: uses quantitative and qualitative methods to **analyze, assess, benchmark and monitor** the risks and trustworthiness characteristics identified in Map, including test, evaluation, verification and validation (**TEVV**), bias and robustness testing, and tracking metrics over time.\n- **Manage**: **prioritizes and acts** on risks: allocating resources, choosing treatments (mitigate, transfer, avoid, accept), planning responses and recovery, managing third-party risks and communicating incidents.\n\nThe functions are iterative rather than a strict one-time sequence, typically starting with Govern and Map. NIST also publishes the **AI RMF Playbook** with suggested actions for each subcategory, and announced that AI RMF 1.0 is being revised.",
+      "terms": [
+        { "t": "NIST AI RMF", "d": "Voluntary NIST framework (AI 100-1) for managing risks of AI systems." },
+        { "t": "Govern", "d": "Cross-cutting function establishing culture, policies and accountability for AI risk." },
+        { "t": "Map", "d": "Function that establishes context and identifies AI risks and impacts." },
+        { "t": "TEVV", "d": "Test, evaluation, verification and validation of AI systems, central to Measure." }
+      ],
+      "trap": "Don't mix up frameworks: Identify/Protect/Detect/Respond/Recover is the NIST Cybersecurity Framework; the AI RMF is Govern/Map/Measure/Manage, and Govern is the cross-cutting one.",
+      "example": "Before launching a claims-triage model, an insurer maps its context and affected groups (Map), runs fairness and robustness tests (Measure), then adds human review for low-confidence cases (Manage), all under its AI policy (Govern).",
+      "diagram": { "kind": "cycle", "items": ["Govern", "Map", "Measure", "Manage"] }
+    },
+    {
+      "id": "secai-plus.d4.3.07",
+      "objective": "d4.3",
+      "seq": 7,
+      "title": "NIST AI RMF: trustworthiness, profiles and the GenAI profile",
+      "short": "The NIST AI RMF describes seven characteristics of trustworthy AI, from valid and reliable to fair with harmful bias managed. Profiles tailor the framework to a sector or use case, and NIST AI 600-1 is the Generative AI Profile. The framework is voluntary and there is no NIST certification.",
+      "deep": "**Trustworthy AI characteristics** in the AI RMF:\n1. **Valid and reliable** (the base for the others)\n2. **Safe**\n3. **Secure and resilient**\n4. **Accountable and transparent** (spans the others)\n5. **Explainable and interpretable**\n6. **Privacy-enhanced**\n7. **Fair, with harmful bias managed**\n\nThese involve trade-offs: for example, more interpretability can reduce accuracy, and privacy techniques can reduce data utility. Organizations decide the balance based on context and risk tolerance.\n\n**Profiles** are implementations of the framework for a particular setting. A *current profile* describes how AI risk is managed today; a *target profile* describes the desired state; the gap drives a roadmap. Use-case and cross-sectoral profiles exist.\n\n**NIST AI 600-1** (July 2024), the **Generative AI Profile**, is a companion that identifies risks unique to or worsened by generative AI, such as confabulation (hallucination), information integrity, data privacy and information security, and maps suggested actions to AI RMF functions.\n\nImpact on business: the AI RMF is **voluntary**, but it is widely used to structure AI governance, cited in contracts and procurement, and maps to ISO/IEC 42001 via NIST crosswalks. NIST does not certify organizations against it.",
+      "terms": [
+        { "t": "Trustworthy AI characteristics", "d": "The seven qualities NIST lists, such as valid and reliable, safe, and privacy-enhanced." },
+        { "t": "AI RMF profile", "d": "Tailored use of the framework for a sector or use case; current vs target profiles show gaps." },
+        { "t": "NIST AI 600-1", "d": "Generative AI Profile companion to the AI RMF, released July 2024." }
+      ],
+      "trap": "A claim of 'NIST AI RMF certified' is a red flag: the framework is voluntary and NIST certifies no one; certification exists for ISO/IEC 42001.",
+      "example": "A hospital builds a current profile of its AI risk practices, compares it with a target profile based on the GenAI Profile, and funds the gaps in its next budget.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d4.3.08",
+      "objective": "d4.3",
+      "seq": 8,
+      "title": "Corporate policy: sanctioned vs unsanctioned AI",
+      "short": "Sanctioned AI tools have been reviewed and approved by the organization, usually with enterprise contracts, SSO, logging and data-protection terms. Unsanctioned tools have not. Corporate policy lists which tools are sanctioned, for what data and uses, and how the rule is enforced.",
+      "deep": "A **sanctioned** AI tool or model has passed the organization's review: security and privacy assessment, legal and contract review, and risk rating. It is typically provided under an **enterprise agreement** with commitments such as no training on customer data, defined retention, data residency, and admin controls like **SSO**, role-based access, audit logging and DLP integration.\n\nAn **unsanctioned** tool has not been approved; using it for company work is shadow AI. Some organizations add a middle tier, **tolerated** or **restricted** tools allowed only for public, non-sensitive data.\n\nThe corporate AI policy should state:\n- the **approved tools list** and the use cases each is approved for;\n- which **data classification levels** may be used with each tool;\n- prohibited uses (e.g. making hiring decisions without human review);\n- how to request approval for a new tool;\n- consequences of non-compliance.\n\nEnforcement uses technical controls: **CASB/SSE** app control to allow sanctioned tools and block or warn on unsanctioned ones, tenant restrictions so only corporate accounts work, DLP on prompts, and browser-extension management. Policies only work alongside training and a usable sanctioned option.",
+      "terms": [
+        { "t": "Sanctioned AI", "d": "AI tools or models approved by the organization after security, privacy and legal review." },
+        { "t": "Unsanctioned AI", "d": "AI tools used without organizational approval; the source of shadow AI." },
+        { "t": "Approved tools list", "d": "Published list of sanctioned AI tools, with permitted uses and data levels." },
+        { "t": "Tenant restriction", "d": "Control that allows sign-in only to the organization's own instance of a cloud service." }
+      ],
+      "trap": "A tool being popular, free or reputable does not make it sanctioned; sanctioned means formally approved by the organization, and a personal account of an approved product can still be unsanctioned.",
+      "example": "Staff may use the company's enterprise chatbot tenant for internal data, but the CASB blocks sign-in to personal accounts of the same chatbot.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d4.3.09",
+      "objective": "d4.3",
+      "seq": 9,
+      "title": "Corporate policy: private vs public models",
+      "short": "A public model is a shared, externally hosted AI service open to many customers, often with consumer terms. A private model runs in an environment the organization controls, such as self-hosted open-weight models or a dedicated private endpoint. Private gives more control over data and configuration but costs more to operate.",
+      "deep": "Corporate policy often decides **which kind of model** may process which data.\n\n**Public models**: multi-tenant AI services reachable over the internet, from free consumer chatbots to public APIs. Pros: no infrastructure, newest capabilities, low entry cost. Cons: data leaves your boundary; under consumer terms prompts may be retained or used to improve models; limited control over versions, logging location and residency; changes made by the vendor can alter behavior.\n\n**Private models**: deployed so the organization controls the environment and data flow: an open-weight model self-hosted on company infrastructure, a model in the company's own cloud account or virtual network, or a dedicated private endpoint with contractual isolation. Pros: data stays within your boundary, you choose retention, logging, region and version, you can fine-tune on sensitive data. Cons: higher cost and operational effort, you own patching and security of the stack, and smaller models may be less capable.\n\nA private model is not automatically secure: you still need access control, guardrails, monitoring and secure supply chain checks on the model itself. Many organizations use a **tiered** approach: public tools for public data, enterprise or private models for confidential and regulated data.",
+      "terms": [
+        { "t": "Public model", "d": "Externally hosted, shared AI service available to many users or customers." },
+        { "t": "Private model", "d": "AI model deployed in an environment the organization controls, with data kept within its boundary." },
+        { "t": "Open-weight model", "d": "Model whose trained weights are released so others can run it themselves." }
+      ],
+      "trap": "Private deployment reduces data-exposure and residency risk but does not remove the need for guardrails, access control and monitoring.",
+      "example": "A law firm runs an open-weight model in its own cloud subscription to summarize privileged case files, while staff may use a public chatbot only for drafting generic marketing text.",
+      "diagram": { "kind": "compare", "cols": ["Aspect", "Public", "Private"], "rows": [["Data location", "Provider", "Your boundary"], ["Control", "Low", "High"], ["Ops effort", "Low", "High"], ["Best for", "Public data", "Sensitive data"]] }
+    },
+    {
+      "id": "secai-plus.d4.3.10",
+      "objective": "d4.3",
+      "seq": 10,
+      "title": "Corporate policy: sensitive data governance for AI",
+      "short": "Sensitive data governance decides which data may be used with which AI systems and how. It relies on data classification labels, minimization, masking or redaction, retention limits and privacy obligations such as GDPR lawful basis and data protection impact assessments.",
+      "deep": "AI systems consume data in prompts, retrieval indexes, fine-tuning sets and logs, so governance must cover all of them.\n\nCore elements:\n- **Data classification labels** (e.g. Public, Internal, Confidential, Restricted) mapped to permitted AI tools and model types.\n- **Data minimization**: only use the data needed for the purpose; GDPR requires this for personal data.\n- **Masking, redaction, tokenization and anonymization** before data reaches a model; note that pseudonymized data is still personal data under GDPR, while truly anonymized data is not.\n- **Access control** on retrieval sources so RAG honors existing permissions.\n- **Retention and log sanitization** for prompts, outputs and training data.\n- **Lineage and provenance** for training data.\n- **Privacy law**: under **GDPR** you need a lawful basis for processing personal data, must respect data-subject rights, should run a **data protection impact assessment (DPIA)** where processing is likely high risk, and must address solely automated decisions with legal or similarly significant effects (Article 22), typically by providing human review.\n- **Special categories** (health, biometric, etc.) and regulated data (cardholder, health records) usually need the strongest controls or are excluded entirely.\n\nEnforcement uses DLP on prompts and uploads, label-aware AI tools and regular audits.",
+      "terms": [
+        { "t": "Data minimization", "d": "Collecting and processing only the data needed for a specific purpose." },
+        { "t": "Data masking", "d": "Replacing sensitive values with realistic but fictitious or tokenized values." },
+        { "t": "DPIA", "d": "Data protection impact assessment required by GDPR for likely high-risk processing." },
+        { "t": "GDPR Article 22", "d": "Right not to be subject to solely automated decisions with legal or similarly significant effects, subject to exceptions." }
+      ],
+      "trap": "Pseudonymized (tokenized but reversible) data is still personal data under GDPR; only properly anonymized data falls outside it.",
+      "example": "Before sending support tickets to an LLM for summarization, a pipeline replaces names, emails and account numbers with tokens and drops fields the summary does not need.",
+      "diagram": { "kind": "flow", "items": ["Classify", "Minimize", "Mask/redact", "Approved model", "Retain/log"] }
+    },
+    {
+      "id": "secai-plus.d4.3.11",
+      "objective": "d4.3",
+      "seq": 11,
+      "title": "Third-party compliance evaluations",
+      "short": "Most organizations buy or embed AI from vendors, so they must evaluate those vendors' compliance before and after signing. Evidence includes security questionnaires, SOC 2 Type II reports, ISO/IEC 27001 and 42001 certificates, model documentation and contract terms, followed by ongoing monitoring.",
+      "deep": "You cannot outsource accountability: if a vendor's AI leaks your data or discriminates against your customers, regulators and customers still hold you responsible. **Third-party compliance evaluation** (part of vendor or supply-chain risk management) checks that AI suppliers meet your requirements.\n\nTypical evidence:\n- **Questionnaires**: standardized security and AI questionnaires (e.g. the Cloud Security Alliance CAIQ) plus AI-specific questions: training data sources, whether customer data trains models, guardrails, red-teaming, sub-processors and data location.\n- **Independent attestations**: a **SOC 2 Type II** report tests whether controls *operated effectively over a period*, whereas Type I only describes design at a point in time. **ISO/IEC 27001** and **ISO/IEC 42001** certificates show certified management systems; always check the **scope** and validity date.\n- **AI documentation**: model or system cards, evaluation results, an AI bill of materials, and for high-risk AI in the EU the provider's conformity documentation.\n- **Contract terms**: no training on customer data, retention and deletion, data residency, breach and incident notification, sub-processor notification, **right to audit**, IP indemnification and SLAs.\n\nProcess: identify and tier vendors by risk, collect and review evidence, remediate or accept gaps, contract, then **reassess periodically** and monitor for incidents or model changes.",
+      "terms": [
+        { "t": "Third-party compliance evaluation", "d": "Assessing a supplier's controls and legal compliance before and during the relationship." },
+        { "t": "SOC 2 Type II", "d": "Independent auditor report on whether controls operated effectively over a review period." },
+        { "t": "Right to audit", "d": "Contract clause letting the customer audit, or obtain audit evidence about, the vendor." },
+        { "t": "Sub-processor", "d": "Another company the vendor uses to process the customer's data." }
+      ],
+      "trap": "Type I shows design at a point in time; Type II shows operating effectiveness over time. A certificate is only meaningful if its scope covers the service you buy.",
+      "example": "Before buying an AI contract-review tool, procurement obtains the vendor's SOC 2 Type II report, confirms its ISO/IEC 42001 certificate covers the product, and adds a no-training clause.",
+      "diagram": { "kind": "flow", "items": ["Tier vendor", "Collect evidence", "Review gaps", "Contract terms", "Reassess"] }
+    },
+    {
+      "id": "secai-plus.d4.3.12",
+      "objective": "d4.3",
+      "seq": 12,
+      "title": "Data sovereignty",
+      "short": "Data sovereignty means data is subject to the laws of the country where it is stored or processed. For AI this covers where prompts, outputs, logs, embeddings and training data live. Organizations use regional endpoints, residency commitments and legal transfer mechanisms such as GDPR adequacy decisions or standard contractual clauses.",
+      "deep": "Three related terms:\n- **Data residency**: the physical or geographic location where data is stored, often a business or contractual choice.\n- **Data sovereignty**: the principle that data is subject to the **laws and jurisdiction** of the place where it resides (and, in practice, sometimes of the provider's home country, e.g. through government access laws).\n- **Data localization**: a legal requirement that certain data stay within a country's borders.\n\nAI makes this tricky because data moves through many places: the inference region, prompt and response logs, abuse-monitoring stores, vector databases, fine-tuning datasets and sub-processors. A model hosted in one country may send traffic for processing in another unless a regional or data-zone endpoint is selected.\n\nUnder **GDPR**, transferring personal data outside the EEA requires a mechanism in **Chapter V**: an **adequacy decision** (e.g. the EU-US Data Privacy Framework for certified US companies), **standard contractual clauses (SCCs)** with a transfer impact assessment, or **binding corporate rules**. Many other countries have their own transfer or localization rules.\n\nControls: choose regions deliberately, get residency commitments for all data stores including logs, map sub-processors, encrypt with customer-managed keys, and record transfers in privacy documentation.",
+      "terms": [
+        { "t": "Data sovereignty", "d": "Data is governed by the laws of the jurisdiction where it is located or processed." },
+        { "t": "Data residency", "d": "The geographic location where data is stored." },
+        { "t": "Data localization", "d": "Legal requirement to keep certain data within a country." },
+        { "t": "Standard contractual clauses", "d": "EU-approved contract terms that permit personal data transfers outside the EEA." }
+      ],
+      "trap": "Residency is where data sits; sovereignty is whose laws apply. Storing data in-region does not help if prompts or logs are processed in another country.",
+      "example": "A German insurer picks an EU-only endpoint for its LLM service and confirms in the contract that prompt logs and abuse-monitoring data also stay in the EU.",
+      "diagram": { "kind": "compare", "cols": ["Term", "Meaning"], "rows": [["Residency", "Where data is stored"], ["Sovereignty", "Whose laws apply"], ["Localization", "Must stay in country"]] }
+    }
+  ],
+  "questions": [
+    {
+      "id": "secai-plus.d4.q001",
+      "lesson": "secai-plus.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the PRIMARY purpose of an AI Center of Excellence (CoE)?",
+      "options": [
+        "To monitor production AI workloads for intrusions around the clock",
+        "To set AI strategy, standards and reusable practices and coordinate governance across the organization",
+        "To act as the external auditor that certifies the organization's AI systems",
+        "To replace business-unit teams so that all AI solutions are built by one central group"
+      ],
+      "answer": [1],
+      "explain": "A CoE is a cross-functional hub that sets strategy, standards, reference patterns and governance. Round-the-clock intrusion monitoring is the SOC's job. External certification needs an independent body. CoEs usually enable business units (hub-and-spoke) rather than replacing them."
+    },
+    {
+      "id": "secai-plus.d4.q002",
+      "lesson": "secai-plus.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A retailer's marketing, HR and logistics departments have each signed separate contracts with different generative AI vendors. Security finds three different prompt-logging approaches, no shared guardrails and no single list of AI systems in use. The CIO wants consistent controls and reuse without stopping innovation in the departments.",
+      "stem": "Which action BEST addresses the CIO's goals?",
+      "options": [
+        "Require each department to hire its own AI auditor",
+        "Block all generative AI vendors until a single vendor is chosen",
+        "Move all AI budgets into the security operations center",
+        "Establish an AI Center of Excellence with an executive sponsor to set standards, approve use cases and maintain an AI inventory"
+      ],
+      "answer": [3],
+      "explain": "A sponsored CoE gives one set of standards, a shared guardrail pattern, intake approval and an AI inventory, while departments keep building (hub-and-spoke). A blanket block stops innovation. Separate auditors per department don't create common standards. The SOC is not a governance or strategy body."
+    },
+    {
+      "id": "secai-plus.d4.q003",
+      "lesson": "secai-plus.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A document gives step-by-step instructions for submitting a new AI use case, completing the risk questionnaire and obtaining sign-off. What type of governance document is this?",
+      "options": [
+        "Procedure",
+        "Policy",
+        "Guideline",
+        "Standard"
+      ],
+      "answer": [0],
+      "explain": "Step-by-step 'how to' instructions are a procedure. A policy states high-level intent and requirements. A standard sets mandatory specifics that support a policy. A guideline is optional recommended practice."
+    },
+    {
+      "id": "secai-plus.d4.q004",
+      "lesson": "secai-plus.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "An organization's AI use-case approval procedure is being documented. Put the steps in order.",
+      "options": [
+        "Business owner submits the use-case request with purpose and data involved",
+        "Use case is risk-classified using the AI risk policy",
+        "Governance board reviews the assessment and approves, rejects or adds conditions",
+        "Approved system is recorded in the AI inventory with an accountable owner",
+        "System is monitored and periodically re-reviewed"
+      ],
+      "explain": "Intake comes first, then risk classification so reviewers know what level of scrutiny applies. The board decides on that evidence, approved systems are registered in the inventory with an owner, and ongoing monitoring and re-review follow deployment."
+    },
+    {
+      "id": "secai-plus.d4.q005",
+      "lesson": "secai-plus.d4.1.03",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which role is PRIMARILY responsible for building ingestion pipelines, enforcing data quality checks and recording data lineage for training datasets?",
+      "options": [
+        "AI auditor",
+        "Data scientist",
+        "Data engineer",
+        "AI risk analyst"
+      ],
+      "answer": [2],
+      "explain": "Data engineers design and run pipelines, quality checks and lineage capture. Data scientists consume the curated data to train and evaluate models. AI risk analysts assess risks. AI auditors independently review controls; they don't build pipelines."
+    },
+    {
+      "id": "secai-plus.d4.q006",
+      "lesson": "secai-plus.d4.1.03",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A team member explores historical claims data, engineers features, compares several algorithms and evaluates them with precision and recall. Which role does this describe?",
+      "options": [
+        "Platform engineer",
+        "Data scientist",
+        "MLOps engineer",
+        "AI governance engineer"
+      ],
+      "answer": [1],
+      "explain": "Exploring data, feature engineering, training and evaluating candidate models is the data scientist's core work. Platform engineers provide compute and tooling. MLOps engineers automate deployment and monitoring. AI governance engineers implement governance controls."
+    },
+    {
+      "id": "secai-plus.d4.q007",
+      "lesson": "secai-plus.d4.1.03",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about AI roles, select Yes if true.",
+      "statements": [
+        { "s": "A machine learning engineer typically turns a validated model into robust, optimized production code and serving APIs.", "a": true },
+        { "s": "A platform engineer is mainly responsible for choosing features and tuning model hyperparameters.", "a": false },
+        { "s": "An AI architect designs how a model, data sources such as a vector store, and applications fit together end to end.", "a": true }
+      ],
+      "explain": "ML engineers productionize models; AI architects design the end-to-end solution. Feature selection and hyperparameter tuning belong to data scientists (and ML engineers); platform engineers build and run the compute and tooling platform."
+    },
+    {
+      "id": "secai-plus.d4.q008",
+      "lesson": "secai-plus.d4.1.04",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company needs someone to build pipelines that retrain models on new data, store each version in a model registry, run canary deployments and automatically roll back when drift thresholds are breached. Which role BEST fits?",
+      "options": [
+        "Data engineer",
+        "AI risk analyst",
+        "AI architect",
+        "MLOps engineer"
+      ],
+      "answer": [3],
+      "explain": "Automated retraining, model registry and versioning, deployment strategies, drift monitoring and automated rollback are MLOps responsibilities. Data engineers own data pipelines, not model release pipelines. AI architects design solutions. AI risk analysts assess risk rather than build automation."
+    },
+    {
+      "id": "secai-plus.d4.q009",
+      "lesson": "secai-plus.d4.1.05",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "The audit committee wants an independent assessment of whether the company's AI systems comply with internal policy and the EU AI Act. Which role should perform it?",
+      "options": [
+        "AI auditor",
+        "AI security architect",
+        "MLOps engineer",
+        "AI governance engineer"
+      ],
+      "answer": [0],
+      "explain": "Independent evaluation of controls and compliance, reported to leadership or the audit committee, is the AI auditor's role. The security architect and governance engineer design and build the controls, so they lack independence to audit them. MLOps engineers run release pipelines."
+    },
+    {
+      "id": "secai-plus.d4.q010",
+      "lesson": "secai-plus.d4.1.05",
+      "objective": "d4.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A bank's AI policy says no model may reach production without an approved risk assessment and a completed model card. Audits found several models deployed without them because checks were manual. Leadership wants the policy enforced automatically inside the deployment pipeline, with evidence stored for future audits.",
+      "stem": "Which role is BEST suited to implement this requirement?",
+      "options": [
+        "AI risk analyst",
+        "Data scientist",
+        "AI governance engineer",
+        "AI auditor"
+      ],
+      "answer": [2],
+      "explain": "Turning governance policy into technical controls, such as policy-as-code gates and automatically collected evidence, is the AI governance engineer's job. The risk analyst writes the risk assessments the gate checks for. The auditor later tests the gate independently. Data scientists build models, not governance controls."
+    },
+    {
+      "id": "secai-plus.d4.q011",
+      "lesson": "secai-plus.d4.1.05",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO activities are MOST typical of an AI risk analyst? (Select TWO.)",
+      "options": [
+        "Provisioning GPU clusters for model training",
+        "Maintaining the AI risk register and tracking treatment status",
+        "Rating the likelihood and impact of risks such as bias or data leakage for a proposed use case",
+        "Writing the inference API code that serves the model",
+        "Issuing the ISO/IEC 42001 certificate after an external audit"
+      ],
+      "answer": [1, 2],
+      "explain": "AI risk analysts identify and rate AI risks and maintain the risk register. GPU provisioning is platform engineering, inference code is ML engineering, and certificates come from an accredited certification body, not an internal role."
+    },
+    {
+      "id": "secai-plus.d4.q012",
+      "lesson": "secai-plus.d4.2.01",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Testing shows a loan-approval model approves equally qualified applicants from one age group far less often than others. Which responsible AI principle is MOST directly violated?",
+      "options": [
+        "Fairness",
+        "Consistency",
+        "Transparency",
+        "Reliability and safety"
+      ],
+      "answer": [0],
+      "explain": "Unjustified differences in outcomes between groups is a fairness failure. Consistency is about stable outputs for similar inputs over time. Transparency is about disclosure and documentation. Reliability and safety are about working as intended without causing harm."
+    },
+    {
+      "id": "secai-plus.d4.q013",
+      "lesson": "secai-plus.d4.2.01",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Employees report that an internal policy chatbot gives contradictory answers when the same leave-policy question is asked on different days. Which responsible AI principle does this MOST directly concern?",
+      "options": [
+        "Inclusiveness",
+        "Transparency",
+        "Accountability",
+        "Consistency"
+      ],
+      "answer": [3],
+      "explain": "Consistency means similar inputs produce stable, predictable outputs; it is managed with grounding, prompt templates, low temperature and regression tests. Inclusiveness is about serving diverse users. Transparency is about disclosure. Accountability is about who owns outcomes."
+    },
+    {
+      "id": "secai-plus.d4.q014",
+      "lesson": "secai-plus.d4.2.01",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A design review requires that a public-facing AI assistant work with screen readers, support several languages and handle a range of accents. Which principle is being applied?",
+      "options": [
+        "Explainability",
+        "Privacy and security",
+        "Inclusiveness",
+        "Fairness"
+      ],
+      "answer": [2],
+      "explain": "Inclusiveness means designing AI for the full range of users, including people with disabilities and different languages or accents. Fairness concerns unequal outcomes between groups, explainability concerns reasons for outputs, and privacy and security protect data and systems."
+    },
+    {
+      "id": "secai-plus.d4.q015",
+      "lesson": "secai-plus.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A declined insurance applicant asks which factors led to their specific result. The insurer provides the top contributing features for that decision. Which principle does this support MOST directly?",
+      "options": [
+        "Transparency",
+        "Explainability",
+        "Consistency",
+        "Inclusiveness"
+      ],
+      "answer": [1],
+      "explain": "Explainability is about the reasons behind a specific output, often shown through feature contributions (e.g. SHAP). Transparency is broader openness, such as disclosing that AI is used and documenting the system. Consistency and inclusiveness do not address why one decision was made."
+    },
+    {
+      "id": "secai-plus.d4.q016",
+      "lesson": "secai-plus.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about responsible AI, select Yes if true.",
+      "statements": [
+        { "s": "Telling users that they are chatting with an AI system rather than a human is an example of transparency.", "a": true },
+        { "s": "When an organization buys an AI system, accountability for its outcomes transfers fully to the vendor.", "a": false },
+        { "s": "AI awareness training should cover which tools are sanctioned and what data must never be entered into AI tools.", "a": true }
+      ],
+      "explain": "Disclosing AI use is transparency. Organizations remain accountable for how they use AI even when a vendor builds it; contracts can share liability but not remove ownership. Awareness training should cover sanctioned tools and data-handling rules."
+    },
+    {
+      "id": "secai-plus.d4.q017",
+      "lesson": "secai-plus.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A governance policy requires every production AI system to have a named business owner who answers for its impacts and handles contested decisions. Which principle does this implement?",
+      "options": [
+        "Accountability",
+        "Explainability",
+        "Reliability and safety",
+        "Inclusiveness"
+      ],
+      "answer": [0],
+      "explain": "Accountability means specific people are answerable for AI outcomes, with oversight and ways to contest decisions. Explainability is about reasons for outputs, reliability and safety about working as intended, and inclusiveness about serving diverse users."
+    },
+    {
+      "id": "secai-plus.d4.q018",
+      "lesson": "secai-plus.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A resume-screening model was trained on ten years of hiring decisions from a period when one gender was strongly favored. The model now ranks that gender higher. What is the MOST likely cause?",
+      "options": [
+        "Concept drift in production data",
+        "Membership inference by applicants",
+        "Historical bias in the training data",
+        "Quantization of the model weights"
+      ],
+      "answer": [2],
+      "explain": "The model learned past discriminatory decisions captured in the data, which is historical bias. Concept drift is change after deployment. Membership inference is a privacy attack. Quantization reduces precision for efficiency and does not create a gender preference."
+    },
+    {
+      "id": "secai-plus.d4.q019",
+      "lesson": "secai-plus.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A lender removed ethnicity and gender columns from its credit dataset before retraining, then declared the model unbiased. A regulator's review shows approval rates still differ sharply between neighborhoods with different ethnic make-up. Postal code is one of the model's strongest features.",
+      "stem": "What should the lender do NEXT?",
+      "options": [
+        "Increase the number of training epochs to improve overall accuracy",
+        "Evaluate fairness metrics across groups and address proxy features such as postal code",
+        "Remove the remaining demographic columns from the logs as well",
+        "Publish a model card stating that protected attributes are not used"
+      ],
+      "answer": [1],
+      "explain": "Postal code is acting as a proxy, so bias persists even without the protected columns. The lender should measure outcomes across groups and mitigate the proxy. More epochs won't fix biased signal. Deleting log columns removes evidence. A model card claim would be misleading without fixing the issue."
+    },
+    {
+      "id": "secai-plus.d4.q020",
+      "lesson": "secai-plus.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A developer pastes proprietary source code into a free public chatbot to find a bug. The provider's consumer terms allow inputs to be used to improve its models. Which risk has been realized?",
+      "options": [
+        "Model theft",
+        "Model inversion",
+        "Data poisoning",
+        "Accidental data leakage"
+      ],
+      "answer": [3],
+      "explain": "Confidential data unintentionally left the organization's control through an AI tool, which is accidental data leakage (here via shadow AI). Model theft and model inversion are deliberate attacks to steal a model or reconstruct training data. Data poisoning corrupts training data to manipulate behavior."
+    },
+    {
+      "id": "secai-plus.d4.q021",
+      "lesson": "secai-plus.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A company launches an internal RAG assistant that indexes its entire document management system. Within a week, a junior employee retrieves executive salary spreadsheets and draft acquisition plans by asking the assistant about compensation and strategy. The source files themselves have restricted permissions.",
+      "stem": "Which TWO controls would BEST prevent this from recurring? (Select TWO.)",
+      "options": [
+        "Raise the model's temperature to make responses less specific",
+        "Enforce permission-aware retrieval so results are filtered by the requesting user's access rights",
+        "Switch to a larger foundation model with a longer context window",
+        "Apply sensitivity labels and exclude restricted content from the index",
+        "Disable all prompt logging so sensitive answers are not stored"
+      ],
+      "answer": [1, 3],
+      "explain": "The leakage happened because retrieval ignored existing permissions (oversharing). Permission-aware retrieval and keeping labelled restricted content out of the index fix the root cause. Temperature and model size don't control access. Disabling logs removes audit evidence and doesn't stop exposure."
+    },
+    {
+      "id": "secai-plus.d4.q022",
+      "lesson": "secai-plus.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An airline's customer chatbot invents a generous refund policy. A customer posts the conversation on social media and it is widely reported in the news. Which business risk is MOST directly realized?",
+      "options": [
+        "Reputational loss",
+        "Model denial of service",
+        "Data sovereignty violation",
+        "Model theft"
+      ],
+      "answer": [0],
+      "explain": "Visible AI misbehavior that damages public trust is reputational loss, often with legal liability too, since companies are generally held to what their chatbots say. Nothing suggests an overload attack, cross-border data issue or stolen model."
+    },
+    {
+      "id": "secai-plus.d4.q023",
+      "lesson": "secai-plus.d4.2.05",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A fraud model performed well at launch, but its detection rate has fallen steadily over six months as attackers changed tactics. Which control BEST addresses this?",
+      "options": [
+        "Add watermarking to the model's outputs",
+        "Repeat the original pre-release test once and archive the results",
+        "Continuously monitor performance for drift and retrain when thresholds are breached",
+        "Reduce the token limit on model inputs"
+      ],
+      "answer": [2],
+      "explain": "Gradual decline as attacker behavior changes is concept drift; it needs continuous monitoring with retraining triggers. A one-time retest on old data won't show the drift or fix it. Watermarking marks outputs, and token limits control input size; neither restores accuracy."
+    },
+    {
+      "id": "secai-plus.d4.q024",
+      "lesson": "secai-plus.d4.2.06",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO scenarios represent intellectual property (IP)-related AI risks? (Select TWO.)",
+      "options": [
+        "An AI coding assistant suggests a function copied from a copyleft-licensed project",
+        "A chatbot's response latency exceeds the service-level target during peak hours",
+        "A company deploys an open-weight model in a commercial product although its licence prohibits commercial use",
+        "A spike in prompt volume increases the monthly AI bill",
+        "A model's accuracy drops after the input data distribution changes"
+      ],
+      "answer": [0, 2],
+      "explain": "Copying copyleft code and breaching a model licence are IP and licensing risks. Latency and cost spikes are operational issues, and accuracy loss from changing data is a model performance (drift) risk."
+    },
+    {
+      "id": "secai-plus.d4.q025",
+      "lesson": "secai-plus.d4.2.07",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An AI agent can prepare vendor payments. Policy requires a finance controller to approve every payment over USD 10,000 before the agent can release it. Which oversight model is this?",
+      "options": [
+        "Human-on-the-loop",
+        "Human-in-the-loop",
+        "Human-out-of-the-loop",
+        "Fully autonomous operation with audit logging"
+      ],
+      "answer": [1],
+      "explain": "Requiring human approval before the action executes is human-in-the-loop. Human-on-the-loop lets the system act while a person monitors and can intervene. Out-of-the-loop and fully autonomous operation have no human approval step; logging alone is after-the-fact."
+    },
+    {
+      "id": "secai-plus.d4.q026",
+      "lesson": "secai-plus.d4.2.07",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": "An IT operations team plans an autonomous agent that can restart services, change firewall rules and delete cloud resources to resolve incidents without waiting for staff. The agent will read incident tickets, which customers can partially edit.",
+      "stem": "For each statement about this design, select Yes if true.",
+      "statements": [
+        { "s": "Giving the agent permission to delete any cloud resource is an example of excessive agency.", "a": true },
+        { "s": "Because tickets can contain attacker-controlled text, a prompt injection could become a real-world action.", "a": true },
+        { "s": "Detailed audit logging alone removes the need for approval steps on irreversible actions.", "a": false }
+      ],
+      "explain": "Broad delete rights exceed what incident fixes need, so they are excessive agency. Untrusted ticket text can carry prompt injection that the agent then acts on. Logging only records what happened; irreversible, high-impact actions still need human approval and scoped permissions."
+    },
+    {
+      "id": "secai-plus.d4.q027",
+      "lesson": "secai-plus.d4.2.08",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which of the following BEST describes shadow AI?",
+      "options": [
+        "AI models that run on edge devices without cloud connectivity",
+        "Attacks that hide malicious instructions inside images sent to a model",
+        "A backup model kept in standby for automated rollback",
+        "Use of AI tools, models or features without the organization's approval or oversight"
+      ],
+      "answer": [3],
+      "explain": "Shadow AI is the AI form of shadow IT: unapproved, ungoverned AI use. Edge AI is a deployment pattern, hidden instructions in images are a form of prompt injection, and a standby model for rollback is a normal MLOps practice."
+    },
+    {
+      "id": "secai-plus.d4.q028",
+      "lesson": "secai-plus.d4.2.08",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A security team is building a program to address shadow AI. Put the steps in order.",
+      "options": [
+        "Discover AI tools in use through CASB, proxy and DNS logs",
+        "Assess the risk of each discovered tool and the data being shared",
+        "Decide whether each tool is sanctioned, restricted or blocked",
+        "Provide sanctioned alternatives with an acceptable use policy and training",
+        "Continuously monitor for new unsanctioned AI use"
+      ],
+      "explain": "You must first find what is in use, then assess each tool's risk before deciding its status. Offering sanctioned alternatives with policy and training follows the decision, and monitoring continues because new tools appear constantly."
+    },
+    {
+      "id": "secai-plus.d4.q029",
+      "lesson": "secai-plus.d4.2.08",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "CASB reports show that about 40% of a consulting firm's staff use personal accounts on several public AI chatbots, often uploading client documents. Interviews reveal staff rely on these tools to meet deadlines. The firm has no approved AI tool and no AI acceptable use policy.",
+      "stem": "Which response is MOST effective at reducing risk while keeping productivity?",
+      "options": [
+        "Block every AI-related domain permanently and take disciplinary action against all users",
+        "Ignore the usage because the chatbot providers are well-known companies",
+        "Publish an AI acceptable use policy, provide a sanctioned enterprise AI tool, and restrict personal accounts with CASB controls",
+        "Ask staff to delete their chat histories and continue as before"
+      ],
+      "answer": [2],
+      "explain": "Staff use shadow AI because it helps them, so the best response pairs a sanctioned alternative and clear AUP with technical restrictions on personal accounts. Blanket blocking and punishment drive usage underground. A provider's reputation doesn't make use sanctioned. Deleting histories doesn't stop future leakage."
+    },
+    {
+      "id": "secai-plus.d4.q030",
+      "lesson": "secai-plus.d4.3.01",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Under the EU AI Act, which risk category applies to an AI system that public authorities use to score citizens' general trustworthiness based on their social behavior?",
+      "options": [
+        "High risk, allowed after conformity assessment",
+        "Unacceptable risk, prohibited",
+        "Limited risk, transparency obligations only",
+        "Minimal risk, no new obligations"
+      ],
+      "answer": [1],
+      "explain": "Social scoring is listed as a prohibited (unacceptable-risk) practice. High-risk systems such as credit scoring or CV screening are allowed with strict requirements. Limited risk covers transparency duties like chatbot disclosure, and minimal risk covers uses such as spam filters."
+    },
+    {
+      "id": "secai-plus.d4.q031",
+      "lesson": "secai-plus.d4.3.01",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A company sells an AI tool in the EU that ranks job applicants' CVs for recruiters. How is this system classified under the EU AI Act?",
+      "options": [
+        "High risk",
+        "Unacceptable risk",
+        "Minimal risk",
+        "Limited risk"
+      ],
+      "answer": [0],
+      "explain": "Employment uses such as recruitment and CV screening are listed in Annex III, so the tool is high risk and must meet strict requirements. It is not a prohibited practice, and it carries more than transparency-only (limited) or no-obligation (minimal) treatment."
+    }
+  ]
+}

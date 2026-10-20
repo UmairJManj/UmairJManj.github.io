@@ -1,0 +1,447 @@
+{
+  "exam": "secai-plus",
+  "domain": "d2",
+  "lessons": [
+    {
+      "id": "secai-plus.d2.1.01",
+      "objective": "d2.1",
+      "seq": 1,
+      "title": "OWASP Top 10 for LLM Applications",
+      "short": "The OWASP Top 10 for LLM Applications (2025 edition, LLM01 to LLM10) lists the most critical risks in apps built on large language models, from prompt injection to unbounded consumption. Use it as a checklist when threat modeling a chatbot, copilot, RAG app or agent.",
+      "deep": "**OWASP** (Open Worldwide Application Security Project) publishes community risk lists. The **Top 10 for LLM Applications** targets software that wraps a large language model. The 2025 list is:\n- **LLM01 Prompt Injection**: crafted input (direct or hidden in documents) changes model behaviour.\n- **LLM02 Sensitive Information Disclosure**: the model reveals PII, secrets or confidential data.\n- **LLM03 Supply Chain**: risky third-party models, datasets, adapters or libraries.\n- **LLM04 Data and Model Poisoning**: tampered training, fine-tuning or embedding data.\n- **LLM05 Improper Output Handling**: model output passed unchecked to browsers, shells or databases.\n- **LLM06 Excessive Agency**: an agent has too much functionality, permission or autonomy.\n- **LLM07 System Prompt Leakage**: hidden instructions (and any secrets in them) get exposed.\n- **LLM08 Vector and Embedding Weaknesses**: RAG and vector store flaws, such as cross-tenant leakage.\n- **LLM09 Misinformation**: hallucinated or misleading output that people trust.\n- **LLM10 Unbounded Consumption**: uncontrolled resource use causing denial of service or runaway cost.\nIn a scenario question, match the symptom to the entry, then pick its main control.",
+      "terms": [
+        {"t": "LLM01 Prompt Injection", "d": "Input that alters an LLM's intended behaviour; can be direct (user) or indirect (hidden in retrieved content)."},
+        {"t": "LLM06 Excessive Agency", "d": "Damage caused because an LLM agent has more functions, permissions or autonomy than it needs."},
+        {"t": "LLM10 Unbounded Consumption", "d": "Uncontrolled inference use leading to DoS, cost spikes ('denial of wallet') or model extraction."},
+        {"t": "LLM08 Vector and Embedding Weaknesses", "d": "Risks in how embeddings are generated, stored and retrieved in RAG systems."}
+      ],
+      "trap": "Older 2023 names (Insecure Output Handling, Model Denial of Service, Insecure Plugin Design, Overreliance) were reworked in 2025 into Improper Output Handling, Unbounded Consumption, Excessive Agency and Misinformation; know both vocabularies.",
+      "example": "A support bot reads a customer email that hides instructions telling it to forward account data. That is LLM01 indirect prompt injection, with LLM02 as the impact.",
+      "diagram": {"kind": "compare", "cols": ["Entry", "Core control"], "rows": [["LLM01 Prompt injection", "Isolate untrusted input"], ["LLM05 Output handling", "Encode/validate output"], ["LLM06 Excessive agency", "Least privilege + HITL"], ["LLM10 Unbounded use", "Rate and token limits"]]}
+    },
+    {
+      "id": "secai-plus.d2.1.02",
+      "objective": "d2.1",
+      "seq": 2,
+      "title": "OWASP Machine Learning Security Top 10",
+      "short": "The OWASP Machine Learning Security Top 10 (ML01 to ML10, 2023 draft) covers attacks on ML models in general, not just LLMs: input manipulation, data poisoning, model inversion, membership inference, model theft, supply chain, transfer learning, model skewing, output integrity and model poisoning.",
+      "deep": "Where the LLM list focuses on applications around a language model, the **ML Security Top 10** focuses on the model and its data pipeline, for any ML system (fraud scoring, image classifiers, malware detectors). The entries:\n- **ML01 Input Manipulation Attack**: adversarial examples that fool a model at inference time.\n- **ML02 Data Poisoning Attack**: corrupting training data.\n- **ML03 Model Inversion Attack**: reconstructing sensitive training data from outputs.\n- **ML04 Membership Inference Attack**: working out whether a specific record was in the training set.\n- **ML05 Model Theft**: copying a model's function or weights, often by mass querying.\n- **ML06 AI Supply Chain Attacks**: compromised libraries, pre-trained models or packages.\n- **ML07 Transfer Learning Attack**: a tampered base model passes hidden behaviour to models fine-tuned from it.\n- **ML08 Model Skewing**: manipulating feedback or live data so the model drifts in the attacker's favour.\n- **ML09 Output Integrity Attack**: altering results between the model and the consumer.\n- **ML10 Model Poisoning**: directly tampering with model parameters.\nThe project is still marked draft, so treat it as a taxonomy rather than a standard.",
+      "terms": [
+        {"t": "Membership inference", "d": "Inferring whether a particular data record was used to train a model."},
+        {"t": "Model inversion", "d": "Reconstructing features of training data (for example faces) from model outputs."},
+        {"t": "Model skewing", "d": "Poisoning feedback loops or production data so the model's behaviour shifts over time."},
+        {"t": "Output integrity attack", "d": "Tampering with predictions after the model produces them, before they reach the user or system."}
+      ],
+      "trap": "Data poisoning (ML02) corrupts the training data; model poisoning (ML10) alters the model's weights directly. Exam scenarios hinge on which one was touched.",
+      "example": "An attacker repeatedly reports legitimate transactions as fraud through the feedback form so the retrained model starts flagging a competitor's customers: model skewing (ML08).",
+      "diagram": {"kind": "flow", "items": ["Training data (ML02)", "Model (ML10)", "Inference (ML01)", "Output (ML09)"]}
+    },
+    {
+      "id": "secai-plus.d2.1.03",
+      "objective": "d2.1",
+      "seq": 3,
+      "title": "MIT AI Risk Repository",
+      "short": "The MIT AI Risk Repository is a free, living database of AI risks extracted from published frameworks, classified by a Causal Taxonomy (entity, intent, timing) and a Domain Taxonomy (7 domains, 24 subdomains). Use it for broad risk identification, not for attack techniques.",
+      "deep": "MIT researchers reviewed dozens of existing AI risk frameworks and pulled every risk they described into one searchable database (over 1,600 entries and growing). Each risk is coded two ways:\n- **Causal Taxonomy**: *Entity* (AI, Human, Other), *Intent* (Intentional, Unintentional, Other) and *Timing* (Pre-deployment, Post-deployment, Other). This tells you who or what causes the risk, whether on purpose, and when.\n- **Domain Taxonomy**: 7 domains: Discrimination and toxicity; Privacy and security; Misinformation; Malicious actors and misuse; Human-computer interaction; Socioeconomic and environmental harms; AI system safety, failures and limitations. These split into 24 subdomains (a multi-agent risks subdomain was added in 2025).\nSecurity teams use it early in threat modeling or risk assessment to make sure they have not missed whole categories of harm (for example overreliance or bias) that a purely technical list would skip. It is a reference catalogue, not a control framework or attack matrix.",
+      "terms": [
+        {"t": "Causal Taxonomy", "d": "Classifies AI risks by entity, intent and timing."},
+        {"t": "Domain Taxonomy", "d": "Groups AI risks into 7 domains and 24 subdomains."},
+        {"t": "Post-deployment risk", "d": "A risk that arises after the AI system is released and in use."}
+      ],
+      "trap": "If the question asks for adversary tactics and techniques, the answer is MITRE ATLAS; if it asks for a broad catalogue of AI risks across societal and technical domains, it is the MIT AI Risk Repository.",
+      "example": "A risk committee filters the repository for Human-computer interaction risks that are Unintentional and Post-deployment to scope overreliance controls for a new copilot.",
+      "diagram": {"kind": "stack", "items": ["Risk entry", "Causal: entity / intent / timing", "Domain: 7 domains", "24 subdomains"]}
+    },
+    {
+      "id": "secai-plus.d2.1.04",
+      "objective": "d2.1",
+      "seq": 4,
+      "title": "MITRE ATLAS",
+      "short": "MITRE ATLAS (Adversarial Threat Landscape for Artificial-Intelligence Systems) is an ATT&CK-style knowledge base of adversary tactics, techniques, mitigations and real-world case studies against AI systems. Its AI-specific tactics are AI Model Access and AI Attack Staging.",
+      "deep": "ATLAS uses the same matrix layout as MITRE ATT&CK: **tactics** are the attacker's goals (columns) and **techniques** are how they achieve them. Most tactics are inherited from ATT&CK (Reconnaissance, Resource Development, Initial Access, Execution, Persistence, Privilege Escalation, Defense Evasion, Credential Access, Discovery, Lateral Movement, Collection, Command and Control, Exfiltration, Impact). Two are unique to AI:\n- **AI Model Access** (AML.TA0000): how the adversary reaches the model, for example via an inference API, an AI-enabled product, physical environment or full model access.\n- **AI Attack Staging** (AML.TA0001): preparing the attack, such as creating a proxy model, crafting adversarial data or verifying the attack offline.\nIDs use the AML prefix: techniques AML.T####, mitigations AML.M#### (for example *Generative AI Guardrails*, *Restrict Number of AI Model Queries*, *AI Bill of Materials*, *Human In-the-Loop for AI Agent Actions*) and case studies AML.CS####. Defenders map observed behaviour to techniques, check which mitigations they have, and use case studies to plan red-team exercises.",
+      "terms": [
+        {"t": "Tactic", "d": "The adversary's objective at a stage of the attack (the 'why')."},
+        {"t": "Technique", "d": "The method used to achieve a tactic (the 'how'), ID AML.T####."},
+        {"t": "AI Attack Staging", "d": "ATLAS tactic for preparing an attack, e.g. building a proxy model or crafting adversarial data."},
+        {"t": "Case study", "d": "A documented real-world or red-team attack on an AI system mapped to ATLAS techniques."}
+      ],
+      "trap": "ATLAS complements ATT&CK rather than replacing it; and it is a threat knowledge base, not a vulnerability database (that is CVE) or a ranked risk list (that is OWASP).",
+      "example": "After seeing thousands of near-identical queries to a scoring API, an analyst maps the activity to ATLAS techniques under AI Model Access and Exfiltration, then applies the query-restriction mitigation.",
+      "diagram": {"kind": "flow", "items": ["Reconnaissance", "AI Model Access", "AI Attack Staging", "Exfiltration", "Impact"]}
+    },
+    {
+      "id": "secai-plus.d2.1.05",
+      "objective": "d2.1",
+      "seq": 5,
+      "title": "CVE AI Working Group",
+      "short": "The CVE AI Working Group, formed in 2024 inside the CVE Program, develops guidance on how vulnerabilities in AI systems should be identified, scoped and recorded as CVE entries, so AI flaws can be tracked and patched like other software vulnerabilities.",
+      "deep": "The **CVE Program** assigns unique identifiers (CVE-YYYY-NNNN) to publicly disclosed vulnerabilities in specific products, issued by CVE Numbering Authorities (CNAs). AI raised hard questions: is a jailbreak of one model a vulnerability? Who is the vendor of a fine-tuned open model? Is a model's probabilistic misbehaviour a flaw in a product version?\nThe **AI Working Group** was set up so the community could agree on answers: which AI issues qualify for a CVE ID, how to describe affected models and components, and how CNAs should handle AI reports. Early direction distinguishes issues that are simply a model ignoring safety instructions (often not CVE-worthy on their own) from those that expose a classic weakness, such as code execution in an AI framework, an insecure model loader, or a data exposure in an AI product, which clearly are. Related work at the **CWE** program defines AI weakness categories.\nFor defenders: track CVEs for AI frameworks, model servers, vector databases and plug-ins in your vulnerability management process, and feed them into your AI bill of materials (AI-BOM).",
+      "terms": [
+        {"t": "CVE", "d": "Common Vulnerabilities and Exposures: unique IDs for specific publicly disclosed vulnerabilities."},
+        {"t": "CNA", "d": "CVE Numbering Authority: an organisation authorised to assign CVE IDs."},
+        {"t": "CWE", "d": "Common Weakness Enumeration: categories of weakness types, not specific product flaws."}
+      ],
+      "trap": "CVE identifies specific vulnerabilities in specific products; it is not a tactic matrix (ATLAS), a weakness taxonomy (CWE) or a severity score (CVSS).",
+      "example": "A patch bulletin lists a CVE for a deserialization flaw in a popular model-serving library; the team uses its AI-BOM to find every endpoint running that version.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d2.1.06",
+      "objective": "d2.1",
+      "seq": 6,
+      "title": "Threat-modeling frameworks: STRIDE, PASTA, LINDDUN",
+      "short": "Threat modeling systematically asks what can go wrong in a design. STRIDE classifies threats by type, PASTA is a seven-stage risk-centric process, and LINDDUN focuses on privacy threats. All apply to AI systems once you draw the data flows, trust boundaries and model components.",
+      "deep": "Threat modeling starts with a **data flow diagram (DFD)**: users, app, gateway, model endpoint, vector store, tools and training pipeline, with **trust boundaries** wherever trust changes (for example between untrusted documents and the model's context).\n- **STRIDE** (Microsoft): Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. AI mapping: tampering = data poisoning; information disclosure = model inversion or system prompt leakage; DoS = unbounded consumption; elevation of privilege = an injected prompt making an agent use tools it should not.\n- **PASTA** (Process for Attack Simulation and Threat Analysis): seven stages, from defining business objectives through technical scope, decomposition, threat analysis, vulnerability analysis and attack modeling to risk and impact analysis. Good when business impact must drive priorities.\n- **LINDDUN**: Linking, Identifying, Non-repudiation, Detecting, Data disclosure, Unawareness, Non-compliance. Use it when training data or prompts contain personal data.\nScoring aids such as **DREAD** and **attack trees** help rank and visualise threats. Enrich each with OWASP, ATLAS and the MIT repository.",
+      "terms": [
+        {"t": "Trust boundary", "d": "A line in a data flow where data or control passes between different trust levels."},
+        {"t": "STRIDE", "d": "Spoofing, Tampering, Repudiation, Information disclosure, DoS, Elevation of privilege."},
+        {"t": "PASTA", "d": "Process for Attack Simulation and Threat Analysis: a 7-stage risk-centric method."},
+        {"t": "LINDDUN", "d": "Privacy threat-modeling framework (Linking, Identifying, Non-repudiation, Detecting, Data disclosure, Unawareness, Non-compliance)."}
+      ],
+      "trap": "STRIDE is a threat classification, not a scoring model; if the question is about privacy harms such as linkability of users, the best fit is LINDDUN.",
+      "example": "Using STRIDE on a RAG app, the team marks the document ingestion path as a Tampering risk (poisoned documents) and the chat output as Information disclosure.",
+      "diagram": {"kind": "cycle", "items": ["Model the system", "Identify threats", "Mitigate", "Validate"]}
+    },
+    {
+      "id": "secai-plus.d2.1.07",
+      "objective": "d2.1",
+      "seq": 7,
+      "title": "MAESTRO and applying threat models to agentic AI",
+      "short": "MAESTRO (Multi-Agent Environment, Security, Threat, Risk, and Outcome) is a Cloud Security Alliance framework for threat modeling agentic AI across seven layers, from foundation models to the agent ecosystem. It extends STRIDE, PASTA and LINDDUN with AI-specific threats.",
+      "deep": "Classic frameworks were designed for deterministic software. Agentic AI adds autonomy, tool use, memory and agent-to-agent communication. **MAESTRO**, published by the Cloud Security Alliance in 2025, breaks an agentic system into seven layers:\n1. Foundation Models\n2. Data Operations\n3. Agent Frameworks\n4. Deployment and Infrastructure\n5. Evaluation and Observability\n6. Security and Compliance (a vertical layer across the others)\n7. Agent Ecosystem\nYou identify threats in each layer (for example poisoned vector data in Data Operations, a compromised tool or MCP server in the Agent Ecosystem) and also cross-layer threats, where a weakness in one layer cascades into another.\nA practical AI threat-modeling workflow:\n- Decompose the system and mark trust boundaries.\n- Enumerate threats using STRIDE or MAESTRO layers.\n- Enrich with OWASP LLM/ML Top 10 entries and ATLAS techniques.\n- Prioritise by likelihood and impact, assign controls, and revisit whenever the model, data or tools change.",
+      "terms": [
+        {"t": "MAESTRO", "d": "Multi-Agent Environment, Security, Threat, Risk, and Outcome: CSA's layered agentic AI threat-modeling framework."},
+        {"t": "Agentic AI", "d": "AI that plans and takes actions using tools, memory and other agents with some autonomy."},
+        {"t": "Cross-layer threat", "d": "A threat where compromise in one layer propagates to others."}
+      ],
+      "trap": "MAESTRO does not replace STRIDE; it extends classic frameworks for multi-agent systems. A one-time threat model is wrong: AI models must be revisited when models, data or tools change.",
+      "example": "Threat modeling a travel-booking agent, the team finds a cross-layer risk: a poisoned review in Data Operations steers the agent framework to call a payment tool.",
+      "diagram": {"kind": "stack", "items": ["7 Agent Ecosystem", "5 Eval & Observability", "4 Deployment & Infra", "3 Agent Frameworks", "2 Data Operations", "1 Foundation Models"]}
+    }
+  ],
+  "questions": [
+    {
+      "id": "secai-plus.d2a.q001",
+      "lesson": "secai-plus.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A customer-service chatbot summarizes inbound emails. An attacker hides instructions in an email that cause the bot to append a malicious link to its reply. Which OWASP Top 10 for LLM Applications entry BEST describes the root cause?",
+      "options": ["LLM09 Misinformation", "LLM01 Prompt Injection", "LLM05 Improper Output Handling", "LLM03 Supply Chain"],
+      "answer": [1],
+      "explain": "Instructions hidden in content the model processes are indirect prompt injection (LLM01). Misinformation concerns false but unprompted content, improper output handling concerns downstream systems trusting output unchecked, and supply chain concerns third-party components."
+    },
+    {
+      "id": "secai-plus.d2a.q002",
+      "lesson": "secai-plus.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A web app renders LLM responses directly into the page without encoding, and a crafted response executes script in users' browsers. Which OWASP LLM Top 10 entry applies?",
+      "options": ["LLM07 System Prompt Leakage", "LLM02 Sensitive Information Disclosure", "LLM08 Vector and Embedding Weaknesses", "LLM05 Improper Output Handling"],
+      "answer": [3],
+      "explain": "Passing model output to a browser without validation or encoding is LLM05 Improper Output Handling, which can lead to XSS, SSRF or code execution. The other entries concern hidden instructions, data exposure and RAG storage flaws."
+    },
+    {
+      "id": "secai-plus.d2a.q003",
+      "lesson": "secai-plus.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An HR assistant agent can read the HR knowledge base. To save time, developers gave its service account full read/write access to the HR database and an email-sending tool. During testing, a manipulated prompt caused the agent to delete several employee records and send emails to external addresses.",
+      "stem": "Which OWASP LLM Top 10 entry MOST directly describes the design flaw the security team should fix first?",
+      "options": ["LLM06 Excessive Agency", "LLM10 Unbounded Consumption", "LLM04 Data and Model Poisoning", "LLM09 Misinformation"],
+      "answer": [0],
+      "explain": "The agent had more permissions (write/delete) and functions (external email) than its read-only task needed: Excessive Agency. The manipulated prompt was the trigger, but the damage came from over-permissioning. Unbounded consumption is about resource use; poisoning is about training data."
+    },
+    {
+      "id": "secai-plus.d2a.q004",
+      "lesson": "secai-plus.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which OWASP Top 10 for LLM Applications (2025) entry covers attackers flooding an LLM API so that costs spike and legitimate users are denied service?",
+      "options": ["LLM02 Sensitive Information Disclosure", "LLM06 Excessive Agency", "LLM10 Unbounded Consumption", "LLM03 Supply Chain"],
+      "answer": [2],
+      "explain": "LLM10 Unbounded Consumption covers uncontrolled inference use: denial of service, 'denial of wallet' cost attacks and extraction through mass querying. It replaced the older Model Denial of Service entry."
+    },
+    {
+      "id": "secai-plus.d2a.q005",
+      "lesson": "secai-plus.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A developer embedded a database connection string in the system prompt of a public chatbot, and users later obtained it. Which TWO OWASP LLM Top 10 entries are MOST relevant? (Select TWO.)",
+      "options": ["LLM07 System Prompt Leakage", "LLM08 Vector and Embedding Weaknesses", "LLM02 Sensitive Information Disclosure", "LLM10 Unbounded Consumption", "LLM04 Data and Model Poisoning"],
+      "answer": [0, 2],
+      "explain": "Exposing the system prompt is LLM07, and the credential inside it is sensitive information disclosed (LLM02). OWASP stresses that secrets should never be placed in system prompts at all. The vector store, consumption and poisoning entries do not describe this event."
+    },
+    {
+      "id": "secai-plus.d2a.q006",
+      "lesson": "secai-plus.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the OWASP Top 10 for LLM Applications (2025), select Yes if true.",
+      "statements": [
+        {"s": "Vector and Embedding Weaknesses is an entry that addresses risks in retrieval-augmented generation (RAG) systems.", "a": true},
+        {"s": "Misinformation covers hallucinated output that users or systems trust without verification.", "a": true},
+        {"s": "Prompt injection is only possible when the attacker types directly into the chat window.", "a": false}
+      ],
+      "explain": "LLM08 targets RAG and vector stores, and LLM09 covers hallucination and overreliance on false output. Prompt injection can also be indirect, hidden in web pages, files or emails the model processes."
+    },
+    {
+      "id": "secai-plus.d2a.q007",
+      "lesson": "secai-plus.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An attacker adds small, carefully computed changes to images so a quality-inspection classifier labels defective parts as acceptable. The model and its training data were not altered. Which OWASP ML Security Top 10 risk is this?",
+      "options": ["ML02 Data Poisoning Attack", "ML10 Model Poisoning", "ML09 Output Integrity Attack", "ML01 Input Manipulation Attack"],
+      "answer": [3],
+      "explain": "Crafted inputs that fool a model at inference time are adversarial examples, ML01 Input Manipulation. Poisoning would alter training data or weights, and output integrity attacks tamper with results after the model produces them."
+    },
+    {
+      "id": "secai-plus.d2a.q008",
+      "lesson": "secai-plus.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A researcher shows that by querying a hospital's diagnostic model, they can determine with high confidence whether a specific patient's record was part of its training set. Which risk is demonstrated?",
+      "options": ["ML04 Membership Inference Attack", "ML03 Model Inversion Attack", "ML05 Model Theft", "ML07 Transfer Learning Attack"],
+      "answer": [0],
+      "explain": "Determining whether a particular record was in the training data is membership inference. Model inversion reconstructs what training data looked like, model theft copies the model, and transfer learning attacks abuse a tampered base model."
+    },
+    {
+      "id": "secai-plus.d2a.q009",
+      "lesson": "secai-plus.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A retailer's recommendation model retrains nightly on click and rating feedback. Over three weeks, a competitor used thousands of fake accounts to rate their own products highly and the retailer's private-label products poorly. Recommendations have gradually shifted, but the training code, base weights and original dataset are unchanged.",
+      "stem": "Which OWASP ML Security Top 10 category BEST fits this attack?",
+      "options": ["ML06 AI Supply Chain Attacks", "ML08 Model Skewing", "ML09 Output Integrity Attack", "ML05 Model Theft"],
+      "answer": [1],
+      "explain": "Manipulating live feedback so a continuously retrained model drifts toward the attacker's goal is model skewing. Nothing in the supply chain was compromised, outputs were not tampered in transit, and the model was not copied."
+    },
+    {
+      "id": "secai-plus.d2a.q010",
+      "lesson": "secai-plus.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A team fine-tunes a publicly downloaded pre-trained vision model. The base model had been tampered with so that its hidden behaviour carries over into the fine-tuned model. Which OWASP ML Security Top 10 risk is this?",
+      "options": ["ML04 Membership Inference Attack", "ML01 Input Manipulation Attack", "ML07 Transfer Learning Attack", "ML03 Model Inversion Attack"],
+      "answer": [2],
+      "explain": "A transfer learning attack plants behaviour in a base model so that it survives fine-tuning into downstream models. The other options are inference-time attacks on a deployed model."
+    },
+    {
+      "id": "secai-plus.d2a.q011",
+      "lesson": "secai-plus.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the OWASP Machine Learning Security Top 10, select Yes if true.",
+      "statements": [
+        {"s": "Data poisoning alters the training data, while model poisoning directly alters the model's parameters.", "a": true},
+        {"s": "The ML Security Top 10 applies only to large language models.", "a": false},
+        {"s": "An output integrity attack modifies a model's results after inference, before they reach the consuming system.", "a": true}
+      ],
+      "explain": "ML02 targets data and ML10 targets weights. The list covers all ML systems, such as classifiers and fraud models, not only LLMs. ML09 output integrity attacks tamper with results in transit or storage."
+    },
+    {
+      "id": "secai-plus.d2a.q012",
+      "lesson": "secai-plus.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which resource classifies AI risks with a Causal Taxonomy (entity, intent, timing) and a Domain Taxonomy of seven domains?",
+      "options": ["MITRE ATLAS", "OWASP Machine Learning Security Top 10", "CVE AI Working Group guidance", "MIT AI Risk Repository"],
+      "answer": [3],
+      "explain": "The MIT AI Risk Repository codes each risk by entity, intent and timing, and sorts risks into 7 domains and 24 subdomains. ATLAS organises adversary tactics and techniques, and OWASP lists ranked security risks."
+    },
+    {
+      "id": "secai-plus.d2a.q013",
+      "lesson": "secai-plus.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A governance lead is starting a risk assessment for a public-facing generative AI tutor. Engineering already has a list of technical attack techniques. The lead wants to make sure the assessment also captures risks such as overreliance by students, discriminatory content and environmental impact, and to record whether each risk is caused by humans or by the AI.",
+      "stem": "Which resource should the lead use to broaden the risk identification?",
+      "options": ["MIT AI Risk Repository", "MITRE ATLAS case studies", "CVE records for AI frameworks", "STRIDE threat categories"],
+      "answer": [0],
+      "explain": "The MIT repository covers societal, human-interaction and environmental domains and tags each risk by causal entity (AI or human). ATLAS and CVE are attack- and vulnerability-focused, and STRIDE classifies security threats only."
+    },
+    {
+      "id": "secai-plus.d2a.q014",
+      "lesson": "secai-plus.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the MIT AI Risk Repository, select Yes if true.",
+      "statements": [
+        {"s": "Its Causal Taxonomy records whether a risk occurs before or after deployment.", "a": true},
+        {"s": "It assigns unique identifiers to vulnerabilities in specific AI products so they can be patched.", "a": false},
+        {"s": "It was built by extracting risks from many existing published AI risk frameworks.", "a": true}
+      ],
+      "explain": "Timing (pre- or post-deployment) is one of the three causal dimensions, and the repository is a meta-review of published frameworks. Product vulnerability IDs are the job of the CVE Program."
+    },
+    {
+      "id": "secai-plus.d2a.q015",
+      "lesson": "secai-plus.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which pair of tactics is unique to MITRE ATLAS rather than inherited from MITRE ATT&CK?",
+      "options": ["Initial Access and Exfiltration", "AI Model Access and AI Attack Staging", "Reconnaissance and Resource Development", "Defense Evasion and Impact"],
+      "answer": [1],
+      "explain": "ATLAS adds AI Model Access (how adversaries reach the model) and AI Attack Staging (preparing attacks such as proxy models and adversarial data). The other pairs are standard ATT&CK tactics that ATLAS reuses."
+    },
+    {
+      "id": "secai-plus.d2a.q016",
+      "lesson": "secai-plus.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Threat intelligence shows an adversary trained a local copy of a target's model using its public API outputs, then tested evasive inputs against that copy before attacking production. In MITRE ATLAS, which tactic does building and testing against the copy belong to?",
+      "options": ["Persistence", "Collection", "AI Attack Staging", "Command and Control"],
+      "answer": [2],
+      "explain": "Creating a proxy model, crafting adversarial data and verifying the attack offline are AI Attack Staging techniques. Collection is gathering data or artifacts; persistence and command and control concern maintaining access."
+    },
+    {
+      "id": "secai-plus.d2a.q017",
+      "lesson": "secai-plus.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A SOC team wants to use MITRE ATLAS to improve defenses for its AI services. Which TWO activities are appropriate uses of ATLAS? (Select TWO.)",
+      "options": ["Mapping observed suspicious model queries to ATLAS techniques to understand adversary goals", "Looking up the CVSS score for a model-serving library vulnerability", "Using ATLAS case studies to design realistic red-team scenarios", "Obtaining a CVE identifier for a newly found AI framework flaw", "Replacing the ATT&CK matrix for all non-AI infrastructure"],
+      "answer": [0, 2],
+      "explain": "ATLAS supports mapping behaviour to techniques and mitigations, and its case studies inform red teaming. CVSS scores and CVE IDs come from vulnerability programs, and ATLAS complements ATT&CK rather than replacing it for traditional IT."
+    },
+    {
+      "id": "secai-plus.d2a.q018",
+      "lesson": "secai-plus.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Logs from a credit-scoring API show one customer account sending tens of thousands of requests over two days, systematically varying single input fields and recording the confidence scores returned. Analysts suspect the goal is to replicate the model's decision logic.",
+      "stem": "Which MITRE ATLAS mitigation addresses this activity MOST directly?",
+      "options": ["AI Bill of Materials", "Human In-the-Loop for AI Agent Actions", "Code Signing", "Restrict Number of AI Model Queries"],
+      "answer": [3],
+      "explain": "Systematic mass querying to replicate a model is extraction through the inference API; limiting query volume (and reducing output detail such as confidence scores) directly counters it. AI-BOM, code signing and HITL address supply chain and agent risks."
+    },
+    {
+      "id": "secai-plus.d2a.q019",
+      "lesson": "secai-plus.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the primary purpose of the CVE AI Working Group?",
+      "options": ["Developing guidance on how AI-related vulnerabilities are identified, scoped and assigned CVE records", "Publishing a ranked list of the top ten risks for LLM applications", "Maintaining a matrix of adversary tactics against AI systems", "Certifying AI models as safe for production use"],
+      "answer": [0],
+      "explain": "The working group operates inside the CVE Program to define how AI flaws qualify for and are described in CVE records. The ranked list is OWASP, the tactic matrix is MITRE ATLAS, and no CVE body certifies models."
+    },
+    {
+      "id": "secai-plus.d2a.q020",
+      "lesson": "secai-plus.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A vulnerability bulletin announces a remote code execution flaw in a model-serving framework version your organization uses. Which identifier would the bulletin MOST likely use to reference this specific flaw?",
+      "options": ["A CWE ID", "An ATLAS technique ID (AML.T####)", "A CVE ID", "An OWASP LLM Top 10 entry number"],
+      "answer": [2],
+      "explain": "Specific vulnerabilities in specific product versions receive CVE IDs. CWE describes weakness types in general, ATLAS IDs describe adversary techniques, and OWASP numbers describe risk categories."
+    },
+    {
+      "id": "secai-plus.d2a.q021",
+      "lesson": "secai-plus.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about CVEs and AI systems, select Yes if true.",
+      "statements": [
+        {"s": "AI frameworks, model servers and vector databases should be included in normal vulnerability management and CVE tracking.", "a": true},
+        {"s": "CVE IDs are assigned by CVE Numbering Authorities (CNAs).", "a": true},
+        {"s": "Any single instance of a model ignoring a safety instruction automatically qualifies for its own CVE.", "a": false}
+      ],
+      "explain": "AI software components are tracked like any software, and CNAs assign CVE IDs. Whether model misbehaviour qualifies is exactly what the AI Working Group is clarifying; a simple guardrail bypass is not automatically a CVE."
+    },
+    {
+      "id": "secai-plus.d2a.q022",
+      "lesson": "secai-plus.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "During a STRIDE review of an ML pipeline, an analyst identifies that an attacker could modify files in the training data bucket. Which STRIDE category does this threat fall under?",
+      "options": ["Repudiation", "Tampering", "Spoofing", "Elevation of privilege"],
+      "answer": [1],
+      "explain": "Unauthorized modification of data is Tampering, which maps to data poisoning in AI systems. Repudiation is denying actions, spoofing is impersonation, and elevation of privilege is gaining unauthorized rights."
+    },
+    {
+      "id": "secai-plus.d2a.q023",
+      "lesson": "secai-plus.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A team is threat modeling a chatbot that stores conversation histories containing customer health details. They specifically want to analyze threats such as linking conversations to individuals and users being unaware of data processing. Which framework fits BEST?",
+      "options": ["DREAD", "PASTA", "LINDDUN", "STRIDE"],
+      "answer": [2],
+      "explain": "LINDDUN is the privacy threat-modeling framework: Linking, Identifying, Non-repudiation, Detecting, Data disclosure, Unawareness, Non-compliance. STRIDE covers security threats, PASTA is a risk-centric process, and DREAD is a scoring model."
+    },
+    {
+      "id": "secai-plus.d2a.q024",
+      "lesson": "secai-plus.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps of a basic AI system threat-modeling exercise in order.",
+      "options": ["Diagram the system's components, data flows and trust boundaries", "Identify threats for each component using STRIDE, OWASP and ATLAS", "Rate and prioritize threats by likelihood and impact", "Select and implement controls for priority threats", "Validate the controls and revisit the model when the system changes"],
+      "explain": "You must understand the system before finding threats, rank threats before spending on controls, and validate controls afterwards. AI threat models are revisited whenever models, data or tools change."
+    },
+    {
+      "id": "secai-plus.d2a.q025",
+      "lesson": "secai-plus.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which threat-modeling framework was designed specifically for multi-agent and agentic AI systems and organizes threats across seven layers?",
+      "options": ["PASTA", "LINDDUN", "OCTAVE", "MAESTRO"],
+      "answer": [3],
+      "explain": "MAESTRO (Multi-Agent Environment, Security, Threat, Risk, and Outcome) from the Cloud Security Alliance uses seven layers from foundation models to the agent ecosystem. The others are general-purpose security, privacy or organizational risk methods."
+    },
+    {
+      "id": "secai-plus.d2a.q026",
+      "lesson": "secai-plus.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "An organization completed a STRIDE threat model for its procurement agent eight months ago. Since then the agent gained access to a new payment tool via an MCP server, its RAG index now includes supplier-submitted PDFs, and the foundation model was upgraded to a new version.",
+      "stem": "Which THREE actions should the security architect take? (Select THREE.)",
+      "options": ["Update the data flow diagram to add the payment tool, MCP server and supplier PDFs with new trust boundaries", "Treat the eight-month-old threat model as valid because STRIDE categories have not changed", "Analyze supplier PDFs as an untrusted input path for indirect prompt injection and data poisoning", "Re-run threat identification for the agent ecosystem and data layers, including cross-layer threats", "Remove the threat model from scope until a security incident occurs"],
+      "answer": [0, 2, 3],
+      "explain": "New tools, untrusted data sources and model changes all alter the attack surface, so the model must be updated, new trust boundaries drawn and cross-layer threats re-analyzed. Waiting for an incident or relying on an outdated model defeats the purpose of threat modeling."
+    }
+  ]
+}

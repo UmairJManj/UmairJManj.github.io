@@ -1,0 +1,326 @@
+{
+  "id": "secai-plus",
+  "name": "CompTIA SecAI+",
+  "code": "CY0-001",
+  "issuer": "CompTIA",
+  "outlineVersion": "CompTIA SecAI+ CY0-001 V1 Exam Objectives, Document Version 2.0 (copyright 2025); exam launched February 17, 2026",
+  "sourceUrl": "https://www.comptia.org/en/certifications/secai/",
+  "exam": {
+    "minutes": 60,
+    "passMark": "600/900",
+    "questionCount": "Maximum of 60",
+    "notes": "Live since February 17, 2026 (V1, after a 2025 beta). Multiple-choice and performance-based questions. English and Japanese. Delivered via Pearson VUE test centre or online proctoring. No prerequisites. Recommended: 3-4 years in IT including 2+ years hands-on cybersecurity, plus Security+, CySA+, PenTest+ or equivalent. Retirement is estimated about 3 years after launch. Third-party sources report a USD 298 voucher (332 with Retake Assurance), 3-year validity and renewal with 15 CEUs. ISO 17024 accreditation and DoD 8140 mapping are pending."
+  },
+  "domains": [
+    {
+      "id": "d1",
+      "name": "Basic AI Concepts Related to Cybersecurity",
+      "weight": "17%",
+      "objectives": [
+        {
+          "id": "d1.1",
+          "name": "Compare and contrast various AI types and techniques used in cybersecurity",
+          "bullets": [
+            "Types of AI: generative AI, machine learning, statistical learning, transformers, deep learning, natural language processing (NLP), large language models (LLMs), small language models (SLMs), generative adversarial networks (GANs)",
+            "Model training techniques: model validation, supervised learning, unsupervised learning, reinforcement learning, fine-tuning, epoch, pruning, quantization",
+            "Prompt engineering: system prompts, user prompts, one-shot, multi-shot and zero-shot prompting, system roles, templates"
+          ]
+        },
+        {
+          "id": "d1.2",
+          "name": "Explain the importance of data security in relation to AI",
+          "bullets": [
+            "Data processing: data cleansing, verification, lineage, integrity, provenance, augmentation, balancing",
+            "Data types: structured, semi-structured, unstructured",
+            "Watermarking",
+            "Retrieval-augmented generation (RAG): vector storage, embeddings"
+          ]
+        },
+        {
+          "id": "d1.3",
+          "name": "Explain the importance of security throughout the life cycle of AI",
+          "bullets": [
+            "Business use case: alignment with corporate objectives",
+            "Data collection: trustworthiness, authenticity",
+            "Data preparation",
+            "Model development/selection",
+            "Model evaluation",
+            "Deployment",
+            "Validation",
+            "Monitoring and maintenance",
+            "Feedback and iteration",
+            "Human-centric AI design principles: human-in-the-loop, human oversight, human validation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "name": "Securing AI Systems",
+      "weight": "40%",
+      "objectives": [
+        {
+          "id": "d2.1",
+          "name": "Given a scenario, use AI threat-modeling resources",
+          "bullets": [
+            "OWASP Top 10: LLM Top 10, Machine Learning (ML) Security Top 10",
+            "MIT AI Risk Repository",
+            "MITRE ATLAS (Adversarial Threat Landscape for Artificial-Intelligence Systems)",
+            "CVE AI Working Group",
+            "Threat-modeling frameworks"
+          ]
+        },
+        {
+          "id": "d2.2",
+          "name": "Given a set of requirements, implement security controls for AI systems",
+          "bullets": [
+            "Model controls: model evaluation, model guardrails, prompt templates",
+            "Gateway controls: prompt firewalls, rate limits, token limits, input quotas (data size, quantity, modality limits), endpoint access controls",
+            "Guardrail testing and validation"
+          ]
+        },
+        {
+          "id": "d2.3",
+          "name": "Given a scenario, implement appropriate access controls for AI systems",
+          "bullets": [
+            "Model access",
+            "Data access",
+            "Agent access",
+            "Network/application programming interface (API) access"
+          ]
+        },
+        {
+          "id": "d2.4",
+          "name": "Given a scenario, implement data security controls for AI systems",
+          "bullets": [
+            "Encryption requirements: in transit, at rest, in use",
+            "Data safety: data anonymization, data classification labels, data redaction, data masking, data minimization"
+          ]
+        },
+        {
+          "id": "d2.5",
+          "name": "Given a scenario, implement monitoring and auditing for AI systems",
+          "bullets": [
+            "Prompt monitoring: query, response",
+            "Log monitoring",
+            "Log sanitization",
+            "Log protection",
+            "Response confidence level",
+            "Rate monitoring",
+            "AI cost monitoring: prompts, storage, response, processing",
+            "Auditing for quality and compliance: hallucinations, accuracy, bias and fairness, access"
+          ]
+        },
+        {
+          "id": "d2.6",
+          "name": "Given a scenario, analyze the evidence of an attack and suggest compensating controls for AI systems",
+          "bullets": [
+            "Attacks: prompt injection; poisoning (model poisoning, data poisoning); jailbreaking; hallucinations; input manipulation; introducing biases; circumventing AI guardrails; manipulating application integrations",
+            "Attacks (cont.): model inversion; model theft; AI supply chain attacks; transfer learning attacks; model skewing; output integrity attacks; membership inference",
+            "Attacks (cont.): insecure output handling; model denial of service (DoS); sensitive information disclosure; insecure plug-in design; excessive agency; overreliance",
+            "Compensating controls: prompt firewalls, model guardrails, access controls, data integrity controls, encryption, prompt templates, rate limiting, least privilege"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "name": "AI-assisted Security",
+      "weight": "24%",
+      "objectives": [
+        {
+          "id": "d3.1",
+          "name": "Given a scenario, use AI-enabled tools to facilitate security tasks",
+          "bullets": [
+            "Tools/applications: IDE plug-ins, browser plug-ins, CLI plug-ins, chatbots, personal assistants, Model Context Protocol (MCP) server",
+            "Use cases: signature matching, code quality and linting, vulnerability analysis, automated penetration testing, anomaly detection, pattern recognition",
+            "Use cases (cont.): incident management, threat modeling, fraud detection, translation, summarization"
+          ]
+        },
+        {
+          "id": "d3.2",
+          "name": "Explain how AI enables or enhances attack vectors",
+          "bullets": [
+            "AI-generated content (deepfake): impersonation, misinformation, disinformation",
+            "Adversarial networks",
+            "Reconnaissance",
+            "Social engineering",
+            "Obfuscation",
+            "Automated data correlation",
+            "Automated attack generation: attack vector discovery, payloads, malware, honeypot, distributed denial of service (DDoS)"
+          ]
+        },
+        {
+          "id": "d3.3",
+          "name": "Given a scenario, use AI to automate security tasks",
+          "bullets": [
+            "Scripting tools: low-code, no-code",
+            "Document synthesis and summarization",
+            "Incident response ticket management",
+            "Change management: AI-assisted approvals, automated deployment/rollback",
+            "AI agents",
+            "CI/CD: code scanning, software composition analysis, unit testing, regression testing, model testing, automated deployment/rollback"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d4",
+      "name": "AI Governance, Risk, and Compliance",
+      "weight": "19%",
+      "objectives": [
+        {
+          "id": "d4.1",
+          "name": "Explain organizational governance structures that support AI",
+          "bullets": [
+            "Organizational structures: AI Center of Excellence, AI policies and procedures",
+            "AI-related roles: data scientist, AI architect, machine learning engineer, platform engineer, MLOps engineer, AI security architect, AI governance engineer, AI risk analyst, AI auditor, data engineer"
+          ]
+        },
+        {
+          "id": "d4.2",
+          "name": "Explain risks associated with AI",
+          "bullets": [
+            "Responsible AI: fairness, reliability and safety, transparency, privacy and security, explainability, inclusiveness, accountability, consistency, awareness training",
+            "Risks: introduction of bias, accidental data leakage, reputational loss, accuracy and performance of the model, intellectual property (IP)-related risks, autonomous systems",
+            "Shadow IT: shadow AI"
+          ]
+        },
+        {
+          "id": "d4.3",
+          "name": "Summarize the impact of compliance on business use and development of AI",
+          "bullets": [
+            "European Union (EU) AI Act",
+            "OECD standards",
+            "ISO AI standards",
+            "NIST AI Risk Management Framework (AI RMF)",
+            "Corporate policies: sanctioned vs. unsanctioned, private vs. public models, sensitive data governance",
+            "Third-party compliance evaluations",
+            "Data sovereignty"
+          ]
+        }
+      ]
+    }
+  ],
+  "keyTerms": [
+    "Generative AI",
+    "Machine learning",
+    "Statistical learning",
+    "Transformer",
+    "Deep learning",
+    "Natural language processing (NLP)",
+    "Large language model (LLM)",
+    "Small language model (SLM)",
+    "Generative adversarial network (GAN)",
+    "Supervised learning",
+    "Unsupervised learning",
+    "Reinforcement learning",
+    "Fine-tuning",
+    "Epoch",
+    "Pruning",
+    "Quantization",
+    "Model validation",
+    "System prompt",
+    "User prompt",
+    "Zero-shot prompting",
+    "One-shot prompting",
+    "Multi-shot prompting",
+    "Prompt template",
+    "Data lineage",
+    "Data provenance",
+    "Data cleansing",
+    "Data augmentation",
+    "Data balancing",
+    "Structured vs. unstructured data",
+    "Watermarking",
+    "Retrieval-augmented generation (RAG)",
+    "Vector storage",
+    "Embeddings",
+    "AI life cycle",
+    "Human-in-the-loop",
+    "Human oversight",
+    "OWASP Top 10 for LLM Applications",
+    "OWASP Machine Learning Security Top 10",
+    "MIT AI Risk Repository",
+    "MITRE ATLAS",
+    "CVE AI Working Group",
+    "Model guardrails",
+    "Guardrail testing and validation",
+    "Prompt firewall",
+    "Rate limiting",
+    "Token limits",
+    "Input quotas",
+    "Modality limits",
+    "Endpoint access controls",
+    "Agent access",
+    "API access control",
+    "Least privilege",
+    "Encryption in use",
+    "Data anonymization",
+    "Data classification labels",
+    "Data redaction",
+    "Data masking",
+    "Data minimization",
+    "Prompt monitoring",
+    "Log sanitization",
+    "Response confidence level",
+    "AI cost monitoring",
+    "Prompt injection",
+    "Model poisoning",
+    "Data poisoning",
+    "Jailbreaking",
+    "Hallucinations",
+    "Input manipulation",
+    "Circumventing AI guardrails",
+    "Model inversion",
+    "Model theft",
+    "AI supply chain attack",
+    "Transfer learning attack",
+    "Model skewing",
+    "Output integrity attack",
+    "Membership inference",
+    "Insecure output handling",
+    "Model denial of service",
+    "Sensitive information disclosure",
+    "Insecure plug-in design",
+    "Excessive agency",
+    "Overreliance",
+    "Model Context Protocol (MCP)",
+    "IDE plug-in",
+    "Security copilot / chatbot",
+    "Anomaly detection",
+    "Signature matching",
+    "Automated penetration testing",
+    "Deepfake",
+    "Disinformation",
+    "AI-driven social engineering",
+    "Automated attack generation",
+    "Low-code / no-code",
+    "AI agents",
+    "CI/CD",
+    "Software composition analysis",
+    "Model testing",
+    "Automated rollback",
+    "AI Center of Excellence",
+    "MLOps engineer",
+    "AI security architect",
+    "AI auditor",
+    "Responsible AI",
+    "Explainability",
+    "Transparency",
+    "Fairness",
+    "Shadow AI",
+    "Autonomous systems",
+    "EU AI Act",
+    "NIST AI RMF",
+    "ISO/IEC 42001",
+    "OECD AI Principles",
+    "GDPR",
+    "Data sovereignty",
+    "Sanctioned vs. unsanctioned AI",
+    "Private vs. public models",
+    "Third-party compliance evaluation"
+  ],
+  "status": "verified",
+  "caveats": "Domains, weights and every objective sub-bullet come from the official CY0-001 V1 objectives PDF (Version 2.0), read through a training partner's mirror (onlc.com) because comptia.org gates the PDF behind a form. The PDF still says question count and length are TBD. The 60 questions, 60 minutes and 600/900 figures come from the live comptia.org SecAI+ page. Several third-party sites instead claim 90 questions, 165 minutes and 750/900 (and one lists 5 domains). These look wrong, but questions on exam facts should rely on the official page. Price and renewal figures are from third parties and vary by country. Sub-bullets are lightly condensed (e.g. input quotas grouped with data size/quantity/modality). ISO/IEC 42001 and GDPR are added keyTerms; the outline itself says only 'ISO AI standards', and GDPR appears in CompTIA marketing copy."
+}

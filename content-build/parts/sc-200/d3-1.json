@@ -1,0 +1,1389 @@
+{
+  "exam": "sc-200",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "sc-200.d3.1.01",
+      "objective": "d3.1",
+      "seq": 1,
+      "title": "Choosing the right advanced hunting table",
+      "short": "Advanced hunting in Microsoft Defender XDR stores telemetry in named tables grouped by source: Device* for endpoints, Email* for mail, Identity* for Active Directory, CloudAppEvents for SaaS, and AlertInfo/AlertEvidence for alerts. Picking the right table is the first step of every hunt.",
+      "deep": "Every advanced hunting query starts with a table name. The schema is organised by where the data comes from:\n- **Endpoints (Defender for Endpoint):** `DeviceProcessEvents` (process creation, command lines), `DeviceNetworkEvents` (connections), `DeviceFileEvents` (file create/modify), `DeviceRegistryEvents` (registry changes), `DeviceLogonEvents` (sign-ins on devices), `DeviceImageLoadEvents` (DLL loads), `DeviceEvents` (antivirus, exploit protection and other security control events), `DeviceInfo` (machine details).\n- **Email (Defender for Office 365):** `EmailEvents` (delivery and blocking), `EmailAttachmentInfo`, `EmailUrlInfo`, `EmailPostDeliveryEvents` (actions after delivery such as ZAP), `UrlClickEvents` (Safe Links clicks).\n- **Identity (Defender for Identity):** `IdentityLogonEvents`, `IdentityQueryEvents` (LDAP/AD object queries), `IdentityDirectoryEvents` (domain controller events).\n- **Cloud apps:** `CloudAppEvents`.\n- **Entra sign-ins:** `EntraIdSignInEvents` (interactive and non-interactive; replaces `AADSignInEventsBeta`, needs Entra ID P2) and `EntraIdSpnSignInEvents` for service principals.\n- **Alerts:** `AlertInfo` (one row per alert) and `AlertEvidence` (entities attached to alerts), joined on `AlertId`.\n- **Exposure Management:** `ExposureGraphNodes` and `ExposureGraphEdges`.",
+      "terms": [
+        {
+          "t": "DeviceProcessEvents",
+          "d": "Endpoint table of process creation events, including FileName and ProcessCommandLine."
+        },
+        {
+          "t": "AlertEvidence",
+          "d": "Table of files, IPs, URLs, users and devices associated with alerts; joins to AlertInfo on AlertId."
+        },
+        {
+          "t": "IdentityQueryEvents",
+          "d": "Defender for Identity table of queries for AD objects such as users, groups and devices (LDAP, SAMR, DNS)."
+        },
+        {
+          "t": "UrlClickEvents",
+          "d": "Safe Links click events from email, Teams and Office apps."
+        }
+      ],
+      "trap": "The exam offers near-identical table names: DeviceEvents (security control events) versus DeviceProcessEvents (process launches), or EmailUrlInfo (URLs in mail) versus UrlClickEvents (actual clicks).",
+      "example": "To find who clicked a phishing link, query UrlClickEvents; to see which device then launched powershell.exe, pivot to DeviceProcessEvents.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Source",
+          "Key tables"
+        ],
+        "rows": [
+          [
+            "Endpoint",
+            "Device*Events"
+          ],
+          [
+            "Email",
+            "Email*, UrlClickEvents"
+          ],
+          [
+            "Identity",
+            "Identity*Events"
+          ],
+          [
+            "Alerts",
+            "AlertInfo, AlertEvidence"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d3.1.02",
+      "objective": "d3.1",
+      "seq": 2,
+      "title": "KQL fundamentals for hunting",
+      "short": "Kusto Query Language (KQL) pipes a table through operators with `|`: `where` filters rows, `project` picks columns, `extend` adds calculated columns, `summarize` aggregates with `by`, and `top`/`order by` rank results. `ago()` builds relative time filters.",
+      "deep": "A KQL query reads top to bottom: a table, then operators separated by the pipe `|`, each working on the output of the previous one.\n- `where Timestamp > ago(7d)`: filter rows; `ago()` subtracts a timespan from now (`1h`, `7d`).\n- String operators: `==` is case-sensitive equality, `=~` is case-insensitive; `has` matches a whole term and uses the term index (fast); `contains` matches any substring (slower); `startswith`, `in~ (...)` and `matches regex` also exist.\n- `project`: keep (and optionally rename) only the listed columns. `project-away` drops columns.\n- `extend`: add a calculated column while keeping all existing ones, for example `extend Hour = hourofday(Timestamp)`.\n- `summarize count() by AccountName, bin(Timestamp, 1h)`: aggregate; `bin()` rounds time into buckets. Without `by`, summarize returns one row.\n- `top 10 by Count desc`, `order by`, `take` (any N rows), `distinct`.\nDefender XDR tables use the `Timestamp` column; Microsoft Sentinel tables use `TimeGenerated`. All advanced hunting data is in UTC. Filter early on time and indexed terms to keep queries inside quotas.",
+      "terms": [
+        {
+          "t": "has vs contains",
+          "d": "`has` matches whole terms using the index; `contains` matches any substring and is slower."
+        },
+        {
+          "t": "extend",
+          "d": "Adds calculated columns while keeping all existing columns."
+        },
+        {
+          "t": "bin()",
+          "d": "Rounds values (often time) down to fixed-size buckets for summarize."
+        },
+        {
+          "t": "=~",
+          "d": "Case-insensitive string equality."
+        }
+      ],
+      "trap": "Candidates swap project and extend: project removes every column you don't list, extend keeps them all and adds new ones.",
+      "example": "`DeviceLogonEvents | where ActionType == 'LogonFailed' | summarize count() by AccountName, bin(Timestamp, 1h)` reveals password-spray bursts per hour.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Table",
+          "where",
+          "extend",
+          "summarize",
+          "top / order"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d3.1.03",
+      "objective": "d3.1",
+      "seq": 3,
+      "title": "KQL patterns to identify threats",
+      "short": "Real hunts correlate data: `join` links tables on a shared column, `let` names reusable values, `arg_max()` returns the latest row per entity, `make_set()` collects distinct values, and functions such as `FileProfile()` enrich hashes with prevalence data.",
+      "deep": "Threat patterns rarely sit in one table, so hunters combine data:\n- `join kind=... (OtherTable) on Column`: the default kind is **innerunique** (deduplicates the left side). `inner` keeps all matches, `leftouter` keeps unmatched left rows, `leftanti` returns left rows with NO match (great for 'never seen before' logic), `leftsemi` returns matched left rows only.\n- `union`: stack rows from several tables; schemas do not have to match.\n- `let Name = ...;` defines a variable, list or sub-query; each `let` ends with a semicolon.\n- `summarize arg_max(Timestamp, *) by DeviceId`: the most recent full row per device. `arg_min` gives the earliest.\n- `make_set(x)` / `make_list(x)`: arrays of distinct / all values; `dcount(x)` counts distinct values; `mv-expand` turns array elements back into rows.\n- `invoke FileProfile(SHA1, 1000)`: an advanced hunting function that adds GlobalPrevalence, signer and other file details. Others include `DeviceFromIP()` and `AssignedIPAddresses()`.\nExample: join EmailAttachmentInfo to DeviceFileEvents on `SHA256` to see attachments that landed on disk.",
+      "terms": [
+        {
+          "t": "innerunique",
+          "d": "Default KQL join kind; deduplicates left-side keys before matching."
+        },
+        {
+          "t": "leftanti",
+          "d": "Join kind returning only left rows with no match on the right."
+        },
+        {
+          "t": "arg_max()",
+          "d": "Aggregation returning the row with the maximum value of an expression, e.g. latest Timestamp."
+        },
+        {
+          "t": "FileProfile()",
+          "d": "Advanced hunting function invoked to enrich file hashes with prevalence and signer info."
+        }
+      ],
+      "trap": "Expect a join-kind question: leftanti (no match) versus leftsemi (match only) versus leftouter (all left rows).",
+      "example": "A hunter lists rare binaries by taking distinct SHA1 values from DeviceProcessEvents, invoking FileProfile and keeping GlobalPrevalence < 50.",
+      "diagram": null
+    },
+    {
+      "id": "sc-200.d3.1.04",
+      "objective": "d3.1",
+      "seq": 4,
+      "title": "Creating advanced hunting queries",
+      "short": "Advanced hunting (Investigation & response > Hunting > Advanced hunting) offers guided mode, a query builder for KQL beginners, and advanced mode for hand-written KQL. Native Defender data goes back 30 days; queries return up to 100,000 rows and time out after 10 minutes.",
+      "deep": "Open the Microsoft Defender portal and go to **Investigation & response > Hunting > Advanced hunting**.\n- **Guided mode:** build queries by picking a domain, conditions and filters, no KQL required.\n- **Advanced mode:** write KQL from scratch with schema browser, IntelliSense and sample queries.\nSave queries to **My queries** or **Shared queries** so the team can reuse them; queries from threat analytics reports can be opened directly here.\n**Quotas (per query):** 30 days of native Defender XDR data, 100,000 rows, 64 MB result size, 10-minute timeout. CPU use is metered per tenant every 15 minutes; heavy users see warnings and can be blocked until the next cycle.\n**Sentinel in the Defender portal:** onboarded workspace tables appear in the same schema and follow the workspace's analytics-tier retention, which is how you hunt Defender data older than 30 days. Data that lives only in the Sentinel data lake tier is not queryable here; use data lake exploration instead.\nAll times are UTC. Event data appears almost immediately; entity data such as DeviceInfo updates hourly.\nAccess: Security Reader, Security Administrator, Global Reader (Entra) or Unified RBAC 'Security data basics (read)'.",
+      "terms": [
+        {
+          "t": "Guided mode",
+          "d": "Query builder in advanced hunting for users not yet fluent in KQL."
+        },
+        {
+          "t": "Advanced mode",
+          "d": "Advanced hunting editor for writing KQL directly."
+        },
+        {
+          "t": "Shared queries",
+          "d": "Saved advanced hunting queries visible to others in the tenant."
+        }
+      ],
+      "trap": "The exam tests limits: 30 days of native data, 100,000 rows, 10 minutes; longer retention needs a Sentinel workspace, not a setting in Defender.",
+      "example": "A junior analyst uses guided mode to filter EmailEvents by sender domain, then switches to advanced mode to see and tweak the generated KQL.",
+      "diagram": null
+    },
+    {
+      "id": "sc-200.d3.1.05",
+      "objective": "d3.1",
+      "seq": 5,
+      "title": "Turning hunting queries into custom detections",
+      "short": "A good hunting query can become a custom detection rule that runs on a schedule (Continuous/NRT, every 1, 3, 12 or 24 hours) and raises alerts. Results must include Timestamp and ReportId plus an entity column such as DeviceId for actions like isolation.",
+      "deep": "From the advanced hunting editor select **Create detection rule**. The wizard asks for alert details (name, frequency, severity, category, MITRE techniques), impacted entities, response actions and scope.\n**Required columns:** project `Timestamp` (or `TimeGenerated`) and `ReportId` from the same event. For Device* tables also include `DeviceId`. Aggregated queries can keep these with `summarize (Timestamp, ReportId) = arg_max(Timestamp, ReportId), count() by DeviceId`.\n**Frequency and lookback (Defender data):** every 24 hours = 30 days; every 12 hours = 48 hours; every 3 hours = 12 hours; every hour = 4 hours. **Continuous (NRT)** works only when the query uses a single table, supported operators, and no joins, unions or externaldata. **Custom** frequency (5 minutes to 14 days) is for Sentinel-only data.\n**Actions:** devices (isolate, collect investigation package, antivirus scan, initiate investigation, restrict app execution, needs DeviceId), files (quarantine, allow/block), users (mark compromised, disable, reset authentication), email (move or delete, needs NetworkMessageId and RecipientEmailAddress).\nEach rule raises at most 150 alerts per run. Creating rules on Defender data needs Security settings (manage) or Security Administrator.",
+      "terms": [
+        {
+          "t": "Custom detection rule",
+          "d": "Saved advanced hunting query that runs on a schedule and generates alerts and optional actions."
+        },
+        {
+          "t": "ReportId",
+          "d": "Event identifier column that, with Timestamp, lets the rule locate the triggering event."
+        },
+        {
+          "t": "Continuous (NRT)",
+          "d": "Near-real-time custom detection frequency for single-table queries without joins or unions."
+        }
+      ],
+      "trap": "Missing DeviceId or ReportId in the projected output is the classic reason a rule can't be saved or can't isolate devices.",
+      "example": "A hunt for repeated antivirus detections becomes an hourly rule that automatically collects an investigation package from each matching DeviceId.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Hunting query",
+          "Create rule",
+          "Alert details",
+          "Entities",
+          "Actions"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d3.1.06",
+      "objective": "d3.1",
+      "seq": 6,
+      "title": "Interpreting threat analytics",
+      "short": "Threat analytics in the Defender portal is Microsoft's in-product threat intelligence: reports on actors, campaigns, tools, techniques and vulnerabilities, each showing related incidents, impacted assets, exposure and recommended actions for YOUR tenant.",
+      "deep": "Threat analytics (dashboard at security.microsoft.com/threatanalytics3) is written by Microsoft security researchers and also surfaces curated OSINT.\n**Dashboard:** *Latest threats* (recently published or updated), *High-impact threats* (most active and resolved alerts in your tenant), *Highest exposure threats* (based on vulnerability severity and how many of your devices could be exploited).\n**Report types:** Activity (a campaign), Actor (a tracked threat actor's motives, targets, TTPs), Tool, Technique, Vulnerability (CVEs), Core threat, and OSINT.\n**Report tabs:** Overview (charts of active vs resolved alerts), Analyst report (executive summary, technical overview, MITRE ATT&CK techniques observed, **Detections/Hunting queries** vetted by Microsoft analysts, recommendations, references), Related incidents, Impacted assets (distinct assets with at least one active alert), Endpoints exposure, Recommended actions, and Indicators.\nHunting queries can be run in advanced hunting or turned into custom detections.\n**Access:** a Defender product licence (Defender for Endpoint P1 alone is not enough). 'Security data basics (read)' shows reports and incidents; 'Vulnerability management (read)' and 'Exposure Management (read)' show exposure and recommended actions. Email notifications can be configured for report updates.",
+      "terms": [
+        {
+          "t": "Actor report",
+          "d": "Threat analytics report on a Microsoft-tracked threat actor's motivations, targets and TTPs."
+        },
+        {
+          "t": "Highest exposure threats",
+          "d": "Dashboard list ranking threats by vulnerability severity and number of exploitable devices."
+        },
+        {
+          "t": "Endpoints exposure",
+          "d": "Report tab showing devices vulnerable to the threat and missing mitigations."
+        }
+      ],
+      "trap": "Know which tab answers which question: incidents in your tenant (Related incidents), vulnerable devices (Endpoints exposure), KQL to hunt (Analyst report).",
+      "example": "After a ransomware advisory, the SOC opens its threat analytics report, checks Related incidents for activity and Endpoints exposure for unpatched servers.",
+      "diagram": null
+    },
+    {
+      "id": "sc-200.d3.1.07",
+      "objective": "d3.1",
+      "seq": 7,
+      "title": "Hunting graphs in advanced hunting",
+      "short": "The hunting graph in Defender advanced hunting renders relationships as nodes (devices, users, IPs, cloud resources) and edges (permissions, logons, routes). Predefined scenarios such as 'Attack paths to critical asset' or 'Paths between two entities' run without writing KQL.",
+      "deep": "Tables are poor at showing chains like 'user can authenticate as service principal, which has a role on a key vault'. The **hunting graph** draws those chains.\n**Open it:** Investigation & response > Hunting > Advanced hunting, then select the hunting graph icon or **Create new > Hunting graph**. A tab named *New graph* opens.\n**Predefined scenarios** (prebuilt queries, filterable by MITRE technique) include Attack paths to critical asset, Entity relationship map, Paths between two entities, Access to key vaults, Users with access to sensitive data, Choke points to SQL data stores, OAuth applications with privileged access, Paths to domain admins and Kerberoast paths to critical assets.\n**Filters:** Show only the shortest paths; source node (is critical, is vulnerable, exposed to the internet); target node (has sensitive data); edge type (has permissions to, can authenticate as, member of, routes traffic to...) and edge direction.\nSelect nodes and edges for details, expand or focus on entities.\n**Prerequisites:** a role for advanced hunting, an onboarded Microsoft Sentinel data lake (the graph is auto-provisioned), and at least read access in Microsoft Security Exposure Management.",
+      "terms": [
+        {
+          "t": "Node",
+          "d": "A graph entity such as a device, user account, IP address or cloud resource."
+        },
+        {
+          "t": "Edge",
+          "d": "A relationship between nodes, for example 'has permissions to' or 'can authenticate as'."
+        },
+        {
+          "t": "Choke point",
+          "d": "A node that appears in many paths to critical assets; fixing it breaks many paths."
+        }
+      ],
+      "trap": "The hunting graph lives in advanced hunting; blast radius lives on the incident graph. Both need the Sentinel data lake and Exposure Management read access.",
+      "example": "A hunter runs 'Access to key vaults' for a production vault and finds a guest account with an indirect path through a group membership.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User",
+          "member of",
+          "Group",
+          "has role on",
+          "Key vault"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d3.1.08",
+      "objective": "d3.1",
+      "seq": 8,
+      "title": "Blast radius analysis",
+      "short": "Blast radius on the Defender incident graph shows possible propagation paths from a compromised node to critical assets. Select a node and choose View blast radius; the top eight paths load first.",
+      "deep": "Blast radius combines pre-breach exposure data with post-breach incident data. It is built on the Microsoft Sentinel data lake and graph and extends and replaces the older attack path view in incidents.\n**How to use it:** open an incident from the Incidents page, select a node on the incident graph, then **View blast radius** (the menu shows 'No blast radius found' if none exist). The graph loads the eight top-rated attack paths; **View full blast radius list** shows all paths and targets. Badges on edges and vulnerability markers on nodes add detail; **Hide blast radius** returns to the incident graph. Use the ungroup toggle to analyse one node in a group.\n**Prerequisites:** onboarded Sentinel data lake and **Exposure management (read)** permission or higher.\n**Limits to understand:** paths are *possible*, not guaranteed; only known attack vectors are modelled; results are scoped by your RBAC; calculations go up to seven hops (lower for some environments); data freshness lags.\nQuality depends on data: if critical assets are not classified in Microsoft Security Exposure Management, the view under-represents risk.",
+      "terms": [
+        {
+          "t": "Blast radius",
+          "d": "Potential impact of a compromised entity: paths it could take to reach critical assets."
+        },
+        {
+          "t": "Critical asset",
+          "d": "An asset classified in Exposure Management as high value, used as a target in path calculations."
+        },
+        {
+          "t": "Exposure management (read)",
+          "d": "Unified RBAC permission required to see blast radius and graph data."
+        }
+      ],
+      "trap": "Blast radius shows potential paths, not proof an attacker took them; and poor results usually mean critical assets were never classified.",
+      "example": "During a token-theft incident, the analyst views the blast radius of the compromised user and sees a path to a SQL server, so they reset the user and contain the intermediate VM.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Incident",
+          "Select node",
+          "View blast radius",
+          "Top 8 paths",
+          "Contain"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d3.1.09",
+      "objective": "d3.1",
+      "seq": 9,
+      "title": "Entity relationships with Microsoft Sentinel graph",
+      "short": "Microsoft Sentinel graph models users, devices, resources and activity as nodes and edges. It powers blast radius, the hunting graph and Exposure Management attack paths; you can query relationships with KQL graph operators or build custom graphs queried with GQL.",
+      "deep": "**Microsoft Sentinel graph** is the graph analytics layer of the Sentinel platform. Onboarding the Sentinel data lake enables it, and the hunting graph and blast radius are auto-provisioned in the Defender portal. Other consumers: attack paths in Security Exposure Management and Defender for Cloud, and data risk graphs in Microsoft Purview.\n**KQL over the exposure graph:** the `ExposureGraphNodes` (NodeId, NodeLabel, NodeName, Categories, NodeProperties) and `ExposureGraphEdges` (SourceNodeId, TargetNodeId, EdgeLabel) tables can be turned into a graph:\n`ExposureGraphEdges | make-graph SourceNodeId --> TargetNodeId with ExposureGraphNodes on NodeId | graph-match (A)-[e]->(B) where ... project ...`\nVariable-length paths use `[e*1..3]`.\n**Custom graphs (preview):** authored in Jupyter notebooks in the Microsoft Sentinel VS Code extension from data lake and third-party data, materialised with a graph job (on-demand graphs are kept 30 days; scheduled jobs rebuild on a refresh schedule) and queried with **GQL** on the **Graphs** page in the Defender portal. Billed on the Sentinel graph meter.\n**AI access:** the Sentinel MCP server exposes graph tools such as `find_blastradius` and `find_walkable_paths`.",
+      "terms": [
+        {
+          "t": "make-graph",
+          "d": "KQL operator that builds a graph from an edges table, optionally joined to a nodes table."
+        },
+        {
+          "t": "graph-match",
+          "d": "KQL operator that finds patterns of nodes and edges in a graph built by make-graph."
+        },
+        {
+          "t": "GQL",
+          "d": "Graph Query Language, used to query Sentinel custom graphs."
+        }
+      ],
+      "trap": "Don't confuse the languages: exposure graph tables use KQL make-graph/graph-match, custom graphs use GQL.",
+      "example": "A hunter uses graph-match over ExposureGraphEdges to list identities that can authenticate to more than one critical device.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Blast radius / Hunting graph",
+          "Microsoft Sentinel graph",
+          "Sentinel data lake"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d3.2.01",
+      "objective": "d3.2",
+      "seq": 1,
+      "title": "Creating and running Sentinel hunting queries",
+      "short": "Microsoft Sentinel > Threat management > Hunting lists built-in queries from Content hub solutions plus your custom ones, grouped by MITRE ATT&CK tactic. Run all or selected queries, then use Results and Results delta to spot what changed.",
+      "deep": "Hunting in Microsoft Sentinel is found at **Microsoft Sentinel > Threat management > Hunting** in the Defender portal (Azure portal: Threat management > Hunting; the Azure portal experience retires after March 31, 2027).\n**Queries tab:** queries installed from **Content hub** solutions plus custom ones. Each shows description, data source, MITRE tactics and techniques, Results and **Results delta** (last 24 hours compared with the 24 to 48 hours before) and Results delta percentage. *N/A* means the required data source isn't connected.\n**Run:** **Run all queries** or **Run selected queries**; favourited queries run automatically when the page opens. Results open in the Logs experience.\n**Create:** Queries tab > **New query**; give a name, description, KQL, **entity mappings** (entity type, identifier, column) and **MITRE ATT&CK** tactic, technique and sub-technique, then **Create**.\n**Change:** only custom-source queries can be edited; Content hub queries are **cloned** first. Right-click a query to run, edit, clone, delete or **Create analytics rule** when it is worth automating.\nThe MITRE ATT&CK page can also filter to techniques that have hunting queries. Microsoft recommends running relevant hunts at least weekly.",
+      "terms": [
+        {
+          "t": "Results delta",
+          "d": "Change in a hunting query's result count between the last 24 hours and the previous 24 to 48 hours."
+        },
+        {
+          "t": "Content hub",
+          "d": "Sentinel catalogue of solutions that install hunting queries, analytics rules, workbooks and more."
+        },
+        {
+          "t": "Entity mapping",
+          "d": "Mapping of query columns to entity types (Account, Host, IP...) so results link to entities."
+        }
+      ],
+      "trap": "Built-in queries can't be edited in place; you clone them. And N/A means no data source, not zero results.",
+      "example": "The SOC sorts by Results delta on Monday and sees a spike in a 'rare process as service' query, so it bookmarks the rows for investigation.",
+      "diagram": null
+    },
+    {
+      "id": "sc-200.d3.2.02",
+      "objective": "d3.2",
+      "seq": 2,
+      "title": "Monitoring hunts: bookmarks, hunts and follow-up",
+      "short": "Bookmarks save interesting result rows with their query and time range in the HuntingBookmark table. Hunts group queries, bookmarks and entities around a hypothesis. Livestream is retired; use analytics rules or KQL jobs for ongoing monitoring.",
+      "deep": "**Bookmarks:** select rows in hunting results and choose **Add bookmark**. You can name it, map entities, set MITRE tactics/techniques, and add tags and notes. A bookmark keeps the rows, the KQL and the time range. Bookmarks are stored in the **HuntingBookmark** table, can open the investigation graph, and can create or be added to incidents. Bookmarks are not available in Defender advanced hunting.\n**Hunts (preview):** the Hunts tab tracks a hypothesis-driven hunt end to end. Create a **New Hunt** or create one from selected queries (they are cloned into the hunt, so edits don't affect other hunts or the workspace). Each hunt has **Queries, Bookmarks and Entities** tabs, a hypothesis state and a status; the page shows metrics such as validated hypotheses, new incidents and new analytics rules. From the Entities tab you can open UEBA pages, add IPs to threat intelligence or run playbooks.\n**Ongoing monitoring:** Sentinel livestream is no longer available. To keep watching a pattern, convert the query to an **analytics rule** (or NRT rule), or schedule a **KQL job** on the data lake, and use playbooks for notifications.",
+      "terms": [
+        {
+          "t": "Bookmark",
+          "d": "Saved hunting result rows with query, time range, entities, tags and notes."
+        },
+        {
+          "t": "HuntingBookmark",
+          "d": "Log Analytics table where Sentinel bookmarks are stored."
+        },
+        {
+          "t": "Hunt",
+          "d": "Sentinel object tracking a hypothesis with its own cloned queries, bookmarks and entities."
+        }
+      ],
+      "trap": "Livestream answers are outdated; for continuous monitoring choose an analytics rule or KQL job.",
+      "example": "A hunter creates a hunt 'OAuth consent abuse', clones three queries into it, bookmarks two suspicious consents and promotes one bookmark to an incident.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Hypothesis",
+          "Run queries",
+          "Bookmark",
+          "Incident / rule"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d3.2.03",
+      "objective": "d3.2",
+      "seq": 3,
+      "title": "KQL jobs in the Sentinel data lake",
+      "short": "A KQL job is a one-time or scheduled KQL query over the Microsoft Sentinel data lake that writes results to a table: new analytics-tier tables get the _KQL_CL suffix, data lake tables get _KQL. Up to 5 jobs run concurrently per tenant.",
+      "deep": "The **Microsoft Sentinel data lake** stores large volumes of logs cheaply (up to 12 years). Interactive queries run in **Data lake exploration > KQL queries**; **KQL jobs** run them as background work and save the output.\n**Create:** Microsoft Sentinel > Data lake exploration > **Jobs > Create job** (or Create job from the query editor, or from one of the built-in templates). Steps: name and description; destination workspace and table (new or existing); prepare the query and select source workspaces; choose **One time** or **Scheduled** (by minute, hourly, daily, weekly, monthly; start at least 30 minutes after creation); review and submit.\n**Destinations:** analytics tier (new table suffix `_KQL_CL`, or append to an existing table with a matching schema, otherwise the job fails) or data lake tier System tables (suffix `_KQL`). Federated tables can't be destinations.\n**Limits:** 5 concurrent executions per tenant (extra runs are rejected, not queued), 1-hour timeout, 100 enabled jobs, one output table per job.\n**Unsupported:** `adx()`, `arg()`, `externaldata()`, `ingestion_time()` and user-defined functions.\n**Latency:** new data can take up to 15 minutes to be queryable, so scheduled jobs offset the end time, e.g. `let endTime = now() - 15m;`.\nCreating new analytics tables requires the data lake managed identity (msg-resources-<guid>) to hold Log Analytics Contributor.",
+      "terms": [
+        {
+          "t": "KQL job",
+          "d": "One-time or scheduled KQL query on the data lake that writes results to a table."
+        },
+        {
+          "t": "_KQL_CL",
+          "d": "Suffix of a new analytics-tier table created by a KQL job."
+        },
+        {
+          "t": "Data lake tier",
+          "d": "Low-cost long-term Sentinel storage queried by KQL jobs, notebooks and data lake exploration."
+        }
+      ],
+      "trap": "Suffixes are tested: _KQL_CL (KQL job, analytics), _SPRK_CL (notebook, analytics), _CL (summary rule or custom log).",
+      "example": "A daily KQL job matches 90 days of firewall logs in the lake against new threat indicators and promotes matches to IOCMatches_KQL_CL for an analytics rule.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Data lake",
+          "KQL job",
+          "_KQL_CL table",
+          "Analytics rule"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d3.2.04",
+      "objective": "d3.2",
+      "seq": 4,
+      "title": "Summary rules and summary tables",
+      "short": "Summary rules run a KQL aggregation on a schedule (bin sizes 20 minutes to 24 hours) and write the results to a custom _CL table on the Analytics plan. They make high-volume or low-cost-tier data fast and cheap to query and alert on.",
+      "deep": "Raw logs such as firewall or proxy events are often kept on the Basic or Auxiliary (data lake) plan because they are huge. **Summary rules** aggregate that data in the background and store the much smaller result in a custom table with the **Analytics** plan, where hunting queries, workbooks and analytics rules run quickly.\n**Create:** Microsoft Sentinel > Configuration > **Summary rules > + Create**; name, description, destination table (`<name>_CL`, new or existing); optionally enable **SummaryLogs** diagnostic settings for run history; enter the KQL and preview results; set scheduling (how often, optional delay in minutes, start time). Content hub has summary rule templates (Templates tab).\n**Rules of the query:** bin size `binSize` is 20, 30, 60, 120, 180, 360, 720 or 1440 minutes; delay up to 1440 minutes. Don't add a time filter: the bin defines the range. No `workspaces()`, `app()`, `resource()`, `adx()`, `arg()`, user-defined functions or `union *`. Max 100 active rules per workspace.\nResult rows carry `_RuleName`, `_BinSize`, `_BinStartTime` and `_RuleLastModifiedTime`. Query the destination like any custom table.\n**Role:** Microsoft Sentinel Contributor.",
+      "terms": [
+        {
+          "t": "Summary rule",
+          "d": "Scheduled aggregation query that writes results to a custom Analytics-plan table."
+        },
+        {
+          "t": "binSize",
+          "d": "Aggregation interval of a summary rule, 20 to 1440 minutes."
+        },
+        {
+          "t": "_BinStartTime",
+          "d": "Column added to summary results showing the start of the aggregation bin."
+        }
+      ],
+      "trap": "Summary rules aggregate recent data on a schedule; they can't backfill history (that's a KQL job), and adding a TimeGenerated filter is wrong.",
+      "example": "An hourly summary rule counts CommonSecurityLog connections by source and destination IP into NetSummary_CL; an analytics rule then joins that table to threat intelligence.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Auxiliary/Basic logs",
+          "Summary rule",
+          "Table_CL (Analytics)",
+          "Hunt / Alert"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d3.2.05",
+      "objective": "d3.2",
+      "seq": 5,
+      "title": "Hunting with Jupyter notebooks on the data lake",
+      "short": "Data lake notebooks run in Visual Studio Code with the Microsoft Sentinel extension, using PySpark on Small, Medium or Large pools. The MicrosoftSentinelProvider class reads tables (read_table) and writes results (save_as_table) to _SPRK lake or _SPRK_CL analytics tables.",
+      "deep": "Notebooks suit hunts that need code: machine learning, baselines, long timelines, custom graphs.\n**Setup:** install VS Code, add the **Microsoft Sentinel** extension (optionally GitHub Copilot), sign in. The pane lists **Lake tables** and **Jobs**. Select the **Microsoft Sentinel** kernel and a pool: **Small** (testing, light work), **Medium** (ETL with joins, model training), **Large** (deep learning, big shuffles). A session takes a few minutes to start; the default session timeout is 30 minutes.\n**Code:**\n`from sentinel_lake.providers import MicrosoftSentinelProvider`\n`data_provider = MicrosoftSentinelProvider(spark)`\n`df = data_provider.read_table('SigninLogs', 'MyWorkspace')`\nOther methods: `list_databases()`, `list_tables()`, `save_as_table(df, name, database, write_options)`, `delete_table()` (lake `_SPRK` tables only).\n**Writing:** `_SPRK` suffix for the lake tier, `_SPRK_CL` for the analytics tier. Mode `append` is the default; `overwrite` works only in the lake tier.\n**Jobs:** notebooks can be scheduled (and parameterised) as notebook jobs: 8-hour timeout, 3 concurrent jobs (others queue).\n**Limits:** Python only; Azure Synapse libraries 3.4 plus the Sentinel provider, no pip installs; 100,000-row display limit.\nThe older Azure ML-based Sentinel notebooks with MSTICPy query the analytics workspace rather than the lake.",
+      "terms": [
+        {
+          "t": "MicrosoftSentinelProvider",
+          "d": "PySpark class for listing, reading, writing and deleting data lake and analytics tables."
+        },
+        {
+          "t": "_SPRK_CL",
+          "d": "Required suffix when a notebook writes an analytics-tier table."
+        },
+        {
+          "t": "Spark pool",
+          "d": "Compute size (Small, Medium, Large) chosen when selecting the Microsoft Sentinel kernel."
+        }
+      ],
+      "trap": "Don't pick 'overwrite' for an analytics-tier write or pip-installing a library; both are unsupported.",
+      "example": "A hunter reads 180 days of SigninLogs into a DataFrame, scores impossible-travel per user on a Medium pool, and appends the top risks to RiskySignins_SPRK_CL.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "VS Code",
+          "Sentinel kernel",
+          "read_table",
+          "PySpark",
+          "save_as_table"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d3.2.06",
+      "objective": "d3.2",
+      "seq": 6,
+      "title": "Connecting to the Microsoft Sentinel MCP server",
+      "short": "The Microsoft Sentinel MCP server is a fully hosted Model Context Protocol endpoint that lets AI clients (VS Code agent mode, Security Copilot, Copilot Studio, Microsoft Foundry) search tables, run KQL on the data lake and analyse entities in natural language. It requires at least Security Reader.",
+      "deep": "**Model Context Protocol (MCP)** is an open standard that lets an AI host (for example VS Code) call tools exposed by a server. Microsoft hosts the Sentinel MCP server, so nothing is deployed; identity uses Microsoft Entra.\n**Collections and URLs:**\n- Data exploration: `https://sentinel.microsoft.com/mcp/data-exploration`\n- Triage: `https://sentinel.microsoft.com/mcp/triage`\n- Security Copilot agent creation: `https://sentinel.microsoft.com/mcp/security-copilot-agent-creation`\n**Data exploration tools:** `list_sentinel_workspaces` (run first to get workspace IDs), `search_tables` (find relevant tables and schemas from keywords), `query_lake` (run a KQL query on the lake), `analyze_user_entity` / `analyze_url_entity` with `get_entity_analysis` (AI verdicts; consume SCUs, need Security Copilot Contributor; user analysis max 7 days and Entra users only), plus preview graph tools such as `find_blastradius`, `find_walkable_paths` and `find_exposure_perimeter`.\n**Connect in VS Code:** Ctrl+Shift+P > **MCP: Add Server** > **HTTP** transport > paste the collection URL > give a server ID and scope > sign in with at least **Security Reader** > open Chat in **Agent mode** and confirm tools under Configure Tools.\nMost tools require the Sentinel data lake to be onboarded.",
+      "terms": [
+        {
+          "t": "MCP",
+          "d": "Model Context Protocol: standard for AI hosts to call tools exposed by servers."
+        },
+        {
+          "t": "query_lake",
+          "d": "Sentinel MCP tool that runs a KQL query against a data lake workspace."
+        },
+        {
+          "t": "Tool collection",
+          "d": "Scenario-based group of Sentinel MCP tools exposed at its own URL."
+        }
+      ],
+      "trap": "Entity analyzer tools need Security Copilot Contributor because they use SCUs; basic tools need only Security Reader.",
+      "example": "From VS Code agent mode, an analyst asks 'find sign-in failures in the last 24 hours'; the agent calls search_tables, then query_lake, and summarises the result.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "VS Code agent",
+          "MCP server",
+          "query_lake",
+          "Data lake"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-200.d3.q001",
+      "lesson": "sc-200.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You need to hunt for powershell.exe launched with an encoded command line on onboarded endpoints. Which advanced hunting table should you query?",
+      "options": [
+        "DeviceEvents",
+        "DeviceProcessEvents",
+        "DeviceImageLoadEvents",
+        "DeviceRegistryEvents"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "DeviceProcessEvents records process creation with FileName and ProcessCommandLine. DeviceEvents holds security-control events (antivirus, exploit protection), DeviceImageLoadEvents holds DLL loads, and DeviceRegistryEvents holds registry changes."
+    },
+    {
+      "id": "sc-200.d3.q002",
+      "lesson": "sc-200.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A phishing campaign delivered a malicious link. You must identify which users actually clicked the Safe Links-wrapped URL. Which table should you query?",
+      "options": [
+        "EmailUrlInfo",
+        "EmailPostDeliveryEvents",
+        "CloudAppEvents",
+        "UrlClickEvents"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "UrlClickEvents records Safe Links clicks from email, Teams and Office apps. EmailUrlInfo only lists URLs contained in messages, EmailPostDeliveryEvents covers post-delivery actions such as ZAP, and CloudAppEvents covers SaaS activity."
+    },
+    {
+      "id": "sc-200.d3.q003",
+      "lesson": "sc-200.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You need a query that lists each Defender XDR alert with its title and severity together with the files, IP addresses and users attached to it. Which TWO tables should you join? Select TWO.",
+      "options": [
+        "AlertInfo",
+        "AlertEvidence",
+        "BehaviorInfo",
+        "IdentityInfo",
+        "DeviceInfo"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "AlertInfo has one row per alert (title, severity, category) and AlertEvidence lists the entities tied to each alert; they join on AlertId. BehaviorInfo holds behaviors, not alerts, and IdentityInfo/DeviceInfo are entity inventories."
+    },
+    {
+      "id": "sc-200.d3.q004",
+      "lesson": "sc-200.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the query to find values written to Run keys, a common persistence technique.",
+      "code": "____\n| where Timestamp > ago(7d)\n| where ActionType == 'RegistryValueSet'\n| where RegistryKey contains @'Microsoft\\Windows\\CurrentVersion\\Run'\n| project Timestamp, DeviceName, RegistryKey, RegistryValueName, RegistryValueData, InitiatingProcessFileName",
+      "options": [
+        "DeviceEvents",
+        "DeviceFileEvents",
+        "DeviceRegistryEvents",
+        "DeviceProcessEvents"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "DeviceRegistryEvents holds registry creation and modification with RegistryKey, RegistryValueName and the RegistryValueSet action type. The other Device tables don't carry these registry columns."
+    },
+    {
+      "id": "sc-200.d3.q005",
+      "lesson": "sc-200.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about advanced hunting tables, select Yes if true.",
+      "statements": [
+        {
+          "s": "EntraIdSignInEvents contains both interactive and non-interactive Microsoft Entra sign-ins.",
+          "a": true
+        },
+        {
+          "s": "IdentityDirectoryEvents records events from on-premises Active Directory domain controllers.",
+          "a": true
+        },
+        {
+          "s": "EmailAttachmentInfo records URLs sent in Microsoft Teams messages.",
+          "a": false
+        }
+      ],
+      "explain": "EntraIdSignInEvents (replacing AADSignInEventsBeta) covers interactive and non-interactive sign-ins, and IdentityDirectoryEvents comes from Defender for Identity on domain controllers. Teams URLs are in MessageUrlInfo; EmailAttachmentInfo describes email attachments."
+    },
+    {
+      "id": "sc-200.d3.q006",
+      "lesson": "sc-200.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso runs Microsoft Defender for Identity sensors on all domain controllers. After a workstation compromise, the SOC suspects the attacker enumerated members of Domain Admins and other privileged groups over LDAP before moving laterally. The hunter wants to see which accounts and devices issued those directory lookups.",
+      "stem": "Which table should the hunter query first?",
+      "options": [
+        "IdentityQueryEvents",
+        "IdentityLogonEvents",
+        "IdentityDirectoryEvents",
+        "DeviceLogonEvents"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "IdentityQueryEvents records queries for AD objects such as users and groups (LDAP, SAMR, DNS), which is reconnaissance. IdentityLogonEvents covers authentications, IdentityDirectoryEvents covers DC-side changes and system events, and DeviceLogonEvents covers sign-ins on endpoints."
+    },
+    {
+      "id": "sc-200.d3.q007",
+      "lesson": "sc-200.d3.1.01",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the query to list phishing messages that were delivered to mailboxes in the last 7 days.",
+      "code": "____\n| where Timestamp > ago(7d)\n| where ThreatTypes has 'Phish' and DeliveryAction == 'Delivered'\n| project Timestamp, NetworkMessageId, SenderFromAddress, RecipientEmailAddress, Subject",
+      "options": [
+        "EmailEvents",
+        "EmailPostDeliveryEvents",
+        "EmailUrlInfo",
+        "CloudAppEvents"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "EmailEvents holds delivery and blocking events with ThreatTypes, DeliveryAction, sender, recipient and Subject. EmailPostDeliveryEvents covers actions after delivery, EmailUrlInfo lists URLs, and CloudAppEvents covers cloud app activity."
+    },
+    {
+      "id": "sc-200.d3.q008",
+      "lesson": "sc-200.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the query so it only returns events from the last 7 days.",
+      "code": "DeviceProcessEvents\n| where Timestamp > ____(7d)\n| where FileName =~ 'powershell.exe' and ProcessCommandLine has '-enc'",
+      "options": [
+        "now",
+        "ago",
+        "bin",
+        "datetime"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "ago(7d) returns the current UTC time minus 7 days. now(7d) would be 7 days in the future, bin() needs a value and bucket size, and datetime() expects a date literal, not a timespan."
+    },
+    {
+      "id": "sc-200.d3.q009",
+      "lesson": "sc-200.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You want failed device logons counted per account for each hour to spot password-spray bursts. Complete the query.",
+      "code": "DeviceLogonEvents\n| where Timestamp > ago(1d)\n| where ActionType == 'LogonFailed'\n| summarize Failures = count() by AccountName, ____(Timestamp, 1h)",
+      "options": [
+        "ago",
+        "make_set",
+        "bin",
+        "todatetime"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "bin(Timestamp, 1h) rounds each timestamp down to the hour so summarize groups counts per hour. ago() takes one timespan, make_set is an aggregation not a grouping key, and todatetime() takes one argument."
+    },
+    {
+      "id": "sc-200.d3.q010",
+      "lesson": "sc-200.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A hunting query that uses `where ProcessCommandLine contains 'mimikatz'` over 30 days is slow and close to the CPU quota. You want to match the whole term faster. What should you change?",
+      "options": [
+        "Replace contains with matches regex",
+        "Replace contains with =~",
+        "Replace contains with has",
+        "Add take 100 before the where clause"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "has matches whole terms using the term index, so it is much faster than substring contains. matches regex is slower still, =~ requires the entire value to equal the string, and take before where samples random rows and misses results."
+    },
+    {
+      "id": "sc-200.d3.q011",
+      "lesson": "sc-200.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the query to return the 10 devices with the most successful outbound RDP connections.",
+      "code": "DeviceNetworkEvents\n| where Timestamp > ago(1d)\n| where RemotePort == 3389 and ActionType == 'ConnectionSuccess'\n| summarize Connections = count() by DeviceName\n| ____ 10 by Connections desc",
+      "options": [
+        "take",
+        "sort",
+        "limit",
+        "top"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "top N by Column desc returns the N highest rows by that column. take and limit return arbitrary N rows and don't accept a by clause, and sort by orders rows but doesn't take a count."
+    },
+    {
+      "id": "sc-200.d3.q012",
+      "lesson": "sc-200.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about KQL operators, select Yes if true.",
+      "statements": [
+        {
+          "s": "The =~ operator performs a case-insensitive equality comparison.",
+          "a": true
+        },
+        {
+          "s": "project adds calculated columns while keeping every existing column in the output.",
+          "a": false
+        },
+        {
+          "s": "summarize count() without a by clause returns a single row.",
+          "a": true
+        }
+      ],
+      "explain": "=~ is case-insensitive equality. Adding columns while keeping the rest is extend; project keeps only the columns you list. summarize without by aggregates the whole input into one row."
+    },
+    {
+      "id": "sc-200.d3.q013",
+      "lesson": "sc-200.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "You want to find cmd.exe child processes launched between midnight and 06:00 UTC. Complete the query.",
+      "code": "DeviceProcessEvents\n| where Timestamp > ago(7d)\n| ____ Hour = hourofday(Timestamp)\n| where Hour < 6 and InitiatingProcessFileName =~ 'cmd.exe'\n| project Timestamp, DeviceName, AccountName, ProcessCommandLine, Hour",
+      "options": [
+        "where",
+        "extend",
+        "order",
+        "evaluate"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "extend creates the calculated Hour column while keeping DeviceName, AccountName and the other columns used later. where filters rather than defines columns, order sorts, and evaluate invokes plugins."
+    },
+    {
+      "id": "sc-200.d3.q014",
+      "lesson": "sc-200.d3.1.02",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which KQL operator keeps only the columns you name (optionally renaming them) and drops all the others?",
+      "options": [
+        "extend",
+        "distinct",
+        "project",
+        "summarize"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "project outputs only the listed columns. extend adds columns and keeps the rest, distinct returns unique combinations of the named columns (deduplicating rows), and summarize aggregates rows into groups."
+    },
+    {
+      "id": "sc-200.d3.q015",
+      "lesson": "sc-200.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You want to find email attachments that were later written to disk on an endpoint. Complete the join condition.",
+      "code": "EmailAttachmentInfo\n| where Timestamp > ago(1d)\n| join kind=inner (\n    DeviceFileEvents\n    | where Timestamp > ago(1d) and ActionType == 'FileCreated'\n) on ____\n| project Timestamp, RecipientEmailAddress, DeviceName, FileName, SHA256",
+      "options": [
+        "NetworkMessageId",
+        "SHA256",
+        "DeviceId",
+        "ReportId"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Both tables carry the file hash in SHA256, so joining on it links the attachment to the file event. NetworkMessageId exists only on the email side, DeviceId only on the endpoint side, and ReportId identifies events within a table and doesn't link them."
+    },
+    {
+      "id": "sc-200.d3.q016",
+      "lesson": "sc-200.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "DeviceInfo contains many snapshot rows per device. You need the most recent row, with all columns, for each DeviceId. Which aggregation should you use in summarize ... by DeviceId?",
+      "options": [
+        "arg_max(Timestamp, *)",
+        "max(Timestamp)",
+        "take_any(*)",
+        "arg_min(Timestamp, *)"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "arg_max(Timestamp, *) returns the full row with the latest Timestamp per group. max(Timestamp) returns only the time, take_any returns an arbitrary row, and arg_min returns the earliest row."
+    },
+    {
+      "id": "sc-200.d3.q017",
+      "lesson": "sc-200.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "For each device and account, you need a list of the distinct command lines executed in the last day. Complete the query.",
+      "code": "DeviceProcessEvents\n| where Timestamp > ago(1d)\n| summarize Commands = ____(ProcessCommandLine) by DeviceName, AccountName",
+      "options": [
+        "dcount",
+        "make_set",
+        "arg_min",
+        "countif"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "make_set returns a dynamic array of distinct values. dcount returns only the number of distinct values, arg_min needs a column to minimise and returns a row, and countif needs a Boolean predicate."
+    },
+    {
+      "id": "sc-200.d3.q018",
+      "lesson": "sc-200.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "You want to enrich executed binaries with global prevalence data and keep only rare files. Complete the query.",
+      "code": "DeviceProcessEvents\n| where Timestamp > ago(1d)\n| distinct SHA1\n| ____ FileProfile(SHA1, 1000)\n| where GlobalPrevalence < 50",
+      "options": [
+        "evaluate",
+        "lookup",
+        "extend",
+        "invoke"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "FileProfile() is an advanced hunting function applied to a tabular input with invoke; it adds columns such as GlobalPrevalence. evaluate calls plugins, lookup joins to a table, and extend can't call a tabular function."
+    },
+    {
+      "id": "sc-200.d3.q019",
+      "lesson": "sc-200.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You build a list of devices that ran a new remote management tool and want only those devices that do NOT appear in an approved-admin-devices list. Which join kind should you use with the device list on the left?",
+      "options": [
+        "leftouter",
+        "leftsemi",
+        "innerunique",
+        "leftanti"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "leftanti returns left rows that have no match on the right, i.e. devices not in the approved list. leftsemi returns only matching left rows, leftouter returns all left rows with or without matches, and innerunique is the default matching join."
+    },
+    {
+      "id": "sc-200.d3.q020",
+      "lesson": "sc-200.d3.1.03",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about KQL, select Yes if true.",
+      "statements": [
+        {
+          "s": "If you don't specify kind, a KQL join uses the innerunique flavor.",
+          "a": true
+        },
+        {
+          "s": "Each let statement must end with a semicolon.",
+          "a": true
+        },
+        {
+          "s": "union fails unless all input tables have identical schemas.",
+          "a": false
+        }
+      ],
+      "explain": "innerunique is the default join kind, and let statements are terminated by a semicolon. union accepts tables with different schemas; columns missing from a table are simply empty for its rows."
+    },
+    {
+      "id": "sc-200.d3.q021",
+      "lesson": "sc-200.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "How far back can an advanced hunting query look in native Microsoft Defender XDR data?",
+      "options": [
+        "7 days",
+        "90 days",
+        "30 days",
+        "180 days"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Advanced hunting keeps 30 days of native Defender XDR data. Longer history requires sending the data to a Microsoft Sentinel workspace with longer analytics-tier retention or streaming it elsewhere."
+    },
+    {
+      "id": "sc-200.d3.q022",
+      "lesson": "sc-200.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements describe per-query limits in Defender XDR advanced hunting? Select TWO.",
+      "options": [
+        "A query returns at most 100,000 rows.",
+        "A query returns at most 10,000 rows.",
+        "A query times out after 10 minutes.",
+        "A query can run for up to 1 hour.",
+        "Result sets are capped at 1 GB."
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Advanced hunting returns up to 100,000 rows and 64 MB per query, and queries time out after 10 minutes. 10,000 rows, a 1-hour runtime and 1 GB aren't the documented per-query limits."
+    },
+    {
+      "id": "sc-200.d3.q023",
+      "lesson": "sc-200.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A new analyst who doesn't know KQL needs to build a hunting query by selecting fields and conditions. Which advanced hunting option should they use?",
+      "options": [
+        "Guided mode",
+        "Advanced mode",
+        "Custom detection rules",
+        "Threat analytics"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Guided mode is the query builder for users not yet familiar with KQL. Advanced mode expects hand-written KQL, custom detection rules schedule existing queries, and threat analytics is a reporting experience."
+    },
+    {
+      "id": "sc-200.d3.q024",
+      "lesson": "sc-200.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about advanced hunting in the Defender portal, select Yes if true.",
+      "statements": [
+        {
+          "s": "Advanced hunting evaluates all data in UTC.",
+          "a": true
+        },
+        {
+          "s": "Data stored only in the Microsoft Sentinel data lake tier can be queried directly in advanced hunting.",
+          "a": false
+        },
+        {
+          "s": "Tables from an onboarded Microsoft Sentinel workspace can be queried alongside Defender XDR tables.",
+          "a": true
+        }
+      ],
+      "explain": "Advanced hunting uses UTC and converts results to your display timezone. Onboarded Sentinel workspace tables appear in the schema, but lake-only data must be queried through data lake exploration, not advanced hunting."
+    },
+    {
+      "id": "sc-200.d3.q025",
+      "lesson": "sc-200.d3.1.04",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam's incident responders regularly need to hunt DeviceProcessEvents and EmailEvents data that is four to six months old. They currently use only Microsoft Defender XDR advanced hunting and find that older data is missing. Fabrikam already licenses Microsoft Sentinel.",
+      "stem": "What should you do so the responders can hunt this older data from the Defender portal?",
+      "options": [
+        "Turn on guided mode for the responders",
+        "Increase the retention period in Settings > Endpoints > Advanced features",
+        "Enable aggregated reporting for Defender for Endpoint",
+        "Ingest the Defender XDR tables into a Sentinel workspace onboarded to the Defender portal and set analytics-tier retention"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Native advanced hunting keeps 30 days. Ingesting Defender XDR data into an onboarded Sentinel workspace makes it queryable for as long as the analytics-tier retention allows. Guided mode and aggregated reporting don't extend retention, and there is no Endpoints setting to do so."
+    },
+    {
+      "id": "sc-200.d3.q026",
+      "lesson": "sc-200.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "You are converting an aggregated hunting query into a custom detection rule. The rule needs the Timestamp and ReportId of the most recent matching event per device. Complete the query.",
+      "code": "DeviceEvents\n| where ActionType == 'AntivirusDetection'\n| summarize (Timestamp, ReportId) = ____(Timestamp, ReportId), count() by DeviceId\n| where count_ > 5",
+      "options": [
+        "arg_min",
+        "make_set",
+        "arg_max",
+        "dcount"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "arg_max(Timestamp, ReportId) returns the latest Timestamp and its ReportId, giving the rule the columns it needs. arg_min returns the earliest event, make_set returns an array, and dcount returns a number."
+    },
+    {
+      "id": "sc-200.d3.q027",
+      "lesson": "sc-200.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A custom detection rule on Defender XDR data is set to run every hour. What lookback period does each run cover?",
+      "options": [
+        "1 hour",
+        "12 hours",
+        "30 days",
+        "4 hours"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Hourly rules look back 4 hours. Rules every 3 hours look back 12 hours, every 12 hours look back 48 hours, and every 24 hours look back 30 days."
+    },
+    {
+      "id": "sc-200.d3.q028",
+      "lesson": "sc-200.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You want a custom detection rule to use the Continuous (NRT) frequency. Which TWO requirements must the query meet? Select TWO.",
+      "options": [
+        "It references only a single table.",
+        "It uses a summarize operator.",
+        "It contains no join or union operators.",
+        "It queries only Microsoft Sentinel tables.",
+        "It projects a SHA256 column."
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "NRT rules must reference one table and avoid joins, unions and externaldata. They don't need summarize or a SHA256 column, and supported tables include Defender tables such as DeviceProcessEvents, not only Sentinel tables."
+    },
+    {
+      "id": "sc-200.d3.q029",
+      "lesson": "sc-200.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A hunter wrote a query against DeviceNetworkEvents that finds devices beaconing to a known command-and-control domain. The SOC manager wants a custom detection rule that automatically isolates each affected device. The query currently projects Timestamp, ReportId, DeviceName and RemoteUrl.",
+      "stem": "Which column must you add to the query output so the Isolate device action can run?",
+      "options": [
+        "DeviceId",
+        "AccountSid",
+        "InitiatingProcessSHA1",
+        "NetworkMessageId"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Device response actions such as isolation use DeviceId, which Defender for Endpoint tables also need for correct scoping. AccountSid supports user actions, SHA1 columns support file actions, and NetworkMessageId supports email actions."
+    },
+    {
+      "id": "sc-200.d3.q030",
+      "lesson": "sc-200.d3.1.05",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You need to turn an advanced hunting query into a custom detection rule. Put the steps in order.",
+      "options": [
+        "Run the query and confirm it returns Timestamp, ReportId and entity columns",
+        "Select Create detection rule",
+        "Enter alert details such as name, frequency, severity and MITRE techniques",
+        "Choose the impacted entities",
+        "Select response actions and scope, then review and create"
+      ],
+      "explain": "You first validate the query output, then open the wizard from the editor, fill in alert details, map impacted entities, and finally choose actions and scope before creating the rule."
+    },
+    {
+      "id": "sc-200.d3.q031",
+      "lesson": "sc-200.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which threat analytics report type describes a Microsoft-tracked threat actor's motivations, targets and tactics, techniques and procedures?",
+      "options": [
+        "Activity",
+        "Tool",
+        "Actor",
+        "Technique"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Actor reports profile a tracked threat actor. Activity reports cover a specific campaign, Tool reports cover malware or tools, and Technique reports cover a single attack technique."
+    },
+    {
+      "id": "sc-200.d3.q032",
+      "lesson": "sc-200.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You are reading a threat analytics report and want KQL vetted by Microsoft analysts that you can run in advanced hunting. Where do you find it?",
+      "options": [
+        "The Impacted assets tab",
+        "The Recommended actions tab",
+        "The Related incidents tab",
+        "The Detections/Hunting queries section of the Analyst report"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The Analyst report includes a Detections/Hunting queries section with queries you can open in advanced hunting or turn into custom detections. The other tabs list assets, mitigations and incidents."
+    },
+    {
+      "id": "sc-200.d3.q033",
+      "lesson": "sc-200.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE sections appear on the threat analytics dashboard? Select THREE.",
+      "options": [
+        "Latest threats",
+        "Top targeted users",
+        "High-impact threats",
+        "Highest exposure threats",
+        "Secure Score threats"
+      ],
+      "answer": [
+        0,
+        2,
+        3
+      ],
+      "explain": "The dashboard shows Latest threats, High-impact threats (most alerts) and Highest exposure threats (vulnerability severity and exploitable devices). Top targeted users and Secure Score threats aren't dashboard sections."
+    },
+    {
+      "id": "sc-200.d3.q034",
+      "lesson": "sc-200.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about threat analytics, select Yes if true.",
+      "statements": [
+        {
+          "s": "A Microsoft Defender for Endpoint Plan 1 licence on its own grants access to threat analytics.",
+          "a": false
+        },
+        {
+          "s": "Highest exposure threats are ranked using vulnerability severity and the number of devices that could be exploited.",
+          "a": true
+        },
+        {
+          "s": "Impacted assets counts distinct assets that have at least one active alert related to the threat.",
+          "a": true
+        }
+      ],
+      "explain": "Threat analytics needs a supported Defender product licence and Defender for Endpoint P1 alone doesn't qualify. Exposure ranking uses vulnerability severity and exploitable device count, and Impacted assets counts assets with active alerts."
+    },
+    {
+      "id": "sc-200.d3.q035",
+      "lesson": "sc-200.d3.1.06",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Microsoft publishes a threat analytics report about a ransomware group exploiting a VPN vulnerability. The CISO asks two things: has the group been active in our tenant, and which of our devices are still vulnerable? The analyst has Security data basics (read), Vulnerability management (read) and Exposure Management (read).",
+      "stem": "Which report tab answers the second question?",
+      "options": [
+        "Overview",
+        "Endpoints exposure",
+        "Related incidents",
+        "Analyst report"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Endpoints exposure shows devices vulnerable to the threat (requires Vulnerability management read). Related incidents answers the first question, Overview shows alert trends, and the Analyst report is Microsoft's write-up rather than tenant-specific device data."
+    },
+    {
+      "id": "sc-200.d3.q036",
+      "lesson": "sc-200.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Where do you create a new hunting graph in the Microsoft Defender portal?",
+      "options": [
+        "Advanced hunting, then Create new > Hunting graph",
+        "Incidents, select a node, then View blast radius",
+        "Exposure management > Attack surface map",
+        "Microsoft Sentinel > Threat management > Hunting > Hunts"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The hunting graph opens from advanced hunting through the graph icon or Create new > Hunting graph. View blast radius is on the incident graph, the attack surface map belongs to Exposure Management, and Hunts track Sentinel hunting hypotheses."
+    },
+    {
+      "id": "sc-200.d3.q037",
+      "lesson": "sc-200.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need to check whether a compromised workstation has any route to a specific storage account. Which hunting graph predefined scenario fits best?",
+      "options": [
+        "Entity relationship map",
+        "Choke points to SQL data stores",
+        "Paths between two entities",
+        "Critical identities with storage access"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Paths between two entities tests whether a path exists between a chosen start and target. Entity relationship map shows only direct connections of one entity, choke points looks at SQL stores generally, and the critical identities scenario focuses on privileged users."
+    },
+    {
+      "id": "sc-200.d3.q038",
+      "lesson": "sc-200.d3.1.07",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": null,
+      "stem": "An analyst can run advanced hunting queries but sees no hunting graph option. Which TWO prerequisites should you check? Select TWO.",
+      "options": [
+        "The tenant is onboarded to the Microsoft Sentinel data lake.",
+        "The analyst has at least read access in Microsoft Security Exposure Management.",
+        "The analyst has Security Copilot Contributor.",
+        "Microsoft Purview Insider Risk Management is enabled.",
+        "Defender for Endpoint Plan 1 is assigned."
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "The hunting graph needs an onboarded Sentinel data lake and at least read-only Exposure Management access, plus advanced hunting permissions. Security Copilot, Insider Risk Management and Defender for Endpoint P1 aren't prerequisites."
+    },
+    {
+      "id": "sc-200.d3.q039",
+      "lesson": "sc-200.d3.1.08",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You need to review the potential impact of a compromised user during an incident. Put the steps in order.",
+      "options": [
+        "Open the incident from the Incidents page",
+        "Select the compromised user node on the incident graph",
+        "Select View blast radius",
+        "Review the top-rated paths, then open View full blast radius list"
+      ],
+      "explain": "Blast radius starts on the incident graph: open the incident, select the node, choose View blast radius (which loads the eight top-rated paths), then expand to the full list for all targets."
+    },
+    {
+      "id": "sc-200.d3.q040",
+      "lesson": "sc-200.d3.1.08",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about blast radius analysis, select Yes if true.",
+      "statements": [
+        {
+          "s": "Blast radius shows the exact path the attacker used after the compromise.",
+          "a": false
+        },
+        {
+          "s": "Blast radius results are scoped by the viewing user's permissions.",
+          "a": true
+        },
+        {
+          "s": "Viewing blast radius requires Exposure management (read) permission or higher.",
+          "a": true
+        }
+      ],
+      "explain": "Blast radius shows possible propagation paths, not confirmed attacker activity. Nodes and edges outside the user's RBAC scope are hidden, and Exposure management (read) or higher is required."
+    },
+    {
+      "id": "sc-200.d3.q041",
+      "lesson": "sc-200.d3.1.08",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailspin Toys onboarded the Sentinel data lake and the SOC uses blast radius during incidents. Analysts complain that blast radius rarely shows paths to the payroll database servers or the finance key vault, even though many admins can reach them. Nobody has configured anything in Microsoft Security Exposure Management since onboarding.",
+      "stem": "What should you do first to improve the blast radius results?",
+      "options": [
+        "Enable UEBA in Microsoft Sentinel",
+        "Review and classify the critical assets in Microsoft Security Exposure Management",
+        "Increase the analytics-tier retention of the Sentinel workspace",
+        "Create a custom detection rule for the payroll servers"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Blast radius calculates paths to critical targets; if critical assets aren't classified in Exposure Management, the graph under-represents risk. UEBA, retention and custom detections don't define path targets."
+    },
+    {
+      "id": "sc-200.d3.q042",
+      "lesson": "sc-200.d3.1.09",
+      "objective": "d3.1",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "You want to find identities that have an edge to a virtual machine in the exposure graph. Complete the query.",
+      "code": "ExposureGraphEdges\n| ____ SourceNodeId --> TargetNodeId with ExposureGraphNodes on NodeId\n| graph-match (Identity)-[e]->(Vm)\n    where set_has_element(Identity.Categories, 'identity') and set_has_element(Vm.Categories, 'virtual_machine')\n    project IdentityName = Identity.NodeName, VmName = Vm.NodeName, Edge = e.EdgeLabel",
+      "options": [
+        "make-series",
+        "make-graph",
+        "graph-to-table",
+        "mv-expand"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "make-graph builds a graph from the edges table, using ExposureGraphNodes for node properties, which graph-match then searches. make-series builds time series, graph-to-table converts a graph back to tables, and mv-expand expands arrays."
+    },
+    {
+      "id": "sc-200.d3.q043",
+      "lesson": "sc-200.d3.1.09",
+      "objective": "d3.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You built a custom graph in Microsoft Sentinel from data lake tables and materialised it with a graph job. Which language do you use to query it on the Graphs page in the Defender portal?",
+      "options": [
+        "KQL",
+        "GQL",
+        "Gremlin",
+        "T-SQL"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Sentinel custom graphs are queried with Graph Query Language (GQL). KQL graph operators work on tables such as ExposureGraphEdges, Gremlin is used by Azure Cosmos DB graphs, and T-SQL is for SQL databases."
+    },
+    {
+      "id": "sc-200.d3.q044",
+      "lesson": "sc-200.d3.1.09",
+      "objective": "d3.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE experiences are powered by Microsoft Sentinel graph? Select THREE.",
+      "options": [
+        "Blast radius on the Defender incident graph",
+        "Microsoft Secure Score",
+        "Hunting graph in advanced hunting",
+        "Attack paths in Microsoft Security Exposure Management",
+        "Microsoft Sentinel livestream"
+      ],
+      "answer": [
+        0,
+        2,
+        3
+      ],
+      "explain": "Sentinel graph powers blast radius, the hunting graph and Exposure Management attack paths (as well as Purview data risk graphs). Secure Score is a posture score, and livestream has been retired from Sentinel."
+    }
+  ]
+}

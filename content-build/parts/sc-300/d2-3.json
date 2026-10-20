@@ -1,0 +1,645 @@
+{
+ "exam": "sc-300",
+ "domain": "d2",
+ "lessons": [],
+ "questions": [
+  {
+   "id": "sc-300.d2.q064",
+   "lesson": "sc-300.d2.3.01",
+   "objective": "d2.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Microsoft recommends a risk-based Conditional Access policy for user risk. Which configuration matches the recommendation?",
+   "explain": "The recommended user risk policy targets High risk, requires risk remediation (or MFA plus secure password change) and enforces sign-in frequency Every time. Blocking at Low creates excessive lockouts; compliance and terms of use don't remediate risk.",
+   "options": [
+    "User risk High; grant Require terms of use; persistent browser session",
+    "User risk High; grant Require risk remediation; sign-in frequency Every time",
+    "User risk Low and above; grant Block access",
+    "User risk Medium and High; grant Require device to be marked as compliant"
+   ],
+   "answer": [
+    1
+   ]
+  },
+  {
+   "id": "sc-300.d2.q065",
+   "lesson": "sc-300.d2.3.01",
+   "objective": "d2.3",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about user risk remediation, select Yes if true.",
+   "explain": "Users must be MFA-registered before remediation or they're blocked. Hybrid users need password writeback. Only a secure password change inside the remediation flow satisfies the control.",
+   "statements": [
+    {
+     "s": "A user who isn't registered for MFA can self-remediate high user risk by changing their password.",
+     "a": false
+    },
+    {
+     "s": "For synced hybrid users, password writeback is required for the secure password change to remediate risk.",
+     "a": true
+    },
+    {
+     "s": "A password change made outside the risk remediation flow satisfies the Require password change control.",
+     "a": false
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q066",
+   "lesson": "sc-300.d2.3.01",
+   "objective": "d2.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Your tenant still uses the legacy user risk policy in the ID Protection dashboard. What does Microsoft advise before its retirement on 1 October 2026?",
+   "explain": "Microsoft recommends recreating risk policies in Conditional Access, validating in report-only, enforcing, then setting the legacy policy to Disabled. There's no automatic migration, and campaigns or PIM don't evaluate risk.",
+   "options": [
+    "Move the policy to Privileged Identity Management",
+    "Convert the legacy policy into a registration campaign",
+    "Create equivalent Conditional Access risk policies in report-only, enable them, then disable the legacy policy",
+    "Leave the legacy policy enabled; it migrates automatically"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q067",
+   "lesson": "sc-300.d2.3.01",
+   "objective": "d2.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Litware synchronises identities with password hash sync. Most users reset passwords from their domain-joined PCs with Ctrl+Alt+Delete rather than through SSPR.",
+   "stem": "Hybrid users use password hash sync. They often reset passwords on-premises with Ctrl+Alt+Delete after being flagged as risky, but their user risk stays high. What should you enable?",
+   "explain": "This ID Protection setting lets an on-premises password change (synced via PHS) remediate user risk. Seamless SSO, writeback unlock and smart lockout don't affect risk state.",
+   "options": [
+    "Seamless single sign-on",
+    "Self-service password reset writeback unlock",
+    "Smart lockout customisation",
+    "Allow on-premises password change to reset user risk"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q068",
+   "lesson": "sc-300.d2.3.02",
+   "objective": "d2.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You need a Conditional Access policy that challenges risky sign-ins according to Microsoft's recommendation. Which sign-in risk levels should you include?",
+   "explain": "Microsoft recommends requiring MFA (authentication strength) for Medium and High sign-in risk. High only misses many attacks; including Low creates prompt fatigue.",
+   "options": [
+    "Medium and High",
+    "Low, Medium and High",
+    "High only",
+    "No risk and above"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q069",
+   "lesson": "sc-300.d2.3.02",
+   "objective": "d2.3",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which detections are sign-in risk detections (not user risk detections)? Select TWO.",
+   "explain": "Atypical travel and anonymous IP address are sign-in risk detections. Leaked credentials, PRT access attempts and user-reported suspicious activity are user risk detections.",
+   "options": [
+    "Leaked credentials",
+    "Possible attempt to access Primary Refresh Token",
+    "User reported suspicious activity",
+    "Anonymous IP address",
+    "Atypical travel"
+   ],
+   "answer": [
+    3,
+    4
+   ]
+  },
+  {
+   "id": "sc-300.d2.q070",
+   "lesson": "sc-300.d2.3.02",
+   "objective": "d2.3",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about sign-in risk, select Yes if true.",
+   "explain": "Passing MFA remediates sign-in risk. Non-P2 tenants see premium detections as Additional risk detected. Microsoft advises separate policies for user and sign-in risk.",
+   "statements": [
+    {
+     "s": "A user who completes MFA on a risky sign-in self-remediates that sign-in's risk.",
+     "a": true
+    },
+    {
+     "s": "Without Entra ID P2, premium detections appear as Additional risk detected.",
+     "a": true
+    },
+    {
+     "s": "Microsoft recommends combining user risk and sign-in risk conditions in one policy.",
+     "a": false
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q071",
+   "lesson": "sc-300.d2.3.02",
+   "objective": "d2.3",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the Conditional Access policy JSON condition so the policy applies to medium and high sign-in risk.",
+   "explain": "Sign-in risk is set with signInRiskLevels. userRiskLevels is for user risk, servicePrincipalRiskLevels for workload identities, and riskLevels isn't a valid property.",
+   "options": [
+    "\"servicePrincipalRiskLevels\": [\"medium\", \"high\"]",
+    "\"signInRiskLevels\": [\"medium\", \"high\"]",
+    "\"userRiskLevels\": [\"medium\", \"high\"]",
+    "\"riskLevels\": { \"signIn\": \"medium\" }"
+   ],
+   "answer": [
+    1
+   ],
+   "code": "\"conditions\": {\n  \"users\": { \"includeUsers\": [\"All\"] },\n  \"applications\": { \"includeApplications\": [\"All\"] },\n  ____\n}"
+  },
+  {
+   "id": "sc-300.d2.q072",
+   "lesson": "sc-300.d2.3.03",
+   "objective": "d2.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You want to nudge users who currently use SMS for MFA to set up Microsoft Authenticator during sign-in, allowing them to postpone a few times. What should you configure?",
+   "explain": "Registration campaigns nudge users to a specific method (Authenticator or passkey) with snoozes. The ID Protection policy requires any MFA registration, the CA user action secures registration, and system-preferred MFA picks among registered methods.",
+   "options": [
+    "The ID Protection MFA registration policy",
+    "A Conditional Access policy for Register security information",
+    "A registration campaign targeting Microsoft Authenticator",
+    "System-preferred multifactor authentication"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q073",
+   "lesson": "sc-300.d2.3.03",
+   "objective": "d2.3",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about registration campaigns, select Yes if true.",
+   "explain": "Snooze days range 0-14. A campaign targets one method at a time. Limited snoozes enforce registration after three snoozes.",
+   "statements": [
+    {
+     "s": "Days allowed to snooze can be set from 0 to 14.",
+     "a": true
+    },
+    {
+     "s": "A campaign can target Microsoft Authenticator and passkeys at the same time.",
+     "a": false
+    },
+    {
+     "s": "With Limited number of snoozes on, users must register after snoozing three times.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q074",
+   "lesson": "sc-300.d2.3.03",
+   "objective": "d2.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Tailwind Traders has 3,000 users, 400 of whom haven't registered MFA. Several accounts were compromised through password spray and an attacker-controlled Authenticator was registered on them.",
+   "stem": "Attackers with stolen passwords are registering their own Authenticator apps on accounts that have no MFA method yet. Which control best prevents this?",
+   "explain": "Protecting the Register security information action stops registration from untrusted contexts. A campaign or the MFA registration policy would actually push the attacker to register; Report suspicious activity relies on an existing method.",
+   "options": [
+    "A registration campaign with 0 snooze days",
+    "The ID Protection MFA registration policy",
+    "Report suspicious activity",
+    "A Conditional Access policy targeting the Register security information user action that requires a trusted location or compliant device"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q075",
+   "lesson": "sc-300.d2.3.04",
+   "objective": "d2.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "ID Protection flags a user as high risk, but you confirm the activity was the user on a business trip. You want to clear the risk without forcing a password change. Which action should you take?",
+   "explain": "Dismiss user risk clears the risk state without changing the password, appropriate for false positives. Confirm compromised escalates risk; Reset password and Block are for real compromises.",
+   "options": [
+    "Dismiss user risk",
+    "Confirm user compromised",
+    "Reset password",
+    "Block user"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q076",
+   "lesson": "sc-300.d2.3.04",
+   "objective": "d2.3",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the Microsoft Graph PowerShell command to list all users currently at high risk.",
+   "explain": "Get-MgRiskyUser returns risky user objects with RiskLevel and RiskState. Get-MgRiskDetection returns individual detections, Get-MgUser has no risk data, and Get-MgRiskyServicePrincipal is for workload identities.",
+   "options": [
+    "Get-MgRiskyServicePrincipal",
+    "Get-MgRiskyUser",
+    "Get-MgUser",
+    "Get-MgRiskDetection"
+   ],
+   "answer": [
+    1
+   ],
+   "code": "Connect-MgGraph -Scopes \"IdentityRiskyUser.Read.All\"\n____ -Filter \"RiskLevel eq 'high'\" | Format-Table UserDisplayName, RiskState"
+  },
+  {
+   "id": "sc-300.d2.q077",
+   "lesson": "sc-300.d2.3.04",
+   "objective": "d2.3",
+   "difficulty": 3,
+   "type": "order",
+   "case": "An analyst confirms that an attacker accessed Megan's account from overseas and registered an extra MFA method. No risk policy fired because the tenant's risk policies were in report-only.",
+   "stem": "An investigation confirms a user's account was compromised and no policy remediated it. Put Microsoft's recommended response in order.",
+   "explain": "Mark the user compromised to feed the model, force a new password (or block), revoke refresh tokens so stolen sessions end, then disable compromised devices.",
+   "options": [
+    "Confirm the user compromised in ID Protection",
+    "Require a password change (block the user if the attacker may control MFA)",
+    "Revoke the user's refresh tokens",
+    "Disable devices the attacker may have used"
+   ]
+  },
+  {
+   "id": "sc-300.d2.q078",
+   "lesson": "sc-300.d2.3.04",
+   "objective": "d2.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ID Protection report shows every individual detection, including whether it was real-time or offline?",
+   "explain": "The Risk detections report lists each detection with its type and timing. Risky users summarises per user, Risky sign-ins lists sign-ins, and Authentication methods activity covers registration and usage.",
+   "options": [
+    "Risky sign-ins",
+    "Risky users",
+    "Risk detections",
+    "Authentication methods activity"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q079",
+   "lesson": "sc-300.d2.3.05",
+   "objective": "d2.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You want to block a single-tenant service principal from signing in when ID Protection rates it high risk. What do you need?",
+   "explain": "Risk-based Conditional Access for service principals needs Workload Identities Premium and a policy scoped to workload identities using service principal risk. User and sign-in risk policies don't apply to service principals.",
+   "options": [
+    "Entra ID P2 and a user risk policy that includes the app",
+    "Workload Identities Premium and an ID Protection user risk policy",
+    "Entra ID P1 and a sign-in risk policy for All users",
+    "Workload Identities Premium and a Conditional Access policy assigned to workload identities with service principal risk"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q080",
+   "lesson": "sc-300.d2.3.05",
+   "objective": "d2.3",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about risky workload identities, select Yes if true.",
+   "explain": "Managed identities aren't in scope. Workload identity CA applies only to single-tenant service principals registered in your tenant. Leaked credentials flags exposed app credentials.",
+   "statements": [
+    {
+     "s": "Managed identities are currently in scope for workload identity risk detections.",
+     "a": false
+    },
+    {
+     "s": "Conditional Access for workload identities can target multitenant apps from other publishers.",
+     "a": false
+    },
+    {
+     "s": "Leaked credentials detects app secrets or certificates found in public code repositories.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q081",
+   "lesson": "sc-300.d2.3.05",
+   "objective": "d2.3",
+   "difficulty": 3,
+   "type": "order",
+   "case": "A secret for the Contoso-Payroll-Sync app registration was committed to a public GitHub repository. ID Protection raised a Leaked credentials detection for the service principal.",
+   "stem": "A service principal's client secret was found in a public repository. Put Microsoft's remediation steps in order.",
+   "explain": "Inventory first so nothing is missed, add the replacement credential before removing the old one to avoid outage, remove the leaked credential, then rotate downstream secrets.",
+   "options": [
+    "Inventory the credentials on the service principal and application objects",
+    "Add a new credential, preferably an X.509 certificate",
+    "Remove the compromised credentials",
+    "Rotate any Azure Key Vault secrets the service principal can access"
+   ]
+  },
+  {
+   "id": "sc-300.d2.q082",
+   "lesson": "sc-300.d2.4.01",
+   "objective": "d2.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Users on Microsoft Entra registered (not joined) Windows 11 devices install the Global Secure Access client. Which traffic will the client acquire?",
+   "explain": "On Entra registered devices the Windows client supports only Private Access traffic. Joined or hybrid joined devices are needed for the full set of profiles.",
+   "options": [
+    "Private Access traffic only",
+    "All traffic forwarding profiles",
+    "Microsoft traffic only",
+    "Internet Access traffic only"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q083",
+   "lesson": "sc-300.d2.4.01",
+   "objective": "d2.4",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Microsoft recommends configuring endpoints before using Microsoft Entra Internet Access through the Global Secure Access client. Which browser or network features should you disable? Select TWO.",
+   "explain": "Internet Access doesn't support QUIC or DNS over HTTPS, so Microsoft recommends disabling both. TLS 1.2, IPv4 and HTTP/1.1 are needed; IPv4 should be preferred over IPv6.",
+   "options": [
+    "QUIC (UDP 443)",
+    "IPv4",
+    "DNS over HTTPS",
+    "TLS 1.2",
+    "HTTP/1.1"
+   ],
+   "answer": [
+    0,
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q084",
+   "lesson": "sc-300.d2.4.01",
+   "objective": "d2.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A branch office has printers and IoT devices that can't run the Global Secure Access client. You need their Microsoft 365 and internet traffic secured by Global Secure Access. What should you configure?",
+   "explain": "Remote networks connect a site's CPE to Global Secure Access over IPsec/BGP, without clients, for Microsoft and Internet Access profiles. Connectors and Quick Access are for Private Access inbound to apps; named locations don't forward traffic.",
+   "options": [
+    "A private network connector in the branch",
+    "A remote network with an IPsec tunnel from the branch router",
+    "An IP-based named location for the branch",
+    "Quick Access with the branch subnet"
+   ],
+   "answer": [
+    1
+   ]
+  },
+  {
+   "id": "sc-300.d2.q085",
+   "lesson": "sc-300.d2.4.01",
+   "objective": "d2.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "On Android devices, how is the Global Secure Access client delivered?",
+   "explain": "The Android Global Secure Access client is built into the Microsoft Defender app and deployed with an Intune app configuration policy. Authenticator and Company Portal don't provide it.",
+   "options": [
+    "Built into Microsoft Authenticator",
+    "Through the Company Portal VPN profile",
+    "As part of the Microsoft Defender app, configured through Intune",
+    "As a standalone Global Secure Access app from Google Play"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q086",
+   "lesson": "sc-300.d2.4.02",
+   "objective": "d2.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You want to replace a legacy VPN quickly by giving users access to the whole 10.10.0.0/16 network through Microsoft Entra Private Access, then later apply per-application policies. What should you configure first?",
+   "explain": "Quick Access is the fast VPN replacement holding broad segments; Microsoft calls it a transition state before per-app access. Per-app first is slower, and the Microsoft profile or remote networks don't publish private apps.",
+   "options": [
+    "The Microsoft traffic profile",
+    "A remote network for the datacenter",
+    "Per-app Global Secure Access enterprise applications for every server",
+    "Quick Access with an IP range application segment"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q087",
+   "lesson": "sc-300.d2.4.02",
+   "objective": "d2.4",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Microsoft Entra Private Access, select Yes if true.",
+   "explain": "Connectors make outbound-only connections. Nested groups aren't supported for assignment. Enterprise app segments win over overlapping Quick Access segments.",
+   "statements": [
+    {
+     "s": "Private network connectors require inbound firewall ports opened from the internet.",
+     "a": false
+    },
+    {
+     "s": "Users who get access only through a nested group are granted access to a Private Access app.",
+     "a": false
+    },
+    {
+     "s": "A per-app enterprise application segment takes priority over an overlapping Quick Access segment.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q088",
+   "lesson": "sc-300.d2.4.02",
+   "objective": "d2.4",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Put the high-level steps to publish an app with Microsoft Entra Private Access in order.",
+   "explain": "Microsoft's order: connectors, app and segments, assignments, Conditional Access, then turn on the Private Access forwarding profile so the client starts tunnelling.",
+   "options": [
+    "Create a connector group with at least one active private network connector",
+    "Create the Global Secure Access application and add application segments",
+    "Assign users and groups to the application",
+    "Create Conditional Access policies for the application",
+    "Enable the Private Access traffic forwarding profile"
+   ]
+  },
+  {
+   "id": "sc-300.d2.q089",
+   "lesson": "sc-300.d2.4.02",
+   "objective": "d2.4",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Tailwind's intranet apps are reached by short names such as http://benefits. Private Access already has an IP range segment covering 10.8.0.0/16, which contains the app servers.",
+   "stem": "Users must reach an internal app at http://benefits (a short name) through Private Access, without defining every host as an FQDN segment. The app's IP is inside a configured IP range segment. What should you configure?",
+   "explain": "Private DNS adds DNS suffixes so the client resolves and routes short names. NetBIOS names aren't supported as segments, a bare * isn't valid, and named locations don't route traffic.",
+   "options": [
+    "Private DNS with the internal DNS suffix",
+    "A NetBIOS name application segment",
+    "A named location for the IP range",
+    "A wildcard FQDN segment of *"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q090",
+   "lesson": "sc-300.d2.4.03",
+   "objective": "d2.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You must block the Gambling web category for all users and all remote network traffic without creating a Conditional Access policy. Where should you link the web content filtering policy?",
+   "explain": "The baseline profile applies tenant-wide to all Internet Access traffic, including remote networks, with no CA policy. Other security profiles reach users through Conditional Access. The Microsoft profile covers Microsoft 365 only.",
+   "options": [
+    "The Microsoft traffic profile",
+    "The baseline profile",
+    "A TLS inspection policy",
+    "A security profile linked to a Conditional Access policy"
+   ],
+   "answer": [
+    1
+   ]
+  },
+  {
+   "id": "sc-300.d2.q091",
+   "lesson": "sc-300.d2.4.03",
+   "objective": "d2.4",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Put the steps to block a web category for one group using Microsoft Entra Internet Access in order.",
+   "explain": "Traffic must be forwarded first; then build the policy, group it in a security profile, and deliver the profile to the group through Conditional Access targeting All internet resources with Global Secure Access.",
+   "options": [
+    "Enable the Internet Access traffic forwarding profile",
+    "Create a web content filtering policy with a block rule for the category",
+    "Add the filtering policy to a security profile",
+    "Create a Conditional Access policy for the group with the Use Global Secure Access security profile session control"
+   ]
+  },
+  {
+   "id": "sc-300.d2.q092",
+   "lesson": "sc-300.d2.4.03",
+   "objective": "d2.4",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Microsoft Entra Internet Access, select Yes if true.",
+   "explain": "Block takes precedence in conflicts. FQDN filtering uses SNI and works without TLS inspection. TLS inspection requires devices to trust the inspecting CA's root certificate.",
+   "statements": [
+    {
+     "s": "When an allow rule and a block rule conflict, block wins.",
+     "a": true
+    },
+    {
+     "s": "FQDN-based web filtering of HTTPS sites requires TLS inspection.",
+     "a": false
+    },
+    {
+     "s": "Devices must trust the root certificate used for TLS inspection.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q093",
+   "lesson": "sc-300.d2.4.04",
+   "objective": "d2.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You want to block access to Exchange Online unless the traffic arrives through your tenant's Global Secure Access, without maintaining IP lists. What should you configure?",
+   "explain": "The compliant network check is tenant-specific and needs no IP lists. Edge IPs are shared and change; Bypass would stop forwarding; tenant restrictions control which tenants users sign in to, not network origin.",
+   "options": [
+    "Set the Exchange Online policy group to Bypass",
+    "Enable universal tenant restrictions",
+    "Enable Conditional Access signaling and block all locations except All Compliant Network locations",
+    "Create an IP-based named location with the Global Secure Access edge IPs"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q094",
+   "lesson": "sc-300.d2.4.04",
+   "objective": "d2.4",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about the Microsoft traffic profile, select Yes if true.",
+   "explain": "Policy groups are Exchange Online, SharePoint/OneDrive, Teams and M365 Common/Office Online. Bypassed Microsoft traffic goes direct and isn't acquired by Internet Access. The profile fails open unless you enforce compliant network.",
+   "statements": [
+    {
+     "s": "Microsoft Teams is one of the policy groups in the Microsoft traffic profile.",
+     "a": true
+    },
+    {
+     "s": "If an FQDN in the Microsoft traffic profile is set to Bypass, the Internet Access profile acquires it instead.",
+     "a": false
+    },
+    {
+     "s": "If the client can't connect to the service, Microsoft traffic fails open and goes direct.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q095",
+   "lesson": "sc-300.d2.4.04",
+   "objective": "d2.4",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Contoso is worried about data exfiltration to personal or attacker-controlled Microsoft 365 tenants. All corporate laptops run the Global Secure Access client. Partner Fabrikam must remain accessible.",
+   "stem": "Employees must be prevented from signing in to Microsoft 365 tenants other than your own and approved partners from any device running the Global Secure Access client. What should you configure?",
+   "explain": "Universal tenant restrictions enforce TRv2 through Global Secure Access when the Microsoft profile is on. Cross-tenant sync provisions users; compliant network checks origin, not target tenant; external collaboration settings govern guest invitations.",
+   "options": [
+    "External collaboration settings with a domain allow list",
+    "Cross-tenant synchronization",
+    "The compliant network check",
+    "Tenant restrictions v2 in cross-tenant access settings plus universal tenant restrictions with the Microsoft traffic profile"
+   ],
+   "answer": [
+    3
+   ]
+  }
+ ]
+}

@@ -1,0 +1,1865 @@
+{
+  "exam": "governance",
+  "domain": "d4",
+  "lessons": [
+    {
+      "id": "governance.d4.1.01",
+      "objective": "d4.1",
+      "seq": 1,
+      "title": "CSF 2.0 release and broader scope",
+      "short": "NIST released CSF 2.0 (NIST CSWP 29) on 26 February 2024. It drops the old critical-infrastructure title and is meant for every organization, whatever its size, sector or maturity, and for all kinds of technology.",
+      "deep": "The **NIST Cybersecurity Framework (CSF)** started in 2014 as the *Framework for Improving Critical Infrastructure Cybersecurity*, written mainly for US critical infrastructure operators. Version 1.1 followed in 2018.\n\n**CSF 2.0** was published on **26 February 2024** as **NIST CSWP 29**. Key changes:\n- **Scope**: it is now for **all organizations**: small businesses, universities, governments, non-profits and multinationals, in any sector or country. The critical-infrastructure title is no longer used.\n- **Technology**: it applies to IT, OT, IoT, cloud, mobile and AI systems.\n- **Governance**: a new sixth Function, **GOVERN**, makes governance and supply chain risk management first-class outcomes.\n- **Resources**: Informative References and Implementation Examples move online, and **Quick-Start Guides** help smaller organizations.\n\nThe CSF is **voluntary** and **outcome-based**. It describes *what* good cybersecurity outcomes look like, not *how* to achieve them. It is not a certification standard: no one is \"certified against CSF\" the way an ISMS is certified to ISO/IEC 27001.",
+      "terms": [
+        {
+          "t": "NIST CSWP 29",
+          "d": "The publication number of The NIST Cybersecurity Framework (CSF) 2.0, released 26 Feb 2024."
+        },
+        {
+          "t": "Outcome-based",
+          "d": "Describes desired results (outcomes) rather than prescribing specific controls or technologies."
+        },
+        {
+          "t": "CSF 1.1",
+          "d": "The 2018 version, titled Framework for Improving Critical Infrastructure Cybersecurity, with five Functions."
+        }
+      ],
+      "trap": "Exams test that CSF 2.0 is for organizations of all sizes and sectors; answers limiting it to US critical infrastructure, or calling it a certifiable standard, are wrong.",
+      "example": "A 40-person accounting firm in Auckland uses CSF 2.0 to structure its security plan even though it is not US critical infrastructure.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "CSF 1.0 (2014)",
+          "CSF 1.1 (2018)",
+          "CSF 2.0 (Feb 2024)"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.1.02",
+      "objective": "d4.1",
+      "seq": 2,
+      "title": "The three CSF components",
+      "short": "CSF 2.0 has three components: the CSF Core (a taxonomy of outcomes in Functions, Categories and Subcategories), Organizational Profiles (Current and Target views of those outcomes) and Tiers (the rigor of risk governance and management).",
+      "deep": "CSF 2.0 is built from three parts that work together:\n\n- **CSF Core**: a hierarchy of high-level cybersecurity **outcomes**. It is organized as **Functions → Categories → Subcategories**. The Core is technology-neutral and is not a checklist.\n- **Organizational Profiles**: a description of an organization's current and/or target posture **in terms of Core outcomes**. A **Current Profile** lists the outcomes the organization is achieving now (and how well). A **Target Profile** lists the outcomes it has selected and prioritized to reach its risk management objectives. Comparing the two shows the gaps.\n- **Tiers**: four levels (**Partial, Risk Informed, Repeatable, Adaptive**) that describe how rigorous the organization's **cybersecurity risk governance and management practices** are. Tiers can inform both Profiles.\n\nIn short: the Core is the shared vocabulary, Profiles apply that vocabulary to *your* organization, and Tiers describe *how* you manage risk around it.\n\nA separate type, the **Community Profile**, is a published baseline for a sector or use case that organizations can adopt as a starting point for their Target Profile.",
+      "terms": [
+        {
+          "t": "CSF Core",
+          "d": "Taxonomy of cybersecurity outcomes organized into Functions, Categories and Subcategories."
+        },
+        {
+          "t": "Organizational Profile",
+          "d": "An organization's current and/or target posture expressed in Core outcomes."
+        },
+        {
+          "t": "Tiers",
+          "d": "Four levels characterizing the rigor of cybersecurity risk governance and management."
+        }
+      ],
+      "trap": "Do not confuse Profiles with Tiers: Profiles say WHICH outcomes you achieve or target; Tiers describe HOW rigorously you govern and manage risk.",
+      "example": "A hospital uses the Core as its vocabulary, writes a Current and Target Profile for its clinical network, and decides it wants to move from Tier 2 to Tier 3.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Component",
+          "Answers"
+        ],
+        "rows": [
+          [
+            "CSF Core",
+            "What outcomes exist"
+          ],
+          [
+            "Profiles",
+            "Which we have/want"
+          ],
+          [
+            "Tiers",
+            "How rigorous we are"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.1.03",
+      "objective": "d4.1",
+      "seq": 3,
+      "title": "Core hierarchy: 6 Functions, 22 Categories, 106 Subcategories",
+      "short": "The CSF 2.0 Core has 6 Functions (GOVERN, IDENTIFY, PROTECT, DETECT, RESPOND, RECOVER), 22 Categories and 106 Subcategories. Each Subcategory is a specific outcome with an identifier like GV.OC-01 or PR.AA-05.",
+      "deep": "The Core is a three-level tree:\n- **Function**: the highest level. CSF 2.0 has **six**: **GOVERN (GV)**, **IDENTIFY (ID)**, **PROTECT (PR)**, **DETECT (DE)**, **RESPOND (RS)** and **RECOVER (RC)**.\n- **Category**: a group of related outcomes inside a Function, for example **PR.AA** (Identity Management, Authentication, and Access Control). There are **22**.\n- **Subcategory**: a specific technical or management outcome, for example **PR.AA-05** (access permissions follow least privilege and separation of duties). There are **106**.\n\nIdentifiers follow the pattern **FUNCTION.CATEGORY-NN**, such as GV.SC-04 or DE.CM-01. **Gaps in numbering** (DE.CM has 01, 02, 03, 06, 09) are intentional. They show where CSF 1.1 Subcategories were withdrawn or moved, so the old numbers are not reused.\n\nFor comparison, CSF 1.1 had 5 Functions, 23 Categories and 108 Subcategories. The new GOVERN Function took in outcomes that used to sit under IDENTIFY, such as governance, risk strategy and supply chain.\n\nFunction one-liners: GV sets strategy, expectations and policy; ID understands current risk; PR applies safeguards; DE finds and analyzes attacks; RS acts on incidents; RC restores assets and operations.",
+      "terms": [
+        {
+          "t": "Function",
+          "d": "Top level of the Core; CSF 2.0 has six: GV, ID, PR, DE, RS, RC."
+        },
+        {
+          "t": "Category",
+          "d": "Group of related outcomes within a Function (22 in CSF 2.0)."
+        },
+        {
+          "t": "Subcategory",
+          "d": "Specific outcome statement with an identifier such as GV.OC-01 (106 in CSF 2.0)."
+        }
+      ],
+      "trap": "The exam checks the counts 6/22/106 and that numbering gaps reflect relocated or withdrawn 1.1 items, not missing content.",
+      "example": "An auditor's finding cites RS.MI-01. Reading it: RESPOND Function, Incident Mitigation Category, Subcategory 01 (incidents are contained).",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "6 Functions",
+          "22 Categories",
+          "106 Subcategories"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.1.04",
+      "objective": "d4.1",
+      "seq": 4,
+      "title": "Informative References and Implementation Examples",
+      "short": "Informative References map Core outcomes to other standards (SP 800-53, ISO/IEC 27001 and more). Implementation Examples are notional, action-oriented ways to reach a Subcategory. Both live online, not in the CSF document, so NIST can update them often.",
+      "deep": "To keep the CSF document stable, NIST moved two supporting resources **online**:\n\n- **Informative References**: mappings between CSF Core outcomes and existing standards, guidelines, regulations and other content, such as **NIST SP 800-53**, **ISO/IEC 27001**, CIS Controls and the NIST Privacy Framework. They show which controls or requirements help achieve an outcome.\n- **Implementation Examples**: short, **notional**, action-oriented examples of how to achieve a Subcategory, such as \"Maintain inventories for all types of hardware.\" They are **not a checklist** and not a required baseline.\n\nBoth can be updated more often than the CSF itself, and both are available in **human- and machine-readable formats** (for example JSON and spreadsheet exports) through the **CSF 2.0 Reference Tool**. NIST invites the community to submit new Informative References.\n\nWhy it matters: an organization that already runs ISO/IEC 27001 can use a reference mapping to reuse its controls as evidence for CSF outcomes instead of starting over.",
+      "terms": [
+        {
+          "t": "Informative References",
+          "d": "Online mappings from CSF outcomes to other standards, guidelines and regulations."
+        },
+        {
+          "t": "Implementation Examples",
+          "d": "Notional, action-oriented examples of achieving a Subcategory; not a required baseline."
+        },
+        {
+          "t": "CSF 2.0 Reference Tool",
+          "d": "NIST online tool to browse, search and export the Core, References and Examples."
+        }
+      ],
+      "trap": "Implementation Examples are illustrative, not mandatory controls; a distractor that calls them a required minimum baseline is wrong.",
+      "example": "A security architect exports the CSF 2.0 Core with SP 800-53 references as JSON to load it into the company's GRC platform.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d4.1.05",
+      "objective": "d4.1",
+      "seq": 5,
+      "title": "Tiers 1-4",
+      "short": "CSF Tiers characterize the rigor of an organization's cybersecurity risk governance and management: Tier 1 Partial, Tier 2 Risk Informed, Tier 3 Repeatable, Tier 4 Adaptive. They provide context, and moving to Tier 4 is not required for everyone.",
+      "deep": "Each Tier is described for both **cybersecurity risk governance** and **cybersecurity risk management**:\n\n- **Tier 1, Partial**: the risk strategy is applied **ad hoc**; awareness of risk is limited; practices are reactive and irregular.\n- **Tier 2, Risk Informed**: risk management practices are **approved by management** but **may not be organization-wide policy**. Awareness exists, but practice is inconsistent.\n- **Tier 3, Repeatable**: risk practices are **formally approved and expressed as policy**, and are consistently applied, reviewed and updated across the organization.\n- **Tier 4, Adaptive**: an **organization-wide**, risk-informed approach that **adapts** using lessons learned and predictive indicators. Executives monitor cybersecurity risk **in the same context as financial and other organizational risks**.\n\nTiers are chosen to **inform Current and Target Profiles**. The goal is to pick a Tier that fits the organization's risk, resources and objectives. NIST frames Tiers as context for improvement, not as a score that everyone must max out. Tiers are also not the same as Profiles: a Tier describes how risk is governed and managed, not which outcomes are achieved.",
+      "terms": [
+        {
+          "t": "Tier 2 Risk Informed",
+          "d": "Practices approved by management but may not be established as organization-wide policy."
+        },
+        {
+          "t": "Tier 3 Repeatable",
+          "d": "Practices formally approved and expressed as policy, applied consistently."
+        },
+        {
+          "t": "Tier 4 Adaptive",
+          "d": "Organization-wide approach that adapts; cyber risk monitored like financial risk."
+        }
+      ],
+      "trap": "The common trap is the Tier 2 versus Tier 3 boundary: management approval alone is Tier 2; formal organization-wide policy is Tier 3.",
+      "example": "A retailer's CISO has the security practices signed off by the COO, but no organization-wide policy exists yet. That is Tier 2, Risk Informed.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Tier 4 Adaptive",
+          "Tier 3 Repeatable",
+          "Tier 2 Risk Informed",
+          "Tier 1 Partial"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.1.06",
+      "objective": "d4.1",
+      "seq": 6,
+      "title": "Adoption resources: Quick-Start Guides, Community Profiles, CPRT",
+      "short": "NIST supports CSF 2.0 adoption with Quick-Start Guides (short, audience-specific guides such as Small Business), Community Profiles (shared baselines for a sector or use case) and the Cybersecurity and Privacy Reference Tool (CPRT), which serves NIST reference data in machine-readable formats.",
+      "deep": "CSF 2.0 comes with a family of supporting resources:\n\n- **Quick-Start Guides (QSGs)**: brief documents on one topic for a specific audience. Examples include the **Small Business** QSG, **Organizational Profiles**, **Tiers**, **Enterprise Risk Management**, **Cybersecurity Supply Chain Risk Management**, **Community Profiles** and a **Resource and Overview Guide**. They are a starting point, not a replacement for the CSF.\n- **Community Profiles**: a **baseline of CSF outcomes** created and published to address shared interests and goals across **many organizations**. They are usually built for a **sector, subsector, technology, threat type or other use case**. An organization can use one as the basis for its own **Target Profile**.\n- **Cybersecurity and Privacy Reference Tool (CPRT)**: NIST's way to browse and download reference data from its frameworks and guidelines (CSF, SP 800-53, the Privacy Framework and others) in formats such as **JSON and XLSX**. The **CSF 2.0 Reference Tool** is built on it.\n\nThese resources are updated more often than the framework itself.",
+      "terms": [
+        {
+          "t": "Quick-Start Guide (QSG)",
+          "d": "Short NIST guide on one CSF topic for a specific audience, e.g. small business."
+        },
+        {
+          "t": "Community Profile",
+          "d": "Published baseline of CSF outcomes for a sector, technology, threat or use case."
+        },
+        {
+          "t": "CPRT",
+          "d": "Cybersecurity and Privacy Reference Tool: NIST reference data in machine-readable form."
+        }
+      ],
+      "trap": "A Community Profile is shared across many organizations; an Organizational Profile is one organization's own. Exams swap the two.",
+      "example": "A water utility adopts a sector Community Profile as the starting point for its Target Profile, then tailors it to its own systems.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d4.2.01",
+      "objective": "d4.2",
+      "seq": 1,
+      "title": "GOVERN at the centre of the wheel",
+      "short": "GOVERN (GV) is new in CSF 2.0. It establishes, communicates and monitors the organization's cybersecurity risk management strategy, expectations and policy. NIST draws it at the centre of the Functions wheel because it informs how the other five Functions are implemented.",
+      "deep": "CSF 2.0 shows the six Functions as a **wheel**, because all of them relate to one another. **GOVERN** sits **in the centre** because it **informs how an organization will implement the other five Functions** (IDENTIFY, PROTECT, DETECT, RESPOND, RECOVER).\n\nGOVERN covers **understanding context and setting direction**:\n- What the mission is and what stakeholders, laws and contracts require.\n- The risk management strategy, including **risk appetite and tolerance**.\n- Who is accountable, and with what resources.\n- Policy, oversight of results, and **cybersecurity supply chain risk management**.\n\nGOVERN also connects cybersecurity to the organization's **enterprise risk management (ERM)**, so cyber risk is weighed next to financial, legal, operational and reputational risk.\n\nGOVERN has **six Categories**: GV.OC, GV.RM, GV.RR, GV.PO, GV.OV and GV.SC. Many of these outcomes used to sit under IDENTIFY in CSF 1.1 (for example Governance, Risk Management Strategy and Supply Chain Risk Management).",
+      "terms": [
+        {
+          "t": "GOVERN (GV)",
+          "d": "Function that sets, communicates and monitors cyber risk strategy, expectations and policy."
+        },
+        {
+          "t": "Functions wheel",
+          "d": "CSF 2.0 figure showing the six Functions as a wheel with GOVERN at the centre."
+        }
+      ],
+      "trap": "If asked which Function informs how the others are implemented, the answer is GOVERN, not IDENTIFY, which was the foundational Function in CSF 1.1.",
+      "example": "Before buying any new security tools, a board sets the cyber risk appetite and approves a policy. Those GOVERN outcomes then shape what PROTECT and DETECT invest in.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Identify",
+          "Protect",
+          "Detect",
+          "Respond",
+          "Recover"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.2.02",
+      "objective": "d4.2",
+      "seq": 2,
+      "title": "GV.OC Organizational Context and GV.RM Risk Management Strategy",
+      "short": "GV.OC makes sure the mission, stakeholder expectations, legal and contractual requirements and critical dependencies are understood. GV.RM sets risk objectives, risk appetite and tolerance, response options and a standard way to calculate and prioritize cyber risk.",
+      "deep": "**GV.OC, Organizational Context**: understand the circumstances around cyber risk decisions.\n- GV.OC-01: the **mission** is understood and shapes cyber risk management.\n- GV.OC-02: internal and external **stakeholders'** needs and expectations are understood.\n- GV.OC-03: **legal, regulatory and contractual requirements**, including privacy and civil liberties obligations, are understood and managed.\n- GV.OC-04: critical objectives and services that **external stakeholders depend on** are understood.\n- GV.OC-05: outcomes and services the **organization depends on** are understood.\n\n**GV.RM, Risk Management Strategy**: priorities, constraints, appetite and assumptions.\n- GV.RM-01: risk management **objectives** are agreed by stakeholders.\n- GV.RM-02: **risk appetite and risk tolerance** statements are set, communicated and maintained.\n- GV.RM-03: cyber risk activities are **included in enterprise risk management**.\n- GV.RM-04: strategic direction on **risk response options** is set.\n- GV.RM-05: communication lines for cyber risk, including supplier risk, are set.\n- GV.RM-06: a **standardized method** for calculating, documenting, categorizing and prioritizing cyber risks.\n- GV.RM-07: **strategic opportunities (positive risks)** are characterized and included.",
+      "terms": [
+        {
+          "t": "Risk appetite",
+          "d": "The broad amount and type of risk an organization is willing to accept to pursue its objectives."
+        },
+        {
+          "t": "Risk tolerance",
+          "d": "The acceptable variation around objectives; a more specific limit than appetite."
+        },
+        {
+          "t": "Positive risk",
+          "d": "An opportunity; GV.RM-07 includes these in cyber risk discussions."
+        }
+      ],
+      "trap": "Knowing legal and contractual requirements (such as privacy law) is GV.OC, not GV.PO; setting risk appetite is GV.RM, not GV.OV.",
+      "example": "A SaaS company lists its contractual uptime commitments to customers (GV.OC-04) and approves a statement that it will not tolerate more than four hours of outage (GV.RM-02).",
+      "diagram": null
+    },
+    {
+      "id": "governance.d4.2.03",
+      "objective": "d4.2",
+      "seq": 3,
+      "title": "GV.RR Roles, Responsibilities, and Authorities",
+      "short": "GV.RR establishes who is accountable for cybersecurity. Leadership owns cyber risk and builds a risk-aware culture, roles and authorities are defined and enforced, resources match the strategy, and cybersecurity is built into human resources practices.",
+      "deep": "**GV.RR** makes accountability explicit so that risk decisions have owners.\n\n- **GV.RR-01**: **organizational leadership is responsible and accountable** for cybersecurity risk and fosters a culture that is risk-aware, ethical and continually improving.\n- **GV.RR-02**: roles, responsibilities and authorities related to cyber risk management are **established, communicated, understood and enforced**.\n- **GV.RR-03**: **adequate resources** are allocated in line with the risk strategy, roles and policies.\n- **GV.RR-04**: cybersecurity is **included in human resources practices**, such as background screening, onboarding, role changes and offboarding.\n\nThe key idea is that accountability sits with **leadership**. The security team runs the program, but executives own the risk. A RACI matrix, a delegated authority to accept risk, and a budget sized to the strategy are typical evidence for GV.RR.\n\nNote the difference from **PR.AT** (Awareness and Training): GV.RR-04 is about building security into HR *processes*, while PR.AT is about *training* people.",
+      "terms": [
+        {
+          "t": "Accountability",
+          "d": "Being answerable for outcomes; GV.RR-01 puts it on organizational leadership."
+        },
+        {
+          "t": "RACI",
+          "d": "Responsible, Accountable, Consulted, Informed: a common way to document roles."
+        }
+      ],
+      "trap": "Background checks and offboarding steps sit under GV.RR-04 (HR practices), not PR.AT; a budget gap is a GV.RR-03 resourcing issue.",
+      "example": "The board delegates authority to accept moderate cyber risks to the CIO, and HR adds an access-revocation step to every termination checklist.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d4.2.04",
+      "objective": "d4.2",
+      "seq": 4,
+      "title": "GV.PO Policy and GV.OV Oversight",
+      "short": "GV.PO sets cyber risk management policy based on context, strategy and priorities, then communicates, enforces, reviews and updates it. GV.OV uses the results of risk management activities to review and adjust the strategy and evaluate overall performance.",
+      "deep": "**GV.PO, Policy**\n- **GV.PO-01**: a policy for managing cybersecurity risk is **established** based on organizational context, strategy and priorities, and is **communicated and enforced**.\n- **GV.PO-02**: the policy is **reviewed, updated, communicated and enforced** to reflect changes in requirements, threats, technology and mission.\n\n**GV.OV, Oversight**: results feed back into strategy.\n- **GV.OV-01**: **outcomes of the strategy are reviewed** to inform and adjust strategy and direction.\n- **GV.OV-02**: the strategy is reviewed and adjusted to make sure it **covers organizational requirements and risks**.\n- **GV.OV-03**: **organizational cyber risk management performance** is evaluated and reviewed for needed adjustments.\n\nThink of it as a loop: GV.RM sets strategy, GV.PO turns it into policy, the other Functions carry it out, and **GV.OV** checks whether it is working and adjusts. Board-level dashboards, KPI and KRI reviews, and annual strategy reviews are typical GV.OV evidence.",
+      "terms": [
+        {
+          "t": "Policy (GV.PO)",
+          "d": "Documented cyber risk management direction that is communicated, enforced and kept current."
+        },
+        {
+          "t": "Oversight (GV.OV)",
+          "d": "Using results to review and adjust the strategy and to evaluate performance."
+        },
+        {
+          "t": "KRI",
+          "d": "Key risk indicator: a metric that signals rising risk exposure."
+        }
+      ],
+      "trap": "Reviewing whether the strategy is working is GV.OV; updating the policy text after a new law is GV.PO-02. Exams contrast the two.",
+      "example": "Each quarter the risk committee reviews phishing click rates and patch latency against targets and adjusts priorities. That is GV.OV-03.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "GV.RM strategy",
+          "GV.PO policy",
+          "Execute (ID-RC)",
+          "GV.OV review"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.2.05",
+      "objective": "d4.2",
+      "seq": 5,
+      "title": "GV.SC Cybersecurity Supply Chain Risk Management",
+      "short": "GV.SC is the largest Govern Category (10 Subcategories). It sets up a C-SCRM program, ranks suppliers by criticality, writes security requirements into contracts, does due diligence before onboarding, monitors suppliers through the relationship, involves them in incident plans and covers activity after the relationship ends.",
+      "deep": "**Cybersecurity supply chain risk management (C-SCRM)** deals with risk from suppliers, products and services: compromised software updates, a breached managed service provider, counterfeit hardware.\n\nGV.SC outcomes follow the **supplier lifecycle**:\n- **GV.SC-01**: a C-SCRM **program, strategy, objectives, policies and processes** are established and agreed.\n- **GV.SC-02**: cyber **roles for suppliers, customers and partners** are set and coordinated.\n- **GV.SC-03**: C-SCRM is **integrated** into cyber and enterprise risk management.\n- **GV.SC-04**: suppliers are **known and prioritized by criticality**.\n- **GV.SC-05**: requirements are **established and included in contracts** and agreements.\n- **GV.SC-06**: **planning and due diligence** happen **before** entering formal relationships.\n- **GV.SC-07**: supplier risks are **understood, recorded, prioritized, assessed, responded to and monitored** over the relationship.\n- **GV.SC-08**: suppliers are **included in incident planning, response and recovery**.\n- **GV.SC-09**: supply chain security practices are **integrated and monitored** across the product and service lifecycle.\n- **GV.SC-10**: C-SCRM plans cover activities **after the partnership or service agreement ends**.\n\nRelated outcomes elsewhere: **ID.RA-10** (critical suppliers assessed before acquisition) and **DE.CM-06** (external service provider activity monitored).",
+      "terms": [
+        {
+          "t": "C-SCRM",
+          "d": "Cybersecurity supply chain risk management: managing cyber risk from suppliers and third parties."
+        },
+        {
+          "t": "Supplier criticality",
+          "d": "How important a supplier is to mission and how much harm its compromise could cause (GV.SC-04)."
+        }
+      ],
+      "trap": "Making sure a departing vendor returns or destroys your data is GV.SC-10 (after the relationship ends), not GV.SC-06 (before it starts).",
+      "example": "Before signing with a new payroll provider, a firm runs a security questionnaire (GV.SC-06) and adds breach-notification clauses to the contract (GV.SC-05).",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Prioritize (04)",
+          "Due diligence (06)",
+          "Contract (05)",
+          "Monitor (07)",
+          "Offboard (10)"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.3.01",
+      "objective": "d4.3",
+      "seq": 1,
+      "title": "ID.AM Asset Management",
+      "short": "ID.AM keeps inventories of hardware, software, services, data and authorized data flows, including supplier-provided services. It prioritizes assets by classification, criticality and mission impact, and manages them through their whole life cycle.",
+      "deep": "You cannot protect what you do not know you have. **IDENTIFY (ID)** helps the organization understand its current cyber risk, and **ID.AM, Asset Management** is where that starts.\n\n- **ID.AM-01**: inventories of **hardware** are maintained.\n- **ID.AM-02**: inventories of **software, services and systems** are maintained.\n- **ID.AM-03**: representations of **authorized network communication and internal and external data flows** are maintained.\n- **ID.AM-04**: inventories of **services provided by suppliers** are maintained.\n- **ID.AM-05**: assets are **prioritized** by classification, criticality, resources and impact on the mission.\n- **ID.AM-07**: inventories of **data and corresponding metadata** for designated data types are maintained.\n- **ID.AM-08**: systems, hardware, software, services and data are **managed throughout their life cycles**, from acquisition to secure disposal.\n\nThere is no ID.AM-06: that 1.1 outcome (roles and responsibilities) moved into **GOVERN (GV.RR)**. Life cycle management (ID.AM-08) is new in 2.0 and links to secure disposal and data destruction.",
+      "terms": [
+        {
+          "t": "Asset inventory",
+          "d": "A maintained list of hardware, software, services and data (ID.AM-01/02/07)."
+        },
+        {
+          "t": "Data flow mapping",
+          "d": "Documenting authorized network communications and data flows (ID.AM-03)."
+        },
+        {
+          "t": "Life cycle management",
+          "d": "Managing assets from acquisition through secure disposal (ID.AM-08)."
+        }
+      ],
+      "trap": "A list of SaaS services your suppliers run for you is ID.AM-04, not a GV.SC outcome; diagrams of data flows are ID.AM-03.",
+      "example": "An MDM tool feeds the hardware inventory, and a data catalog tags which databases hold customer PII. Those cover ID.AM-01 and ID.AM-07.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d4.3.02",
+      "objective": "d4.3",
+      "seq": 2,
+      "title": "ID.RA Risk Assessment and ID.IM Improvement",
+      "short": "ID.RA identifies vulnerabilities, threats, likelihood and impact, then prioritizes and tracks risk responses, including supplier and product integrity checks. ID.IM, new in 2.0, identifies improvements from evaluations, tests and exercises, and operations, and maintains incident response plans.",
+      "deep": "**ID.RA, Risk Assessment**\n- **ID.RA-01** asset **vulnerabilities** are identified, validated and recorded.\n- **ID.RA-02** **cyber threat intelligence** is received from sharing forums and sources.\n- **ID.RA-03** internal and external **threats** are identified and recorded.\n- **ID.RA-04** potential **impacts and likelihoods** are identified and recorded.\n- **ID.RA-05** threats, vulnerabilities, likelihoods and impacts are used to understand **inherent risk** and prioritize responses.\n- **ID.RA-06** **risk responses** are chosen, prioritized, planned, tracked and communicated.\n- **ID.RA-07** **changes and exceptions** are managed and assessed for risk.\n- **ID.RA-08** processes for receiving and acting on **vulnerability disclosures** exist.\n- **ID.RA-09** **authenticity and integrity of hardware and software** are assessed before acquisition and use.\n- **ID.RA-10** **critical suppliers** are assessed before acquisition.\n\n**ID.IM, Improvement** (new Category in 2.0, replacing the separate RS.IM and RC.IM)\n- **ID.IM-01** improvements from **evaluations**.\n- **ID.IM-02** from **security tests and exercises**, including those with suppliers.\n- **ID.IM-03** from **operational processes**, procedures and activities.\n- **ID.IM-04** **incident response plans** and other cyber plans are established, communicated, maintained and improved.",
+      "terms": [
+        {
+          "t": "Inherent risk",
+          "d": "Risk before considering existing controls or responses (ID.RA-05)."
+        },
+        {
+          "t": "Vulnerability disclosure",
+          "d": "A process to receive and act on reports of vulnerabilities (ID.RA-08)."
+        },
+        {
+          "t": "ID.IM",
+          "d": "Improvement Category: lessons from evaluations, tests, exercises and operations."
+        }
+      ],
+      "trap": "Lessons learned after an incident or exercise feed ID.IM in CSF 2.0, not RS.IM or RC.IM, which no longer exist.",
+      "example": "After a tabletop exercise with its MSP, a company updates its incident response plan. That is ID.IM-02 and ID.IM-04.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Vulns (01)",
+          "Threats (03)",
+          "Impact (04)",
+          "Risk (05)",
+          "Response (06)"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.3.03",
+      "objective": "d4.3",
+      "seq": 3,
+      "title": "PR.AA Identity, Authentication and Access Control; PR.AT Awareness and Training",
+      "short": "PR.AA manages identities and credentials, verifies and authenticates users, services and hardware, protects identity assertions, enforces least privilege and separation of duties, and controls physical access. PR.AT gives all staff awareness training and gives specialized roles role-specific training.",
+      "deep": "**PROTECT (PR)** applies safeguards to manage cyber risk. Its first two Categories focus on people and access.\n\n**PR.AA, Identity Management, Authentication, and Access Control** (renamed from 1.1's PR.AC)\n- **PR.AA-01** identities and credentials for users, services and hardware are **managed**.\n- **PR.AA-02** identities are **proofed and bound to credentials** based on the interaction's context.\n- **PR.AA-03** users, services and hardware are **authenticated**.\n- **PR.AA-04** **identity assertions** (such as SAML or OIDC tokens) are protected, conveyed and verified.\n- **PR.AA-05** access permissions are defined, managed, enforced and reviewed, following **least privilege and separation of duties**.\n- **PR.AA-06** **physical access** to assets is managed, monitored and enforced according to risk.\n\n**PR.AT, Awareness and Training**\n- **PR.AT-01** **personnel** get awareness and training so they can perform general tasks with cyber risk in mind.\n- **PR.AT-02** individuals in **specialized roles** (such as developers, admins or executives) get training for their roles.\n\nNote that physical access control lives in PR.AA-06, while monitoring of the physical environment is DE.CM-02.",
+      "terms": [
+        {
+          "t": "Identity proofing",
+          "d": "Verifying that a person is who they claim before issuing credentials (PR.AA-02)."
+        },
+        {
+          "t": "Identity assertion",
+          "d": "A statement about an authenticated identity, e.g. a federation token (PR.AA-04)."
+        },
+        {
+          "t": "Separation of duties",
+          "d": "Splitting critical tasks so one person cannot complete them alone (PR.AA-05)."
+        }
+      ],
+      "trap": "Badge readers on the data-centre door are PR.AA-06 (physical access), not PR.IR; quarterly access reviews are PR.AA-05.",
+      "example": "A bank requires phishing-resistant MFA for admins (PR.AA-03) and gives its developers secure-coding training (PR.AT-02).",
+      "diagram": null
+    },
+    {
+      "id": "governance.d4.3.04",
+      "objective": "d4.3",
+      "seq": 4,
+      "title": "PR.DS Data Security and PR.PS Platform Security",
+      "short": "PR.DS protects the confidentiality, integrity and availability of data at rest, in transit and in use, and covers backups. PR.PS covers configuration management, software and hardware maintenance, log generation, blocking unauthorized software and secure software development.",
+      "deep": "**PR.DS, Data Security**: data is managed consistent with the risk strategy.\n- **PR.DS-01** CIA of **data at rest** is protected (for example encryption).\n- **PR.DS-02** CIA of **data in transit** is protected (for example TLS).\n- **PR.DS-10** CIA of **data in use** is protected (for example confidential computing).\n- **PR.DS-11** **backups** are created, protected, maintained and tested.\n\n**PR.PS, Platform Security** (new Category in 2.0): hardware, software and services of physical and virtual platforms.\n- **PR.PS-01** **configuration management** practices are established and applied (secure baselines).\n- **PR.PS-02** **software** is maintained, replaced and removed according to risk (patching, end-of-life).\n- **PR.PS-03** **hardware** is maintained, replaced and removed according to risk.\n- **PR.PS-04** **log records are generated** and made available for continuous monitoring.\n- **PR.PS-05** installation and execution of **unauthorized software** are prevented (allow-listing).\n- **PR.PS-06** **secure software development** practices are integrated and monitored through the SDLC.\n\nWatch the split: *generating* logs is PR.PS-04, but *monitoring* them is DETECT (DE.CM).",
+      "terms": [
+        {
+          "t": "Data in use",
+          "d": "Data being processed in memory; protected under PR.DS-10."
+        },
+        {
+          "t": "Configuration management",
+          "d": "Setting and enforcing secure baselines for systems (PR.PS-01)."
+        },
+        {
+          "t": "Allow-listing",
+          "d": "Only approved software may run; supports PR.PS-05."
+        }
+      ],
+      "trap": "Turning on audit logging is PR.PS-04 (Protect); reviewing those logs for suspicious activity is DE.CM (Detect).",
+      "example": "A firm encrypts laptops (PR.DS-01), tests restores monthly (PR.DS-11) and applies CIS benchmarks to its servers (PR.PS-01).",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Data state",
+          "Subcategory"
+        ],
+        "rows": [
+          [
+            "At rest",
+            "PR.DS-01"
+          ],
+          [
+            "In transit",
+            "PR.DS-02"
+          ],
+          [
+            "In use",
+            "PR.DS-10"
+          ],
+          [
+            "Backups",
+            "PR.DS-11"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.3.05",
+      "objective": "d4.3",
+      "seq": 5,
+      "title": "PR.IR Technology Infrastructure Resilience",
+      "short": "PR.IR (new in 2.0) manages security architecture for resilience: networks and environments are protected from unauthorized logical access, assets are protected from environmental threats, resilience mechanisms work in normal and adverse conditions, and enough capacity exists for availability.",
+      "deep": "**PR.IR, Technology Infrastructure Resilience** is about designing infrastructure so it keeps running and resists attack.\n\n- **PR.IR-01**: **networks and environments are protected from unauthorized logical access** and usage, for example through segmentation, firewalls and zero trust architecture.\n- **PR.IR-02**: technology assets are protected from **environmental threats** such as fire, flood, heat and power loss.\n- **PR.IR-03**: mechanisms are implemented to achieve **resilience requirements in normal and adverse situations**, such as failover, redundancy and load balancing.\n- **PR.IR-04**: **adequate resource capacity** to ensure availability is maintained, for example capacity planning and DDoS headroom.\n\nPR.IR focuses on **architecture**. Backups are data protection (**PR.DS-11**). Restoring from backups after an incident is **RECOVER (RC.RP)**. Physical *access* to facilities is **PR.AA-06**, while *environmental* protection is **PR.IR-02**.",
+      "terms": [
+        {
+          "t": "Network segmentation",
+          "d": "Dividing networks to limit unauthorized logical access and lateral movement (PR.IR-01)."
+        },
+        {
+          "t": "Resilience",
+          "d": "Ability to keep operating, or recover quickly, under adverse conditions (PR.IR-03)."
+        },
+        {
+          "t": "Capacity management",
+          "d": "Keeping enough compute, storage and bandwidth to stay available (PR.IR-04)."
+        }
+      ],
+      "trap": "Fire suppression and UPS units map to PR.IR-02 (environmental threats), not PR.AA-06 (physical access).",
+      "example": "A retailer deploys its checkout service across two cloud regions with automatic failover (PR.IR-03) and segments its POS network from corporate Wi-Fi (PR.IR-01).",
+      "diagram": null
+    },
+    {
+      "id": "governance.d4.4.01",
+      "objective": "d4.4",
+      "seq": 1,
+      "title": "DE.CM Continuous Monitoring and DE.AE Adverse Event Analysis",
+      "short": "DETECT finds and analyzes possible attacks. DE.CM monitors networks, the physical environment, personnel activity, external providers and computing assets for adverse events. DE.AE analyzes and correlates events, estimates impact and scope, adds threat intelligence and declares incidents when criteria are met.",
+      "deep": "**DE.CM, Continuous Monitoring**: assets are monitored to find anomalies, indicators of compromise and other potentially adverse events.\n- **DE.CM-01** **networks and network services**.\n- **DE.CM-02** the **physical environment**.\n- **DE.CM-03** **personnel activity and technology usage**.\n- **DE.CM-06** **external service provider** activities and services.\n- **DE.CM-09** **computing hardware and software, runtime environments and their data**.\n\n**DE.AE, Adverse Event Analysis** (renamed from 1.1's Anomalies and Events)\n- **DE.AE-02** potentially adverse events are **analyzed** to understand associated activities.\n- **DE.AE-03** information is **correlated from multiple sources** (the classic SIEM job).\n- **DE.AE-04** the estimated **impact and scope** of adverse events are understood.\n- **DE.AE-06** information on adverse events is provided to **authorized staff and tools**.\n- **DE.AE-07** **cyber threat intelligence** and other context are integrated into the analysis.\n- **DE.AE-08** **incidents are declared** when adverse events meet the defined incident criteria.\n\nDE.AE-08 is the hand-off point: once an incident is declared, RESPOND (RS.MA-01) executes the incident response plan.",
+      "terms": [
+        {
+          "t": "Adverse event",
+          "d": "An event with a negative consequence, such as an unauthorized login attempt or malware execution."
+        },
+        {
+          "t": "Correlation",
+          "d": "Linking related events from multiple sources to reveal an attack (DE.AE-03)."
+        },
+        {
+          "t": "Incident declaration",
+          "d": "Formally calling an incident when defined criteria are met (DE.AE-08)."
+        }
+      ],
+      "trap": "Declaring an incident is DETECT (DE.AE-08); triaging and prioritizing the declared incident is RESPOND (RS.MA).",
+      "example": "A SIEM correlates a VPN login from a new country with mass file downloads (DE.AE-03), and the SOC lead declares an incident (DE.AE-08).",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Monitor (DE.CM)",
+          "Analyze (DE.AE-02)",
+          "Correlate (03)",
+          "Declare (08)"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.4.02",
+      "objective": "d4.4",
+      "seq": 2,
+      "title": "RS.MA Incident Management and RS.AN Incident Analysis",
+      "short": "RS.MA executes the incident response plan with third parties, triages and validates reports, categorizes and prioritizes incidents, escalates as needed and applies criteria for starting recovery. RS.AN establishes what happened and the root cause, preserves evidence integrity and provenance, and estimates magnitude.",
+      "deep": "**RESPOND (RS)** takes action on a detected incident. In CSF 2.0 its first Category is **RS.MA, Incident Management** (new in 2.0).\n- **RS.MA-01** the **incident response plan is executed** in coordination with relevant third parties once an incident is declared.\n- **RS.MA-02** incident reports are **triaged and validated**.\n- **RS.MA-03** incidents are **categorized and prioritized**.\n- **RS.MA-04** incidents are **escalated or elevated** as needed.\n- **RS.MA-05** the **criteria for initiating incident recovery** are applied.\n\n**RS.AN, Incident Analysis**: investigations support effective response and forensics.\n- **RS.AN-03** analysis determines **what took place and the root cause**.\n- **RS.AN-06** actions during the investigation are **recorded**, and the records' **integrity and provenance** are preserved.\n- **RS.AN-07** incident **data and metadata are collected**, with integrity and provenance preserved (chain of custody).\n- **RS.AN-08** the incident's **magnitude** is estimated and validated.\n\nNote that **RS.MA-05** is the bridge to RECOVER: response decides *when* recovery can start, and RC.RP then carries it out.",
+      "terms": [
+        {
+          "t": "Triage",
+          "d": "Rapidly reviewing incident reports to validate them and set initial priority (RS.MA-02)."
+        },
+        {
+          "t": "Root cause analysis",
+          "d": "Finding the underlying cause of an incident (RS.AN-03)."
+        },
+        {
+          "t": "Provenance",
+          "d": "Documented origin and handling history of evidence, supporting chain of custody (RS.AN-06/07)."
+        }
+      ],
+      "trap": "Preserving forensic evidence with chain of custody is RS.AN-07, not DE.AE; deciding recovery can start is RS.MA-05, not RC.RP.",
+      "example": "The IR lead escalates a ransomware incident to the executive crisis team (RS.MA-04) while forensics images affected servers with hashes recorded (RS.AN-07).",
+      "diagram": null
+    },
+    {
+      "id": "governance.d4.4.03",
+      "objective": "d4.4",
+      "seq": 3,
+      "title": "RS.CO Reporting and Communication and RS.MI Incident Mitigation",
+      "short": "RS.CO notifies internal and external stakeholders of incidents and shares information with designated stakeholders as required by policy, law and contracts. RS.MI contains incidents and eradicates them.",
+      "deep": "**RS.CO, Incident Response Reporting and Communication**: response activities are coordinated with internal and external stakeholders as required by laws, regulations or policies.\n- **RS.CO-02** **internal and external stakeholders are notified** of incidents, for example regulators, customers, law enforcement and the board.\n- **RS.CO-03** **information is shared with designated** internal and external **stakeholders**, for example an ISAC or a supplier.\n\n**RS.MI, Incident Mitigation**: activities to prevent expansion and lessen effects.\n- **RS.MI-01** incidents are **contained**, for example isolating a host, disabling an account or blocking an IP.\n- **RS.MI-02** incidents are **eradicated**, for example removing malware, closing the exploited vulnerability or resetting compromised credentials.\n\nContain first, then eradicate: stop the spread before you clean up. Restoring systems afterwards belongs to **RECOVER**.\n\nCommunication is split by phase. **RS.CO** covers notifications *during the response*, such as breach notification to a privacy regulator. **RC.CO** covers communication about *recovery progress*.",
+      "terms": [
+        {
+          "t": "Containment",
+          "d": "Limiting an incident's spread and impact (RS.MI-01)."
+        },
+        {
+          "t": "Eradication",
+          "d": "Removing the cause of the incident from the environment (RS.MI-02)."
+        },
+        {
+          "t": "ISAC",
+          "d": "Information Sharing and Analysis Center: a sector body for sharing threat and incident information."
+        }
+      ],
+      "trap": "Notifying a regulator of a breach is RS.CO-02; telling customers that services are back is RC.CO. Isolating a laptop is RS.MI-01, not RC.RP.",
+      "example": "The SOC isolates infected endpoints with EDR (RS.MI-01) while legal notifies the privacy regulator (RS.CO-02).",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Contain (RS.MI-01)",
+          "Eradicate (RS.MI-02)",
+          "Recover (RC.RP)"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.4.04",
+      "objective": "d4.4",
+      "seq": 4,
+      "title": "RC.RP Recovery Plan Execution and RC.CO Recovery Communication",
+      "short": "RECOVER restores assets and operations affected by an incident. RC.RP executes the recovery part of the IR plan, prioritizes recovery actions, verifies backup and restored asset integrity, and declares the end of recovery. RC.CO communicates recovery progress and public updates.",
+      "deep": "**RC.RP, Incident Recovery Plan Execution**\n- **RC.RP-01** the **recovery portion of the incident response plan** is executed once initiated from the response process.\n- **RC.RP-02** recovery actions are **selected, scoped, prioritized and performed**.\n- **RC.RP-03** the **integrity of backups** and other restoration assets is **verified before** using them.\n- **RC.RP-04** critical mission functions and cyber risk management are considered to set **post-incident operational norms**.\n- **RC.RP-05** the **integrity of restored assets is verified**, systems and services are restored, and **normal operating status is confirmed**.\n- **RC.RP-06** the **end of incident recovery is declared** based on criteria, and incident-related **documentation is completed**.\n\n**RC.CO, Incident Recovery Communication**\n- **RC.CO-03** recovery activities and **progress are communicated to designated internal and external stakeholders**.\n- **RC.CO-04** **public updates** on recovery are shared using **approved methods and messaging**.\n\nVerifying backups before restoring (RC.RP-03) matters because ransomware operators often try to corrupt or infect backups first.",
+      "terms": [
+        {
+          "t": "Recovery plan",
+          "d": "The recovery portion of the incident response plan, executed under RC.RP-01."
+        },
+        {
+          "t": "Restoration asset",
+          "d": "Backups, golden images and similar resources used to rebuild (RC.RP-03)."
+        },
+        {
+          "t": "End of recovery",
+          "d": "Formal declaration, based on criteria, that recovery is complete (RC.RP-06)."
+        }
+      ],
+      "trap": "Checking that a backup is clean before restoring is RC.RP-03; creating and testing backups beforehand is PR.DS-11.",
+      "example": "After a ransomware attack, an engineer scans the last backup for malware before restoring (RC.RP-03), and comms posts an approved status update (RC.CO-04).",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Execute plan (01)",
+          "Prioritize (02)",
+          "Verify backups (03)",
+          "Restore+verify (05)",
+          "Declare end (06)"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.4.05",
+      "objective": "d4.4",
+      "seq": 5,
+      "title": "How the Functions run over time",
+      "short": "NIST says the six Functions should be addressed concurrently. GOVERN, IDENTIFY, PROTECT and DETECT activities happen continuously. RESPOND and RECOVER must be ready at all times and run when incidents occur, alongside the others.",
+      "deep": "The Functions are **not** a one-way sequence where you finish IDENTIFY before starting PROTECT. CSF 2.0 says they **should be addressed concurrently**.\n\n- **GOVERN, IDENTIFY, PROTECT and DETECT**: actions that support these should **happen continuously**. Detection never switches off, because monitoring is how you find incidents.\n- **RESPOND and RECOVER**: actions should be **ready at all times** (plans, contacts, playbooks, backups) and **happen when cybersecurity incidents occur**.\n\nDuring an incident, **DETECT, RESPOND and RECOVER overlap**. Containment can happen while analysts are still scoping the event, and recovery of one system can begin while others are still being eradicated. GOVERN, IDENTIFY and PROTECT keep running the whole time.\n\nThe ordered wheel (GV in the middle; ID, PR, DE, RS, RC around it) is a reading aid, not a strict timeline. Some study material groups DETECT with the incident Functions because they run together during an incident. The CSF text itself lists DETECT as continuous.",
+      "terms": [
+        {
+          "t": "Concurrent",
+          "d": "Happening at the same time; how NIST says the six Functions should be addressed."
+        },
+        {
+          "t": "Continuous Functions",
+          "d": "GV, ID, PR and DE: their activities happen all the time, not only during incidents."
+        }
+      ],
+      "trap": "A distractor claims the Functions are performed strictly in order; NIST says they are addressed concurrently, and Respond/Recover must be ready at all times.",
+      "example": "While RECOVER restores the email server, DETECT is still watching for the attacker's return and GOVERN briefs the board. Several Functions run at once.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Function",
+          "When"
+        ],
+        "rows": [
+          [
+            "GV, ID, PR",
+            "Continuously"
+          ],
+          [
+            "DE",
+            "Continuously"
+          ],
+          [
+            "RS, RC",
+            "Ready always; run in incidents"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.5.01",
+      "objective": "d4.5",
+      "seq": 1,
+      "title": "Creating and using Organizational Profiles",
+      "short": "CSF 2.0 gives five steps: scope the Profile, gather information, create the Current and Target Profiles, analyze gaps and create a prioritized action plan, then implement the plan and update the Profile, repeating as needed.",
+      "deep": "An **Organizational Profile** describes an organization's posture in Core outcomes. NIST lays out **five steps**:\n\n1. **Scope the Organizational Profile**: document the high-level facts and assumptions, for example the whole organization or one business unit, system or product line.\n2. **Gather the information needed**: policies, risk management priorities and resources, enterprise risk profiles, BIA results, requirements and standards, practices and **Tiers**.\n3. **Create the Organizational Profile**: decide what to record for each selected outcome (current practices, target priorities, notes) and fill in the **Current Profile** and **Target Profile**. A **Community Profile** can be a starting point for the Target.\n4. **Analyze the gaps** between Current and Target and **create a prioritized action plan**, for example in a **risk register** or a **plan of action and milestones (POA&M)**.\n5. **Implement the action plan and update the Profile**, then **repeat** as risk, threats and the business change.\n\nThe Target Profile can also take anticipated changes into account, such as new requirements, technology adoption and threat trends.",
+      "terms": [
+        {
+          "t": "Current Profile",
+          "d": "The Core outcomes an organization is currently achieving, or attempting to, and how well."
+        },
+        {
+          "t": "Target Profile",
+          "d": "The desired outcomes an organization has selected and prioritized."
+        },
+        {
+          "t": "POA&M",
+          "d": "Plan of action and milestones: a tracked list of corrective actions with owners and dates."
+        }
+      ],
+      "trap": "The gap analysis compares the Current Profile with the Target Profile, not one Tier with another, and it produces a prioritized action plan, not a certificate.",
+      "example": "A university scopes a Profile to its research network, finds that DE.CM-09 is far below target, and adds an EDR rollout to its POA&M.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Scope",
+          "Gather info",
+          "Create profiles",
+          "Gap + plan",
+          "Implement + update"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.5.02",
+      "objective": "d4.5",
+      "seq": 2,
+      "title": "Integrating cyber risk with ERM (NIST IR 8286 series)",
+      "short": "CSF 2.0 positions cybersecurity as one input to enterprise risk management (ERM). The NIST IR 8286 series explains how cybersecurity risk registers (CSRRs) roll up into an enterprise risk register (ERR) and enterprise risk profile (ERP) for executive oversight.",
+      "deep": "**Enterprise risk management (ERM)** looks across all risk types (financial, legal, operational, reputational and cyber) so leadership can make balanced decisions. CSF 2.0 builds this in through **GV.RM-03** (cyber risk activities included in ERM) and **GV.SC-03**.\n\nThe **NIST IR 8286** series shows how to connect the two:\n- **IR 8286**, *Integrating Cybersecurity and Enterprise Risk Management (ERM)*: the foundation.\n- **IR 8286A**, *Identifying and Estimating Cybersecurity Risk for ERM*: risk identification and analysis, recorded in a **cybersecurity risk register (CSRR)**.\n- **IR 8286B**, *Prioritizing Cybersecurity Risk for ERM*: apply enterprise objectives to prioritize risks and select responses.\n- **IR 8286C**, *Staging Cybersecurity Risks for ERM and Governance Oversight*: aggregate **CSRRs** into the **enterprise risk register (ERR)** and the **enterprise risk profile (ERP)** that leadership oversees.\n\nRisk information flows **up** (system to organization to enterprise), and risk appetite and tolerance flow **down**. NIST also publishes a CSF 2.0 **Enterprise Risk Management Quick-Start Guide**.",
+      "terms": [
+        {
+          "t": "ERM",
+          "d": "Enterprise risk management: managing all risk types together at enterprise level."
+        },
+        {
+          "t": "CSRR",
+          "d": "Cybersecurity risk register: records identified cyber risks, owners, responses."
+        },
+        {
+          "t": "ERR / ERP",
+          "d": "Enterprise risk register and enterprise risk profile: aggregated views for executives."
+        }
+      ],
+      "trap": "Cyber risk is not managed in isolation: CSRRs roll up into the ERR and ERP (IR 8286C), and appetite and tolerance set at the top flow down.",
+      "example": "Each business unit keeps a CSRR; the CRO combines the top cyber risks into the ERR so the board sees them next to liquidity and regulatory risk.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "System CSRR",
+          "Org CSRR",
+          "Enterprise ERR",
+          "Enterprise ERP"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.5.03",
+      "objective": "d4.5",
+      "seq": 3,
+      "title": "C-SCRM becomes a dedicated Govern Category",
+      "short": "In CSF 1.1, supply chain risk sat under IDENTIFY as ID.SC. CSF 2.0 moves it into GOVERN as GV.SC, with 10 Subcategories, so supplier risk is treated as a strategic, organization-wide governance issue tied to ERM.",
+      "deep": "Supply chain attacks, such as poisoned software updates, compromised MSPs and malicious open-source packages, showed that supplier risk needs leadership attention. CSF 2.0 responds by **moving C-SCRM from IDENTIFY (ID.SC in 1.1) into GOVERN as GV.SC**.\n\nWhat this signals:\n- C-SCRM is a **program** with strategy, policy, roles and resourcing (GV.SC-01, -02), not just a vendor questionnaire.\n- It must be **integrated into cybersecurity and enterprise risk management** (GV.SC-03).\n- It covers the **whole supplier relationship**: criticality ranking, due diligence, contracts, ongoing monitoring, joint incident response and post-termination (GV.SC-04 to -10).\n\nSupplier outcomes also appear in other Functions: **ID.AM-04** (inventory of supplier services), **ID.RA-09/-10** (product integrity and critical supplier assessment), **ID.IM-02** (exercises with suppliers), **DE.CM-06** (monitoring providers) and **RS.MA-01** (response with third parties).\n\nNIST provides a **C-SCRM Quick-Start Guide** and detailed guidance in **SP 800-161 Rev. 1**.",
+      "terms": [
+        {
+          "t": "GV.SC",
+          "d": "Cybersecurity Supply Chain Risk Management Category under GOVERN (10 Subcategories)."
+        },
+        {
+          "t": "ID.SC",
+          "d": "Supply Chain Risk Management Category under IDENTIFY in CSF 1.1; replaced by GV.SC."
+        },
+        {
+          "t": "SP 800-161 Rev. 1",
+          "d": "NIST guidance on C-SCRM practices for systems and organizations."
+        }
+      ],
+      "trap": "Questions ask which Function holds C-SCRM in CSF 2.0: the answer is GOVERN (GV.SC), not IDENTIFY as in 1.1.",
+      "example": "After a supplier breach, a company's board asks for a C-SCRM strategy with named owners and a budget. That is a GV.SC-01/02 governance outcome.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "CSF 1.1 ID.SC",
+          "CSF 2.0 GV.SC"
+        ]
+      }
+    },
+    {
+      "id": "governance.d4.5.04",
+      "objective": "d4.5",
+      "seq": 4,
+      "title": "Mapping CSF to ISO/IEC 27001, SP 800-53 and the Privacy Framework",
+      "short": "Informative References map CSF outcomes to standards such as NIST SP 800-53, ISO/IEC 27001 and the NIST Privacy Framework. They let an organization reuse existing controls, show crosswalks to auditors, and pair the CSF with the Privacy Framework.",
+      "deep": "The CSF says *what* outcome to reach. Other frameworks often say *how*. **Informative References** connect them:\n\n- **NIST SP 800-53** (*Security and Privacy Controls for Information Systems and Organizations*): a detailed control catalog. Mapping lets a US federal agency show that its 800-53 controls achieve CSF outcomes.\n- **ISO/IEC 27001**: a certifiable ISMS standard with Annex A controls. An organization certified to 27001 can use a mapping to show CSF alignment without a second program. The CSF itself is not certifiable.\n- **NIST Privacy Framework**: shares the Core/Profiles/Tiers structure. NIST says the two frameworks **can be used together** to manage overlapping cybersecurity and privacy risk, such as data security for personal data.\n\nReferences are published **online** through the **CSF 2.0 Reference Tool** in human- and machine-readable formats, and the community can submit new ones. A mapping shows a *relationship*. It does not mean the two documents are identical or that meeting one automatically satisfies the other in full.",
+      "terms": [
+        {
+          "t": "Crosswalk",
+          "d": "A mapping showing how requirements in one framework relate to another."
+        },
+        {
+          "t": "NIST SP 800-53",
+          "d": "NIST catalog of security and privacy controls; a key Informative Reference."
+        },
+        {
+          "t": "NIST Privacy Framework",
+          "d": "NIST framework for privacy risk, designed to be used with the CSF."
+        }
+      ],
+      "trap": "Mappings show relationships, not equivalence; and ISO/IEC 27001 is certifiable, whereas the CSF is a voluntary framework with no certification.",
+      "example": "An ISO/IEC 27001-certified company uses the CSF 2.0 mapping to answer a US customer's CSF questionnaire with its existing Annex A evidence.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "CSF outcome",
+          "Informative Ref",
+          "800-53 / 27001 control"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "governance.d4.q001",
+      "lesson": "governance.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement best describes the intended audience of NIST CSF 2.0?",
+      "options": [
+        "Only US federal agencies subject to FISMA",
+        "Only owners and operators of US critical infrastructure",
+        "Organizations of all sizes and sectors, in any country",
+        "Only organizations seeking ISO/IEC 27001 certification"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "CSF 2.0 broadened its scope to all organizations, of any size or sector, and dropped the old critical-infrastructure title. It is not limited to federal agencies, which follow FISMA and SP 800-53, and it has no link to ISO/IEC 27001 certification."
+    },
+    {
+      "id": "governance.d4.q002",
+      "lesson": "governance.d4.1.01",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about NIST CSF 2.0, select Yes if true.",
+      "statements": [
+        {
+          "s": "CSF 2.0 was published by NIST in February 2024.",
+          "a": true
+        },
+        {
+          "s": "Organizations can be formally certified against CSF 2.0 by accredited certification bodies.",
+          "a": false
+        },
+        {
+          "s": "CSF 2.0 applies to technologies including OT, IoT, cloud and AI systems.",
+          "a": true
+        }
+      ],
+      "explain": "CSF 2.0 (NIST CSWP 29) was released on 26 February 2024 and covers all technology types, including OT, IoT, cloud, mobile and AI. It is a voluntary, outcome-based framework with no certification scheme, unlike ISO/IEC 27001."
+    },
+    {
+      "id": "governance.d4.q003",
+      "lesson": "governance.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which CSF 2.0 component describes an organization's current or target cybersecurity posture in terms of Core outcomes?",
+      "options": [
+        "Organizational Profile",
+        "Implementation Tier",
+        "Informative Reference",
+        "Implementation Example"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "An Organizational Profile describes current and/or target posture as Core outcomes. Tiers describe how rigorous risk governance and management are. Informative References map outcomes to other standards. Implementation Examples illustrate ways to achieve a Subcategory."
+    },
+    {
+      "id": "governance.d4.q004",
+      "lesson": "governance.d4.1.02",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE are the components of NIST CSF 2.0 as defined in the framework? Select THREE.",
+      "options": [
+        "CSF Core",
+        "Statement of Applicability",
+        "Organizational Profiles",
+        "Tiers",
+        "Maturity Model Certification levels"
+      ],
+      "answer": [
+        0,
+        2,
+        3
+      ],
+      "explain": "CSF 2.0 has three components: the Core, Organizational Profiles and Tiers. A Statement of Applicability belongs to ISO/IEC 27001. Maturity certification levels come from CMMC, a separate US DoD program, not from the CSF."
+    },
+    {
+      "id": "governance.d4.q005",
+      "lesson": "governance.d4.1.03",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "How is the CSF 2.0 Core structured?",
+      "options": [
+        "5 Functions, 23 Categories, 108 Subcategories",
+        "6 Functions, 22 Categories, 106 Subcategories",
+        "6 Functions, 23 Categories, 108 Subcategories",
+        "4 Functions, 22 Categories, 106 Subcategories"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "CSF 2.0 has 6 Functions (GV, ID, PR, DE, RS, RC), 22 Categories and 106 Subcategories. The figures 5/23/108 describe CSF 1.1, before GOVERN was added. The other combinations mix the two versions."
+    },
+    {
+      "id": "governance.d4.q006",
+      "lesson": "governance.d4.1.03",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A reviewer notices that DE.CM jumps from DE.CM-03 to DE.CM-06. What is the most likely explanation?",
+      "options": [
+        "DE.CM-04 and DE.CM-05 are reserved for sector Community Profiles",
+        "The missing numbers are optional Subcategories published only online",
+        "The gaps mark CSF 1.1 Subcategories that were moved or withdrawn, so their numbers are not reused",
+        "DE.CM-04 and DE.CM-05 were merged into the PROTECT Function's PR.PS Category"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "CSF 2.0 keeps the old identifiers and leaves gaps where 1.1 Subcategories were relocated or withdrawn. There are no reserved slots for Community Profiles and no optional online-only Subcategories. Claiming a specific merger into PR.PS invents a mapping the gap does not indicate."
+    },
+    {
+      "id": "governance.d4.q007",
+      "lesson": "governance.d4.1.04",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A consultant tells a client that CSF 2.0 Implementation Examples are the mandatory minimum controls for each Subcategory. How should you respond?",
+      "options": [
+        "Correct: each example must be implemented to claim the outcome",
+        "Correct only for organizations operating at Tier 3 or Tier 4",
+        "Incorrect: they are the Informative References to SP 800-53, which are mandatory",
+        "Incorrect: they are notional, action-oriented illustrations, not a required baseline or checklist"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Implementation Examples are notional, action-oriented examples of how an outcome might be reached. NIST says they are not a checklist or required baseline, at any Tier. Informative References are mappings to other standards, and they are not mandatory either."
+    },
+    {
+      "id": "governance.d4.q008",
+      "lesson": "governance.d4.1.04",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Why did NIST publish CSF 2.0 Informative References and Implementation Examples online instead of inside the framework document?",
+      "options": [
+        "So they can be updated more frequently than the framework and provided in machine-readable formats",
+        "Because they are proprietary and require a paid NIST subscription",
+        "Because they apply only to US federal agencies",
+        "So that the framework document can serve as a certifiable standard"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Keeping them online lets NIST update them more often than the CSF and offer human- and machine-readable formats through the CSF 2.0 Reference Tool. They are free to use, apply to everyone, and the CSF is not a certifiable standard."
+    },
+    {
+      "id": "governance.d4.q009",
+      "lesson": "governance.d4.1.05",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put the CSF 2.0 Tiers in order from least to most rigorous.",
+      "options": [
+        "Partial",
+        "Risk Informed",
+        "Repeatable",
+        "Adaptive"
+      ],
+      "explain": "Tier 1 is Partial (ad hoc), Tier 2 is Risk Informed (approved by management), Tier 3 is Repeatable (formal organization-wide policy) and Tier 4 is Adaptive (adapts using lessons learned and predictive indicators)."
+    },
+    {
+      "id": "governance.d4.q010",
+      "lesson": "governance.d4.1.05",
+      "objective": "d4.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A logistics firm's security practices are approved by its COO and followed by most teams, but no organization-wide cybersecurity policy has been formally adopted. Risk information is shared informally. Leadership wants to know its current Tier.",
+      "stem": "Which Tier best fits the firm's current cybersecurity risk governance?",
+      "options": [
+        "Tier 1, Partial",
+        "Tier 2, Risk Informed",
+        "Tier 3, Repeatable",
+        "Tier 4, Adaptive"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Practices approved by management but not established as organization-wide policy match Tier 2, Risk Informed. Tier 1 is ad hoc. Tier 3 needs formally approved practices expressed as policy. Tier 4 adds organization-wide adaptation and executive monitoring of cyber risk alongside financial risk."
+    },
+    {
+      "id": "governance.d4.q011",
+      "lesson": "governance.d4.1.05",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about CSF Tiers, select Yes if true.",
+      "statements": [
+        {
+          "s": "Tiers characterize the rigor of an organization's cybersecurity risk governance and management practices.",
+          "a": true
+        },
+        {
+          "s": "Every organization is expected to reach Tier 4 to use CSF 2.0 correctly.",
+          "a": false
+        },
+        {
+          "s": "An organization can use Tiers to inform its Current and Target Profiles.",
+          "a": true
+        }
+      ],
+      "explain": "Tiers characterize the rigor of risk governance and management, and NIST says they can inform both Profiles. Organizations should choose a Tier that suits their risk and resources. Reaching Tier 4 is not a requirement."
+    },
+    {
+      "id": "governance.d4.q012",
+      "lesson": "governance.d4.1.06",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A sector association publishes a baseline set of CSF outcomes that its member manufacturers can adopt as a starting point. What is this called?",
+      "options": [
+        "Organizational Profile",
+        "Implementation Tier",
+        "Community Profile",
+        "Quick-Start Guide"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A Community Profile is a published baseline of CSF outcomes for a sector, technology, threat or use case, shared across many organizations. Each member then tailors it into its own Organizational (Target) Profile. A Quick-Start Guide is a short how-to document, and a Tier describes rigor."
+    },
+    {
+      "id": "governance.d4.q013",
+      "lesson": "governance.d4.1.06",
+      "objective": "d4.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A small business with no security staff wants free NIST resources to help it get started with CSF 2.0. Which TWO are the best fit? Select TWO.",
+      "options": [
+        "The CSF 2.0 Small Business Quick-Start Guide",
+        "NIST SP 800-53 high baseline",
+        "The CSF 2.0 Reference Tool for browsing and exporting the Core",
+        "ISO/IEC 27001 Annex A",
+        "FedRAMP authorization package templates"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Quick-Start Guides, including the Small Business guide, are short, audience-specific starting points, and the CSF 2.0 Reference Tool lets anyone explore and export the Core. The SP 800-53 high baseline and FedRAMP packages target federal systems, and ISO/IEC 27001 is a separate, non-NIST standard."
+    },
+    {
+      "id": "governance.d4.q014",
+      "lesson": "governance.d4.1.06",
+      "objective": "d4.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What does the NIST Cybersecurity and Privacy Reference Tool (CPRT) provide?",
+      "options": [
+        "A certification registry of organizations compliant with CSF 2.0",
+        "Reference data from NIST frameworks and guidelines in machine-readable formats such as JSON and XLSX",
+        "An automated vulnerability scanner that scores assets against CSF Subcategories",
+        "A free SIEM that maps alerts to DE.CM Subcategories"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "CPRT gives consistent access to reference data from NIST publications, such as the CSF and SP 800-53, in downloadable formats like JSON and XLSX. NIST does not run a CSF certification registry, and CPRT is not a scanner or a SIEM."
+    },
+    {
+      "id": "governance.d4.q015",
+      "lesson": "governance.d4.2.01",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Why is GOVERN shown at the centre of the CSF 2.0 Functions wheel?",
+      "options": [
+        "It is the first step and must be completed before the other Functions begin",
+        "It is the only Function that applies to small businesses",
+        "It replaces the IDENTIFY Function from CSF 1.1",
+        "It informs how an organization implements the other five Functions"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "NIST places GOVERN at the centre because it informs how the other five Functions are implemented. The Functions are addressed concurrently, not in sequence, so GOVERN is not a step to finish first. All Functions apply to every organization, and IDENTIFY still exists in CSF 2.0."
+    },
+    {
+      "id": "governance.d4.q016",
+      "lesson": "governance.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company documents its obligations under privacy law and customer contracts so they shape cybersecurity decisions. Which CSF 2.0 Category does this support?",
+      "options": [
+        "GV.PO Policy",
+        "GV.OC Organizational Context",
+        "GV.OV Oversight",
+        "ID.RA Risk Assessment"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "GV.OC-03 covers understanding and managing legal, regulatory and contractual cyber requirements, including privacy obligations. GV.PO sets the organization's own policy, GV.OV reviews whether the strategy is working, and ID.RA assesses threats and vulnerabilities."
+    },
+    {
+      "id": "governance.d4.q017",
+      "lesson": "governance.d4.2.02",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO outcomes belong to GV.RM Risk Management Strategy? Select TWO.",
+      "options": [
+        "Risk appetite and risk tolerance statements are established, communicated and maintained",
+        "Hardware inventories are maintained",
+        "Cybersecurity risk management activities are included in enterprise risk management processes",
+        "Incidents are categorized and prioritized",
+        "Personnel receive awareness training"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "GV.RM-02 sets risk appetite and tolerance, and GV.RM-03 brings cyber risk into ERM. Hardware inventories are ID.AM-01, incident categorization is RS.MA-03, and awareness training is PR.AT-01."
+    },
+    {
+      "id": "governance.d4.q018",
+      "lesson": "governance.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "An internal audit finds that HR does not tell IT when staff leave, so accounts stay active. Which CSF 2.0 Subcategory most directly covers building cybersecurity into these HR processes?",
+      "options": [
+        "GV.RR-04",
+        "PR.AT-01",
+        "GV.PO-01",
+        "DE.CM-03"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "GV.RR-04 states that cybersecurity is included in human resources practices, such as onboarding, role changes and offboarding. PR.AT-01 is awareness training, GV.PO-01 sets overall policy, and DE.CM-03 monitors personnel activity. None of those addresses the HR process gap."
+    },
+    {
+      "id": "governance.d4.q019",
+      "lesson": "governance.d4.2.03",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about GOVERN, select Yes if true.",
+      "statements": [
+        {
+          "s": "GV.RR-01 makes organizational leadership responsible and accountable for cybersecurity risk.",
+          "a": true
+        },
+        {
+          "s": "GV.RR-03 covers allocating adequate resources in line with the risk strategy, roles and policies.",
+          "a": true
+        },
+        {
+          "s": "GV.RR is the Category that maintains inventories of supplier-provided services.",
+          "a": false
+        }
+      ],
+      "explain": "GV.RR-01 puts accountability on leadership, and GV.RR-03 covers adequate resourcing. Inventories of supplier-provided services are ID.AM-04 under IDENTIFY, not part of GV.RR."
+    },
+    {
+      "id": "governance.d4.q020",
+      "lesson": "governance.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Each quarter, the risk committee reviews security KPIs and the results of the cyber strategy, then adjusts direction where targets are missed. Which Category is this?",
+      "options": [
+        "GV.PO Policy",
+        "GV.RM Risk Management Strategy",
+        "GV.OV Oversight",
+        "ID.IM Improvement"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "GV.OV uses the results of risk management activities to review and adjust strategy and evaluate performance (GV.OV-01 and GV.OV-03). GV.RM sets the strategy, and GV.PO establishes and maintains policy. ID.IM finds operational improvements from evaluations, tests and exercises, not strategy-level oversight."
+    },
+    {
+      "id": "governance.d4.q021",
+      "lesson": "governance.d4.2.04",
+      "objective": "d4.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A new regulation takes effect and the company revises its cybersecurity policy and re-communicates it to staff. Which Subcategory does this satisfy?",
+      "options": [
+        "GV.OV-02",
+        "GV.PO-02",
+        "GV.OC-01",
+        "PR.AT-02"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "GV.PO-02 covers reviewing, updating, communicating and enforcing the policy as requirements, threats, technology and mission change. GV.OV-02 reviews the strategy, GV.OC-01 is understanding the mission, and PR.AT-02 trains specialized roles."
+    },
+    {
+      "id": "governance.d4.q022",
+      "lesson": "governance.d4.2.05",
+      "objective": "d4.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A hospital is replacing its cloud-hosted patient scheduling vendor. The new vendor will hold patient data. The old vendor's contract ends in 60 days. The CISO wants to map the work to CSF 2.0 supply chain outcomes.",
+      "stem": "Which TWO GV.SC Subcategories most directly apply to this transition? Select TWO.",
+      "options": [
+        "GV.SC-06: planning and due diligence before entering the new relationship",
+        "GV.SC-10: activities after the old partnership or agreement ends",
+        "GV.OC-01: the mission is understood",
+        "PR.DS-02: data in transit is protected",
+        "GV.RR-04: cybersecurity in HR practices"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Vetting the new vendor before signing is GV.SC-06. Making sure the old vendor returns or destroys patient data and loses access after the contract ends is GV.SC-10. GV.OC-01, PR.DS-02 and GV.RR-04 are real outcomes, but they are not supply chain lifecycle outcomes."
+    },
+    {
+      "id": "governance.d4.q023",
+      "lesson": "governance.d4.2.05",
+      "objective": "d4.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which GV.SC Subcategory covers writing cybersecurity requirements into supplier contracts?",
+      "options": [
+        "GV.SC-04",
+        "GV.SC-07",
+        "GV.SC-09",
+        "GV.SC-05"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "GV.SC-05 sets requirements for addressing cyber risk in the supply chain and includes them in contracts and agreements. GV.SC-04 ranks suppliers by criticality, GV.SC-07 assesses and monitors supplier risk through the relationship, and GV.SC-09 integrates practices across the product lifecycle."
+    },
+    {
+      "id": "governance.d4.q024",
+      "lesson": "governance.d4.3.01",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A team diagrams which systems are authorized to communicate and how customer data flows to external partners. Which Subcategory does this support?",
+      "options": [
+        "ID.AM-03",
+        "ID.AM-01",
+        "PR.IR-01",
+        "DE.CM-01"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "ID.AM-03 maintains representations of authorized network communication and internal and external data flows. ID.AM-01 is the hardware inventory, PR.IR-01 protects networks from unauthorized access, and DE.CM-01 monitors networks for adverse events."
+    },
+    {
+      "id": "governance.d4.q025",
+      "lesson": "governance.d4.3.01",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about ID.AM, select Yes if true.",
+      "statements": [
+        {
+          "s": "ID.AM-08 covers managing systems, hardware, software, services and data throughout their life cycles.",
+          "a": true
+        },
+        {
+          "s": "ID.AM-05 prioritizes assets based on classification, criticality, resources and impact on the mission.",
+          "a": true
+        },
+        {
+          "s": "ID.AM-07 covers monitoring personnel activity for adverse events.",
+          "a": false
+        }
+      ],
+      "explain": "ID.AM-08 is life cycle management and ID.AM-05 is asset prioritization. ID.AM-07 maintains inventories of data and its metadata. Monitoring personnel activity is DE.CM-03."
+    },
+    {
+      "id": "governance.d4.q026",
+      "lesson": "governance.d4.3.02",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "After a ransomware tabletop exercise with its managed service provider, a company records lessons learned and updates its incident response plan. Which CSF 2.0 Category covers this?",
+      "options": [
+        "RS.AN Incident Analysis",
+        "ID.IM Improvement",
+        "RC.RP Incident Recovery Plan Execution",
+        "GV.OV Oversight"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "ID.IM, new in CSF 2.0, identifies improvements from tests and exercises, including those with suppliers (ID.IM-02), and maintains IR plans (ID.IM-04). RS.AN investigates real incidents, RC.RP runs recovery, and GV.OV reviews strategy performance."
+    },
+    {
+      "id": "governance.d4.q027",
+      "lesson": "governance.d4.3.02",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Before deploying network switches from a new supplier, a company checks that the firmware is genuine and has not been tampered with. Which Subcategory is this?",
+      "options": [
+        "PR.PS-03",
+        "GV.SC-04",
+        "ID.RA-09",
+        "DE.CM-09"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "ID.RA-09 assesses the authenticity and integrity of hardware and software before acquisition and use. PR.PS-03 covers maintaining and replacing hardware, GV.SC-04 ranks suppliers by criticality, and DE.CM-09 monitors computing assets once they are in operation."
+    },
+    {
+      "id": "governance.d4.q028",
+      "lesson": "governance.d4.3.03",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Quarterly access reviews remove excessive permissions so that users keep only what their job needs. Which Subcategory does this map to?",
+      "options": [
+        "PR.AA-01",
+        "PR.AA-03",
+        "PR.AA-06",
+        "PR.AA-05"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "PR.AA-05 covers defining, managing, enforcing and reviewing access permissions under least privilege and separation of duties. PR.AA-01 manages identities and credentials, PR.AA-03 authenticates users, services and hardware, and PR.AA-06 manages physical access."
+    },
+    {
+      "id": "governance.d4.q029",
+      "lesson": "governance.d4.3.03",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about PROTECT, select Yes if true.",
+      "statements": [
+        {
+          "s": "Giving database administrators role-specific security training maps to PR.AT-02.",
+          "a": true
+        },
+        {
+          "s": "Badge-controlled entry to the server room is managed under PR.AA-06.",
+          "a": true
+        },
+        {
+          "s": "PR.AA-04 covers training all staff to recognize phishing.",
+          "a": false
+        }
+      ],
+      "explain": "PR.AT-02 trains specialized roles, and PR.AA-06 manages physical access. PR.AA-04 protects, conveys and verifies identity assertions. General phishing awareness for all staff is PR.AT-01."
+    },
+    {
+      "id": "governance.d4.q030",
+      "lesson": "governance.d4.3.04",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An engineer enables audit logging on all servers so that logs are available to the SOC. Which CSF 2.0 Subcategory does enabling the logs fall under?",
+      "options": [
+        "PR.PS-04",
+        "DE.CM-09",
+        "DE.AE-03",
+        "ID.AM-02"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "PR.PS-04 covers generating log records and making them available for continuous monitoring. Watching those logs is DE.CM-09, and correlating them is DE.AE-03. ID.AM-02 is the software and systems inventory."
+    },
+    {
+      "id": "governance.d4.q031",
+      "lesson": "governance.d4.3.04",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO Subcategories belong to PR.DS Data Security? Select TWO.",
+      "options": [
+        "Backups are created, protected, maintained and tested",
+        "Installation of unauthorized software is prevented",
+        "Confidentiality, integrity and availability of data in use are protected",
+        "Configuration management practices are applied",
+        "Networks are protected from unauthorized logical access"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Backups (PR.DS-11) and data in use (PR.DS-10) are both PR.DS outcomes. Blocking unauthorized software (PR.PS-05) and configuration management (PR.PS-01) are Platform Security. Network protection from unauthorized logical access is PR.IR-01."
+    },
+    {
+      "id": "governance.d4.q032",
+      "lesson": "governance.d4.3.05",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A data centre installs fire suppression, flood sensors and backup generators to protect its servers. Which Subcategory is the best fit?",
+      "options": [
+        "PR.AA-06",
+        "PR.IR-02",
+        "DE.CM-02",
+        "PR.DS-11"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "PR.IR-02 protects technology assets from environmental threats. PR.AA-06 controls physical access, DE.CM-02 monitors the physical environment for adverse events, and PR.DS-11 covers backups."
+    },
+    {
+      "id": "governance.d4.q033",
+      "lesson": "governance.d4.4.01",
+      "objective": "d4.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A SIEM links a suspicious VPN login with unusual file access and firewall alerts from three different systems. Which Subcategory describes this activity?",
+      "options": [
+        "DE.CM-01",
+        "RS.AN-03",
+        "DE.AE-03",
+        "ID.RA-02"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "DE.AE-03 correlates information from multiple sources. DE.CM-01 monitors networks to generate events in the first place. RS.AN-03 determines root cause after an incident is declared, and ID.RA-02 is receiving threat intelligence for risk assessment."
+    },
+    {
+      "id": "governance.d4.q034",
+      "lesson": "governance.d4.4.01",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which CSF 2.0 Subcategory covers formally declaring an incident when adverse events meet defined criteria?",
+      "options": [
+        "RS.MA-01",
+        "RS.MA-02",
+        "DE.AE-04",
+        "DE.AE-08"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "DE.AE-08 declares incidents when adverse events meet the incident criteria. RS.MA-01 then executes the IR plan, and RS.MA-02 triages and validates reports. DE.AE-04 estimates impact and scope."
+    },
+    {
+      "id": "governance.d4.q035",
+      "lesson": "governance.d4.4.01",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO activities are DE.CM Continuous Monitoring outcomes? Select TWO.",
+      "options": [
+        "Monitoring a cloud provider's administrative activity on your tenant",
+        "Integrating threat intelligence into event analysis",
+        "Monitoring CCTV and door sensors for unusual physical activity",
+        "Containing a compromised host",
+        "Generating log records on servers"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Monitoring external service providers is DE.CM-06, and monitoring the physical environment is DE.CM-02. Integrating threat intelligence into analysis is DE.AE-07, containment is RS.MI-01, and generating logs is PR.PS-04."
+    },
+    {
+      "id": "governance.d4.q036",
+      "lesson": "governance.d4.4.02",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put these CSF 2.0 outcomes in order as a malware incident moves from detection to recovery.",
+      "options": [
+        "Declare the incident because events meet defined criteria (DE.AE-08)",
+        "Execute the incident response plan (RS.MA-01)",
+        "Contain the incident (RS.MI-01)",
+        "Eradicate the incident (RS.MI-02)",
+        "Execute the recovery portion of the plan (RC.RP-01)"
+      ],
+      "explain": "DETECT declares the incident (DE.AE-08), RESPOND activates the IR plan (RS.MA-01), contains the spread (RS.MI-01) and then eradicates the cause (RS.MI-02), and RECOVER executes the recovery portion of the plan (RC.RP-01)."
+    },
+    {
+      "id": "governance.d4.q037",
+      "lesson": "governance.d4.4.02",
+      "objective": "d4.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "During a breach investigation, analysts image three servers, record hashes of each image and log every action they take. Legal counsel says the evidence may be used in court and must show who handled it and when.",
+      "stem": "Which CSF 2.0 Category most directly covers these activities?",
+      "options": [
+        "RS.AN Incident Analysis",
+        "DE.AE Adverse Event Analysis",
+        "RS.MI Incident Mitigation",
+        "ID.RA Risk Assessment"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "RS.AN-06 and RS.AN-07 record investigation actions and collect incident data while preserving integrity and provenance, which is chain of custody. DE.AE analyzes events before declaration, RS.MI contains and eradicates, and ID.RA assesses risk in advance."
+    },
+    {
+      "id": "governance.d4.q038",
+      "lesson": "governance.d4.4.03",
+      "objective": "d4.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "The SOC isolates an infected workstation from the network using EDR. Which Subcategory is this?",
+      "options": [
+        "RS.MI-02",
+        "RC.RP-02",
+        "RS.MI-01",
+        "PR.IR-01"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Isolating the host contains the incident, which is RS.MI-01. Removing the malware afterwards is eradication (RS.MI-02). RC.RP-02 performs recovery actions, and PR.IR-01 is preventive network protection, not incident response."
+    },
+    {
+      "id": "governance.d4.q039",
+      "lesson": "governance.d4.4.03",
+      "objective": "d4.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "Within the required deadline, a company notifies its privacy regulator and affected customers about a data breach under investigation. Which Subcategory is this?",
+      "options": [
+        "RC.CO-03",
+        "RS.CO-02",
+        "GV.OC-03",
+        "DE.AE-06"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "RS.CO-02 notifies internal and external stakeholders of incidents during response. RC.CO-03 communicates recovery progress. GV.OC-03 is knowing the legal requirements in advance, and DE.AE-06 passes event information to authorized staff and tools."
+    },
+    {
+      "id": "governance.d4.q040",
+      "lesson": "governance.d4.4.04",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put these RC.RP recovery outcomes in a logical order for restoring a ransomware-hit file server.",
+      "options": [
+        "Execute the recovery portion of the incident response plan",
+        "Verify the integrity of backups before using them",
+        "Restore services and verify the integrity of restored assets",
+        "Declare the end of recovery and complete documentation"
+      ],
+      "explain": "RC.RP-01 starts recovery, RC.RP-03 checks that backups are clean before use, RC.RP-05 restores and verifies systems and confirms normal status, and RC.RP-06 declares the end of recovery against criteria and completes documentation."
+    },
+    {
+      "id": "governance.d4.q041",
+      "lesson": "governance.d4.4.04",
+      "objective": "d4.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "After a ransomware outage, a retailer's systems are being restored. Customers are posting on social media and the press is asking questions. The CEO wants regular public updates, but legal wants every message pre-approved.",
+      "stem": "Which CSF 2.0 Subcategory best addresses sharing these public updates?",
+      "options": [
+        "RS.CO-03",
+        "GV.RM-05",
+        "RC.RP-04",
+        "RC.CO-04"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "RC.CO-04 shares public updates on incident recovery using approved methods and messaging. RS.CO-03 shares information with designated stakeholders during response, GV.RM-05 sets risk communication lines in advance, and RC.RP-04 sets post-incident operational norms."
+    },
+    {
+      "id": "governance.d4.q042",
+      "lesson": "governance.d4.4.05",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about how the CSF 2.0 Functions operate, select Yes if true.",
+      "statements": [
+        {
+          "s": "NIST says the Functions should be addressed concurrently.",
+          "a": true
+        },
+        {
+          "s": "An organization must fully complete IDENTIFY before it starts any PROTECT activities.",
+          "a": false
+        },
+        {
+          "s": "RESPOND and RECOVER capabilities should be ready at all times, even when no incident is underway.",
+          "a": true
+        }
+      ],
+      "explain": "CSF 2.0 says the Functions should be addressed concurrently. GOVERN, IDENTIFY, PROTECT and DETECT happen continuously, and RESPOND and RECOVER should be ready at all times and run when incidents occur. There is no requirement to finish one Function first."
+    },
+    {
+      "id": "governance.d4.q043",
+      "lesson": "governance.d4.4.05",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": "Midway through a breach, the email service is being restored from backup while analysts still hunt for attacker persistence on other hosts, and the CISO briefs the board on residual risk.",
+      "stem": "For each statement about this scenario, select Yes if true.",
+      "explain": "Restoring from backup is RECOVER (RC.RP), and briefing the board on risk is GOVERN (GV.OV and GV.RR). NIST says the Functions are addressed concurrently and DETECT is continuous. Pausing monitoring during recovery would give a persistent attacker room to return.",
+      "statements": [
+        {
+          "s": "Restoring the email service from backup is a RECOVER activity.",
+          "a": true
+        },
+        {
+          "s": "Because recovery has started, DETECT monitoring should be paused until it finishes.",
+          "a": false
+        },
+        {
+          "s": "Briefing the board on residual cyber risk is a GOVERN activity.",
+          "a": true
+        }
+      ]
+    },
+    {
+      "id": "governance.d4.q044",
+      "lesson": "governance.d4.5.01",
+      "objective": "d4.5",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put the CSF 2.0 steps for creating and using an Organizational Profile in order.",
+      "options": [
+        "Scope the Organizational Profile",
+        "Gather the information needed to prepare the Profile",
+        "Create the Organizational Profile",
+        "Analyze gaps between Current and Target Profiles and create an action plan",
+        "Implement the action plan and update the Profile"
+      ],
+      "explain": "NIST's five steps are: scope, gather information, create the Profile (Current and Target), analyze gaps and build a prioritized action plan, then implement and update. The cycle repeats as conditions change."
+    },
+    {
+      "id": "governance.d4.q045",
+      "lesson": "governance.d4.5.01",
+      "objective": "d4.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company has completed its Current and Target Profiles. What should it produce next?",
+      "options": [
+        "A Statement of Applicability for certification",
+        "A Community Profile for its sector",
+        "A gap analysis and a prioritized action plan, such as a risk register or POA&M",
+        "A Tier 4 attestation letter from NIST"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Step 4 analyzes the gaps between Current and Target and builds a prioritized action plan, often recorded in a risk register or POA&M. An SoA belongs to ISO/IEC 27001, Community Profiles are sector baselines, and NIST issues no attestations."
+    },
+    {
+      "id": "governance.d4.q046",
+      "lesson": "governance.d4.5.01",
+      "objective": "d4.5",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Organizational Profiles, select Yes if true.",
+      "statements": [
+        {
+          "s": "A Profile can be scoped to a single business unit, system or product line rather than the whole organization.",
+          "a": true
+        },
+        {
+          "s": "A Community Profile can serve as a starting point for an organization's Target Profile.",
+          "a": true
+        },
+        {
+          "s": "A Target Profile describes only the outcomes the organization already achieves today.",
+          "a": false
+        }
+      ],
+      "explain": "Profiles can be scoped narrowly, and a Community Profile can seed a Target Profile. The outcomes achieved today are the Current Profile. The Target Profile holds the desired outcomes the organization has selected and prioritized."
+    },
+    {
+      "id": "governance.d4.q047",
+      "lesson": "governance.d4.5.02",
+      "objective": "d4.5",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Following the NIST IR 8286 series, put the flow of cybersecurity risk information in order, from the most detailed level to executive oversight.",
+      "options": [
+        "System-level cybersecurity risk register (CSRR)",
+        "Organization-level aggregated CSRR",
+        "Enterprise risk register (ERR)",
+        "Enterprise risk profile (ERP) reviewed by leadership"
+      ],
+      "explain": "IR 8286C describes cyber risks being recorded in CSRRs at lower levels, aggregated upward, normalized into the enterprise risk register, and summarized in the enterprise risk profile that leadership oversees."
+    },
+    {
+      "id": "governance.d4.q048",
+      "lesson": "governance.d4.5.02",
+      "objective": "d4.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which CSF 2.0 Subcategory states that cybersecurity risk management activities are included in enterprise risk management processes?",
+      "options": [
+        "GV.RM-03",
+        "GV.OC-02",
+        "ID.RA-05",
+        "GV.OV-01"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "GV.RM-03 brings cyber risk management activities into ERM. GV.OC-02 covers stakeholder expectations, ID.RA-05 uses threats, vulnerabilities, likelihood and impact to understand inherent risk, and GV.OV-01 reviews strategy outcomes."
+    },
+    {
+      "id": "governance.d4.q049",
+      "lesson": "governance.d4.5.02",
+      "objective": "d4.5",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A bank's board receives separate reports for credit, liquidity and operational risk, but cyber risk arrives as a technical vulnerability list that directors cannot compare with other risks. The CRO wants cyber risk reported in the same terms as other enterprise risks.",
+      "stem": "Which NIST resource is most directly designed to help with this?",
+      "options": [
+        "NIST SP 800-61 incident handling guidance",
+        "The NIST IR 8286 series on integrating cybersecurity and ERM",
+        "The NIST Privacy Framework",
+        "NIST SP 800-161 Rev. 1 on C-SCRM"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The IR 8286 series explains how to express cyber risk in risk registers and roll it into the enterprise risk register and profile, so it can be compared with other risks. SP 800-61 covers incident response, the Privacy Framework covers privacy risk, and SP 800-161 covers supply chain."
+    },
+    {
+      "id": "governance.d4.q050",
+      "lesson": "governance.d4.5.03",
+      "objective": "d4.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In CSF 2.0, where does cybersecurity supply chain risk management sit?",
+      "options": [
+        "IDENTIFY, as ID.SC",
+        "PROTECT, as PR.SC",
+        "GOVERN, as GV.SC",
+        "It was removed and moved to SP 800-161"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "CSF 2.0 moved supply chain risk management from IDENTIFY (ID.SC in 1.1) to GOVERN as GV.SC, with 10 Subcategories. There is no PR.SC Category. SP 800-161 adds detailed guidance but does not replace GV.SC."
+    },
+    {
+      "id": "governance.d4.q051",
+      "lesson": "governance.d4.5.03",
+      "objective": "d4.5",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A software firm's C-SCRM work is a vendor questionnaire run by procurement. There is no strategy, no named owners, no budget, and supplier risks never reach the enterprise risk register. A recent breach at a code-signing vendor went unnoticed for weeks.",
+      "stem": "Which pair of GV.SC outcomes addresses the most fundamental gaps?",
+      "options": [
+        "GV.SC-05 contract requirements and GV.SC-10 post-termination activities",
+        "GV.SC-04 supplier criticality and GV.SC-09 lifecycle integration",
+        "GV.SC-06 due diligence and GV.SC-08 incident planning with suppliers",
+        "GV.SC-01 program, strategy and policies, and GV.SC-03 integration into cyber and enterprise risk management"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The core gaps are that no C-SCRM program, strategy or ownership exists (GV.SC-01) and that supplier risk is not integrated with cyber and enterprise risk management (GV.SC-03). The other pairs are real outcomes, but they build on a program the firm does not yet have."
+    },
+    {
+      "id": "governance.d4.q052",
+      "lesson": "governance.d4.5.04",
+      "objective": "d4.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company certified to ISO/IEC 27001 must show a US customer how its controls support CSF 2.0 outcomes. What should it use?",
+      "options": [
+        "Informative References mapping CSF outcomes to ISO/IEC 27001",
+        "A CSF 2.0 certificate from an accredited body",
+        "CSF Implementation Tiers",
+        "The CSF 1.1 Framework Core document"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Informative References map CSF outcomes to standards such as ISO/IEC 27001, so existing controls can serve as evidence. No CSF certification exists, Tiers describe rigor rather than control mappings, and CSF 1.1 is superseded."
+    },
+    {
+      "id": "governance.d4.q053",
+      "lesson": "governance.d4.5.04",
+      "objective": "d4.5",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about using the CSF with other NIST and ISO frameworks are correct? Select TWO.",
+      "options": [
+        "NIST states the Privacy Framework and the CSF can be used together to manage cybersecurity and privacy risks",
+        "A mapping to SP 800-53 means implementing the CSF automatically satisfies every SP 800-53 control",
+        "SP 800-53 is used as an Informative Reference showing controls that help achieve CSF outcomes",
+        "ISO/IEC 27001 replaces the CSF Core for organizations outside the US",
+        "Informative References are fixed and can only change when a new CSF version is released"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "NIST says the Privacy Framework and CSF can be used together, and SP 800-53 is a key Informative Reference. A mapping shows relationships, not full equivalence. ISO/IEC 27001 does not replace the Core, and References are online and updated more often than the CSF."
+    },
+    {
+      "id": "governance.d4.q054",
+      "lesson": "governance.d4.5.04",
+      "objective": "d4.5",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about CSF Informative References, select Yes if true.",
+      "statements": [
+        {
+          "s": "They map CSF Core outcomes to existing standards, guidelines and regulations.",
+          "a": true
+        },
+        {
+          "s": "They can be accessed and exported through the CSF 2.0 Reference Tool.",
+          "a": true
+        },
+        {
+          "s": "They are printed in full inside the CSF 2.0 document and never change.",
+          "a": false
+        }
+      ],
+      "explain": "Informative References map Core outcomes to other content and are available online through the CSF 2.0 Reference Tool in human- and machine-readable formats. They are kept outside the CSF document so they can be updated more often."
+    }
+  ]
+}

@@ -1,0 +1,824 @@
+{
+ "exam": "sc-500",
+ "domain": "d3",
+ "lessons": [
+  {
+   "id": "sc-500.d3.3.01",
+   "objective": "d3.3",
+   "seq": 1,
+   "title": "Defender for Containers: posture and runtime",
+   "short": "Defender for Containers protects Kubernetes clusters (AKS, EKS, GKE and Arc-enabled clusters), their nodes, workloads and registries. Agentless discovery and Azure Policy for Kubernetes catch misconfigurations, agentless scanning finds image vulnerabilities, and the Defender sensor detects runtime threats.",
+   "deep": "The plan covers **four areas**:\n- **Security posture**: **Kubernetes API access** gives agentless discovery of clusters and workloads for inventory, attack paths and Security explorer. The **Azure Policy** component deploys the Azure Policy for Kubernetes add-on, which checks requests to the API server against best practices (for example, *no privileged containers*) and can **deny** ones that fail.\n- **Vulnerability assessment**: **Registry access** gives agentless scanning of images in ACR, ECR and Google Artifact Registry, and running containers are rescanned daily. Findings link to running workloads.\n- **Runtime threat protection**: the **Defender sensor** (a DaemonSet on nodes) collects node and workload telemetry for more than 60 Kubernetes-aware detections, such as crypto miners, exposed dashboards or new high-privilege roles. Optional parts include **Defender Security Gating**, an admission control that can audit or block images that fail vulnerability rules, and **runtime anti-malware**. Control-plane audit logs are also analyzed.\n- **Agentless scanning for machines**: covers the node VMs.\n\n**Enable it** in Defender for Cloud > Environment settings > **Containers** = On, then choose components under Settings. AKS needs no connector. **EKS/GKE** connect through AWS/GCP connectors, which create Arc-enabled Kubernetes resources. **On-premises** clusters must be connected to Azure Arc first. Alerts map to MITRE ATT&CK and flow into Defender XDR.",
+   "terms": [
+    {
+     "t": "Defender sensor",
+     "d": "DaemonSet deployed to cluster nodes that provides runtime threat detection telemetry."
+    },
+    {
+     "t": "Azure Policy for Kubernetes",
+     "d": "Add-on (Gatekeeper-based) that audits/denies non-compliant Kubernetes objects at admission."
+    },
+    {
+     "t": "Gated deployment",
+     "d": "Admission rules that audit or block images that fail vulnerability policy."
+    }
+   ],
+   "trap": "Runtime threat detection on nodes requires the Defender sensor; agentless components alone give posture and image vulnerabilities, not workload runtime alerts.",
+   "example": "An alert fires that a pod in an AKS cluster started a crypto-mining process; the Defender sensor detected it and the alert appears in a Defender XDR incident.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Component",
+     "Gives you"
+    ],
+    "rows": [
+     [
+      "K8s API access",
+      "Agentless posture"
+     ],
+     [
+      "Azure Policy",
+      "Admission hardening"
+     ],
+     [
+      "Registry access",
+      "Image vuln scans"
+     ],
+     [
+      "Defender sensor",
+      "Runtime threats"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.3.02",
+   "objective": "d3.3",
+   "seq": 2,
+   "title": "Securing Azure Kubernetes Service",
+   "short": "Lock down AKS identity with Microsoft Entra integration, Azure RBAC for Kubernetes and disabled local accounts. Restrict the API server with a private cluster or authorized IP ranges. Control pods with network policies, Pod Security Admission, workload identity and the Key Vault secrets provider, and keep nodes patched with auto-upgrade.",
+   "deep": "**Identity and access**\n- **Microsoft Entra integration** means users sign in with Entra ID. **Azure RBAC for Kubernetes authorization** lets you grant built-in roles such as *Azure Kubernetes Service RBAC Reader/Writer/Admin/Cluster Admin*, scoped to a cluster or namespace.\n- **Disable local accounts** (`--disable-local-accounts`) removes the static admin kubeconfig, so every access goes through Entra and Conditional Access.\n- **Workload identity** (OIDC issuer plus federated credentials) lets pods get Entra tokens without stored secrets.\n\n**API server exposure**: a **private cluster** gives the API server only a private IP. **API server authorized IP ranges** limit a public API server to known CIDRs.\n\n**Inside the cluster**\n- **Network policies** (Azure, Calico or Cilium engines) control pod-to-pod traffic by namespace and labels. The default is that everything is allowed.\n- **Pod Security Admission** enforces the *baseline* or *restricted* Pod Security Standards through namespace labels.\n- The **Azure Policy add-on** applies built-in AKS policy initiatives.\n- The **Azure Key Vault provider for Secrets Store CSI driver** mounts Key Vault secrets into pods.\n- **KMS etcd encryption** encrypts Kubernetes Secrets in etcd with your Key Vault key.\n\n**Nodes**: use **auto-upgrade channels** for Kubernetes versions and node OS images, and **Image Cleaner** to remove unused vulnerable images.",
+   "terms": [
+    {
+     "t": "Azure RBAC for Kubernetes",
+     "d": "Authorizes Kubernetes API actions with Azure role assignments instead of only Kubernetes RoleBindings."
+    },
+    {
+     "t": "Private cluster",
+     "d": "AKS cluster whose API server has only a private IP via Private Link."
+    },
+    {
+     "t": "Workload identity",
+     "d": "Lets pods exchange a Kubernetes service account token for an Entra token via federation."
+    },
+    {
+     "t": "Network policy",
+     "d": "Kubernetes rules restricting pod ingress/egress by labels and namespaces."
+    }
+   ],
+   "trap": "Enabling Entra integration alone still leaves the local admin account usable - you must also disable local accounts.",
+   "example": "A bank creates AKS with --enable-azure-rbac, --disable-local-accounts and --enable-private-cluster, so only Entra users on the corporate network can run kubectl.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Entra ID + Azure RBAC",
+     "Private API server",
+     "Network policies",
+     "Pod Security Admission",
+     "Patched nodes"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.3.03",
+   "objective": "d3.3",
+   "seq": 3,
+   "title": "Securing Azure Container Registry",
+   "short": "Secure Azure Container Registry with Microsoft Entra authentication and least-privilege roles (AcrPull, or the Container Registry Repository Reader and Writer roles with ABAC). Keep the admin user disabled, use Premium private endpoints with public access turned off, and scan images with Defender for Containers.",
+   "deep": "**Authentication** (best first):\n- **Managed identity** or a **service principal** for unattended pulls and pushes, such as AKS, ACI, Container Apps or CI/CD. **Individual Entra login** (`az acr login`) for people, which gives a token valid for 3 hours.\n- **Admin user**: one shared account with full push and pull rights and no RBAC. It's **disabled by default** and should stay that way (`az acr update --admin-enabled false`).\n- **Repository-scoped tokens**: non-Entra tokens limited to particular repositories.\n\n**Authorization**: classic roles are **AcrPull**, **AcrPush** and **AcrDelete**. In the newer *RBAC Registry + ABAC Repository Permissions* mode, the **Container Registry Repository Reader / Writer / Contributor** roles can be scoped with **ABAC conditions** to specific repositories. To pull from AKS, give the kubelet identity AcrPull (for example with `az aks update --attach-acr`).\n\n**Network**: **private endpoints** (with the private DNS zone `privatelink.azurecr.io`) need the **Premium** tier. Set **public network access** to Disabled. Turn on the **trusted services** bypass if Defender for Cloud or other trusted Azure services need to reach the registry.\n\n**Content**: Defender for Containers scans pushed images and rescans them daily. Combine this with gating rules so vulnerable images can't be deployed.",
+   "terms": [
+    {
+     "t": "AcrPull",
+     "d": "Built-in role allowing image pulls only."
+    },
+    {
+     "t": "Admin user",
+     "d": "Shared registry credential with full push/pull, disabled by default; not RBAC-aware."
+    },
+    {
+     "t": "ABAC repository permissions",
+     "d": "Entra attribute-based conditions that scope ACR data roles to specific repositories."
+    }
+   ],
+   "trap": "Private endpoints require the Premium SKU - Standard registries cannot use Private Link.",
+   "example": "An AKS cluster pulls from ACR through its kubelet managed identity with AcrPull, while the registry admin user stays disabled and public access is off.",
+   "diagram": null
+  },
+  {
+   "id": "sc-500.d3.3.04",
+   "objective": "d3.3",
+   "seq": 4,
+   "title": "Securing Container Instances and Container Apps",
+   "short": "For Azure Container Instances, deploy container groups into a delegated VNet subnet for private IPs and pull images with a managed identity. For Azure Container Apps, use internal ingress or IP restrictions, built-in authentication, managed identities, Key Vault-referenced secrets and a VNet-integrated environment.",
+   "deep": "**Azure Container Instances (ACI)**: single container groups with no orchestrator.\n- **VNet deployment**: the container group gets **private IPs** in a subnet that must be **delegated** to `Microsoft.ContainerInstance/containerGroups`. That subnet can hold only container groups. Outbound traffic from a VNet-deployed group must go through a **NAT gateway**.\n- **Managed identity** (system- or user-assigned) lets the group pull from ACR and reach Key Vault or Storage without credentials. Use **secure environment variables** for secret values.\n- **Confidential containers** run inside hardware-based trusted execution environments.\n\n**Azure Container Apps (ACA)**: a serverless app platform built on Kubernetes.\n- **Ingress**: **external** (public) or **internal** (reachable only inside the environment's VNet). Add **IP security restrictions** with allow or deny rules.\n- **Built-in authentication** (Easy Auth) with Microsoft Entra ID and other providers, with no code changes.\n- **Managed identity** for **ACR pulls** (AcrPull) and Key Vault. **Secrets** can be **Key Vault references** exposed as environment variables or volumes.\n- **Environment networking**: a custom VNet with a workload profiles environment, *internal-only* mode, private endpoints, and **mTLS** between apps inside the environment.\n- Defender CSPM covers serverless container posture and attack paths.",
+   "terms": [
+    {
+     "t": "Subnet delegation",
+     "d": "Assigning a subnet to a service (here Microsoft.ContainerInstance/containerGroups) so it can inject resources."
+    },
+    {
+     "t": "Internal ingress",
+     "d": "Container Apps ingress reachable only from within the environment's virtual network."
+    },
+    {
+     "t": "Secure environment variable",
+     "d": "ACI env var whose value is hidden from container group properties."
+    }
+   ],
+   "trap": "Using the ACR admin user to let ACI/Container Apps pull images is the insecure answer; use a managed identity with AcrPull.",
+   "example": "A payroll API on Container Apps uses internal ingress, an Entra-authenticated front end, and a user-assigned identity that reads its DB password from Key Vault.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Control",
+     "ACI",
+     "Container Apps"
+    ],
+    "rows": [
+     [
+      "Private network",
+      "Delegated subnet",
+      "VNet environment"
+     ],
+     [
+      "Image pull",
+      "Managed identity",
+      "Managed identity"
+     ],
+     [
+      "Inbound auth",
+      "Your code/APIM",
+      "Built-in auth"
+     ],
+     [
+      "IP filtering",
+      "NSG on subnet",
+      "Ingress IP rules"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.3.05",
+   "objective": "d3.3",
+   "seq": 5,
+   "title": "Securing Azure Functions",
+   "short": "HTTP-triggered functions use authorization levels (anonymous, function, admin) backed by access keys, but keys don't identify the caller. Add App Service built-in authentication with Entra ID, access restrictions or private endpoints, managed identity for outbound calls, and Key Vault references for secrets.",
+   "deep": "**Access keys**: an HTTP trigger has an authorization level.\n- **anonymous**: no key needed.\n- **function**: needs a **function key** (for one function) or a **host key** (for every function in the app).\n- **admin**: needs the **master key** (`_master`), which also unlocks the `/admin` runtime APIs.\n- **System keys** are used by extensions such as Event Grid webhooks.\n\nCallers send the key as `?code=` or in the `x-functions-key` header. Keys are stored in Blob storage by default, or in **Key Vault** if you set `AzureWebJobsSecretStorageType=keyvault`. Keys are shared secrets, not identities. For real caller authentication, use **App Service authentication (Easy Auth)** with Microsoft Entra ID, or put **API Management** in front.\n\n**Network**: **access restrictions** set allow or deny rules by priority. With no rules, all traffic is allowed. **Private endpoints** are available on the Flex Consumption, Elastic Premium and Dedicated plans. **VNet integration** handles outbound traffic. Lock down the storage account the app depends on, too.\n\n**Secrets and identity**: use a **managed identity** with identity-based connections, and **Key Vault references** (`@Microsoft.KeyVault(SecretUri=...)`) in app settings.\n\n**Hardening**: turn on HTTPS only, set minimum TLS to 1.2, disable FTP or require FTPS, don't use CORS wildcards, and turn off remote debugging.",
+   "terms": [
+    {
+     "t": "Authorization level",
+     "d": "HTTP trigger setting (anonymous/function/admin) deciding which key is required."
+    },
+    {
+     "t": "Host key",
+     "d": "Key that authorizes calls to all functions in a function app at function level."
+    },
+    {
+     "t": "Master key",
+     "d": "_master key granting admin-level access, including runtime admin APIs."
+    },
+    {
+     "t": "Easy Auth",
+     "d": "App Service built-in authentication/authorization in front of app code."
+    }
+   ],
+   "trap": "Function keys are not authentication - when the requirement says 'identify users' or 'Entra ID', choose App Service authentication or APIM validate-jwt.",
+   "example": "A partner-facing function switches from a shared host key to Easy Auth with Entra ID, and its app setting for the DB password becomes a Key Vault reference.",
+   "diagram": null
+  },
+  {
+   "id": "sc-500.d3.3.06",
+   "objective": "d3.3",
+   "seq": 6,
+   "title": "Securing Azure Logic Apps",
+   "short": "Request-triggered Logic Apps are protected by a SAS signature in the callback URL by default. Harden them with Microsoft Entra OAuth authorization policies, inbound IP restrictions and APIM in front. Hide sensitive data with secure inputs/outputs, use managed identities for connections and apply least-privilege Logic App roles.",
+   "deep": "**Inbound (Request trigger)**:\n- By default the callback URL carries a **SAS** signature (`sp`, `sv`, `sig`). Treat that URL like a password. **Regenerate access keys** if it leaks, and use expiring callback URLs where you can.\n- **OAuth with Microsoft Entra ID** (Consumption): add an **authorization policy** with the issuer and audience claims (types AAD or AADPOP). A request can't use SAS and OAuth together. On Consumption you can turn SAS off completely.\n- **IP restrictions**: on Consumption, the workflow settings option **Allowed inbound IP addresses** offers *Only other Logic Apps* or specific ranges. On Standard, use **Networking > Access restrictions**.\n- Put **Azure API Management** in front to add OAuth validation, client certificates and throttling.\n\n**Run history**: turn on **Secure inputs / Secure outputs** on actions that handle secrets, so the values are hidden in run history and not sent to Log Analytics. Downstream actions need the setting too. You can also **restrict run-history access by IP range**.\n\n**Secrets and outbound**: use `securestring`/`secureobject` parameters and Key Vault. For outbound calls, prefer **managed identity** authentication.\n\n**Hosting**: **Standard** (single-tenant) logic apps support **VNet integration** and **private endpoints**.\n\n**RBAC**: on Consumption, *Logic App Contributor* and *Logic App Operator* (which can run and enable but not edit). Anyone who can edit a workflow can use its managed identity, so lock down edit rights.",
+   "terms": [
+    {
+     "t": "SAS callback URL",
+     "d": "Request trigger URL containing a shared access signature that authorizes callers."
+    },
+    {
+     "t": "Authorization policy",
+     "d": "Logic Apps setting that validates Entra OAuth tokens (issuer/audience claims) on request triggers."
+    },
+    {
+     "t": "Secure inputs/outputs",
+     "d": "Action setting that hides data in run history and diagnostics."
+    }
+   ],
+   "trap": "Secure outputs on one action does not automatically protect downstream actions that consume that output - enable secure inputs on them too.",
+   "example": "A Logic App that retrieves an API secret from Key Vault enables Secure outputs on that action and Secure inputs on the HTTP action that uses it.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Caller",
+     "APIM / IP filter",
+     "OAuth policy or SAS",
+     "Workflow",
+     "Managed identity out"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.3.07",
+   "objective": "d3.3",
+   "seq": 7,
+   "title": "Securing Azure App Service",
+   "short": "Harden App Service by enforcing HTTPS only and TLS 1.2 or higher. Lock down both the main site and the SCM (Kudu) site with access restrictions or private endpoints, disable basic auth for FTP and SCM publishing, use built-in authentication, managed identity and Key Vault references, and turn on Defender for App Service.",
+   "deep": "**Transport**: **HTTPS Only** isn't on by default, so turn it on. Set the **minimum TLS version** to 1.2 (TLS 1.3 is also supported) for the app and for SCM. Set FTP to **FTPS only** or **Disabled**.\n\n**Network**:\n- **Access restrictions**: priority-ordered allow or deny rules by IP/CIDR, **service tag** (such as AzureFrontDoor.Backend, with an X-Azure-FDID header check) or **VNet subnet** through service endpoints. The **SCM site** has its own rule set. Either configure it separately or tick *use main site rules*.\n- **Private endpoints** remove public inbound access. **VNet integration** is outbound only.\n- **App Service Environment** gives full single-tenant isolation, optionally in ILB mode behind a WAF.\n- **Client certificates (mTLS)**: `clientCertEnabled` with mode Required.\n\n**Identity and secrets**: **built-in authentication** (Easy Auth with Entra ID and other providers) runs before your code. A **managed identity** calls SQL, Storage and Key Vault. **Key Vault references** in app settings keep secrets out of configuration.\n\n**Deployment**: **turn off basic authentication** for FTP and SCM (basicPublishingCredentialsPolicies) and deploy with Entra identities instead.\n\n**Detection**: **Defender for App Service** finds attacks against the app and dangling DNS, and Azure Policy audits these settings.",
+   "terms": [
+    {
+     "t": "SCM site",
+     "d": "The Kudu deployment endpoint (<app>.scm.azurewebsites.net) with its own access restrictions."
+    },
+    {
+     "t": "Access restrictions",
+     "d": "Priority-ordered allow/deny rules for inbound traffic to an App Service app."
+    },
+    {
+     "t": "Key Vault reference",
+     "d": "App setting syntax @Microsoft.KeyVault(SecretUri=...) resolved at runtime with the app's identity."
+    }
+   ],
+   "trap": "Restricting the main site does not restrict the SCM/Kudu site unless you add rules there or choose to use the main site rules.",
+   "example": "A web app behind Azure Front Door allows only the AzureFrontDoor.Backend service tag with its Front Door ID header, and its SCM site allows only the build agents' IPs.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Defender for App Service",
+     "Easy Auth + managed identity",
+     "Access restrictions / PE",
+     "HTTPS only + TLS 1.2"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.3.08",
+   "objective": "d3.3",
+   "seq": 8,
+   "title": "Azure Web Application Firewall",
+   "short": "Azure WAF protects web apps from OWASP Top 10 attacks on Application Gateway (regional) or Azure Front Door (global edge). A WAF policy combines managed rule sets (the Default Rule Set), bot protection and custom rules (IP, geo, rate limit), and runs in Detection or Prevention mode.",
+   "deep": "**Where it runs**:\n- **Application Gateway WAF_v2**: regional. Policies can attach to the **gateway**, to a **listener** (per site) or to a **path rule** (per URI).\n- **Azure Front Door**: at the global edge, before traffic reaches your network. Managed rule sets and bot protection need **Front Door Premium**, while Standard supports **custom rules only**.\n\n**Policy content**:\n- **Managed rules**: Microsoft's **Default Rule Set (DRS)**. DRS 2.2 is recommended on Application Gateway, while older OWASP CRS versions are legacy. Rules cover SQL injection, XSS, LFI/RFI, command injection and protocol attacks. **Anomaly scoring** is used: Critical = 5, Error = 4, Warning = 3, Notice = 2, and a total of **5 or more blocks** the request in Prevention mode.\n- **Bot Manager rule set**: categories for bad, good and unknown bots.\n- **Custom rules** run **before** managed rules, in priority order where a lower number goes first. Options include IP allow/block lists, **geo-match**, **rate limiting** and header or query matches.\n- **Exclusions** stop specific request attributes (for example a token field) from causing false positives.\n\n**Modes**: **Detection** only logs. **Prevention** blocks, returning 403 by default. Start in Detection, tune against the logs (WAF logs or the Sentinel workbook), then switch to Prevention.",
+   "terms": [
+    {
+     "t": "WAF policy",
+     "d": "Resource holding managed rules, custom rules, exclusions and mode, associated with App Gateway or Front Door."
+    },
+    {
+     "t": "Default Rule Set (DRS)",
+     "d": "Microsoft-managed rule set based on OWASP CRS plus Microsoft Threat Intelligence rules."
+    },
+    {
+     "t": "Anomaly scoring",
+     "d": "Matched rules add severity points; total >= 5 blocks in Prevention mode."
+    },
+    {
+     "t": "Detection vs Prevention",
+     "d": "Detection logs only; Prevention blocks matching requests."
+    }
+   ],
+   "trap": "Custom rules are evaluated before managed rules - a custom Allow rule can let traffic skip the managed rule set.",
+   "example": "A retailer deploys Front Door Premium with DRS in Detection mode for a week, adds an exclusion for a noisy cookie, then switches to Prevention and adds a rate-limit rule for /login.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Request",
+     "Custom rules",
+     "Managed DRS",
+     "Anomaly score",
+     "Allow / 403"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d3.3.09",
+   "objective": "d3.3",
+   "seq": 9,
+   "title": "Protecting back-end APIs with API Management",
+   "short": "API Management policies protect back ends at the gateway. validate-jwt or validate-azure-ad-token authenticate callers, ip-filter restricts sources, and rate-limit-by-key and quota throttle use. authentication-managed-identity or certificates authenticate APIM to the back end, which should accept traffic only from APIM.",
+   "deep": "Policies are XML, applied at the **global, product, API or operation** scope, in the **inbound, backend, outbound and on-error** sections.\n\n**Authenticate and authorize callers (inbound)**:\n- `validate-jwt` checks a JWT from a header or query string against an `openid-config` URL, the allowed `audiences`, the issuer and **required-claims** (for example a role), and returns 401 if it fails.\n- `validate-azure-ad-token` is the Entra-specific shorthand that takes a tenant ID and client application IDs.\n- `validate-client-certificate` handles mTLS from callers. `check-header` enforces that a header is present.\n- **Subscription keys** identify an app, but they aren't strong authentication.\n\n**Restrict and throttle**: `ip-filter` (allow or forbid by address or range), `rate-limit` and `rate-limit-by-key` (calls per time window, for example keyed on the client IP or a JWT claim), `quota` / `quota-by-key`, and `validate-content` for body schema and size.\n\n**Authenticate to the back end**: `authentication-managed-identity` gets an Entra token for the back end's resource. `authentication-certificate` sends a client certificate. Then **lock the back end down** to APIM only, using private networking (VNet-injected APIM or a private endpoint to the back end) or access restrictions that allow just APIM, so callers can't skip the gateway.\n\nApplication Gateway or Front Door WAF in front of APIM adds OWASP protection.",
+   "terms": [
+    {
+     "t": "validate-jwt",
+     "d": "APIM policy that enforces presence and validity of a JWT, including audience and claims."
+    },
+    {
+     "t": "rate-limit-by-key",
+     "d": "Throttles calls per custom key (IP, claim, header) within a time window."
+    },
+    {
+     "t": "authentication-managed-identity",
+     "d": "APIM policy that obtains an Entra token with APIM's managed identity for the back end."
+    }
+   ],
+   "trap": "Subscription keys alone are not user authentication - for Entra-issued tokens choose validate-jwt / validate-azure-ad-token.",
+   "example": "An orders API requires a valid Entra token with the Orders.Read role, limits each client IP to 100 calls per minute, and calls the back-end Function with APIM's managed identity.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Client + JWT",
+     "validate-jwt",
+     "rate-limit-by-key",
+     "managed identity",
+     "Back end (private)"
+    ]
+   }
+  }
+ ],
+ "questions": [
+  {
+   "id": "sc-500.d3.q057",
+   "lesson": "sc-500.d3.3.01",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which Defender for Containers component must be deployed to cluster nodes to detect suspicious processes running inside containers?",
+   "options": [
+    "Defender sensor",
+    "Kubernetes API access",
+    "Registry access",
+    "Agentless discovery for Kubernetes"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "The Defender sensor runs on nodes and collects the runtime telemetry used for workload threat detection. Kubernetes API access and agentless discovery provide posture data. Registry access scans images for vulnerabilities."
+  },
+  {
+   "id": "sc-500.d3.q058",
+   "lesson": "sc-500.d3.3.01",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You want deployments to an AKS cluster to be blocked when their container images have critical vulnerabilities found by Defender for Containers. What should you enable?",
+   "options": [
+    "Defender Security Gating (gated deployment) on the Defender sensor",
+    "Image Cleaner on the cluster",
+    "API server authorized IP ranges",
+    "The ACR admin user"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Defender Security Gating adds an admission control that uses vulnerability findings to audit or block deployments. Image Cleaner removes unused images from nodes. Authorized IP ranges limit API access. The admin user is a registry credential."
+  },
+  {
+   "id": "sc-500.d3.q059",
+   "lesson": "sc-500.d3.3.01",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about onboarding clusters to Defender for Containers, select Yes if true.",
+   "statements": [
+    {
+     "s": "Amazon EKS clusters are onboarded through an AWS connector in Defender for Cloud.",
+     "a": true
+    },
+    {
+     "s": "An on-premises Kubernetes cluster must first be connected to Azure Arc.",
+     "a": true
+    },
+    {
+     "s": "AKS clusters must be connected to Azure Arc before Defender for Containers can protect them.",
+     "a": false
+    }
+   ],
+   "explain": "EKS and GKE use multicloud connectors, which create Arc-enabled Kubernetes resources. On-premises clusters need Azure Arc. AKS clusters are native Azure resources and need neither a connector nor Arc."
+  },
+  {
+   "id": "sc-500.d3.q060",
+   "lesson": "sc-500.d3.3.02",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "You are creating an AKS cluster where all Kubernetes access must go through Microsoft Entra ID and the static cluster-admin credentials must not exist. Complete the command.",
+   "code": "az aks create --resource-group rg-prod --name aks-prod \\\n  --enable-aad --enable-azure-rbac \\\n  ____",
+   "options": [
+    "--disable-local-accounts",
+    "--enable-managed-identity",
+    "--enable-private-cluster",
+    "--enable-oidc-issuer"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "--disable-local-accounts removes the local admin kubeconfig, so access has to go through Entra ID. A managed identity is the cluster's own identity. A private cluster restricts network reach, not credentials. The OIDC issuer supports workload identity."
+  },
+  {
+   "id": "sc-500.d3.q061",
+   "lesson": "sc-500.d3.3.02",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Pods in an AKS cluster must call Azure Key Vault with Microsoft Entra tokens, without storing client secrets in the cluster. What should you configure?",
+   "options": [
+    "Kubernetes Secrets holding a service principal secret",
+    "Microsoft Entra Workload ID with the OIDC issuer",
+    "The ACR admin user",
+    "API server authorized IP ranges"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Workload identity federates a Kubernetes service account with an Entra identity, so pods get tokens without stored secrets. A service principal secret in a Kubernetes Secret is exactly what the requirement rules out. The ACR admin user and authorized IP ranges don't give pods an identity."
+  },
+  {
+   "id": "sc-500.d3.q062",
+   "lesson": "sc-500.d3.3.02",
+   "objective": "d3.3",
+   "difficulty": 3,
+   "type": "multi",
+   "case": "Tailwind runs a multi-tenant AKS cluster. Requirements: the API server must not be reachable from the internet; pods in the 'payments' namespace may accept traffic only from pods in the 'frontend' namespace; and privileged containers must be rejected in the payments namespace.",
+   "stem": "Which THREE controls meet the requirements? Select THREE.",
+   "options": [
+    "Deploy the cluster as a private cluster",
+    "Apply a Kubernetes network policy on the payments namespace",
+    "Label the payments namespace to enforce the restricted Pod Security Standard",
+    "Enable Image Cleaner",
+    "Assign the Azure Kubernetes Service RBAC Reader role to the frontend team"
+   ],
+   "answer": [
+    0,
+    1,
+    2
+   ],
+   "explain": "A private cluster keeps the API server off the internet. A network policy limits ingress to traffic from the frontend namespace. Pod Security Admission set to restricted rejects privileged pods. Image Cleaner removes stale images, and a reader role controls API access, not pod traffic."
+  },
+  {
+   "id": "sc-500.d3.q063",
+   "lesson": "sc-500.d3.3.03",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which Azure Container Registry service tier is required to use private endpoints?",
+   "options": [
+    "Basic",
+    "Standard",
+    "Premium",
+    "Any tier, once the admin user is disabled"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Private Link for ACR is a Premium feature. Basic and Standard registries can't use private endpoints, and the admin user setting has nothing to do with networking."
+  },
+  {
+   "id": "sc-500.d3.q064",
+   "lesson": "sc-500.d3.3.03",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An AKS cluster must pull images from ACR with least privilege and no shared credentials. What should you do?",
+   "options": [
+    "Enable the ACR admin user and store its password as an image pull secret",
+    "Assign AcrPush to the cluster's kubelet identity",
+    "Create a repository-scoped token with push and pull on all repositories",
+    "Assign AcrPull to the cluster's kubelet managed identity"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "AcrPull on the kubelet identity, which az aks update --attach-acr sets up, allows pulls only with no stored secret. The admin user is a shared full-access credential. AcrPush grants more than needed. A token with push rights on every repository isn't least privilege."
+  },
+  {
+   "id": "sc-500.d3.q065",
+   "lesson": "sc-500.d3.3.03",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "A security review finds the registry's shared admin account is enabled. Complete the command to disable it.",
+   "code": "az acr update --name contosoacr ____",
+   "options": [
+    "--public-network-enabled false",
+    "--admin-enabled false",
+    "--anonymous-pull-enabled false",
+    "--sku Premium"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "--admin-enabled false turns off the shared admin user. --public-network-enabled false blocks public network access. --anonymous-pull-enabled false stops unauthenticated pulls. Changing the SKU doesn't affect the admin account."
+  },
+  {
+   "id": "sc-500.d3.q066",
+   "lesson": "sc-500.d3.3.04",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "You are deploying an Azure Container Instances container group into an existing virtual network subnet that's currently empty. What must be done to the subnet first?",
+   "options": [
+    "Attach a route table that forces traffic to Azure Firewall",
+    "Enable a service endpoint for Microsoft.ContainerRegistry",
+    "Delegate the subnet to Microsoft.ContainerInstance/containerGroups",
+    "Name the subnet AzureContainerSubnet"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "VNet-deployed container groups need a subnet delegated to Microsoft.ContainerInstance/containerGroups, and only container groups can use it. There's no required subnet name. Route tables and service endpoints are optional and don't replace delegation."
+  },
+  {
+   "id": "sc-500.d3.q067",
+   "lesson": "sc-500.d3.3.04",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "An Azure Container Apps API must be reachable only from other apps and VMs in its virtual network, and must read its database password from Azure Key Vault without storing credentials. Which TWO configurations should you use? Select TWO.",
+   "options": [
+    "Set ingress to internal",
+    "Reference the Key Vault secret using the app's managed identity",
+    "Enable the ACR admin user",
+    "Set ingress to external and allow 0.0.0.0/0",
+    "Store the password as a plain environment variable"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "Internal ingress keeps the app inside the environment's VNet. A Key Vault secret reference resolved with a managed identity avoids storing credentials. External ingress open to everyone, the ACR admin user and plain-text environment variables all break the requirements."
+  },
+  {
+   "id": "sc-500.d3.q068",
+   "lesson": "sc-500.d3.3.05",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "An HTTP-triggered function has authorization level 'function'. Which key can a caller use to invoke it?",
+   "options": [
+    "The function's key or any host key",
+    "Only the master key",
+    "A storage account access key",
+    "No key is required"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "At the function level, either that function's key or a host key works. The master key is required only at the admin level. Storage account keys don't authorize HTTP triggers. Only the anonymous level needs no key."
+  },
+  {
+   "id": "sc-500.d3.q069",
+   "lesson": "sc-500.d3.3.05",
+   "objective": "d3.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "A function app exposes HTTP APIs to employees. Security says that shared function keys don't identify who is calling, and only signed-in Microsoft Entra users should reach the code, with no code changes. What should you implement?",
+   "options": [
+    "Rotate the host keys weekly",
+    "Switch the authorization level to admin",
+    "Enable App Service authentication with the Microsoft Entra identity provider",
+    "Store the function keys in Azure Key Vault"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "App Service authentication (Easy Auth) with Entra ID authenticates users before requests reach the code, with no code changes. Rotating keys or storing them in Key Vault still leaves shared secrets. The admin level just demands the master key, which is worse."
+  },
+  {
+   "id": "sc-500.d3.q070",
+   "lesson": "sc-500.d3.3.06",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A Logic App action retrieves a secret from Key Vault and passes it to an HTTP action. Operators can see the secret in run history. Which configuration hides it from both actions in run history?",
+   "options": [
+    "Enable Secure outputs on the Key Vault action and Secure inputs on the HTTP action",
+    "Enable Secure inputs on the Key Vault action only",
+    "Regenerate the logic app's access keys",
+    "Change the trigger to use OAuth with Microsoft Entra ID"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Secure outputs hides the secret where it's produced, and downstream actions don't inherit that protection, so the HTTP action also needs Secure inputs. Securing only the Key Vault action's inputs leaves its output visible. Access keys and trigger OAuth control who can call the workflow, not what run history shows."
+  },
+  {
+   "id": "sc-500.d3.q071",
+   "lesson": "sc-500.d3.3.06",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about securing a Consumption logic app with a Request trigger, select Yes if true.",
+   "statements": [
+    {
+     "s": "By default, the trigger's callback URL contains a shared access signature.",
+     "a": true
+    },
+    {
+     "s": "A single inbound request can authenticate with both SAS and an OAuth token at the same time.",
+     "a": false
+    },
+    {
+     "s": "You can restrict inbound calls so that only other logic apps can call the trigger.",
+     "a": true
+    }
+   ],
+   "explain": "The callback URL includes SAS parameters (sp, sv, sig) by default. SAS and OAuth can't be combined on one request, and doing so causes an error. The Allowed inbound IP addresses setting includes an 'Only other Logic Apps' option."
+  },
+  {
+   "id": "sc-500.d3.q072",
+   "lesson": "sc-500.d3.3.07",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You added access restriction rules so an App Service web app accepts traffic only from your office IP range. A penetration test shows the Kudu (SCM) endpoint is still reachable from the internet. What should you do?",
+   "options": [
+    "Enable HTTPS Only",
+    "Configure access restrictions for the SCM site, or set it to use the main site rules",
+    "Enable VNet integration",
+    "Turn on Defender for App Service"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The SCM site has its own access restriction rules, so you either add rules there or tell it to use the main site's rules. HTTPS Only doesn't block anyone. VNet integration is outbound only. Defender for App Service detects threats but doesn't restrict access."
+  },
+  {
+   "id": "sc-500.d3.q073",
+   "lesson": "sc-500.d3.3.07",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the Azure CLI command that forces an App Service app to redirect all HTTP requests to HTTPS.",
+   "code": "az webapp update --resource-group rg-web --name app-contoso ____",
+   "options": [
+    "--https-only true",
+    "--min-tls-version 1.2",
+    "--client-cert-enabled true",
+    "--ftps-state FtpsOnly"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "--https-only true on az webapp update turns on HTTPS-only redirection. Minimum TLS and FTPS state are set with az webapp config set. Client certificates require mTLS, which doesn't redirect HTTP."
+  },
+  {
+   "id": "sc-500.d3.q074",
+   "lesson": "sc-500.d3.3.07",
+   "objective": "d3.3",
+   "difficulty": 3,
+   "type": "multi",
+   "case": "A web app stores a SQL connection string in app settings and is deployed with FTP using publishing profile credentials. An audit requires that no secrets are kept in app configuration and that deployments don't use shared basic credentials.",
+   "stem": "Which TWO actions meet the requirements? Select TWO.",
+   "options": [
+    "Replace the connection string with a Key Vault reference resolved by the app's managed identity",
+    "Disable basic authentication for FTP and SCM publishing",
+    "Set the minimum TLS version to 1.3",
+    "Enable client certificate mode Required",
+    "Add an access restriction for the office IP"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "A Key Vault reference keeps the secret out of app settings, and disabling basic auth for FTP and SCM removes shared publishing credentials. TLS version, client certificates and IP restrictions are good hardening steps, but they don't meet either requirement."
+  },
+  {
+   "id": "sc-500.d3.q075",
+   "lesson": "sc-500.d3.3.08",
+   "objective": "d3.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "A new Azure WAF policy must log matched attacks without blocking traffic while you tune false positives. Which mode should you use?",
+   "options": [
+    "Prevention",
+    "Detection",
+    "Audit",
+    "Anomaly"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Detection mode logs matches and lets the requests through, which is the recommended starting point. Prevention blocks. 'Audit' isn't a WAF mode, and anomaly scoring is a rule action, not a mode."
+  },
+  {
+   "id": "sc-500.d3.q076",
+   "lesson": "sc-500.d3.3.08",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You need managed OWASP rule sets and bot protection at Microsoft's global edge for a website. Which service should you deploy?",
+   "options": [
+    "Azure Front Door Standard with a WAF policy",
+    "Azure Firewall Premium",
+    "Application Gateway WAF_v2 in a single region",
+    "Azure Front Door Premium with a WAF policy"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Front Door Premium supports managed rule sets and bot protection at the global edge. Front Door Standard supports custom rules only. Application Gateway is regional, not edge. Azure Firewall Premium is a network firewall with IDPS, not a web application firewall."
+  },
+  {
+   "id": "sc-500.d3.q077",
+   "lesson": "sc-500.d3.3.08",
+   "objective": "d3.3",
+   "difficulty": 3,
+   "type": "yesno",
+   "case": null,
+   "stem": "A WAF policy on Application Gateway uses DRS with anomaly scoring in Prevention mode. For each statement, select Yes if true.",
+   "statements": [
+    {
+     "s": "A request that matches a single Critical-severity rule is blocked.",
+     "a": true
+    },
+    {
+     "s": "A request that matches a single Warning-severity rule is blocked.",
+     "a": false
+    },
+    {
+     "s": "Custom rules are evaluated before the managed rule set.",
+     "a": true
+    }
+   ],
+   "explain": "Critical adds 5 points, which reaches the threshold of 5 and blocks the request. Warning adds only 3. Custom rules are always processed before managed rules."
+  },
+  {
+   "id": "sc-500.d3.q078",
+   "lesson": "sc-500.d3.3.09",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "API Management must reject calls that don't carry a valid Microsoft Entra access token for the Orders API. Complete the inbound policy.",
+   "code": "<inbound>\n  <base />\n  <____ header-name=\"Authorization\" failed-validation-httpcode=\"401\">\n    <openid-config url=\"https://login.microsoftonline.com/contoso.onmicrosoft.com/v2.0/.well-known/openid-configuration\" />\n    <audiences>\n      <audience>api://orders</audience>\n    </audiences>\n  </validate-jwt>\n</inbound>",
+   "options": [
+    "validate-jwt",
+    "check-header",
+    "authentication-managed-identity",
+    "validate-client-certificate"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "validate-jwt checks the token's signature against the OpenID configuration, along with its audience and claims. check-header only confirms a header exists. authentication-managed-identity authenticates APIM to the back end. validate-client-certificate checks mTLS certificates, not JWTs."
+  },
+  {
+   "id": "sc-500.d3.q079",
+   "lesson": "sc-500.d3.3.09",
+   "objective": "d3.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "API Management must call a back-end Azure Function using a Microsoft Entra token, without storing a client secret in APIM. Which policy should you add to the inbound section?",
+   "options": [
+    "authentication-basic",
+    "set-backend-service",
+    "authentication-managed-identity",
+    "rate-limit-by-key"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "authentication-managed-identity gets an Entra token with APIM's managed identity for the back end's resource. Basic authentication sends stored credentials. set-backend-service changes the routing URL. rate-limit-by-key throttles calls."
+  },
+  {
+   "id": "sc-500.d3.q080",
+   "lesson": "sc-500.d3.3.09",
+   "objective": "d3.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Contoso publishes an internal back-end API through API Management with validate-jwt and rate-limit-by-key policies. A test shows callers can still reach the back end directly at its public App Service URL, bypassing every APIM policy.",
+   "stem": "What should you do to make sure all traffic goes through API Management?",
+   "options": [
+    "Add an ip-filter policy in APIM",
+    "Increase the rate-limit-by-key threshold",
+    "Require a subscription key on the API",
+    "Restrict the back end to accept traffic only from APIM, using a private endpoint or access restrictions"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "APIM policies only apply to traffic that passes through APIM, so the back end has to be locked down to accept only APIM. Policies in APIM, such as ip-filter, rate limits or subscription keys, can't affect direct calls to the back end."
+  }
+ ]
+}

@@ -1,0 +1,279 @@
+{
+  "exam": "governance",
+  "domain": "d5",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "governance.d5.q033",
+      "lesson": "governance.d5.2.03",
+      "objective": "d5.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which body has exclusive competence to supervise and enforce the obligations of general-purpose AI model providers?",
+      "options": ["The European Data Protection Board", "National market surveillance authorities", "The European Artificial Intelligence Board", "The AI Office within the European Commission"],
+      "answer": [3],
+      "explain": "The Commission, through the AI Office, supervises and enforces the GPAI model rules. Market surveillance authorities oversee most AI systems. The AI Board advises and coordinates but does not enforce. The EDPB handles GDPR consistency."
+    },
+    {
+      "id": "governance.d5.q034",
+      "lesson": "governance.d5.2.03",
+      "objective": "d5.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the GPAI Code of Practice, select Yes if true.",
+      "statements": [
+        { "s": "Signing the Code is mandatory for all GPAI providers placing models on the EU market.", "a": false },
+        { "s": "A provider may sign only some chapters and show compliance with the others by other adequate means.", "a": true },
+        { "s": "The Commission and the AI Board assessed the Code as an adequate voluntary tool for demonstrating compliance.", "a": true }
+      ],
+      "explain": "The Code is voluntary. Signatories can demonstrate compliance by adhering to it, and non-signatories use other adequate means. A provider can sign selected chapters; for example, one major provider signed only Safety and Security. The Commission and AI Board confirmed its adequacy in 2025."
+    },
+    {
+      "id": "governance.d5.q035",
+      "lesson": "governance.d5.2.01",
+      "objective": "d5.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A software firm builds a recruitment screening system on top of a third-party GPAI model and needs to understand the model's limitations to meet its own high-risk obligations.",
+      "stem": "Which GPAI provider obligation most directly supports the firm?",
+      "options": ["Providing information and documentation to downstream providers", "Publishing the training-content summary", "Notifying the Commission of systemic risk", "Adopting a copyright policy"],
+      "answer": [0],
+      "explain": "Art. 53 requires GPAI providers to give downstream providers information and documentation (Annex XII) on capabilities and limitations so they can comply. The training summary is public-facing and high-level. Systemic-risk notification and copyright policy do not address the integrator's needs."
+    },
+    {
+      "id": "governance.d5.q036",
+      "lesson": "governance.d5.2.02",
+      "objective": "d5.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which obligations apply only to providers of GPAI models with systemic risk, on top of the duties for all GPAI providers? Select TWO.",
+      "options": ["Perform model evaluation including adversarial testing", "Publish a training-content summary", "Ensure adequate cybersecurity for the model and its physical infrastructure", "Draw up technical documentation for the AI Office", "Adopt an EU copyright policy"],
+      "answer": [0, 2],
+      "explain": "Art. 55 adds model evaluation with adversarial testing, systemic risk assessment and mitigation, serious incident reporting, and cybersecurity. Training summaries, technical documentation and copyright policies are Art. 53 duties for every GPAI provider."
+    },
+    {
+      "id": "governance.d5.q037",
+      "lesson": "governance.d5.3.01",
+      "objective": "d5.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "On what date did the EU AI Act (Regulation (EU) 2024/1689) enter into force?",
+      "options": ["12 July 2024", "2 February 2025", "1 August 2024", "2 August 2026"],
+      "answer": [2],
+      "explain": "The Act was published in the Official Journal on 12 July 2024 and entered into force 20 days later, on 1 August 2024. 2 February 2025 is when the prohibitions began to apply, and 2 August 2026 is the general application date."
+    },
+    {
+      "id": "governance.d5.q038",
+      "lesson": "governance.d5.3.01",
+      "objective": "d5.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Why does the AI Act apply in all Member States without each one passing its own transposing law?",
+      "options": ["It is a directive with a direct-effect clause", "It is a regulation, which is directly applicable", "It is a Commission delegated act", "The AI Office adopts it into each national legal system"],
+      "answer": [1],
+      "explain": "EU regulations are binding and directly applicable in all Member States. Directives require national transposition. Delegated acts supplement existing legislation, and the AI Office has no power to adopt law into national systems. Member States still designate authorities and set penalty rules."
+    },
+    {
+      "id": "governance.d5.q039",
+      "lesson": "governance.d5.3.02",
+      "objective": "d5.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which provisions began to apply on 2 February 2025? Select TWO.",
+      "options": ["Article 5 prohibited AI practices", "Article 50 transparency obligations", "Article 4 AI literacy", "Annex III high-risk requirements", "Article 53 GPAI provider obligations"],
+      "answer": [0, 2],
+      "explain": "Chapters I and II, including AI literacy (Art. 4) and the prohibitions (Art. 5), applied from 2 February 2025. GPAI duties applied from 2 August 2025, Art. 50 from 2 August 2026, and Annex III high-risk duties from 2 December 2027 after the omnibus."
+    },
+    {
+      "id": "governance.d5.q040",
+      "lesson": "governance.d5.3.02",
+      "objective": "d5.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A logistics firm uses only minimal-risk AI tools, such as route optimisation. Since 2 February 2025, which AI Act duty applies to it as a deployer?",
+      "options": ["Fundamental rights impact assessment", "Registration in the EU database", "Keeping logs for six months", "Measures to promote AI literacy among staff operating the AI"],
+      "answer": [3],
+      "explain": "Art. 4 AI literacy applies to providers and deployers of all AI systems, whatever their risk tier. FRIA, EU database registration and six-month log retention are tied to high-risk systems."
+    },
+    {
+      "id": "governance.d5.q041",
+      "lesson": "governance.d5.3.03",
+      "objective": "d5.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "From which date did the obligations for providers of general-purpose AI models begin to apply?",
+      "options": ["2 August 2025", "2 February 2025", "2 August 2026", "2 December 2027"],
+      "answer": [0],
+      "explain": "Chapter V GPAI obligations, the governance bodies and the penalty rules applied from 2 August 2025. 2 February 2025 covers prohibitions and literacy. 2 August 2026 is general application. 2 December 2027 is the deferred Annex III date."
+    },
+    {
+      "id": "governance.d5.q042",
+      "lesson": "governance.d5.3.03",
+      "objective": "d5.3",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": "ModelCo placed GPAI model A on the EU market in March 2025 and GPAI model B in October 2025.",
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        { "s": "Model B had to comply with Article 53 from its release.", "a": true },
+        { "s": "Model A must comply with the GPAI obligations by 2 August 2027.", "a": true },
+        { "s": "The Commission could fine ModelCo under Article 101 from 2 August 2025.", "a": false }
+      ],
+      "explain": "Models placed on the market from 2 August 2025 must comply immediately. Earlier models have until 2 August 2027. Although Chapter XII penalties applied from 2 August 2025, Art. 101 Commission fines on GPAI providers apply only from 2 August 2026."
+    },
+    {
+      "id": "governance.d5.q043",
+      "lesson": "governance.d5.3.04",
+      "objective": "d5.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Following the Digital Omnibus, which obligations still apply from 2 August 2026 for systems placed on the market from that date?",
+      "options": ["Annex III high-risk requirements", "Article 50 transparency obligations", "Annex I product-embedded high-risk requirements", "The new non-consensual intimate imagery prohibition"],
+      "answer": [1],
+      "explain": "Art. 50 transparency duties apply from 2 August 2026, the general application date. The omnibus moved Annex III to 2 December 2027 and Annex I to 2 August 2028. The new intimate-imagery and CSAM bans apply from 2 December 2026."
+    },
+    {
+      "id": "governance.d5.q044",
+      "lesson": "governance.d5.3.04",
+      "objective": "d5.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "GenPix launched an image-generation service in the EU in May 2026. A competitor launched a similar service in September 2026.",
+      "stem": "By when must each provider meet the Article 50(2) machine-readable marking duty?",
+      "options": ["Both by 2 August 2026", "Both by 2 December 2026", "GenPix by 2 August 2027; the competitor by 2 December 2026", "GenPix by 2 December 2026; the competitor from its September 2026 launch"],
+      "answer": [3],
+      "explain": "The omnibus gives generative systems placed on the market before 2 August 2026 until 2 December 2026. Systems placed on the market after that date get no grace period and must comply from launch. 2 August 2027 is the legacy GPAI model deadline."
+    },
+    {
+      "id": "governance.d5.q045",
+      "lesson": "governance.d5.3.05",
+      "objective": "d5.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "After the Digital Omnibus on AI, when do the obligations for Annex III stand-alone high-risk systems apply?",
+      "options": ["2 August 2026", "2 August 2028", "2 December 2027", "2 December 2026"],
+      "answer": [2],
+      "explain": "Regulation (EU) 2026/1744 deferred Annex III obligations from 2 August 2026 to 2 December 2027. 2 August 2028 is the new Annex I date. 2 December 2026 is the Art. 50(2) legacy deadline and the date the new prohibitions apply."
+    },
+    {
+      "id": "governance.d5.q046",
+      "lesson": "governance.d5.3.05",
+      "objective": "d5.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put these AI Act milestones, as amended by the Digital Omnibus, in chronological order.",
+      "options": ["Digital Omnibus on AI enters into force", "Legacy generative systems must meet Article 50(2) marking", "Annex III high-risk obligations apply", "Annex I product-embedded high-risk obligations apply"],
+      "explain": "The omnibus entered into force on 27 July 2026. Legacy Art. 50(2) marking is due 2 December 2026, Annex III high-risk duties apply from 2 December 2027, and Annex I duties from 2 August 2028."
+    },
+    {
+      "id": "governance.d5.q047",
+      "lesson": "governance.d5.3.05",
+      "objective": "d5.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the Digital Omnibus on AI, select Yes if true.",
+      "statements": [
+        { "s": "It deferred the Article 5 prohibitions that applied from 2 February 2025.", "a": false },
+        { "s": "It moved the Annex I product-embedded high-risk deadline from 2 August 2027 to 2 August 2028.", "a": true },
+        { "s": "It was adopted as Regulation (EU) 2026/1744 and entered into force in July 2026.", "a": true }
+      ],
+      "explain": "The original prohibitions kept their February 2025 date; the omnibus added new bans instead. Annex I moved one year to 2 August 2028. Regulation (EU) 2026/1744 was published on 24 July 2026 and entered into force on 27 July 2026."
+    },
+    {
+      "id": "governance.d5.q048",
+      "lesson": "governance.d5.3.06",
+      "objective": "d5.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which new prohibited practice did the Digital Omnibus on AI add to Article 5?",
+      "options": ["AI systems generating non-consensual intimate imagery or child sexual abuse material", "All emotion recognition in public spaces", "Any use of general-purpose AI models above 10^26 FLOPs", "AI-based credit scoring of consumers"],
+      "answer": [0],
+      "explain": "The omnibus banned AI systems that generate non-consensual intimate imagery (nudifier apps) and CSAM, applying from 2 December 2026. Emotion recognition outside work and school stays high-risk, large GPAI models are regulated rather than banned, and credit scoring remains Annex III high-risk."
+    },
+    {
+      "id": "governance.d5.q049",
+      "lesson": "governance.d5.3.06",
+      "objective": "d5.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A compliance officer argues that because the Digital Omnibus 'softened' Article 4, the company can drop its AI literacy programme entirely.",
+      "stem": "Which response is most accurate?",
+      "options": ["Correct: the omnibus repealed Article 4", "Incorrect: Article 4 now requires certified literacy exams for all staff", "Incorrect: the duty remains, reframed as taking measures to promote literacy (an obligation of means)", "Correct: AI literacy now applies only to providers of high-risk systems"],
+      "answer": [2],
+      "explain": "The omnibus kept Art. 4 but reframed it so providers and deployers must take measures to promote staff AI literacy suited to context, without guaranteeing a set level. It was not repealed, does not require certification, and still covers all providers and deployers."
+    },
+    {
+      "id": "governance.d5.q050",
+      "lesson": "governance.d5.3.07",
+      "objective": "d5.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the maximum administrative fine for engaging in a prohibited AI practice under Article 99?",
+      "options": ["EUR 20 million or 4% of worldwide annual turnover", "EUR 35 million or 7% of worldwide annual turnover, whichever is higher", "EUR 15 million or 3% of worldwide annual turnover", "EUR 7.5 million or 1% of worldwide annual turnover"],
+      "answer": [1],
+      "explain": "Prohibited practices carry the top tier: EUR 35 million or 7%, whichever is higher. EUR 20m or 4% is the GDPR maximum. EUR 15m or 3% covers most other obligations, and EUR 7.5m or 1% covers supplying misleading information."
+    },
+    {
+      "id": "governance.d5.q051",
+      "lesson": "governance.d5.3.07",
+      "objective": "d5.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A start-up that qualifies as an SME supplies misleading information to a national competent authority. How is the fine cap calculated?",
+      "options": ["The higher of EUR 7.5 million or 1% of turnover", "The higher of EUR 15 million or 3% of turnover", "The lower of EUR 15 million or 3% of turnover", "The lower of EUR 7.5 million or 1% of turnover"],
+      "answer": [3],
+      "explain": "Misleading information falls in the EUR 7.5m or 1% tier. For SMEs and start-ups, Art. 99 caps each fine at the lower of the two amounts, whereas larger undertakings face whichever is higher."
+    },
+    {
+      "id": "governance.d5.q052",
+      "lesson": "governance.d5.3.07",
+      "objective": "d5.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A large company with EUR 1 billion worldwide annual turnover breaches its deployer obligations for a high-risk system. Separately, it failed to disclose a deepfake under Article 50.",
+      "stem": "Which statements about the maximum fines are correct? Select TWO.",
+      "options": ["The deployer breach is capped at EUR 30 million", "The Article 50 breach falls in the EUR 35 million or 7% tier", "The Article 50 breach falls in the same EUR 15 million or 3% tier as the deployer breach", "The deployer breach is capped at EUR 15 million because that figure is fixed", "Both breaches are capped at EUR 7.5 million"],
+      "answer": [0, 2],
+      "explain": "Deployer and Art. 50 transparency breaches are in the EUR 15m or 3% tier, whichever is higher. For EUR 1bn turnover, 3% is EUR 30m, which exceeds EUR 15m. The 7% tier is for prohibited practices only, and EUR 7.5m is for misleading information."
+    },
+    {
+      "id": "governance.d5.q053",
+      "lesson": "governance.d5.3.08",
+      "objective": "d5.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A Canadian company with no EU establishment runs a credit-scoring AI on servers in Canada. It sends scores to a bank in Spain, which uses them to decide on loans to Spanish customers.",
+      "stem": "Does the AI Act apply to the Canadian company?",
+      "options": ["No, because it has no establishment in the EU", "No, because the system runs on servers outside the EU", "Only if the bank signs a code of conduct", "Yes, because the system's output is used in the Union"],
+      "answer": [3],
+      "explain": "Art. 2 covers providers and deployers in third countries where the AI output is used in the Union, and providers placing systems on the EU market wherever they are established. Server location and lack of an EU office do not remove the company from scope."
+    },
+    {
+      "id": "governance.d5.q054",
+      "lesson": "governance.d5.3.08",
+      "objective": "d5.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which use of AI is excluded from the scope of the AI Act?",
+      "options": ["AI developed and used exclusively for military or defence purposes", "A non-EU provider's chatbot offered to EU consumers", "An EU bank deploying AI for credit scoring", "An importer distributing a US-made high-risk system in Germany"],
+      "answer": [0],
+      "explain": "Art. 2 excludes AI used exclusively for military, defence or national security purposes. Non-EU providers serving the EU, EU deployers and importers are all within scope."
+    }
+  ]
+}

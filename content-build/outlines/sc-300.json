@@ -1,0 +1,362 @@
+{
+  "id": "sc-300",
+  "name": "Microsoft Identity and Access Administrator",
+  "code": "SC-300",
+  "issuer": "Microsoft",
+  "outlineVersion": "Skills measured as of October 28, 2026",
+  "sourceUrl": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/sc-300",
+  "exam": {
+    "minutes": 100,
+    "passMark": "700/1000",
+    "questionCount": "40-60",
+    "notes": "100 minutes per the certification page (seat time may be longer); may include case studies and interactive items. Question count not officially published (40-60 commonly reported). Associate certification renews every 12 months via free online assessment. English update takes effect Oct 28, 2026."
+  },
+  "domains": [
+    {
+      "id": "d1",
+      "name": "Implement and manage user identities",
+      "weight": "20-25%",
+      "objectives": [
+        {
+          "id": "d1.1",
+          "name": "Configure and manage a Microsoft Entra tenant",
+          "bullets": [
+            "Configure and manage built-in and custom Entra roles",
+            "Recommend when to use administrative units",
+            "Configure and manage administrative units",
+            "Evaluate effective permissions for Entra roles",
+            "Configure and manage domains in Entra ID and Microsoft 365",
+            "Configure Company branding",
+            "Configure tenant properties and user, group, and device settings"
+          ]
+        },
+        {
+          "id": "d1.2",
+          "name": "Create, configure, and manage Microsoft Entra identities",
+          "bullets": [
+            "Create, configure, and manage users",
+            "Create, configure, and manage groups",
+            "Manage custom security attributes",
+            "Automate bulk operations with the Entra admin center and PowerShell",
+            "Manage device join and device registration",
+            "Assign, modify, and report on licenses"
+          ]
+        },
+        {
+          "id": "d1.3",
+          "name": "Implement and manage identities for external users and tenants",
+          "bullets": [
+            "Manage External collaboration settings",
+            "Invite external users individually or in bulk",
+            "Manage external user accounts",
+            "Implement cross-tenant access settings",
+            "Implement and manage cross-tenant synchronization",
+            "Configure external identity providers incl. SAML and WS-Fed"
+          ]
+        },
+        {
+          "id": "d1.4",
+          "name": "Implement and manage hybrid identity",
+          "bullets": [
+            "Microsoft Entra Connect Sync",
+            "Microsoft Entra Cloud Sync",
+            "Password hash synchronization",
+            "Pass-through authentication",
+            "Seamless single sign-on (SSO)",
+            "Migrate from AD FS to other authentication/authorization mechanisms",
+            "Microsoft Entra Connect Health"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "name": "Implement authentication and access management",
+      "weight": "25-30%",
+      "objectives": [
+        {
+          "id": "d2.1",
+          "name": "Plan, implement, and manage Microsoft Entra user authentication",
+          "bullets": [
+            "Plan for authentication",
+            "Authentication methods incl. certificate-based auth, Temporary Access Pass, Microsoft Authenticator, and passkeys (FIDO2)",
+            "Tenant-wide MFA settings",
+            "Configure and deploy self-service password reset (SSPR)",
+            "Implement and manage Windows Hello for Business",
+            "Disable accounts and revoke user sessions",
+            "Implement and manage Entra password protection",
+            "Enable Entra Kerberos authentication for hybrid identities"
+          ]
+        },
+        {
+          "id": "d2.2",
+          "name": "Plan, implement, and manage Microsoft Entra Conditional Access",
+          "bullets": [
+            "Plan Conditional Access policies",
+            "Implement policy assignments",
+            "Implement policy controls",
+            "Test and troubleshoot policies",
+            "Implement session management",
+            "Implement device-enforced restrictions",
+            "Implement continuous access evaluation (CAE)",
+            "Configure authentication context",
+            "Implement protected actions",
+            "Create a policy from a template"
+          ]
+        },
+        {
+          "id": "d2.3",
+          "name": "Manage risk by using Microsoft Entra ID Protection",
+          "bullets": [
+            "Manage user risk via ID Protection or Conditional Access",
+            "Manage sign-in risk via ID Protection or Conditional Access",
+            "Manage MFA registration via authentication methods and registration campaigns",
+            "Monitor, investigate, and remediate risky users and sign-ins",
+            "Monitor, investigate, and remediate risky workload identities"
+          ]
+        },
+        {
+          "id": "d2.4",
+          "name": "Implement Global Secure Access",
+          "bullets": [
+            "Deploy Global Secure Access clients",
+            "Deploy and manage Microsoft Entra Private Access",
+            "Deploy and manage Microsoft Entra Internet Access",
+            "Deploy and manage the Microsoft traffic profile for Microsoft 365"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "name": "Plan and implement workload identities",
+      "weight": "20-25%",
+      "objectives": [
+        {
+          "id": "d3.1",
+          "name": "Plan and implement identities for applications and Azure workloads",
+          "bullets": [
+            "Select identities for apps and Azure workloads: managed identities, service principals, user accounts, managed service accounts",
+            "Create managed identities",
+            "Assign a managed identity to an Azure resource",
+            "Use a managed identity to access other Azure resources"
+          ]
+        },
+        {
+          "id": "d3.2",
+          "name": "Plan, implement, and monitor the integration of enterprise applications",
+          "bullets": [
+            "Plan and implement enterprise app settings (app-level and tenant-level)",
+            "Assign Entra roles to users to manage enterprise apps",
+            "Integrate on-premises apps with Microsoft Entra Application Proxy",
+            "Integrate SaaS apps",
+            "Assign, classify, and manage users, groups, and app roles",
+            "Configure and manage user and admin consent",
+            "Create and manage application collections"
+          ]
+        },
+        {
+          "id": "d3.3",
+          "name": "Plan and implement app registrations",
+          "bullets": [
+            "Plan app registrations",
+            "Create app registrations",
+            "Configure app authentication",
+            "Configure API permissions",
+            "Create app roles"
+          ]
+        },
+        {
+          "id": "d3.4",
+          "name": "Manage and monitor app access by using Microsoft Defender for Cloud Apps",
+          "bullets": [
+            "Configure and analyze cloud discovery results",
+            "Configure connected apps",
+            "Implement application-enforced restrictions",
+            "Configure Conditional Access app control",
+            "Create access and session policies",
+            "Implement and manage OAuth app policies",
+            "Manage the Cloud app catalog"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d4",
+      "name": "Plan and automate identity governance",
+      "weight": "20-25%",
+      "objectives": [
+        {
+          "id": "d4.1",
+          "name": "Plan and implement entitlement management in Microsoft Entra",
+          "bullets": [
+            "Plan entitlements",
+            "Create and configure catalogs",
+            "Create and configure access packages",
+            "Manage access requests",
+            "Implement and manage terms of use (ToU)",
+            "Manage the lifecycle of external users",
+            "Configure and manage connected organizations"
+          ]
+        },
+        {
+          "id": "d4.2",
+          "name": "Plan, implement, and manage access reviews in Microsoft Entra",
+          "bullets": [
+            "Plan access reviews",
+            "Create and configure access reviews",
+            "Monitor access review activity",
+            "Manually respond to access review activity"
+          ]
+        },
+        {
+          "id": "d4.3",
+          "name": "Plan and implement privileged access",
+          "bullets": [
+            "Manage Entra roles in PIM, incl. settings and assignments",
+            "Manage Azure resources in PIM, incl. settings and assignments",
+            "Plan and configure PIM for Groups",
+            "Manage the PIM request and approval process",
+            "Analyze PIM audit history and reports",
+            "Create and manage emergency access accounts"
+          ]
+        },
+        {
+          "id": "d4.4",
+          "name": "Monitor identity activity by using logs, workbooks, and reports",
+          "bullets": [
+            "Review sign-in, audit, and provisioning logs in the Entra admin center",
+            "Configure diagnostic settings and destinations (Log Analytics, storage accounts, Event Hubs)",
+            "Monitor Entra ID with KQL queries in Log Analytics",
+            "Analyze Entra ID with workbooks and reporting",
+            "Improve security posture with Identity Secure Score"
+          ]
+        }
+      ]
+    }
+  ],
+  "keyTerms": [
+    "Microsoft Entra ID",
+    "Microsoft Entra admin center",
+    "Tenant",
+    "Built-in roles",
+    "Custom roles",
+    "Administrative units",
+    "Restricted management administrative units",
+    "Custom domain names",
+    "Company branding",
+    "Dynamic groups",
+    "Custom security attributes",
+    "Microsoft Graph PowerShell",
+    "Microsoft Graph API",
+    "Microsoft Entra joined",
+    "Microsoft Entra hybrid joined",
+    "Microsoft Entra registered",
+    "Group-based licensing",
+    "B2B collaboration",
+    "B2B direct connect",
+    "External collaboration settings",
+    "Cross-tenant access settings",
+    "Cross-tenant synchronization",
+    "Multitenant organization",
+    "SAML 2.0",
+    "WS-Federation",
+    "OpenID Connect",
+    "OAuth 2.0",
+    "Microsoft Entra Connect Sync",
+    "Microsoft Entra Cloud Sync",
+    "Password hash synchronization (PHS)",
+    "Pass-through authentication (PTA)",
+    "Seamless SSO",
+    "AD FS",
+    "Staged rollout",
+    "Microsoft Entra Connect Health",
+    "Authentication methods policy",
+    "Certificate-based authentication (CBA)",
+    "Temporary Access Pass (TAP)",
+    "Microsoft Authenticator",
+    "Number matching",
+    "Passkeys (FIDO2)",
+    "Windows Hello for Business",
+    "Self-service password reset (SSPR)",
+    "Password writeback",
+    "Microsoft Entra Password Protection",
+    "Smart lockout",
+    "Microsoft Entra Kerberos",
+    "Security defaults",
+    "Conditional Access",
+    "Named locations",
+    "Grant controls",
+    "Session controls",
+    "Report-only mode",
+    "What If tool",
+    "Sign-in frequency",
+    "Continuous access evaluation (CAE)",
+    "Authentication context",
+    "Authentication strength",
+    "Protected actions",
+    "Device compliance",
+    "Microsoft Intune",
+    "Microsoft Entra ID Protection",
+    "User risk policy",
+    "Sign-in risk policy",
+    "Risky workload identities",
+    "MFA registration campaign",
+    "Global Secure Access",
+    "Security Service Edge (SSE)",
+    "Microsoft Entra Private Access",
+    "Microsoft Entra Internet Access",
+    "Microsoft traffic profile",
+    "Managed identities",
+    "System-assigned managed identity",
+    "User-assigned managed identity",
+    "Service principals",
+    "Group managed service accounts (gMSA)",
+    "Enterprise applications",
+    "Microsoft Entra Application Proxy",
+    "Private network connector",
+    "App registrations",
+    "Redirect URI",
+    "Client secrets and certificates",
+    "Delegated permissions",
+    "Application permissions",
+    "Admin consent",
+    "User consent settings",
+    "App roles",
+    "My Apps portal",
+    "Application collections",
+    "SCIM provisioning",
+    "Microsoft Defender for Cloud Apps",
+    "Cloud Discovery",
+    "App connectors",
+    "Conditional Access app control",
+    "Session policies",
+    "OAuth app policies",
+    "Cloud app catalog",
+    "Microsoft Entra ID Governance",
+    "Entitlement management",
+    "Access packages",
+    "Connected organizations",
+    "Terms of use",
+    "Access reviews",
+    "Lifecycle workflows",
+    "Privileged Identity Management (PIM)",
+    "Eligible vs active assignments",
+    "PIM for Groups",
+    "Just-in-time access",
+    "Emergency access (break-glass) accounts",
+    "Sign-in logs",
+    "Audit logs",
+    "Provisioning logs",
+    "Diagnostic settings",
+    "Log Analytics workspace",
+    "Azure Event Hubs",
+    "KQL",
+    "Workbooks",
+    "Identity Secure Score",
+    "Microsoft Entra ID P1",
+    "Microsoft Entra ID P2"
+  ],
+  "status": "verified",
+  "caveats": "This captures the upcoming outline effective Oct 28, 2026 (one week after today); until then the live English exam uses the prior version. Change log rates 'Plan, implement, and manage Microsoft Entra user authentication', 'Implement Global Secure Access', and 'Plan and implement privileged access' as Minor, without itemizing bullets; domain weights unchanged. No retirement announced. Question count unofficial."
+}

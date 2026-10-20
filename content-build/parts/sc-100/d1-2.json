@@ -1,0 +1,449 @@
+{
+  "exam": "sc-100",
+  "domain": "d1",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-100.d1.q023",
+      "lesson": "sc-100.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft resource provides diagrams that map Microsoft security capabilities across a hybrid, multicloud estate, including attack chain coverage and security operations views?",
+      "options": [
+        "Microsoft Cybersecurity Reference Architectures (MCRA)",
+        "Microsoft cloud security benchmark (MCSB)",
+        "Azure Well-Architected Framework (WAF)",
+        "Microsoft Compliance Manager"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "MCRA is a set of reference architecture diagrams showing how Microsoft capabilities fit together, including attack chain coverage and SecOps. MCSB is a control set, WAF guides workload design, and Compliance Manager tracks regulatory assessments."
+    },
+    {
+      "id": "sc-100.d1.q024",
+      "lesson": "sc-100.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A security architect wants to compare the company's existing third-party tools against Microsoft's recommended end-to-end capabilities and identify integration points and gaps. Which resource should be the starting template?",
+      "options": [
+        "Azure landing zone accelerator",
+        "Microsoft Secure Score",
+        "Microsoft Cybersecurity Reference Architectures (MCRA)",
+        "Microsoft cloud security benchmark compliance dashboard"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "MCRA is designed as a target-state template and comparison reference to find gaps and integration points with existing tools. The landing zone accelerator deploys Azure foundations, Secure Score measures Microsoft-configured posture, and the compliance dashboard tracks control status."
+    },
+    {
+      "id": "sc-100.d1.q025",
+      "lesson": "sc-100.d1.2.01",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the MCRA, select Yes if true.",
+      "statements": [
+        {
+          "s": "The MCRA includes guidance on operational technology (OT) and multicloud environments.",
+          "a": true
+        },
+        {
+          "s": "The MCRA defines prescriptive control IDs such as NS-1 that Defender for Cloud assesses.",
+          "a": false
+        },
+        {
+          "s": "The MCRA is aligned with Zero Trust principles.",
+          "a": true
+        }
+      ],
+      "explain": "MCRA covers the 'hybrid of everything' including OT and multicloud, built on Zero Trust. Control IDs like NS-1 come from the MCSB, which Defender for Cloud assesses."
+    },
+    {
+      "id": "sc-100.d1.q026",
+      "lesson": "sc-100.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which security standard is assigned by default when you enable Microsoft Defender for Cloud on an Azure subscription?",
+      "options": [
+        "CIS Microsoft Azure Foundations Benchmark",
+        "NIST SP 800-53 Rev. 5",
+        "ISO/IEC 27001:2022",
+        "Microsoft cloud security benchmark"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "MCSB is the default standard in Defender for Cloud for Azure, AWS and GCP, and drives Secure Score. CIS, NIST and ISO standards can be added through the regulatory compliance settings but aren't assigned by default."
+    },
+    {
+      "id": "sc-100.d1.q027",
+      "lesson": "sc-100.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In the MCSB, which control domain covers requirements such as protecting Recovery Services vaults and validating restores?",
+      "options": [
+        "BR (Backup and recovery)",
+        "DP (Data protection)",
+        "IR (Incident response)",
+        "PV (Posture and vulnerability management)"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Backup and recovery (BR) covers backup coverage, protecting backups and validating recovery. DP focuses on data classification and encryption, IR on incident handling, and PV on configuration and vulnerability management."
+    },
+    {
+      "id": "sc-100.d1.q028",
+      "lesson": "sc-100.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A company runs workloads in Azure, AWS and GCP and wants a single security baseline with posture recommendations across all three. Which TWO statements are correct? Select TWO.",
+      "options": [
+        "Defender for Cloud assesses connected AWS and GCP environments against MCSB by default",
+        "MCSB applies only to Azure, so the company must use the CIS benchmarks for AWS and GCP",
+        "MCSB control mappings to frameworks such as NIST prove the company is fully compliant",
+        "MCSB recommendations contribute to Defender for Cloud Secure Score",
+        "MCSB can only be assessed by third-party CSPM tools"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "MCSB is multicloud and is the default standard for Azure, AWS and GCP in Defender for Cloud, feeding Secure Score. Mappings show a feature helps meet a requirement, not full compliance. Defender for Cloud assesses MCSB natively."
+    },
+    {
+      "id": "sc-100.d1.q029",
+      "lesson": "sc-100.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure Resource Graph query that returns unhealthy Defender for Cloud recommendations (assessments).",
+      "code": "securityresources\n| where type == \"____\"\n| where properties.status.code == \"Unhealthy\"\n| project id, name = properties.displayName",
+      "options": [
+        "microsoft.security/securescores",
+        "microsoft.security/assessments",
+        "microsoft.policyinsights/policystates",
+        "microsoft.security/alerts"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Recommendations are stored as microsoft.security/assessments in securityresources, with a status code of Healthy, Unhealthy or NotApplicable. Secure scores are aggregate values, policy states live in policyresources, and alerts are threats, not posture assessments."
+    },
+    {
+      "id": "sc-100.d1.q030",
+      "lesson": "sc-100.d1.2.02",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Woodgrove's auditors require evidence of PCI DSS control status for its card platform in Azure. The CISO also wants engineers to keep a consistent cloud security baseline for all other workloads and to track improvement over time with one score.",
+      "stem": "What should the architect recommend in Defender for Cloud?",
+      "options": [
+        "Remove MCSB and assign only PCI DSS to all subscriptions",
+        "Use Microsoft Purview Compliance Manager only and stop using Defender for Cloud",
+        "Assign PCI DSS as a custom Azure Policy initiative and disable the regulatory compliance dashboard",
+        "Keep MCSB as the baseline and add PCI DSS as an additional standard on the card platform subscriptions"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "MCSB stays as the universal baseline driving Secure Score, while PCI DSS is added where needed and tracked in the regulatory compliance dashboard. Removing MCSB loses the baseline; disabling the dashboard removes audit evidence; Compliance Manager alone doesn't give the Azure workload posture view."
+    },
+    {
+      "id": "sc-100.d1.q031",
+      "lesson": "sc-100.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which solution detects that a departing employee downloaded large volumes of confidential files shortly after their resignation was recorded in the HR system?",
+      "options": [
+        "Microsoft Entra ID Protection",
+        "Microsoft Defender for Identity",
+        "Microsoft Purview Communication Compliance",
+        "Microsoft Purview Insider Risk Management"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Insider Risk Management's 'data theft by departing users' template uses an HR connector plus activity signals. ID Protection assesses sign-in and user compromise risk, Defender for Identity detects on-premises AD attacks, and Communication Compliance reviews messages."
+    },
+    {
+      "id": "sc-100.d1.q032",
+      "lesson": "sc-100.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A managed service provider (MSP) currently has permanent Global Administrator rights in your tenant through legacy delegated admin. You need to reduce supply chain risk from the MSP while keeping its support access. What should you implement?",
+      "options": [
+        "Granular delegated admin privileges (GDAP) with least-privilege, time-bound roles",
+        "Microsoft Entra B2B direct connect with Teams shared channels",
+        "Cross-tenant synchronization of the MSP's users into your tenant",
+        "Self-service password reset for the MSP's accounts"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "GDAP replaces broad delegated admin with specific, time-limited roles for partners. B2B direct connect is for Teams shared channels, cross-tenant sync is for multi-tenant organisations, and SSPR doesn't reduce partner privilege."
+    },
+    {
+      "id": "sc-100.d1.q033",
+      "lesson": "sc-100.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Contoso builds its customer portal with GitHub Actions and many open-source npm packages. A recent industry incident involved a malicious package update that stole cloud credentials from build pipelines. Contoso's pipelines authenticate to Azure with a client secret stored as a repository secret.",
+      "stem": "Which THREE controls BEST reduce Contoso's supply chain risk? Select THREE.",
+      "options": [
+        "Enable Dependabot alerts and maintain an SBOM for the portal",
+        "Replace the client secret with workload identity federation (OIDC) for the pipeline",
+        "Enable Azure DDoS Network Protection on the portal's virtual network",
+        "Restrict the pipeline identity to the minimum RBAC scope it needs",
+        "Move the portal to a different Azure region"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Dependency monitoring and an SBOM find malicious or vulnerable packages; OIDC federation removes a long-lived secret that could be stolen; least privilege limits damage if the pipeline is abused. DDoS protection and region changes don't address supply chain compromise."
+    },
+    {
+      "id": "sc-100.d1.q034",
+      "lesson": "sc-100.d1.2.03",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about protecting against insider, external and supply chain attacks, select Yes if true.",
+      "statements": [
+        {
+          "s": "Purview Insider Risk Management shows pseudonymised user names by default to protect privacy.",
+          "a": true
+        },
+        {
+          "s": "A perimeter firewall is the primary defence against a compromised software update from a trusted vendor.",
+          "a": false
+        },
+        {
+          "s": "Access reviews of guest and partner accounts help limit third-party access risk.",
+          "a": true
+        }
+      ],
+      "explain": "Insider Risk Management pseudonymises users by default. A trusted vendor update passes through the perimeter, so you need dependency, integrity and least-privilege controls instead. Access reviews remove stale partner access."
+    },
+    {
+      "id": "sc-100.d1.q035",
+      "lesson": "sc-100.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which MCSB AI security control requires that only models passing a formal verification and approval process are deployed to production?",
+      "options": [
+        "AI-3: Adopt safety meta-prompts",
+        "AI-1: Ensure use of approved models",
+        "AI-5: Ensure human-in-the-loop",
+        "AI-7: Perform continuous AI red teaming"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "AI-1 addresses model provenance and approval. AI-3 is about system prompts that steer behaviour, AI-5 requires human approval of critical actions, and AI-7 is ongoing adversarial testing."
+    },
+    {
+      "id": "sc-100.d1.q036",
+      "lesson": "sc-100.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An AI agent can read the CRM, send emails to customers and issue refunds. Following the MCSB AI controls, how should refunds above a set threshold be handled?",
+      "options": [
+        "Require human approval before the agent completes the refund",
+        "Allow the agent to complete the refund and log it to Microsoft Sentinel",
+        "Give the agent Owner on the subscription so it can fix failures itself",
+        "Rely on the safety meta-prompt to tell the agent not to issue large refunds"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "AI-5 (human-in-the-loop) requires human review of critical actions such as financial transactions. Logging alone doesn't prevent harm, Owner breaks AI-4 least privilege, and meta-prompts (AI-3) can be bypassed by prompt injection, so they aren't sufficient alone."
+    },
+    {
+      "id": "sc-100.d1.q037",
+      "lesson": "sc-100.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO measures implement MCSB AI-2 (multi-layered content filtering) for a generative AI chat application? Select TWO.",
+      "options": [
+        "Apply Azure AI Content Safety Prompt Shields to user input",
+        "Filter model output for harmful or sensitive content before returning it",
+        "Assign the app a system-assigned managed identity",
+        "Run a quarterly PyRIT red team exercise",
+        "Deploy the model in a private virtual network"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "AI-2 filters at input, processing and output stages, so input Prompt Shields and output filtering fit. Managed identity supports least privilege (AI-4), PyRIT is red teaming (AI-7), and private networking is platform security, not content filtering."
+    },
+    {
+      "id": "sc-100.d1.q038",
+      "lesson": "sc-100.d1.2.04",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Relecloud runs a customer support copilot on Azure OpenAI. The SOC wants real-time alerts when users attempt jailbreaks or when the app leaks sensitive data, with prompt evidence included and incidents correlated alongside endpoint and email alerts.",
+      "stem": "Which solution meets the requirement?",
+      "options": [
+        "Defender CSPM AI security posture management",
+        "Azure Monitor metrics on the Azure OpenAI resource",
+        "Microsoft Defender for Cloud threat protection for AI services integrated with Defender XDR",
+        "Microsoft Purview Compliance Manager AI assessments"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Threat protection for AI services raises real-time alerts (jailbreak, data leakage) with prompt evidence and integrates with Defender XDR for correlation (MCSB AI-6). AI-SPM finds misconfigurations, not runtime attacks; metrics don't detect jailbreaks; Compliance Manager tracks regulatory controls."
+    },
+    {
+      "id": "sc-100.d1.q039",
+      "lesson": "sc-100.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE are the guiding principles of Zero Trust? Select THREE.",
+      "options": [
+        "Verify explicitly",
+        "Use least privilege access",
+        "Trust the corporate network",
+        "Assume breach",
+        "Defence at the perimeter only"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Zero Trust rests on verify explicitly, use least privilege access, and assume breach. Trusting the corporate network and relying on perimeter-only defence are exactly the assumptions Zero Trust rejects."
+    },
+    {
+      "id": "sc-100.d1.q040",
+      "lesson": "sc-100.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the first stages of the Zero Trust adoption lifecycle in order.",
+      "options": [
+        "Define strategy",
+        "Plan",
+        "Ready",
+        "Adopt",
+        "Govern"
+      ],
+      "explain": "The lifecycle starts with Define strategy (business case), then Plan, Ready (prepare environment), Adopt (implement incrementally), then Govern (track and measure) and Manage."
+    },
+    {
+      "id": "sc-100.d1.q041",
+      "lesson": "sc-100.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Leadership wants to minimise the impact of a successful attack by limiting blast radius through segmentation, threat detection and response. Which Zero Trust adoption business scenario matches this goal?",
+      "options": [
+        "Secure remote and hybrid work",
+        "Identify and protect sensitive business data",
+        "Meet regulatory and compliance requirements",
+        "Prevent or reduce business damage from a breach"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "'Prevent or reduce business damage from a breach' focuses on limiting blast radius via segmentation, detection and response. Remote work focuses on users and devices, data protection on classification, and compliance on regulatory alignment."
+    },
+    {
+      "id": "sc-100.d1.q042",
+      "lesson": "sc-100.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A healthcare company is starting its Zero Trust journey. Basic hygiene is weak: no MFA for many users, many standing admin accounts and an untested backup process. The CISO wants quick, visible risk reduction in the first 90 days before tackling bigger programmes.",
+      "stem": "Which approach best follows Microsoft's Zero Trust guidance?",
+      "options": [
+        "Start with 'Rapidly modernize your security posture' and RaMP quick wins (access trust, ransomware recovery)",
+        "Start with a full network micro-segmentation project across all datacentres",
+        "Wait until all legacy systems are retired before adopting any Zero Trust controls",
+        "Start with the 'Meet regulatory and compliance requirements' scenario and buy a new GRC platform"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "'Rapidly modernize your security posture' is typically the starting scenario, building basic hygiene, and RaMP checklists deliver fast wins like MFA/Conditional Access and recovery readiness. Large segmentation projects and waiting for legacy retirement delay risk reduction; a GRC platform doesn't fix hygiene."
+    },
+    {
+      "id": "sc-100.d1.q043",
+      "lesson": "sc-100.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the Zero Trust adoption framework, select Yes if true.",
+      "statements": [
+        {
+          "s": "Each business scenario progresses through the adoption lifecycle independently.",
+          "a": true
+        },
+        {
+          "s": "The Define strategy stage focuses on building a business case tied to business risks and goals.",
+          "a": true
+        },
+        {
+          "s": "SecOps is not one of the Zero Trust technology pillars.",
+          "a": false
+        }
+      ],
+      "explain": "Scenarios move through the lifecycle on their own timelines, and Define strategy builds the business case. SecOps is a technology pillar alongside identities, endpoints, data, apps, infrastructure and network."
+    },
+    {
+      "id": "sc-100.d1.q044",
+      "lesson": "sc-100.d1.2.05",
+      "objective": "d1.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which Zero Trust principle is MOST directly applied when Conditional Access evaluates user risk, device compliance and location before granting access to an app?",
+      "options": [
+        "Assume breach",
+        "Use least privilege access",
+        "Verify explicitly",
+        "Segment access by network zone"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Verify explicitly means authenticating and authorising on all available signals such as identity, device, location and risk. Least privilege limits what is granted, assume breach drives segmentation and detection, and network-zone trust is a legacy model."
+    }
+  ]
+}

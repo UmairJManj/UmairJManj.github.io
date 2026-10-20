@@ -1,0 +1,718 @@
+{
+  "exam": "sc-900",
+  "domain": "d4",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-900.d4.q037",
+      "lesson": "sc-900.d4.3.05",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Purview feature can classify a document and encrypt it so only specific people can open it, with the protection staying on the file wherever it goes?",
+      "options": [
+        "Sensitivity labels",
+        "Retention labels",
+        "Data loss prevention policies",
+        "Microsoft Purview Data Map"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Sensitivity labels classify content and can apply encryption and content markings that persist with the item. Retention labels only keep or delete content. DLP enforces sharing rules but doesn't travel with the file, and Data Map catalogs data estate metadata."
+    },
+    {
+      "id": "sc-900.d4.q038",
+      "lesson": "sc-900.d4.3.05",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about sensitivity labels, select Yes if true.",
+      "statements": [
+        {
+          "s": "A single document can have two sensitivity labels applied at the same time.",
+          "a": false
+        },
+        {
+          "s": "A document can have a sensitivity label and a retention label at the same time.",
+          "a": true
+        },
+        {
+          "s": "Sensitivity labels can be applied to Microsoft Teams, Microsoft 365 Groups and SharePoint sites to control privacy and external sharing.",
+          "a": true
+        }
+      ],
+      "explain": "Each item can have only one sensitivity label, but it can also have a retention label. Container labels on teams, groups and sites control settings such as privacy and external sharing. They don't label the files stored inside."
+    },
+    {
+      "id": "sc-900.d4.q039",
+      "lesson": "sc-900.d4.3.05",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO actions can a sensitivity label perform on a Word document? Select TWO.",
+      "options": [
+        "Add a header, footer or watermark",
+        "Delete the document after seven years",
+        "Encrypt the document to restrict who can open it",
+        "Place the document on eDiscovery hold",
+        "Declare the document a regulatory record"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Sensitivity labels apply content markings and encryption. Deleting after a period and declaring records are done with retention labels. Holds are placed through eDiscovery cases."
+    },
+    {
+      "id": "sc-900.d4.q040",
+      "lesson": "sc-900.d4.3.06",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need every user to choose a sensitivity label before they can save a new document or send an email. Where do you configure this?",
+      "options": [
+        "In the encryption settings of each sensitivity label",
+        "In a DLP policy rule",
+        "In Compliance Manager improvement actions",
+        "In the sensitivity label policy, by enabling mandatory labeling"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Mandatory labeling is a label policy setting, like default labels and downgrade justification. Encryption is a setting on the label itself. DLP rules can block sharing but can't force users to label, and Compliance Manager only tracks actions."
+    },
+    {
+      "id": "sc-900.d4.q041",
+      "lesson": "sc-900.d4.3.06",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You're rolling out sensitivity labels for the first time. Put the steps in order.",
+      "options": [
+        "Define the labels and their protection settings",
+        "Publish the labels to users and groups in a label policy",
+        "Users apply labels in Office apps",
+        "Monitor labeling in activity explorer"
+      ],
+      "explain": "You create labels (with encryption and marking settings) first. They do nothing until a label policy publishes them to users or groups. Users then apply them in apps, and activity explorer shows label activity so you can tune the rollout."
+    },
+    {
+      "id": "sc-900.d4.q042",
+      "lesson": "sc-900.d4.3.05",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso has four sensitivity labels: Public, General, Confidential and Highly Confidential. A user opens a Highly Confidential file and tries to change its label to General. The label policy uses the default justification setting.",
+      "stem": "What happens?",
+      "options": [
+        "The change is blocked, because labels can never be lowered.",
+        "The user is prompted to give a justification, because General has a lower priority than Highly Confidential.",
+        "The file keeps both labels, and the higher one takes effect.",
+        "The change succeeds silently, because users can always change labels."
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Lowering a label to a lower-priority one requires a justification by default, and the reason is recorded (it can be reviewed in activity explorer). Downgrades aren't blocked outright. An item can only have one sensitivity label."
+    },
+    {
+      "id": "sc-900.d4.q043",
+      "lesson": "sc-900.d4.3.07",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Purview solution detects sensitive information in emails and documents and can block them from being shared outside the organization?",
+      "options": [
+        "Insider risk management",
+        "Records management",
+        "Data loss prevention",
+        "Compliance Manager"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "DLP policies inspect content against conditions such as SITs and act on it, for example by blocking or warning. Insider risk management detects risky behavior patterns, records management keeps records unchanged, and Compliance Manager tracks regulatory progress."
+    },
+    {
+      "id": "sc-900.d4.q044",
+      "lesson": "sc-900.d4.3.07",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In a DLP policy, what is the in-app notification that warns users their action might share sensitive data inappropriately?",
+      "options": [
+        "Policy tip",
+        "Alert",
+        "Disposition notice",
+        "Legal hold notification"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Policy tips warn users inside apps such as Outlook and can let them override with a justification. Alerts go to admins. Disposition reviews are part of records management, and legal hold notifications are part of eDiscovery."
+    },
+    {
+      "id": "sc-900.d4.q045",
+      "lesson": "sc-900.d4.3.07",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Microsoft recommends a staged approach to deploying a DLP policy. Put the steps in order.",
+      "options": [
+        "Design the policy from your control objectives",
+        "Run the policy in simulation mode",
+        "Monitor outcomes and fine-tune the policy",
+        "Turn on the policy to enforce actions"
+      ],
+      "explain": "You design first, then simulate. Simulation mode evaluates the policy without enforcing actions. You then monitor and fine-tune to reduce false positives and business disruption, and only after that enable enforcement."
+    },
+    {
+      "id": "sc-900.d4.q046",
+      "lesson": "sc-900.d4.3.07",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You're creating a DLP policy in Security & Compliance PowerShell. It must run in simulation, with no enforcement actions, but still send notifications to users. Complete the command.",
+      "code": "New-DlpCompliancePolicy -Name \"PCI Email Policy\" -ExchangeLocation All -Mode ____",
+      "options": [
+        "Enable",
+        "TestWithNotifications",
+        "TestWithoutNotifications",
+        "AuditOnly"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "-Mode TestWithNotifications runs the policy in simulation and still sends notifications. TestWithoutNotifications sends none. Enable enforces the policy's actions. AuditOnly isn't a valid -Mode value."
+    },
+    {
+      "id": "sc-900.d4.q047",
+      "lesson": "sc-900.d4.3.07",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailwind Traders wants staff to be able to email a single customer credit card number to a partner, but they should be warned first. If an email contains 10 or more card numbers, it should be blocked unless the sender gives a business justification.",
+      "stem": "What should you configure?",
+      "options": [
+        "Two sensitivity labels with different encryption settings",
+        "A communication compliance policy with two reviewers",
+        "An insider risk management policy using the Data leaks template",
+        "A DLP policy with two rules: a low-volume rule with a policy tip, and a high-volume rule that blocks with override"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "DLP rules combine conditions, such as the number of SIT instances, with actions such as policy tips and block with override. Labels encrypt but don't count card numbers in outbound mail. Communication compliance and insider risk detect and review behavior; neither blocks the email in real time."
+    },
+    {
+      "id": "sc-900.d4.q048",
+      "lesson": "sc-900.d4.3.08",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You must stop users copying files that contain sensitive information to USB drives from their Windows 11 laptops. Which solution should you use?",
+      "options": [
+        "Retention policies",
+        "Sensitivity label container settings",
+        "Microsoft Entra Conditional Access",
+        "Endpoint DLP"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Endpoint DLP enforces DLP on onboarded Windows and macOS devices. It can audit or block copying to removable media, printing and uploads. Retention keeps content, container labels control sites and teams, and Conditional Access controls sign-in to apps, not file copies."
+    },
+    {
+      "id": "sc-900.d4.q049",
+      "lesson": "sc-900.d4.3.08",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE user activities can Endpoint DLP audit or restrict on onboarded devices? Select THREE.",
+      "options": [
+        "Printing a sensitive document",
+        "Copying a sensitive file to a removable USB device",
+        "Signing in from an unfamiliar location",
+        "Copying sensitive content to the clipboard",
+        "Resetting the user's password"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Endpoint DLP monitors device activities such as printing, copying to USB or network shares, copying to the clipboard and access by unallowed apps. Risky sign-in locations are Entra ID Protection signals, and password resets are an identity function (SSPR)."
+    },
+    {
+      "id": "sc-900.d4.q050",
+      "lesson": "sc-900.d4.3.09",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Your organization must keep certain financial documents unchanged for 10 years and then have someone approve their deletion. Which Microsoft Purview solution is designed for this?",
+      "options": [
+        "Records management",
+        "Data loss prevention",
+        "Microsoft Purview Information Protection",
+        "Communication compliance"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Records management uses retention labels to declare records, which locks them against edits and deletion, and supports disposition review with proof of disposal. DLP prevents data leaks, Information Protection classifies and encrypts, and communication compliance reviews messages."
+    },
+    {
+      "id": "sc-900.d4.q051",
+      "lesson": "sc-900.d4.3.09",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which item status means that nobody, not even a Global Administrator, can remove the label, edit the item, or shorten the retention period?",
+      "options": [
+        "Unlocked record",
+        "Locked record",
+        "Regulatory record",
+        "Item labeled Highly Confidential"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A regulatory record is the strictest option. Its label can't be removed by anyone, edits and moves are blocked, and the retention period can only be made longer. Container admins can still remove the label from a locked record. A Highly Confidential sensitivity label protects access but doesn't prevent deletion."
+    },
+    {
+      "id": "sc-900.d4.q052",
+      "lesson": "sc-900.d4.3.09",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "The option to mark content as a regulatory record isn't visible in retention label settings by default. Complete the Security & Compliance PowerShell command that makes it appear.",
+      "code": "____ -Enabled $true",
+      "options": [
+        "Set-ComplianceTag",
+        "Set-RetentionCompliancePolicy",
+        "Enable-RegulatoryRecord",
+        "Set-RegulatoryComplianceUI"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Set-RegulatoryComplianceUI -Enabled $true shows the regulatory record option. Because it's so restrictive and irreversible, it's hidden by default. Set-ComplianceTag modifies existing labels, Set-RetentionCompliancePolicy modifies policies, and Enable-RegulatoryRecord isn't a real cmdlet."
+    },
+    {
+      "id": "sc-900.d4.q053",
+      "lesson": "sc-900.d4.3.09",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Purview Records Management, select Yes if true.",
+      "statements": [
+        {
+          "s": "Event-based retention can start the retention period when an event occurs, such as an employee leaving.",
+          "a": true
+        },
+        {
+          "s": "Items are declared as records by applying a sensitivity label.",
+          "a": false
+        },
+        {
+          "s": "Disposition review lets reviewers approve deletion at the end of the retention period and keeps proof of disposal.",
+          "a": true
+        }
+      ],
+      "explain": "Event-based retention and disposition review with proof of disposal are core Records Management features. Records are declared with retention labels. Sensitivity labels handle classification and protection."
+    },
+    {
+      "id": "sc-900.d4.q054",
+      "lesson": "sc-900.d4.3.10",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You must keep all Microsoft Teams chat and channel messages for three years. What should you use?",
+      "options": [
+        "A retention label policy published to Teams",
+        "An auto-apply retention label policy",
+        "A retention policy that includes the Teams locations",
+        "A sensitivity label applied to each team"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Teams messages support retention policies but not retention labels, so label policies (manual or auto-apply) don't work for them. Sensitivity labels on a team control privacy and sharing, not retention."
+    },
+    {
+      "id": "sc-900.d4.q055",
+      "lesson": "sc-900.d4.3.10",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Woodgrove Bank has two retention policies that both include the same SharePoint site. Policy A keeps content for 7 years. Policy B deletes content after 3 years. A user deletes a document from the site in year 2.",
+      "stem": "What happens to the document?",
+      "options": [
+        "It's kept (in the Preservation Hold library) until the 7-year period ends, because retention wins over deletion.",
+        "It's permanently deleted at year 3, because the shortest deletion period wins.",
+        "It's permanently deleted straight away, because the user deleted it.",
+        "The policies cancel each other out, and normal recycle bin behavior applies."
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Under the principles of retention, retention wins over deletion and the longest retention period wins. The deleted item is kept in the hidden Preservation Hold library for the full 7 years. 'Shortest deletion period wins' only applies after the retention rules are resolved."
+    },
+    {
+      "id": "sc-900.d4.q056",
+      "lesson": "sc-900.d4.3.10",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You're creating a retention policy in Security & Compliance PowerShell for the Finance SharePoint site. (A retention rule will be added afterwards.) Complete the command.",
+      "code": "New-RetentionCompliancePolicy -Name \"Finance Sites\" ____ \"https://contoso.sharepoint.com/sites/finance\"",
+      "options": [
+        "-ExchangeLocation",
+        "-SharePointLocation",
+        "-OneDriveLocation",
+        "-ModernGroupLocation"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "-SharePointLocation takes SharePoint site URLs (or All). -ExchangeLocation is for mailboxes, -OneDriveLocation for OneDrive accounts, and -ModernGroupLocation for Microsoft 365 Groups. The policy isn't valid until a retention rule is added."
+    },
+    {
+      "id": "sc-900.d4.q057",
+      "lesson": "sc-900.d4.3.11",
+      "objective": "d4.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO requirements can be met with a retention label but NOT with a retention policy? Select TWO.",
+      "options": [
+        "Declare an individual document a record",
+        "Retain all email in every mailbox for 5 years",
+        "Trigger a disposition review at the end of the retention period",
+        "Retain Teams channel messages",
+        "Apply settings to an entire SharePoint site"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Only retention labels can declare records and trigger disposition review. Blanket rules for all mailboxes or a whole site are best done with retention policies, and Teams messages support only retention policies."
+    },
+    {
+      "id": "sc-900.d4.q058",
+      "lesson": "sc-900.d4.3.11",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You need a retention label that keeps contracts for 7 years from creation and then deletes them automatically. Complete the Security & Compliance PowerShell command.",
+      "code": "New-ComplianceTag -Name \"Contracts 7y\" -RetentionAction ____ -RetentionDuration 2555 -RetentionType CreationAgeInDays",
+      "options": [
+        "Keep",
+        "Delete",
+        "KeepAndDelete",
+        "RetainThenDelete"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "KeepAndDelete keeps content for the duration and then deletes it. Keep only retains it, and Delete only deletes after the period. RetainThenDelete matches the portal wording but isn't a valid -RetentionAction value."
+    },
+    {
+      "id": "sc-900.d4.q059",
+      "lesson": "sc-900.d4.3.12",
+      "objective": "d4.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Purview capability scans data sources such as Azure SQL Database and on-premises SQL Server to capture metadata, classifications and data lineage?",
+      "options": [
+        "Content explorer",
+        "Microsoft Purview Data Map",
+        "Compliance Manager",
+        "Audit (Premium)"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Data Map scans registered sources across on-premises, Azure, multicloud and SaaS, and builds an inventory of assets, classifications and lineage. Content explorer shows labeled and SIT-matching items in Microsoft 365. Compliance Manager tracks regulations, and Audit records activity."
+    },
+    {
+      "id": "sc-900.d4.q060",
+      "lesson": "sc-900.d4.3.12",
+      "objective": "d4.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A data steward wants to group curated tables and Power BI reports into one discoverable package so analysts can find it and request access. Which Microsoft Purview Unified Catalog feature fits?",
+      "options": [
+        "Governance domain",
+        "Retention label",
+        "Data product",
+        "Glossary term"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A data product bundles related assets for a use case so people can find them and request access. A governance domain is the business boundary that contains data products. A glossary term defines business vocabulary, and a retention label has nothing to do with the catalog."
+    },
+    {
+      "id": "sc-900.d4.q061",
+      "lesson": "sc-900.d4.4.01",
+      "objective": "d4.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Purview solution correlates signals such as mass file downloads and an upcoming resignation date to detect possible data theft by an employee?",
+      "options": [
+        "Microsoft Entra ID Protection",
+        "Insider risk management",
+        "Data loss prevention",
+        "Microsoft Defender for Cloud Apps"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Insider risk management correlates user activity with signals such as HR resignation dates to detect risky behavior from insiders. Entra ID Protection detects compromised identities. DLP enforces rules on individual content actions, and Defender for Cloud Apps governs SaaS app usage."
+    },
+    {
+      "id": "sc-900.d4.q062",
+      "lesson": "sc-900.d4.4.01",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You plan to use the 'Data theft by departing users' insider risk policy template. You want it to be triggered by resignation and termination dates from your HR system. What should you configure?",
+      "options": [
+        "A Microsoft 365 HR connector",
+        "A Microsoft Sentinel data connector",
+        "An eDiscovery hold on all mailboxes",
+        "A Compliance Manager assessment"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The Microsoft 365 HR connector imports resignation and termination dates that trigger the policy (without it, the template can instead trigger on Microsoft Entra account deletion). Sentinel connectors feed a SIEM, holds preserve content for legal cases, and Compliance Manager assessments track regulations."
+    },
+    {
+      "id": "sc-900.d4.q063",
+      "lesson": "sc-900.d4.4.01",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the stages of the insider risk management workflow in order.",
+      "options": [
+        "Create a policy from a template",
+        "Alerts are generated when activity matches the policy",
+        "Triage the alerts",
+        "Investigate the case",
+        "Take action, such as notifying the user or escalating"
+      ],
+      "explain": "Policies define the users and risk indicators in scope. Matching activity creates alerts, which reviewers triage. Alerts that need deeper review become cases, and the workflow ends with an action, such as a notice to the user, resolving the case, or escalating to eDiscovery (Premium)."
+    },
+    {
+      "id": "sc-900.d4.q064",
+      "lesson": "sc-900.d4.4.01",
+      "objective": "d4.4",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": "Adatum's works council worries that insider risk management will let analysts snoop on named employees. The compliance lead is preparing answers.",
+      "stem": "For each statement about insider risk management, select Yes if true.",
+      "statements": [
+        {
+          "s": "Usernames are pseudonymized by default in insider risk management.",
+          "a": true
+        },
+        {
+          "s": "Insider risk management blocks file downloads in real time when a policy matches.",
+          "a": false
+        },
+        {
+          "s": "Actions taken by people assigned insider risk management roles can be reviewed in an audit log.",
+          "a": true
+        }
+      ],
+      "explain": "Insider risk management is built with privacy by design: users are pseudonymized by default, and role-based access and audit logs record what analysts do. It detects risk and creates alerts. Real-time blocking is done by DLP, which Adaptive Protection can tighten for risky users."
+    },
+    {
+      "id": "sc-900.d4.q065",
+      "lesson": "sc-900.d4.4.02",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "HR wants to detect harassing or threatening language in Microsoft Teams chats and have designated reviewers handle the matches. Which solution should you use?",
+      "options": [
+        "Data loss prevention",
+        "Communication compliance",
+        "Insider risk management with the Data leaks template",
+        "Audit (Premium)"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Communication compliance scans Teams, Exchange, Viva Engage and Copilot messages for inappropriate content, and reviewers can tag, notify or remove messages. DLP looks for sensitive data, not harassment. The Data leaks template is about leaking information, and Audit logs activity without judging message content."
+    },
+    {
+      "id": "sc-900.d4.q066",
+      "lesson": "sc-900.d4.4.02",
+      "objective": "d4.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Litware wants stricter controls only for risky users. Users that insider risk management rates Elevated should be blocked from sharing sensitive files externally. Lower-risk users should only see a policy tip, and admins shouldn't have to keep updating group membership by hand.",
+      "stem": "What should Litware use?",
+      "options": [
+        "Adaptive Protection, with DLP policies that use insider risk levels",
+        "A static retention policy scoped to risky users",
+        "Communication compliance escalation to eDiscovery",
+        "Microsoft Entra ID Protection user risk policy"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Adaptive Protection gives users an insider risk level (Minor, Moderate or Elevated) and applies DLP, Conditional Access or data lifecycle controls to them automatically. Retention doesn't block sharing. Communication compliance reviews messages, and Entra ID Protection user risk is about compromised accounts, not insider behavior."
+    },
+    {
+      "id": "sc-900.d4.q067",
+      "lesson": "sc-900.d4.4.03",
+      "objective": "d4.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "During a lawsuit, legal counsel needs to make sure relevant mailbox and OneDrive content can't be permanently deleted while the case is open. What should be used?",
+      "options": [
+        "A DLP policy",
+        "A hold in an eDiscovery case",
+        "A sensitivity label with encryption",
+        "An Audit (Premium) retention policy"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "eDiscovery holds preserve content in its current location for the life of the case and override deletion. DLP prevents sharing, encryption controls who can open content, and audit retention policies keep log records, not the content itself."
+    },
+    {
+      "id": "sc-900.d4.q068",
+      "lesson": "sc-900.d4.4.03",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO capabilities require premium eDiscovery features (for example, a Microsoft 365 E5 licence)? Select TWO.",
+      "options": [
+        "Review sets",
+        "Placing content locations on hold",
+        "Exporting search results",
+        "Analytics such as near-duplicate detection and email threading",
+        "Creating a case"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "Review sets, tagging, OCR, analytics (near-duplicate detection, email threading, themes) and predictive coding are premium. Cases, holds, searches and export are standard eDiscovery features."
+    },
+    {
+      "id": "sc-900.d4.q069",
+      "lesson": "sc-900.d4.4.03",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "An investigator runs a compliance search from Security & Compliance PowerShell for all mailboxes that mention Project Falcon and its budget. Complete the command.",
+      "code": "Connect-IPPSSession -EnableSearchOnlySession\nNew-ComplianceSearch -Name \"Falcon\" -ExchangeLocation All ____ \"'Project Falcon' AND 'budget'\"\nStart-ComplianceSearch -Identity \"Falcon\"",
+      "options": [
+        "-SearchQuery",
+        "-KeywordFilter",
+        "-ContentMatchQuery",
+        "-Query"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "-ContentMatchQuery takes the keyword or KQL query that filters the content searched. -SearchQuery belonged to the retired Search-Mailbox cmdlet. -KeywordFilter and -Query aren't New-ComplianceSearch parameters."
+    },
+    {
+      "id": "sc-900.d4.q070",
+      "lesson": "sc-900.d4.4.04",
+      "objective": "d4.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Purview Audit, select Yes if true.",
+      "statements": [
+        {
+          "s": "Audit (Standard) is enabled by default for organizations with an eligible subscription.",
+          "a": true
+        },
+        {
+          "s": "Audit (Standard) keeps audit records for 180 days.",
+          "a": true
+        },
+        {
+          "s": "Audit (Standard) lets you keep audit records for up to 10 years with custom retention policies.",
+          "a": false
+        }
+      ],
+      "explain": "Audit (Standard) is on by default and keeps records for 180 days. Custom audit log retention policies need Audit (Premium). Keeping records for 10 years also needs the 10-Year Audit Log Retention add-on licence."
+    },
+    {
+      "id": "sc-900.d4.q071",
+      "lesson": "sc-900.d4.4.04",
+      "objective": "d4.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "After a suspected business email compromise, Contoso's investigators find that the activity started eight months ago. Audit (Standard) no longer has records that old. For the future, they want Exchange and SharePoint audit records kept for 1 year by default, and records for executives kept for 10 years.",
+      "stem": "What should Contoso implement?",
+      "options": [
+        "Export Audit (Standard) results to CSV every week",
+        "Extend activity explorer retention to 1 year",
+        "Create an eDiscovery hold on the executives' mailboxes",
+        "Audit (Premium), with a custom audit log retention policy and the 10-Year Audit Log Retention add-on licence for executives"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Audit (Premium) keeps Exchange, SharePoint, OneDrive and Entra ID records for 1 year by default. Custom audit retention policies with the 10-year add-on extend that for chosen users. Audit (Standard) keeps 180 days, activity explorer is fixed at 30 days, and holds preserve content, not audit records."
+    },
+    {
+      "id": "sc-900.d4.q072",
+      "lesson": "sc-900.d4.4.04",
+      "objective": "d4.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You need to search the unified audit log for everything a specific user did over two weeks. Complete the Exchange Online PowerShell command.",
+      "code": "Search-UnifiedAuditLog -StartDate 10/01/2026 -EndDate 10/14/2026 ____ \"kim@contoso.com\" -ResultSize 5000",
+      "options": [
+        "-UserIds",
+        "-Identity",
+        "-Mailbox",
+        "-UserPrincipalName"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "-UserIds filters by the UPN of the user who performed the actions, and -ResultSize allows up to 5,000 results. -Identity, -Mailbox and -UserPrincipalName aren't Search-UnifiedAuditLog parameters. StartDate and EndDate are required."
+    }
+  ]
+}

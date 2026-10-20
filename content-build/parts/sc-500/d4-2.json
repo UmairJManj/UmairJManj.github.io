@@ -1,0 +1,814 @@
+{
+ "exam": "sc-500",
+ "domain": "d4",
+ "lessons": [],
+ "questions": [
+  {
+   "id": "sc-500.d4.q041",
+   "lesson": "sc-500.d4.2.05",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "The Forwarder_AMA_installer.py script configures the syslog daemon to listen on port 514 for both UDP and TCP.",
+     "a": true
+    },
+    {
+     "s": "Setting LOG_ERR as a facility's minimum log level also collects LOG_CRIT, LOG_ALERT and LOG_EMERG messages.",
+     "a": true
+    },
+    {
+     "s": "The Monitoring Reader role is enough to create the data collection rule.",
+     "a": false
+    }
+   ],
+   "explain": "The installer opens 514 for UDP and TCP. A minimum level includes every more severe level. Creating or editing DCRs needs Monitoring Contributor."
+  },
+  {
+   "id": "sc-500.d4.q042",
+   "lesson": "sc-500.d4.2.06",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Domain controllers send the All event set, which costs too much. You still need a full user audit trail that includes logon and logoff events. Which event set should you choose?",
+   "options": [
+    "Minimal",
+    "Custom with only Event ID 4688",
+    "Common",
+    "All, with an XPath that excludes Event ID 4624"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Common keeps a full user audit trail, including 4624 and 4634, at lower volume. Minimal drops logoff events, 4688 alone is process creation, and excluding 4624 removes logons from the audit trail."
+  },
+  {
+   "id": "sc-500.d4.q043",
+   "lesson": "sc-500.d4.2.06",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "A custom event set must collect only successful and failed logons from the Security log. Complete the XPath query for the data collection rule.",
+   "code": "____*[System[(EventID=4624 or EventID=4625)]]",
+   "options": [
+    "Security:",
+    "SecurityEvent!",
+    "System!",
+    "Security!"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "DCR XPath entries use the form LogName!XPathQuery, so the Security log prefix is 'Security!'. SecurityEvent is a workspace table rather than an event log, and System is a different log."
+  },
+  {
+   "id": "sc-500.d4.q044",
+   "lesson": "sc-500.d4.2.06",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "The Minimal event set includes logoff events (4634).",
+     "a": false
+    },
+    {
+     "s": "The Windows Security Events via AMA connector writes events to the SecurityEvent table.",
+     "a": true
+    },
+    {
+     "s": "You can test an XPath query locally with Get-WinEvent -FilterXPath before adding it to a DCR.",
+     "a": true
+    }
+   ],
+   "explain": "Minimal includes 4624 and 4625 but leaves out 4634. The connector writes to SecurityEvent. Get-WinEvent -FilterXPath checks query syntax and results locally."
+  },
+  {
+   "id": "sc-500.d4.q045",
+   "lesson": "sc-500.d4.2.06",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "You need accounts with more than 20 failed logons, after counting them per account and computer. Complete the query.",
+   "code": "SecurityEvent\n| where EventID == 4625\n| summarize FailedLogons = count() by TargetAccount, Computer\n| ____ FailedLogons > 20",
+   "options": [
+    "having",
+    "extend",
+    "where",
+    "distinct"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "KQL filters aggregated rows with a second where after summarize. HAVING is SQL, not KQL. extend adds a calculated column without filtering, and distinct expects column names."
+  },
+  {
+   "id": "sc-500.d4.q046",
+   "lesson": "sc-500.d4.2.07",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Workstation security events reach Sentinel through Windows Event Forwarding and the Windows Forwarded Events connector. A built-in rule that queries SecurityEvent never fires for these events. Why?",
+   "options": [
+    "Forwarded events are stored in the WindowsEvent table, not SecurityEvent",
+    "WEF subscriptions strip the EventID field",
+    "Forwarded events always go to the data lake tier",
+    "The rule needs the Microsoft Sentinel Automation Contributor role"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "The Windows Forwarded Events connector writes to WindowsEvent. Change the rule to query WindowsEvent, or collect with the Windows Security Events via AMA connector. Event IDs are kept, and tiering and roles aren't the cause."
+  },
+  {
+   "id": "sc-500.d4.q047",
+   "lesson": "sc-500.d4.2.07",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Litware has 6,000 on-premises Windows workstations. Change control forbids installing any additional agents on workstations, but Group Policy changes are allowed. The SOC needs logon and account management events from every workstation in Microsoft Sentinel. Two Windows servers can be dedicated to log collection.",
+   "stem": "Which collection design should you recommend?",
+   "options": [
+    "Onboard all 6,000 workstations to Azure Arc and deploy AMA with a Windows Security Events DCR",
+    "Configure the workstations to send events to a Syslog via AMA forwarder",
+    "Have each workstation call the Logs Ingestion API through a scheduled script",
+    "Configure WEF by GPO to two Windows Event Collector servers, and collect ForwardedEvents with AMA and the Windows Forwarded Events connector"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "WEF is built into Windows and is configured by GPO, so agents run only on the collectors. Arc and AMA on every workstation breaks the 'no agents' rule. Syslog can't natively collect Windows event logs, and per-device scripts are fragile."
+  },
+  {
+   "id": "sc-500.d4.q048",
+   "lesson": "sc-500.d4.2.07",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "Events collected through Windows Event Forwarding and the Windows Forwarded Events connector must be searched for account creation (4720). Complete the query.",
+   "code": "____\n| where EventID == 4720\n| project TimeGenerated, Computer, EventID",
+   "options": [
+    "SecurityEvent",
+    "WindowsEvent",
+    "Event",
+    "ForwardedEvents"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The Windows Forwarded Events connector stores data in WindowsEvent. SecurityEvent is used by the Windows Security Events via AMA connector, Event by generic Azure Monitor DCRs, and ForwardedEvents is the Windows log channel name, not a table."
+  },
+  {
+   "id": "sc-500.d4.q049",
+   "lesson": "sc-500.d4.2.08",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What suffix must the name of a custom log table in a Log Analytics workspace end with?",
+   "options": [
+    "_CF",
+    "_CL",
+    "_KQL",
+    "_Custom"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Custom tables end in _CL. _CF is for custom columns added to Azure tables, and _KQL is used for data lake tables created by KQL jobs."
+  },
+  {
+   "id": "sc-500.d4.q050",
+   "lesson": "sc-500.d4.2.08",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "An application uses a Microsoft Entra app registration to send JSON to the Logs Ingestion API and receives 403 Forbidden. The DCR and table are correct. What should you do?",
+   "options": [
+    "Assign Log Analytics Contributor to the app registration on the workspace",
+    "Assign Microsoft Sentinel Contributor to the app registration",
+    "Create a data collection endpoint and link it to the workspace",
+    "Assign the Monitoring Metrics Publisher role to the app registration on the DCR"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The Logs Ingestion API checks whether the caller has Monitoring Metrics Publisher on the DCR. Workspace or Sentinel roles don't grant ingestion rights, and a DCE only matters for Private Link or older DCRs."
+  },
+  {
+   "id": "sc-500.d4.q051",
+   "lesson": "sc-500.d4.2.08",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "A DCR for the Logs Ingestion API must drop Debug records and send everything else unchanged to the custom table. Complete the dataFlows fragment.",
+   "code": "\"dataFlows\": [{\n  \"streams\": [\"Custom-AppAudit\"],\n  \"destinations\": [\"LogAnalyticsDest\"],\n  \"transformKql\": \"____ | where Level != 'Debug'\",\n  \"outputStream\": \"Custom-AppAudit_CL\"\n}]",
+   "options": [
+    "source",
+    "input",
+    "stream",
+    "table"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "In a DCR transformation, the incoming data is always called 'source'. A plain 'source' passes data through unchanged, and adding operators filters or reshapes it."
+  },
+  {
+   "id": "sc-500.d4.q052",
+   "lesson": "sc-500.d4.2.08",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "You create the destination table for text-file logs that a server writes directly and the Custom Logs via AMA connector collects. Which two columns must the table contain? Select TWO.",
+   "options": [
+    "TenantId",
+    "TimeGenerated",
+    "SourceSystem",
+    "RawData",
+    "Computer"
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "explain": "The table must have exactly TimeGenerated (datetime) and RawData (string). Message replaces RawData only when logs come through a forwarder. TenantId and SourceSystem are reserved or system columns."
+  },
+  {
+   "id": "sc-500.d4.q053",
+   "lesson": "sc-500.d4.2.08",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "A data collection endpoint (DCE) is always required to use the Logs Ingestion API.",
+     "a": false
+    },
+    {
+     "s": "Custom columns added to an Azure (built-in) table must use the _CF suffix.",
+     "a": true
+    },
+    {
+     "s": "Clients of the Logs Ingestion API authenticate by using a Microsoft Entra app registration.",
+     "a": true
+    }
+   ],
+   "explain": "A DCE is only needed with Private Link or DCRs that have no logs ingestion endpoint. Custom columns on Azure tables end in _CF. The API uses Entra app authentication with client credentials."
+  },
+  {
+   "id": "sc-500.d4.q054",
+   "lesson": "sc-500.d4.2.09",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A penetration test runs for two weeks from a known IP address. Incidents that include that IP must be closed automatically during the test only, with no manual clean-up afterwards. What should you configure?",
+   "options": [
+    "A playbook triggered by a scheduled Logic Apps recurrence",
+    "A watchlist that disables the affected analytics rules",
+    "An automation rule with an expiration date that closes matching incidents",
+    "A Data collection rule transformation that drops events from the IP"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Automation rules can close incidents that match conditions, and an expiration date disables the rule on its own when the test ends. Dropping the data would hide evidence, and the other options need manual clean-up."
+  },
+  {
+   "id": "sc-500.d4.q055",
+   "lesson": "sc-500.d4.2.09",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You are creating an automation rule in Microsoft Sentinel. Put the steps in order.",
+   "options": [
+    "Enter a name for the automation rule",
+    "Select the trigger, such as When incident is created",
+    "Define conditions, such as the analytics rule name or entity values",
+    "Add actions, such as change status or run playbook",
+    "Set the order and optional expiration, then apply"
+   ],
+   "explain": "An automation rule is built in this order: trigger, conditions, then actions. Order and expiration decide when it runs and when it stops."
+  },
+  {
+   "id": "sc-500.d4.q056",
+   "lesson": "sc-500.d4.2.09",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "The When alert is created trigger fires for alerts from Scheduled and NRT analytics rules.",
+     "a": true
+    },
+    {
+     "s": "Automation rules that share a trigger run in parallel to reduce latency.",
+     "a": false
+    },
+    {
+     "s": "An incident-trigger automation rule can run a playbook that uses the alert trigger.",
+     "a": false
+    }
+   ],
+   "explain": "Alert-created rules cover Scheduled, NRT and Microsoft security rules. Rules run one after another in order. Incident-trigger rules can only run incident-trigger playbooks."
+  },
+  {
+   "id": "sc-500.d4.q057",
+   "lesson": "sc-500.d4.2.10",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "An engineer built an incident-trigger playbook in resource group RG-Playbooks. The Sentinel workspace is in RG-SOC. When the engineer creates an automation rule, the playbook appears greyed out and Sentinel reports that it lacks permissions to run it. The engineer is an Owner of both resource groups.",
+   "stem": "What should you do so the automation rule can run the playbook?",
+   "options": [
+    "Grant Microsoft Sentinel permissions on RG-Playbooks by using Settings > Playbook permissions, signed in as an Owner of that resource group",
+    "Assign Logic App Contributor to the engineer on RG-Playbooks",
+    "Assign Microsoft Sentinel Playbook Operator to all SOC analysts",
+    "Recreate the playbook as a Standard logic app in the workspace's resource group"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Automation rules run playbooks with the Azure Security Insights service account, which needs explicit permission on the playbook's resource group. Granting it requires Owner. More rights for the engineer or the analysts don't help."
+  },
+  {
+   "id": "sc-500.d4.q058",
+   "lesson": "sc-500.d4.2.10",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "During an investigation, an analyst wants to run a playbook against one suspicious IP address shown in the incident, without running it on the whole incident. Which playbook trigger supports this?",
+   "options": [
+    "Microsoft Sentinel alert trigger",
+    "Microsoft Sentinel entity trigger",
+    "Logic Apps recurrence trigger",
+    "HTTP request trigger with an incident ID"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The entity trigger lets an analyst run a playbook on a single entity, such as an IP, account or host. The alert trigger acts on an alert, recurrence runs on a schedule, and an HTTP trigger isn't the supported Sentinel integration."
+  },
+  {
+   "id": "sc-500.d4.q059",
+   "lesson": "sc-500.d4.2.10",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which three trigger types does the Microsoft Sentinel connector support for playbooks? Select THREE.",
+   "options": [
+    "Workbook",
+    "Incident",
+    "Watchlist item",
+    "Entity",
+    "Alert"
+   ],
+   "answer": [
+    1,
+    3,
+    4
+   ],
+   "explain": "Sentinel playbooks can be triggered by an incident (including its alerts and entities), an alert or an entity. There are no watchlist or workbook triggers."
+  },
+  {
+   "id": "sc-500.d4.q060",
+   "lesson": "sc-500.d4.2.11",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Firewall logs must be searchable by analytics rules for 90 days and kept for 7 years for audits, at the lowest cost. How should you configure the CommonSecurityLog table?",
+   "options": [
+    "Analytics retention 7 years",
+    "Move the table to the data lake tier and set retention to 7 years",
+    "Analytics retention 90 days and total retention 7 years, so older data stays in the data lake tier",
+    "Analytics retention 90 days and total retention 90 days"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Analytics retention can be at most 2 years, and data lake storage is cheap for long-term retention. Moving the table fully to the data lake stops analytics rules, and 90 days of total retention doesn't meet the 7-year requirement."
+  },
+  {
+   "id": "sc-500.d4.q061",
+   "lesson": "sc-500.d4.2.11",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "Switching a table from the Analytics tier to the Data lake tier stops analytics rules on that table.",
+     "a": true
+    },
+    {
+     "s": "Reducing a table's total retention deletes the older data immediately.",
+     "a": false
+    },
+    {
+     "s": "Microsoft Sentinel solution tables can be kept in the analytics tier for 90 days without a storage charge.",
+     "a": true
+    }
+   ],
+   "explain": "Data lake-only tables can't feed real-time analytics. Reducing total retention has a 30-day wait before deletion. Sentinel solution tables get 90 days of free analytics retention."
+  },
+  {
+   "id": "sc-500.d4.q062",
+   "lesson": "sc-500.d4.2.12",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An investigator must search the unified audit log from the Defender portal, and you must grant the least privilege. Which Exchange Online role should you assign?",
+   "options": [
+    "Audit Logs",
+    "Mail Recipients",
+    "Legal Hold",
+    "View-Only Audit Logs"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "View-Only Audit Logs allows searching the audit log. Audit Logs also allows changing audit settings, so it grants more than needed. Mail Recipients and Legal Hold don't grant audit search."
+  },
+  {
+   "id": "sc-500.d4.q063",
+   "lesson": "sc-500.d4.2.12",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is the default retention period for Audit (Standard) records in Microsoft Purview?",
+   "options": [
+    "90 days",
+    "1 year",
+    "180 days",
+    "10 years"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Audit (Standard) keeps records for 180 days. Audit (Premium) keeps Exchange, SharePoint, OneDrive and Entra ID records for 1 year, and 10 years needs an add-on licence. 90 days applied only to logs created before October 2023."
+  },
+  {
+   "id": "sc-500.d4.q064",
+   "lesson": "sc-500.d4.2.12",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "You need to see Microsoft 365 activity by guest users from the past week in Defender XDR advanced hunting. Complete the query.",
+   "code": "CloudAppEvents\n| where Timestamp > ago(7d)\n| where ____ == true\n| summarize count() by AccountDisplayName, ActionType",
+   "options": [
+    "IsExternalUser",
+    "IsAdminOperation",
+    "IsImpersonated",
+    "IsAnonymousProxy"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "IsExternalUser flags accounts from outside the organization. IsAdminOperation marks admin activity, IsImpersonated marks actions done on behalf of another user, and IsAnonymousProxy marks traffic from anonymizing IPs."
+  },
+  {
+   "id": "sc-500.d4.q065",
+   "lesson": "sc-500.d4.2.12",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "CloudAppEvents returns no results in advanced hunting. Which two statements about this table are true? Select TWO.",
+   "options": [
+    "It's populated when Microsoft 365 activities is selected in the Defender for Cloud Apps Microsoft 365 app connector",
+    "It's populated only for users with Audit (Premium) licences",
+    "It's queried with KQL on the Advanced hunting page of the Defender portal",
+    "It's an alias for the Microsoft Entra AuditLogs table",
+    "It requires a Microsoft Sentinel workspace onboarded as primary"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "CloudAppEvents is a Defender XDR advanced hunting table filled by Defender for Cloud Apps. The Microsoft 365 connector must include Microsoft 365 activities. It needs neither Sentinel nor Audit (Premium), and it's separate from Entra AuditLogs."
+  },
+  {
+   "id": "sc-500.d4.q066",
+   "lesson": "sc-500.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A Security Copilot workspace was created with its data storage location set to United States. Compliance now requires session data to be stored in the EU. What should you do?",
+   "options": [
+    "Change the data storage location in Owner settings",
+    "Set the prompt evaluation location to Europe (EU)",
+    "Move the capacity resource to an EU Azure region",
+    "Create a new workspace with Europe (EU) as the data storage location"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The data storage location can't be changed after a workspace is created. Prompt evaluation location controls where prompts are processed, not where data is stored, and moving capacity doesn't move workspace data."
+  },
+  {
+   "id": "sc-500.d4.q067",
+   "lesson": "sc-500.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "A single Security Copilot capacity can be used by two workspaces at the same time.",
+     "a": false
+    },
+    {
+     "s": "A workspace name can contain spaces, such as 'Contoso SOC'.",
+     "a": false
+    },
+    {
+     "s": "The setting that logs Security Copilot activity to Microsoft Purview applies to the whole tenant.",
+     "a": true
+    }
+   ],
+   "explain": "Each capacity serves one workspace at a time. Names can use only letters, numbers, hyphens and underscores. Audit logging is a tenant-wide setting that a Security Administrator changes."
+  },
+  {
+   "id": "sc-500.d4.q068",
+   "lesson": "sc-500.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Northwind has 2,000 paid Microsoft 365 E5 user licences and has not bought any Security Copilot capacity. The CISO wants to know how much Security Copilot usage is included each month before deciding whether to provision more capacity.",
+   "stem": "How many SCUs per month will Northwind receive under the inclusion model?",
+   "options": [
+    "400",
+    "800",
+    "2,000",
+    "10,000"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The inclusion model gives 400 SCUs per month for every 1,000 paid user licences, so 2,000 licences get 800. 10,000 is the monthly cap, and unused SCUs don't roll over."
+  },
+  {
+   "id": "sc-500.d4.q069",
+   "lesson": "sc-500.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An analyst has the Copilot contributor role. When they ask Security Copilot to summarize Microsoft Sentinel incidents, the Sentinel plugin returns an access error. What should you do?",
+   "options": [
+    "Assign the analyst the Copilot owner role",
+    "Assign the analyst the Microsoft Sentinel Reader role on the Sentinel workspace",
+    "Turn on the Sentinel plugin for 'Owners only'",
+    "Add more provisioned SCUs to the capacity"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Security Copilot works on behalf of the user, so access to Sentinel data needs an Azure role such as Microsoft Sentinel Reader. Copilot owner gives no data access, and plugin scope or SCUs won't fix a permission error."
+  },
+  {
+   "id": "sc-500.d4.q070",
+   "lesson": "sc-500.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which two Microsoft Entra roles automatically inherit Copilot owner access in Security Copilot? Select TWO.",
+   "options": [
+    "Security Operator",
+    "Global Reader",
+    "Security Reader",
+    "Global Administrator",
+    "Security Administrator"
+   ],
+   "answer": [
+    3,
+    4
+   ],
+   "explain": "Global Administrator and Security Administrator, along with roles such as Billing Administrator and Compliance Administrator, inherit Copilot owner. Reader and operator roles don't."
+  },
+  {
+   "id": "sc-500.d4.q071",
+   "lesson": "sc-500.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "Copilot owner and Copilot contributor are Microsoft Entra directory roles.",
+     "a": false
+    },
+    {
+     "s": "If you remove the Everyone group from Security Copilot contributor access, it can't be assigned again.",
+     "a": true
+    },
+    {
+     "s": "For new Security Copilot instances, contributor access is given by default to the Recommended Microsoft Security roles group.",
+     "a": true
+    }
+   ],
+   "explain": "Copilot roles belong to Security Copilot and aren't Entra roles. Everyone can't be re-added once removed. New instances default to the Recommended Microsoft Security roles group."
+  },
+  {
+   "id": "sc-500.d4.q072",
+   "lesson": "sc-500.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A Copilot owner wants contributors to publish custom plugins for the whole organization, but the organization-scope option isn't shown in Plugin settings. What should the owner do first?",
+   "options": [
+    "Set preinstalled plugin availability to All users",
+    "Assign contributors the Security Administrator role",
+    "Upload the plugin as an OpenAI plugin",
+    "Change the personal-scope custom plugin setting to Contributors and Owners"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The organization-scope setting only appears when personal scope lets contributors add their own plugins. The default is Owners only. Preinstalled plugin availability, Entra roles and the plugin type don't control this."
+  },
+  {
+   "id": "sc-500.d4.q073",
+   "lesson": "sc-500.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which two top-level keys must a Security Copilot custom plugin manifest contain?",
+   "options": [
+    "Descriptor and SkillGroups",
+    "Name and Endpoints",
+    "Plugin and Actions",
+    "Metadata and Skills"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "A Security Copilot plugin manifest, in YAML or JSON, needs Descriptor (name, display name, description) and SkillGroups (the skills and their format). The other pairs aren't the manifest schema."
+  },
+  {
+   "id": "sc-500.d4.q074",
+   "lesson": "sc-500.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You need to add a custom Security Copilot plugin for everyone in your organization. Put the steps in order.",
+   "options": [
+    "Select the Sources icon in the prompt bar",
+    "In Manage plugins, go to Custom and select Upload plugin",
+    "Choose 'Anyone in my organization' and the Security Copilot plugin type",
+    "Upload the YAML or JSON manifest, or provide it as a link",
+    "Complete any setup fields and select Setup"
+   ],
+   "explain": "Custom plugins are added from Sources > Manage plugins > Custom > Upload plugin. Choose the scope and type, provide the manifest, and finish setup."
+  },
+  {
+   "id": "sc-500.d4.q075",
+   "lesson": "sc-500.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Contoso deployed the Phishing Triage Agent with a new agent identity. Defender for Office 365 Plan 2, unified RBAC, user-reported settings and the 'Email reported by user as malware or phish' alert policy are all in place. Users report phishing every day, but the alerts are closed with no agent verdict.",
+   "stem": "What should you do so the agent triages these alerts?",
+   "options": [
+    "Assign the agent's identity the Copilot owner role",
+    "Replace Defender for Office 365 Plan 2 with Plan 1",
+    "Turn off the Auto-Resolve - Email reported by user as malware or phish tuning rule",
+    "Turn off the Email reported by user as malware or phish alert policy"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "The agent can't triage alerts that a tuning rule has already resolved, so disable the built-in auto-resolve rule. The alert policy itself must stay on, Plan 2 is required, and Copilot owner isn't needed by the agent."
+  },
+  {
+   "id": "sc-500.d4.q076",
+   "lesson": "sc-500.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "The Conditional Access Optimization Agent finds new users who aren't covered by MFA and suggests a new policy. When the suggestion is applied, in what state is the new policy created?",
+   "options": [
+    "Report-only",
+    "On",
+    "Off",
+    "Enforced for administrators only"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "New policies suggested by the agent are created in report-only mode, so admins can check their impact before turning them on. The agent doesn't change existing policies without approval."
+  },
+  {
+   "id": "sc-500.d4.q077",
+   "lesson": "sc-500.d4.3.05",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "A Copilot owner set up a partner agent from Microsoft Security Store that reads Microsoft Sentinel and Intune data, but the Set up button is disabled. What is required?",
+   "options": [
+    "The owner must add more overage SCUs",
+    "A Global Administrator must approve the agent's permissions by using Start approval",
+    "The agent must be republished as a custom plugin",
+    "Every analyst must be assigned Copilot owner"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Partner agents that reach Microsoft products through Microsoft skills need a Global Administrator to approve their permissions before Set up is enabled. SCUs, plugins and analyst roles don't unlock it."
+  },
+  {
+   "id": "sc-500.d4.q078",
+   "lesson": "sc-500.d4.3.05",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which two permissions do you need to buy and set up an agent from Microsoft Security Store? Select TWO.",
+   "options": [
+    "Billing Reader on the Azure billing subscription",
+    "Contributor or Owner on the Azure billing subscription",
+    "Security Reader in Microsoft Entra ID",
+    "Microsoft Sentinel Responder on the workspace",
+    "Security Copilot owner or contributor"
+   ],
+   "answer": [
+    1,
+    4
+   ],
+   "explain": "Buying needs Contributor or Owner on the billing subscription, and setting up the agent needs a Security Copilot owner or contributor role. Reader-type roles can't buy or configure agents."
+  },
+  {
+   "id": "sc-500.d4.q079",
+   "lesson": "sc-500.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "In the Contoso-Compliance workspace only owners may upload knowledge-source files, but in the Contoso-SOC workspace every analyst may. How should you configure this?",
+   "options": [
+    "Set File upload permissions once at tenant level, because the setting applies to all workspaces",
+    "Restrict preinstalled plugin availability to Owners only in the compliance workspace",
+    "Set File upload permissions in Owner settings separately in each workspace",
+    "Assign compliance analysts the Security Reader role in Microsoft Entra ID"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "File upload permissions (owners only or all contributors) is a per-workspace owner setting. Audit logging is the tenant-wide setting. Plugin availability and Entra roles don't control file uploads."
+  },
+  {
+   "id": "sc-500.d4.q080",
+   "lesson": "sc-500.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You are setting up a Microsoft-built Security Copilot agent. Which identity option does Microsoft recommend?",
+   "options": [
+    "Connect your own PIM-eligible Global Administrator account",
+    "Use the Copilot capacity's managed identity",
+    "Use the Azure Security Insights service account",
+    "Create an agent identity (Microsoft Entra Agent ID) scoped to the permissions you grant"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "A dedicated Entra Agent ID keeps access scoped and manageable. A user account passes on that user's rights, and PIM elevation can make runs fail. The other two identities aren't agent identity options."
+  }
+ ]
+}

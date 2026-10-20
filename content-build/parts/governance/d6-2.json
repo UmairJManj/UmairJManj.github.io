@@ -1,0 +1,735 @@
+{
+ "exam": "governance",
+ "domain": "d6",
+ "lessons": [
+  {
+   "id": "governance.d6.4.01",
+   "objective": "d6.4",
+   "seq": 1,
+   "title": "The Privacy Commissioner and complaints",
+   "short": "The Privacy Commissioner is an independent Crown entity and New Zealand's privacy regulator. It investigates complaints, tries to settle them through conciliation, and can refer justified complaints to the Director of Human Rights Proceedings, who decides whether to take them to the Human Rights Review Tribunal.",
+   "deep": "The **Privacy Commissioner** (supported by the **Office of the Privacy Commissioner, OPC**) is an **independent Crown entity**: funded by the Crown but independent of ministers in its statutory decisions.\n\nCore functions include education and guidance, monitoring compliance, issuing **codes of practice**, examining proposed laws, handling **breach notifications**, and **investigating complaints**.\n\n**Complaint pathway:**\n1. The individual first raises the concern with the agency and its **privacy officer**.\n2. They complain to the Commissioner (orally or in writing). The Commissioner can decide not to investigate (e.g., trivial, out of time, better handled elsewhere such as the Ombudsman).\n3. During investigation the Commissioner tries to secure a **settlement** between the parties (**conciliation**) and can form a view on whether there was an **interference with privacy**.\n4. If not settled and the complaint has substance, the Commissioner may **refer** it to the **Director of Human Rights Proceedings**, who independently decides whether to bring proceedings in the **Human Rights Review Tribunal (HRRT)**.\n5. If the Director doesn't take it, or the Commissioner finds no interference, the individual can usually bring proceedings themselves.\n\nThe Commissioner's opinions on ordinary complaints are not binding; binding powers are compliance notices and access directions.",
+   "terms": [
+    {
+     "t": "Independent Crown entity",
+     "d": "A Crown-funded body independent of government direction in performing its statutory functions."
+    },
+    {
+     "t": "Conciliation",
+     "d": "The Commissioner's efforts to settle a complaint between the parties."
+    },
+    {
+     "t": "Director of Human Rights Proceedings",
+     "d": "Independent official who decides whether to take a referred privacy case to the HRRT."
+    }
+   ],
+   "trap": "Exams say the Commissioner fines agencies or awards damages directly; the Commissioner investigates and settles, while damages come from the Human Rights Review Tribunal.",
+   "example": "A tenant's complaint about a landlord sharing her bank statements isn't settled; the Commissioner refers it to the Director of Human Rights Proceedings, who files in the HRRT.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Complaint",
+     "Investigate",
+     "Conciliate",
+     "Refer to Director",
+     "HRRT"
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.4.02",
+   "objective": "d6.4",
+   "seq": 2,
+   "title": "Compliance notices and access directions",
+   "short": "The Commissioner can issue a compliance notice requiring an agency to do, or stop doing, something to comply with the Act, and an access direction that binds an agency to release information after an IPP6 complaint. Both can be appealed to the Human Rights Review Tribunal.",
+   "deep": "Two binding enforcement tools arrived with the 2020 Act.\n\n**Compliance notices**\n- A written notice requiring an agency to **do something or stop doing something** to comply with the Act (IPPs, codes, breach notification, information sharing, appointing a privacy officer and more).\n- Can address a one-off breach or **systemic** problems, issued whether or not anyone complained.\n- The Commissioner weighs factors like seriousness, number affected, likelihood of repetition, cooperation and cost of compliance; the agency gets a draft and a chance to comment first.\n- Appeal to the **HRRT within 15 working days**. Non-compliance can be enforced through the HRRT, and failing to comply with an enforcement order is an offence (fine up to $10,000).\n- The Commissioner may **publish** (name) the agency where in the public interest.\n\n**Access directions**\n- After investigating an **IPP6 access complaint**, the Commissioner can **direct** the agency to give access, confirm what it holds, reconsider a decision or review a charge.\n- This is a **binding** decision; appeal to the HRRT within **20 working days**. If ignored, the individual can seek an enforceable access order from the Tribunal.",
+   "terms": [
+    {
+     "t": "Compliance notice",
+     "d": "Binding notice requiring an agency to take or stop actions to comply with the Act."
+    },
+    {
+     "t": "Access direction",
+     "d": "Binding direction requiring an agency to provide access after an IPP6 complaint investigation."
+    },
+    {
+     "t": "CARAF",
+     "d": "OPC's Compliance and Regulatory Action Framework guiding enforcement choices."
+    }
+   ],
+   "trap": "Exams say access directions can be issued for any IPP or that compliance notices need a complaint first; access directions are IPP6-only, and compliance notices don't require a complaint.",
+   "example": "After repeated misdirected emails, OPC issues a compliance notice requiring an agency to deploy email recipient checks and report back within three months.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Tool",
+     "Trigger",
+     "HRRT appeal"
+    ],
+    "rows": [
+     [
+      "Compliance notice",
+      "Any breach of the Act",
+      "15 working days"
+     ],
+     [
+      "Access direction",
+      "IPP6 complaint",
+      "20 working days"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.4.03",
+   "objective": "d6.4",
+   "seq": 3,
+   "title": "Codes of practice",
+   "short": "The Commissioner can issue codes of practice that modify how the IPPs apply to a specific sector, activity or type of information, making rules more or less stringent. A breach of a code rule is treated like a breach of an IPP. Current codes include the HIPC 2020, Credit Reporting, Telecommunications and Biometric Processing codes.",
+   "deep": "A **code of practice** is secondary legislation issued by the Commissioner after public consultation. A code can:\n- **modify** the application of IPPs (more or less stringent)\n- **exempt** an action from an IPP\n- prescribe **how** an IPP applies or is complied with\n- apply to a specified **information type, agency, activity, industry or profession**\n\nWhere a code applies, its **rules** replace the IPPs for that information, and breaching a code rule is treated as breaching an IPP for complaints.\n\nCurrent codes include:\n- **Health Information Privacy Code 2020 (HIPC)**: health information held by health agencies\n- **Credit Reporting Privacy Code 2020**: credit reporters' handling of credit information\n- **Telecommunications Information Privacy Code 2020**: telecommunications agencies and information such as call data and location\n- **Biometric Processing Privacy Code 2025**: agencies using biometric processing (e.g., facial recognition); in force **3 November 2025**, with existing processing given until **3 August 2026**\n- **Civil Defence National Emergencies (Information Sharing) Code 2020**, **Justice Sector Unique Identifier Code 2020**, **Superannuation Schemes Unique Identifier Code 2020**\n\nFrom 1 May 2026, the HIPC, credit, telecommunications and biometric codes were amended to add their own **rule 3A** reflecting IPP3A.",
+   "terms": [
+    {
+     "t": "Code of practice",
+     "d": "Commissioner-issued rules modifying or applying the IPPs for a sector or information type."
+    },
+    {
+     "t": "Biometric Processing Privacy Code 2025",
+     "d": "Code for biometric processing such as facial recognition; in force 3 November 2025."
+    },
+    {
+     "t": "Credit Reporting Privacy Code 2020",
+     "d": "Code regulating credit reporters and credit information."
+    }
+   ],
+   "trap": "Exams say codes are voluntary guidance; codes are legally binding and a breach of a code rule is treated as a breach of an IPP.",
+   "example": "A retailer trialling facial recognition to spot repeat shoplifters must comply with the Biometric Processing Privacy Code rules, not just the general IPPs.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.4.04",
+   "objective": "d6.4",
+   "seq": 4,
+   "title": "Tribunal damages and offences",
+   "short": "The Human Rights Review Tribunal can award damages for interference with privacy, including for humiliation and injury to feelings. The Act also creates offences, each with fines up to NZD 10,000, such as impersonating someone to obtain their information and destroying information knowing it has been requested.",
+   "deep": "**Human Rights Review Tribunal (HRRT)** remedies for an interference with privacy include:\n- a **declaration** of interference\n- orders restraining the agency or requiring it to remedy the interference\n- **damages** for pecuniary loss, loss of a benefit, and **humiliation, loss of dignity and injury to feelings**\n- other relief it thinks fit\n\n**Offences** under the Act (fine not exceeding **$10,000** each) include:\n- **impersonating** an individual, or falsely pretending to act with their authority, to **mislead an agency** into giving access to, altering or destroying their personal information\n- **destroying** a document containing personal information **knowing a request** for it has been made\n- obstructing or misleading the Commissioner, or falsely claiming authority under the Act\n- failing without reasonable excuse to comply with a lawful requirement, e.g., a compliance notice enforcement order\n- failing to notify the Commissioner of a notifiable breach (s 118)\n\nOffences are prosecuted in the criminal courts; damages are a civil HRRT remedy. The two are separate.",
+   "terms": [
+    {
+     "t": "Damages",
+     "d": "Monetary compensation the HRRT can award for loss, humiliation, loss of dignity and injury to feelings."
+    },
+    {
+     "t": "Impersonation offence",
+     "d": "Misleading an agency, by pretending to be someone or have their authority, to obtain or change their information."
+    },
+    {
+     "t": "Destruction offence",
+     "d": "Destroying personal information knowing an access request has been made for it."
+    }
+   ],
+   "trap": "Exams confuse the $10,000 offence fine with a cap on HRRT damages; Tribunal damages are a separate civil remedy and are not limited to $10,000.",
+   "example": "A private investigator phones a bank pretending to be the account holder to get her transactions; that is an offence under the Privacy Act.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.4.05",
+   "objective": "d6.4",
+   "seq": 5,
+   "title": "Privacy officers",
+   "short": "Under s 201 every agency must appoint at least one privacy officer, who can be inside or outside the agency. Their role is to encourage compliance with the IPPs, handle requests under the Act, work with the Commissioner on investigations, and ensure the agency complies with the Act.",
+   "deep": "Section **201** requires every agency to appoint **one or more individuals** as **privacy officers**. They can be employees or an **external** person (e.g., a consultant) who understands the business. Legal qualifications aren't required.\n\nResponsibilities include:\n- **encouraging compliance** with the IPPs\n- **dealing with requests** made to the agency under the Act (such as IPP6 access and IPP7 correction requests)\n- **working with the Commissioner** on investigations relating to the agency\n- otherwise **ensuring the agency complies** with the Act\n\nThe only exception is an individual handling personal information solely for their **personal or domestic affairs**.\n\nIn practice privacy officers also run breach response and NotifyUs reporting, maintain privacy statements, carry out **privacy impact assessments (PIAs)**, train staff and advise on new projects. Failure to appoint one can be the subject of a **compliance notice**. OPC offers free e-learning and a privacy officer network.",
+   "terms": [
+    {
+     "t": "Privacy officer",
+     "d": "Person(s) every agency must appoint under s 201 to oversee privacy compliance and requests."
+    },
+    {
+     "t": "Privacy impact assessment (PIA)",
+     "d": "Structured review of a project's privacy risks and mitigations."
+    },
+    {
+     "t": "Section 201",
+     "d": "Provision requiring agencies to appoint privacy officers."
+    }
+   ],
+   "trap": "Exams say only large or public sector agencies need a privacy officer, or that it must be a lawyer; every agency needs one, and it can be an external, non-lawyer appointee.",
+   "example": "A three-person accounting practice appoints its office manager as privacy officer to handle client access requests and breach reporting.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.5.01",
+   "objective": "d6.5",
+   "seq": 1,
+   "title": "HIPC 2020 scope",
+   "short": "The Health Information Privacy Code 2020 is a code of practice issued under the Privacy Act. It applies to health information about identifiable individuals held by health agencies, and its 13 rules (plus rule 3A from 1 May 2026) replace the IPPs for that information.",
+   "deep": "The **HIPC 2020** applies to:\n\n**Health information**: information about an identifiable individual's health (including medical history), disabilities, health or disability support services provided to them, donation of body parts or bodily substances, and information collected before or incidental to providing those services.\n\n**Health agencies**, including:\n- providers of health or disability support services (GPs, hospitals, pharmacists, dentists, optometrists, rest homes, primary health organisations)\n- health training and registration bodies, health insurers, and medicine and device suppliers\n- agencies named in a schedule, such as **ACC**, the **Ministry of Health** and the **Health Research Council**\n\nFor this information the code's **rules 1-13** (and **rule 3A** from **1 May 2026**, via Amendment No 2) **take the place of the IPPs**. Rule numbers mirror the IPPs so they are easy to map.\n\nThe code was revoked and reissued in 2020 to align with the 2020 Act; **Amendment No 1** (in force 1 July 2022) reflected health system reforms such as Health New Zealand (Te Whatu Ora); **Amendment No 2** added rule 3A.",
+   "terms": [
+    {
+     "t": "HIPC 2020",
+     "d": "Health Information Privacy Code 2020: code of practice for health information held by health agencies."
+    },
+    {
+     "t": "Health agency",
+     "d": "Health/disability providers and listed health-sector bodies such as ACC and the Ministry of Health."
+    },
+    {
+     "t": "Health information",
+     "d": "Identifiable information about health, disability, services received, or body part/substance donation."
+    }
+   ],
+   "trap": "Exams say the HIPC sits alongside the IPPs so both apply; for health information held by health agencies, the code's rules replace the IPPs.",
+   "example": "A private physiotherapy clinic follows HIPC rules 1-13 for patient records, while it follows the IPPs for its staff payroll data.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Privacy Act 2020",
+     "Code of practice",
+     "HIPC 2020 rules",
+     "Health agency practice"
+    ]
+   }
+  },
+  {
+   "id": "governance.d6.5.02",
+   "objective": "d6.5",
+   "seq": 2,
+   "title": "HIPC rules 1-4 and rule 3A",
+   "short": "HIPC rules 1-4 cover collection: rule 1 purpose, rule 2 source (collect from the individual), rule 3 what to tell the individual, and rule 4 manner of collection. Rule 3A, in force 1 May 2026, requires notifying people when their health information is collected from someone else.",
+   "deep": "**Rule 1 Purpose:** collect health information only for a lawful purpose connected with the health agency's function and only if necessary.\n\n**Rule 2 Source:** collect directly from the individual unless an exception applies, e.g., the individual or their **representative** authorises collection elsewhere, compliance would prejudice the individual's interests or someone's health or safety, it isn't reasonably practicable, the information is publicly available, or collection is from the individual for a **family or genetic history**.\n\n**Rule 3 What to tell the individual:** the purpose, intended recipients, agency details, whether supply is voluntary, consequences of not providing it, and access/correction rights, before collection or as soon as practicable after.\n\n**Rule 3A Indirect collection:** if a health agency collects health information **from someone other than the individual or their representative**, it must take reasonable steps, as soon as reasonably practicable, to make the individual or representative aware of the collection, purpose, recipients, agency names and addresses, any authorising law, and rights under **rules 6 and 7**. It doesn't apply to information collected before 1 May 2026. Exceptions include health-specific ones such as a **serious threat** to public health or another person, and information collected from the individual for a **family or genetic history**.\n\n**Rule 4 Manner:** lawful, fair, not unreasonably intrusive, with particular care for children and young people.",
+   "terms": [
+    {
+     "t": "Rule 3A",
+     "d": "HIPC rule requiring notice when health information is collected indirectly; from 1 May 2026."
+    },
+    {
+     "t": "Representative",
+     "d": "E.g., parent/guardian of a child under 16, personal representative of a deceased person, or person lawfully acting for someone unable to."
+    },
+    {
+     "t": "Family or genetic history",
+     "d": "Information about relatives collected from the patient; an exception in rules 2 and 3A."
+    }
+   ],
+   "trap": "Exams suggest rule 3A requires notifying every relative mentioned in a family history; the code exempts information collected from the individual for a family or genetic history.",
+   "example": "A hospital receives a referral from a GP containing a patient's history; under rule 3A it ensures the patient knows the hospital now holds it and how to access it.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.5.03",
+   "objective": "d6.5",
+   "seq": 3,
+   "title": "HIPC rules 5-8",
+   "short": "Rule 5 requires reasonable security safeguards for health information; rule 6 gives individuals access to their health information; rule 7 gives a right to request correction; rule 8 requires checking accuracy before use or disclosure.",
+   "deep": "**Rule 5 Storage and security:** health agencies must protect health information with **reasonable safeguards** against loss and unauthorised access, use, modification or disclosure, and ensure secure **disposal** that doesn't compromise privacy. OPC suggests identifying risks, making a security plan covering electronic, operational and physical security, and treating security as ongoing; the standard rises with sensitivity.\n\n**Rule 6 Access:** individuals can obtain confirmation and access to their health information, subject to Part 4 of the Act (e.g., withholding where release would likely prejudice the person's health after consulting their practitioner, or endanger safety). The code's clause on **charges** restricts private sector health agencies: generally **no charge**, except for a repeat request within 12 months or copies of items like x-rays, videos or MRI/PET/CAT scan images.\n\n**Rule 7 Correction:** request correction or attach a statement of correction sought but not made.\n\n**Rule 8 Accuracy:** before using or disclosing, take reasonable steps to ensure the information is accurate, up to date, complete, relevant and not misleading. In clinical settings inaccurate records can cause direct patient harm.",
+   "terms": [
+    {
+     "t": "Rule 5",
+     "d": "Storage, security and secure disposal of health information."
+    },
+    {
+     "t": "Rule 6",
+     "d": "Right of access to one's own health information, subject to the Act's withholding grounds."
+    },
+    {
+     "t": "Access charges",
+     "d": "Private health agencies generally can't charge for access, with limited exceptions such as scans or repeat requests."
+    }
+   ],
+   "trap": "Exams let a private clinic charge a standard admin fee for a first access request; the HIPC generally prohibits charging, with narrow exceptions.",
+   "example": "A patient asks a private specialist for her notes for the first time; the clinic provides them free, charging only for a copy of her MRI images.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.5.04",
+   "objective": "d6.5",
+   "seq": 4,
+   "title": "HIPC rules 9-11",
+   "short": "Rule 9: don't keep health information longer than needed (subject to other laws such as the 10-year minimum for providers). Rule 10 limits use for other purposes. Rule 11 limits disclosure, with health-specific exceptions like disclosure to a representative, to caregivers under recognised professional practice, or to prevent a serious threat.",
+   "deep": "**Rule 9 Retention:** keep health information no longer than required for lawful purposes. But other law can require longer: Health Act regulations require providers to keep health information for at least **10 years from the last encounter** with the patient (unless transferred to another provider or the patient). Public sector agencies also follow the Public Records Act.\n\n**Rule 10 Use:** use only for the purpose of collection unless an exception applies (directly related purpose, authorisation by the individual or representative, de-identified, serious threat, etc.).\n\n**Rule 11 Disclosure:** disclosure is prohibited unless an exception applies. Health-specific examples:\n- to the **individual** or their **representative** (where the individual is dead or can't exercise their rights), or with their **authorisation**\n- disclosure was one of the **purposes** of collection (e.g., GP referral to a specialist)\n- a hospital patient's **presence, location, condition and progress**, unless the patient objected\n- where authorisation isn't practicable or desirable, to a **nominated person, principal caregiver or near relative** in line with **recognised professional practice**, unless contrary to express wishes\n- to **prevent or lessen a serious threat** to public health or safety, or to someone's life or health, to a recipient who can act on it",
+   "terms": [
+    {
+     "t": "Rule 9",
+     "d": "Retention limits for health information, subject to statutory minimums."
+    },
+    {
+     "t": "Rule 11",
+     "d": "Limits on disclosure of health information with health-specific exceptions."
+    },
+    {
+     "t": "Serious threat exception",
+     "d": "Disclosure allowed to prevent or lessen a serious threat to public health/safety or a person's life or health."
+    },
+    {
+     "t": "Recognised professional practice",
+     "d": "Clinical norms guiding disclosure to caregivers or relatives."
+    }
+   ],
+   "trap": "Exams say a doctor can never share without consent; rule 11 allows disclosure in defined cases, such as to prevent a serious threat, to someone who can act on it.",
+   "example": "A psychiatrist believes a patient poses an imminent risk to a named person and tells Police, relying on the rule 11 serious threat exception.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.5.05",
+   "objective": "d6.5",
+   "seq": 5,
+   "title": "HIPC rules 12-13 and the NHI",
+   "short": "Rule 12 applies the IPP12 cross-border disclosure limits to health information. Rule 13 restricts unique identifiers: a health agency may assign one only if necessary, and only agencies authorised by law or listed in the code's schedule may assign the National Health Index (NHI) number.",
+   "deep": "**Rule 12 Disclosure outside New Zealand:** mirrors IPP12. A health agency may disclose health information to a foreign person or entity only on the same kinds of grounds: informed authorisation, comparable laws, contractual comparable safeguards, and so on. Overseas cloud hosting purely on the agency's behalf is still not a disclosure under s 11, but the agency stays responsible.\n\n**Rule 13 Unique identifiers:**\n- a health agency may assign a unique identifier only if necessary to carry out its functions efficiently\n- assign it only to individuals whose identity is clearly established\n- generally don't assign an identifier already assigned by another agency\n- the **National Health Index (NHI) number** is the key health identifier: it identifies a person across the NZ health system. Only agencies **authorised by an enactment** or listed in the code's **schedule** (e.g., health practitioners, hospitals, primary health organisations, ACC, the Ministry of Health, Health New Zealand, and agencies funded to provide health services) may assign it\n- don't require a person to disclose their identifier except for the purpose for which it was assigned or a directly related purpose\n\nUsing the NHI as a general-purpose ID outside health (e.g., for school or HR records) would breach rule 13.",
+   "terms": [
+    {
+     "t": "National Health Index (NHI) number",
+     "d": "Unique identifier assigned to people who use NZ health services."
+    },
+    {
+     "t": "Rule 13",
+     "d": "HIPC rule limiting assignment and use of unique identifiers such as the NHI."
+    },
+    {
+     "t": "Rule 12",
+     "d": "HIPC cross-border disclosure rule mirroring IPP12."
+    }
+   ],
+   "trap": "Exams suggest any organisation may use a person's NHI as a convenient ID; only listed health agencies may assign it, and requiring it for unrelated purposes breaches rule 13.",
+   "example": "A gym wants members' NHI numbers to link injury records; it isn't a listed health agency and the purpose is unrelated, so rule 13 prevents this.",
+   "diagram": null
+  },
+  {
+   "id": "governance.d6.5.06",
+   "objective": "d6.5",
+   "seq": 6,
+   "title": "HIPC commentary and breach notification",
+   "short": "The HIPC is published with commentary and OPC guidance that health agencies should use to interpret the rules. The Privacy Act's notifiable privacy breach regime applies to health agencies in the same way as to all agencies.",
+   "deep": "**Commentary and guidance:** OPC publishes the HIPC with **commentary** under the rules and a series of **factsheets** (overview, collection, disclosure, access requests, storage/security/retention/disposal) plus guidance such as the serious threat exception and IPP3A/rule 3A guidance for health agencies. Health agencies should consider this material when applying the rules, because it explains how the Commissioner interprets them.\n\n**Breach notification:** the HIPC replaces the IPPs, but **Part 6** of the Privacy Act (notifiable privacy breaches) still applies to health agencies. A health agency must:\n- assess whether a privacy breach has caused or is likely to cause **serious harm**; health information is inherently **sensitive**, so serious harm is often likely\n- notify the **Commissioner** (OPC expects ideally within 72 hours) via **NotifyUs** and notify affected individuals as soon as practicable\n- consider the s 116 exception where notifying an individual would likely **prejudice their health**, after consulting their health practitioner where practicable, and then consider notifying a representative\n\nThe same $10,000 offence applies for failing to notify the Commissioner.",
+   "terms": [
+    {
+     "t": "HIPC commentary",
+     "d": "Explanatory notes published with the code to help apply each rule."
+    },
+    {
+     "t": "Part 6",
+     "d": "The Privacy Act's notifiable privacy breach provisions; applies to health agencies too."
+    },
+    {
+     "t": "Health prejudice exception",
+     "d": "Individual notice may be withheld if it would likely prejudice the person's health."
+    }
+   ],
+   "trap": "Exams suggest health agencies follow a separate breach regime under the HIPC; the Privacy Act's notifiable breach rules apply equally to them.",
+   "example": "A radiology clinic's patient portal is breached; it reports via NotifyUs and notifies patients, citing the HIPC factsheets in its response plan.",
+   "diagram": null
+  }
+ ],
+ "questions": [
+  {
+   "id": "governance.d6.q034",
+   "lesson": "governance.d6.4.01",
+   "objective": "d6.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What kind of body is New Zealand's Privacy Commissioner?",
+   "options": [
+    "A government department reporting to the Minister of Justice",
+    "A division of the Ombudsman's office",
+    "A court of record",
+    "An independent Crown entity"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The Privacy Commissioner is an independent Crown entity, Crown-funded but independent in its statutory functions. It isn't a department, part of the Ombudsman or a court; the Human Rights Review Tribunal is the adjudicating body."
+  },
+  {
+   "id": "governance.d6.q035",
+   "lesson": "governance.d6.4.01",
+   "objective": "d6.4",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "A patient believes a private clinic disclosed her information without authority and the matter can't be resolved directly. Put the typical escalation path in order.",
+   "options": [
+    "Raise the concern with the clinic's privacy officer",
+    "Complain to the Privacy Commissioner, who investigates and tries to settle",
+    "The Commissioner refers the unresolved complaint to the Director of Human Rights Proceedings",
+    "The Director brings proceedings in the Human Rights Review Tribunal"
+   ],
+   "explain": "Complainants usually start with the agency, then the Commissioner investigates and conciliates. Unresolved justified complaints can be referred to the Director of Human Rights Proceedings, who may bring proceedings in the HRRT."
+  },
+  {
+   "id": "governance.d6.q036",
+   "lesson": "governance.d6.4.02",
+   "objective": "d6.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "OPC finds an agency keeps sending client information to wrong recipients because of poor processes, although no one has complained. Which power can require the agency to fix its processes?",
+   "options": [
+    "An access direction",
+    "A compliance notice",
+    "A transfer prohibition notice",
+    "A code of practice exemption"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "A compliance notice requires an agency to do or stop doing something to comply with the Act and doesn't depend on a complaint. Access directions are limited to IPP6 complaints, and transfer prohibition notices cover onward transfers."
+  },
+  {
+   "id": "governance.d6.q037",
+   "lesson": "governance.d6.4.02",
+   "objective": "d6.4",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about the Commissioner's binding powers, select Yes if true.",
+   "statements": [
+    {
+     "s": "An access direction can be issued after investigating an IPP6 access complaint.",
+     "a": true
+    },
+    {
+     "s": "An agency can appeal a compliance notice to the Human Rights Review Tribunal.",
+     "a": true
+    },
+    {
+     "s": "The Commissioner can issue an access direction requiring an agency to delete inaccurate information under IPP7.",
+     "a": false
+    }
+   ],
+   "explain": "Access directions follow IPP6 complaints and can be appealed to the HRRT, as can compliance notices. Access directions don't cover IPP7 correction; correction issues go through the usual complaint process or a compliance notice."
+  },
+  {
+   "id": "governance.d6.q038",
+   "lesson": "governance.d6.4.03",
+   "objective": "d6.4",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Privacy Act codes of practice, select Yes if true.",
+   "explain": "Codes are binding secondary legislation that can modify, exempt from or prescribe how IPPs apply to a sector, activity or information type. Breaching a code rule is treated as breaching an IPP.",
+   "statements": [
+    {
+     "s": "A code can modify how the IPPs apply to a particular industry or type of information.",
+     "a": true
+    },
+    {
+     "s": "A breach of a code rule is treated like a breach of an IPP for complaints.",
+     "a": true
+    },
+    {
+     "s": "Codes are voluntary guidance with no legal effect.",
+     "a": false
+    }
+   ]
+  },
+  {
+   "id": "governance.d6.q039",
+   "lesson": "governance.d6.4.03",
+   "objective": "d6.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A supermarket chain plans to use facial recognition to identify people on a watchlist entering its stores. Which code of practice specifically governs this activity?",
+   "options": [
+    "Telecommunications Information Privacy Code 2020",
+    "Credit Reporting Privacy Code 2020",
+    "Justice Sector Unique Identifier Code 2020",
+    "Biometric Processing Privacy Code 2025"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The Biometric Processing Privacy Code 2025 covers agencies using biometric processing such as facial recognition, in force from 3 November 2025. The telecommunications, credit and justice codes cover other sectors and identifiers."
+  },
+  {
+   "id": "governance.d6.q040",
+   "lesson": "governance.d6.4.03",
+   "objective": "d6.4",
+   "difficulty": 3,
+   "type": "multi",
+   "case": null,
+   "stem": "Which are codes of practice issued under the Privacy Act 2020? Select THREE.",
+   "options": [
+    "Health Information Privacy Code 2020",
+    "Telecommunications Information Privacy Code 2020",
+    "Credit Reporting Privacy Code 2020",
+    "Anti-Money Laundering Privacy Code 2021",
+    "Consumer Data Right Privacy Code 2025"
+   ],
+   "answer": [
+    0,
+    1,
+    2
+   ],
+   "explain": "The HIPC, Telecommunications and Credit Reporting codes are current Privacy Act codes, alongside the Biometric Processing code and others. There is no Anti-Money Laundering or Consumer Data Right privacy code issued by the Commissioner."
+  },
+  {
+   "id": "governance.d6.q041",
+   "lesson": "governance.d6.4.04",
+   "objective": "d6.4",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which body can award damages for humiliation, loss of dignity and injury to feelings caused by an interference with privacy?",
+   "options": [
+    "The Human Rights Review Tribunal",
+    "The Privacy Commissioner",
+    "The Ombudsman",
+    "The Director of Human Rights Proceedings"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "The HRRT can award damages, including for humiliation, loss of dignity and injury to feelings. The Commissioner investigates and settles, the Director brings proceedings, and the Ombudsman handles official information complaints."
+  },
+  {
+   "id": "governance.d6.q042",
+   "lesson": "governance.d6.4.04",
+   "objective": "d6.4",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which actions are offences under the Privacy Act 2020? Select TWO.",
+   "options": [
+    "Pretending to be an individual to mislead an agency into releasing that individual's information",
+    "Charging a reasonable fee for a private sector access request",
+    "Destroying personal information knowing an access request for it has been made",
+    "Taking 18 working days to respond to an access request"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "Impersonating someone to obtain their information and destroying requested information are offences with fines up to $10,000. Private agencies may charge reasonably in some cases, and 18 working days is within the 20-working-day limit."
+  },
+  {
+   "id": "governance.d6.q043",
+   "lesson": "governance.d6.4.05",
+   "objective": "d6.4",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A four-person landscaping business asks whether it must have a privacy officer. What is the correct answer?",
+   "options": [
+    "No, only agencies with more than 50 employees must appoint one",
+    "Yes, every agency must appoint at least one privacy officer, who may be inside or outside the agency",
+    "Yes, but the privacy officer must hold a practising certificate as a lawyer",
+    "No, small businesses can rely on the Privacy Commissioner to act as their privacy officer"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Section 201 requires every agency (except individuals acting for personal or domestic affairs) to appoint one or more privacy officers, internal or external. There is no size threshold or legal qualification requirement."
+  },
+  {
+   "id": "governance.d6.q044",
+   "lesson": "governance.d6.5.01",
+   "objective": "d6.5",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "How does the Health Information Privacy Code 2020 relate to the Information Privacy Principles?",
+   "options": [
+    "Its rules apply in addition to the IPPs, so health agencies must satisfy both",
+    "It is non-binding guidance on how health agencies might apply the IPPs",
+    "Its rules replace the IPPs for health information held by health agencies",
+    "It only applies to public hospitals"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "The HIPC is a code of practice whose rules take the place of the IPPs for health information held by health agencies. It is binding, and it covers private as well as public health agencies, from GPs to insurers."
+  },
+  {
+   "id": "governance.d6.q045",
+   "lesson": "governance.d6.5.01",
+   "objective": "d6.5",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about the HIPC's scope, select Yes if true.",
+   "statements": [
+    {
+     "s": "A private pharmacy is a health agency under the HIPC.",
+     "a": true
+    },
+    {
+     "s": "A GP practice's payroll records for its own staff are health information under the HIPC.",
+     "a": false
+    },
+    {
+     "s": "ACC is among the agencies the HIPC applies to.",
+     "a": true
+    }
+   ],
+   "explain": "Pharmacies are health service providers and ACC is a listed agency, so the HIPC applies. Staff payroll records aren't health information about patients, so the IPPs apply to them."
+  },
+  {
+   "id": "governance.d6.q046",
+   "lesson": "governance.d6.5.02",
+   "objective": "d6.5",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "In July 2026 a hospital receives a referral from a GP containing a patient's history. Which HIPC rule requires the hospital to take reasonable steps to make the patient aware it has collected this information?",
+   "options": [
+    "Rule 3A",
+    "Rule 3",
+    "Rule 8",
+    "Rule 11"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Rule 3A, in force 1 May 2026, applies when a health agency collects health information from someone other than the individual or their representative. Rule 3 covers direct collection, rule 8 accuracy, and rule 11 disclosure."
+  },
+  {
+   "id": "governance.d6.q047",
+   "lesson": "governance.d6.5.02",
+   "objective": "d6.5",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A genetic counsellor collects details from a patient about her parents' and siblings' medical conditions to build a family history. The relatives haven't been contacted. The clinic asks whether rule 3A means it must notify each relative.",
+   "stem": "What is the best advice?",
+   "options": [
+    "Yes, every relative must be notified as soon as reasonably practicable",
+    "Yes, but only relatives aged over 16",
+    "No, the code exempts information collected from the individual to assemble a family or genetic history",
+    "No, rule 3A applies only to public sector health agencies"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "HIPC rule 3A includes a health-specific exception for information collected from the individual to assemble their family or genetic history. Rule 3A isn't limited to public sector agencies and has no age-based relative test."
+  },
+  {
+   "id": "governance.d6.q048",
+   "lesson": "governance.d6.5.02",
+   "objective": "d6.5",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which HIPC rule requires health information to be collected directly from the individual concerned, unless an exception applies?",
+   "options": [
+    "Rule 1",
+    "Rule 4",
+    "Rule 5",
+    "Rule 2"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Rule 2 is the source rule: collect from the individual unless an exception applies. Rule 1 covers purpose, rule 4 manner of collection, and rule 5 storage and security."
+  },
+  {
+   "id": "governance.d6.q049",
+   "lesson": "governance.d6.5.03",
+   "objective": "d6.5",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "A patient makes her first request to a private dermatology clinic for a copy of her clinical notes. The clinic proposes a $45 administration fee. What does the HIPC say?",
+   "options": [
+    "The fee is fine, since private agencies may always charge a reasonable fee",
+    "The fee is allowed only if the clinic gives an estimate first",
+    "The clinic must refer the request to the Ministry of Health",
+    "Private health agencies generally can't charge for access, apart from narrow exceptions such as repeat requests or certain images"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The HIPC's charging clause stops private health agencies charging for access except in limited cases, such as a repeat request within 12 months or copies of x-rays, videos or MRI/PET/CAT scans. A general admin fee on a first request isn't permitted."
+  },
+  {
+   "id": "governance.d6.q050",
+   "lesson": "governance.d6.5.03",
+   "objective": "d6.5",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "A new GP clinic is setting up its approach to HIPC rule 5. Put OPC's suggested security planning steps in order.",
+   "options": [
+    "Identify the risks to the health information it holds",
+    "Make a security plan covering electronic, operational and physical security",
+    "Put the plan into practice",
+    "Review and update security on an ongoing basis as risks change"
+   ],
+   "explain": "OPC's rule 5 guidance: identify risks, plan safeguards across electronic, operational and physical security, implement the plan, and treat security as ongoing, raising the standard as risks or sensitivity grow."
+  },
+  {
+   "id": "governance.d6.q051",
+   "lesson": "governance.d6.5.04",
+   "objective": "d6.5",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A GP believes a patient with an uncontrolled seizure condition is continuing to drive a school bus, despite advice, creating a serious risk to children. Which HIPC basis most directly supports disclosure to the relevant authority?",
+   "options": [
+    "Rule 11 exception to prevent or lessen a serious threat to public safety",
+    "Rule 10 directly related purpose",
+    "Rule 12 cross-border disclosure ground",
+    "Rule 3A indirect collection exception"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Rule 11 permits disclosure where necessary to prevent or lessen a serious threat to public health or safety, to someone who can act on it. Rule 10 governs use, rule 12 overseas disclosure, and rule 3A notice for indirect collection."
+  },
+  {
+   "id": "governance.d6.q052",
+   "lesson": "governance.d6.5.04",
+   "objective": "d6.5",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "According to OPC guidance on HIPC rule 9, how long must health care providers generally keep patient health information under Health Act regulations?",
+   "options": [
+    "At least 10 years from the last encounter with the patient",
+    "Seven years from the date of collection",
+    "Until the patient turns 25",
+    "No minimum; destroy as soon as treatment ends"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "OPC notes Health Act regulations require providers to keep health information for 10 years from the last encounter, unless it's transferred to another provider or the patient. Rule 9 otherwise limits retention to what is required."
+  },
+  {
+   "id": "governance.d6.q053",
+   "lesson": "governance.d6.5.05",
+   "objective": "d6.5",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A private school wants to record students' National Health Index (NHI) numbers as their primary enrolment ID. Under HIPC rule 13, why is this a problem?",
+   "options": [
+    "The NHI may only be stored in New Zealand-hosted systems",
+    "Rule 13 limits NHI assignment to authorised or listed health agencies, and requiring it for an unrelated purpose is restricted",
+    "NHI numbers expire when a child turns 16",
+    "The school would need written approval from the Privacy Commissioner"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Only agencies authorised by law or listed in the HIPC schedule may assign the NHI, and people shouldn't be required to disclose a unique identifier for unrelated purposes. There's no data-residency rule, expiry or Commissioner approval mechanism."
+  },
+  {
+   "id": "governance.d6.q054",
+   "lesson": "governance.d6.5.06",
+   "objective": "d6.5",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A private radiology provider discovers that an attacker accessed its patient portal and downloaded scan reports for 2,300 patients. Some patients have serious diagnoses not yet discussed with them by their specialists.",
+   "stem": "Which response best reflects the Privacy Act and HIPC?",
+   "options": [
+    "Follow only the HIPC, because the Privacy Act breach rules don't apply to health agencies",
+    "Notify affected patients but not the Commissioner, as health information is covered by the HIPC",
+    "Notify the Commissioner promptly, and assess the health-prejudice exception for specific patients with their practitioners",
+    "Delay all notifications until every specialist has discussed results with their patients"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Part 6 of the Privacy Act applies to health agencies. The Commissioner must be notified as soon as practicable; for individuals where notice would likely prejudice their health, s 116 allows not notifying them after consulting their practitioner, considering representatives. Blanket delay isn't permitted."
+  }
+ ]
+}

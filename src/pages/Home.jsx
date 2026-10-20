@@ -3,7 +3,10 @@ import { motion } from "framer-motion";
 import { profile, focus, stack, experience, certHighlights, projects } from "../data.js";
 import { Reveal, Stagger, StaggerItem, SpotlightCard } from "../lib/motion.jsx";
 import Footer from "../components/Footer.jsx";
-import Hoops from "../components/Hoops.jsx";
+import { lazy, Suspense } from "react";
+
+// The 3D game (Three.js) loads after the profile, so the page paints first.
+const HoopsArena = lazy(() => import("../hoops3d/HoopsArena.jsx"));
 
 function Row({ label, children, id }) {
   return (
@@ -153,9 +156,11 @@ export default function Home() {
 
       </div>
 
-      {/* Something to do while the profile loads in your head. */}
-      <aside className="home-right" aria-label="Basketball game">
-        <Hoops />
+      {/* Learn my certification path one basket at a time. */}
+      <aside className="home-right" aria-label="Learn by playing: certification basketball">
+        <Suspense fallback={<div className="h3d h3d-loading"><div className="h3d-stage" /></div>}>
+          <HoopsArena />
+        </Suspense>
       </aside>
 
       <Footer />

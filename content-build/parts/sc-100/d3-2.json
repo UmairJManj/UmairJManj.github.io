@@ -1,0 +1,682 @@
+{
+  "exam": "sc-100",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "sc-100.d3.2.01",
+      "objective": "d3.2",
+      "seq": 1,
+      "title": "Server security requirements across platforms",
+      "short": "Server requirements should be the same whatever the OS or location: onboard to Defender for Endpoint through Defender for Servers, harden against a baseline, patch, restrict management access with JIT or Azure Bastion, and bring non-Azure servers in through Azure Arc.",
+      "deep": "An architect writes requirements, not click-paths. A good cross-platform server specification covers:\n- **Protection**: Microsoft Defender for Endpoint on Windows Server and Linux, deployed through **Defender for Servers** so onboarding is automatic for Azure VMs and Arc-enabled machines (AWS, GCP, on-premises).\n- **Vulnerability management**: Defender Vulnerability Management findings or agentless scanning (Plan 2) and a patch SLA delivered with **Azure Update Manager**.\n- **Hardening**: an OS baseline (MCSB compute baseline through **Azure Policy machine configuration**, CIS, or Group Policy from the Security Compliance Toolkit).\n- **Management access**: no public RDP/SSH; use **just-in-time VM access** or **Azure Bastion**, and privileged access workstations for admins. Linux should use SSH keys or Microsoft Entra ID login rather than passwords.\n- **Identity**: managed identities instead of stored secrets; Windows LAPS for local admin passwords.\n- **Monitoring**: Azure Monitor Agent sending security events to Microsoft Sentinel; file integrity monitoring where regulations require it.\n- **Resilience**: backups (Azure Backup with soft delete and immutability).\n\nThe point: one standard, applied through one control plane (Azure Resource Manager via Arc), so posture is measured the same way everywhere.",
+      "terms": [
+        {
+          "t": "Azure Bastion",
+          "d": "Managed PaaS for browser-based RDP/SSH to VMs without public IPs."
+        },
+        {
+          "t": "Azure Update Manager",
+          "d": "Service for assessing and deploying OS updates on Azure and Arc machines."
+        },
+        {
+          "t": "Microsoft Entra login for Linux",
+          "d": "Sign in to Azure Linux VMs with Entra ID credentials governed by RBAC and Conditional Access."
+        }
+      ],
+      "trap": "When the stem says 'no public management ports', the answer is JIT or Azure Bastion, not simply an NSG rule that allows RDP from the internet.",
+      "example": "A design standard requires every Linux and Windows server, wherever it runs, to be Arc-enabled or in Azure, onboarded to Defender for Servers, and reachable only through Bastion.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Monitoring (Sentinel)",
+          "Access (JIT/Bastion)",
+          "Hardening baseline",
+          "Patching",
+          "EDR (Defender)"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.2.02",
+      "objective": "d3.2",
+      "seq": 2,
+      "title": "Mobile devices and clients",
+      "short": "Use Microsoft Intune for device compliance and app protection, Defender for Endpoint for mobile threat defence, and Conditional Access to enforce both. Corporate devices are enrolled (MDM); personal devices can use app protection policies (MAM) without enrolment.",
+      "deep": "Client requirements depend on ownership:\n- **Corporate-owned**: enrol in **Intune (MDM)**, for example Windows Autopilot, Apple Automated Device Enrollment, or Android Enterprise fully managed. Apply **compliance policies** (encryption, OS version, passcode, jailbreak/root detection) and configuration profiles.\n- **Personal (BYOD)**: avoid controlling the whole device. Use **Intune app protection policies (MAM)** that protect corporate data inside apps such as Outlook and Teams: block copy-paste to personal apps, require a PIN, and allow **selective wipe** of corporate data only. Android Enterprise **work profile** is a middle ground.\n- **Mobile threat defence**: **Microsoft Defender for Endpoint on iOS/Android** detects phishing sites, malicious apps and risky networks; its device risk level can feed Intune compliance.\n\nEnforcement is in **Conditional Access**: grant controls **Require device to be marked as compliant**, or **Require app protection policy**. Add **authentication strengths** such as phishing-resistant MFA.\n\nClients (Windows/macOS) also need disk encryption (BitLocker/FileVault), EDR, ASR rules and a security baseline.",
+      "terms": [
+        {
+          "t": "App protection policy (MAM)",
+          "d": "Intune policy that protects corporate data inside apps, with or without device enrolment."
+        },
+        {
+          "t": "Compliance policy",
+          "d": "Intune rules a device must meet; result used by Conditional Access."
+        },
+        {
+          "t": "Selective wipe",
+          "d": "Removes only corporate app data, leaving personal data intact."
+        },
+        {
+          "t": "Mobile threat defense",
+          "d": "Detection of mobile threats such as phishing and malicious apps, e.g. Defender for Endpoint."
+        }
+      ],
+      "trap": "BYOD scenarios where users refuse enrolment point to app protection policies plus 'Require app protection policy', not device compliance.",
+      "example": "Contractors' personal iPhones get Outlook with an app protection policy, and Conditional Access requires that policy before Exchange Online access.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Corporate",
+          "BYOD"
+        ],
+        "rows": [
+          [
+            "Intune mode",
+            "MDM enrolment",
+            "MAM app protection"
+          ],
+          [
+            "CA grant",
+            "Compliant device",
+            "App protection policy"
+          ],
+          [
+            "Wipe",
+            "Full or retire",
+            "Selective"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.2.03",
+      "objective": "d3.2",
+      "seq": 3,
+      "title": "IoT devices and embedded systems",
+      "short": "IoT and embedded devices often cannot run agents, so requirements focus on unique device identity, secure provisioning, network isolation, firmware updates and agentless monitoring. Enterprise IoT such as printers and cameras is discovered by Defender for Endpoint and Defender for IoT.",
+      "deep": "Requirements for IoT devices and embedded systems:\n- **Unique identity per device**: X.509 certificates (ideally backed by a hardware root of trust such as a TPM or secure element), never one shared key for a fleet. Use **Azure IoT Hub Device Provisioning Service (DPS)** for zero-touch, secure enrolment.\n- **Least privilege and secure defaults**: no default passwords, disable unused services and ports.\n- **Secure update**: signed firmware and an update mechanism (for example Device Update for IoT Hub).\n- **Network segmentation**: place devices in isolated segments/VLANs, allow only required flows, no direct internet inbound.\n- **Monitoring**: because many devices cannot host an agent, use **agentless, network-based** detection. **Enterprise IoT** in Microsoft Defender for IoT uses Defender for Endpoint network discovery to inventory printers, VoIP phones, smart TVs and cameras and show vulnerabilities and alerts in the Defender portal.\n- **Device-side agent** for builders: the Defender for IoT **micro agent** is scheduled to retire on **1 June 2027**, so avoid basing new designs on it.\n\nThese map to the Zero Trust idea of explicitly verifying every device, not trusting the network.",
+      "terms": [
+        {
+          "t": "Device Provisioning Service",
+          "d": "Azure service that securely enrols IoT devices into the right IoT hub at scale."
+        },
+        {
+          "t": "Hardware root of trust",
+          "d": "TPM or secure element that protects device keys and attests identity."
+        },
+        {
+          "t": "Enterprise IoT",
+          "d": "Defender for IoT capability that discovers IT-network IoT devices via Defender for Endpoint."
+        }
+      ],
+      "trap": "Shared symmetric keys across a fleet are a classic wrong answer; per-device X.509 identity with DPS is the secure pattern.",
+      "example": "A smart-building project issues each sensor its own X.509 certificate at the factory, enrols through DPS, and isolates sensors on a dedicated VLAN.",
+      "diagram": null
+    },
+    {
+      "id": "sc-100.d3.2.04",
+      "objective": "d3.2",
+      "seq": 4,
+      "title": "Securing OT and ICS with Defender for IoT",
+      "short": "Microsoft Defender for IoT protects operational technology (OT) and industrial control systems (ICS) with agentless network sensors that receive mirrored traffic from a SPAN port or TAP and use deep packet inspection of industrial protocols. Sensors can be cloud-connected or fully air-gapped.",
+      "deep": "OT networks (PLCs, HMIs, SCADA, historians) cannot tolerate scanning or agents, so monitoring must be **passive**.\n\n**OT network sensors** (physical appliance or VM) connect to a **SPAN (mirror) port or network TAP** and perform deep packet inspection of protocols such as Modbus, DNP3 and others. They build an asset inventory, a network map and vulnerability findings. Analysis happens **on the sensor**, so only metadata goes to Azure, which suits low-bandwidth sites.\n\n**Analytics engines**: protocol violation, policy violation (deviation from a learned baseline), industrial malware (e.g. TRITON), anomaly and operational incidents.\n\n**Deployment models**:\n- **Cloud-connected**: alerts and inventory in the Azure portal or Defender portal, threat intelligence pushed automatically, integration with **Microsoft Sentinel** and Defender XDR.\n- **Locally managed / air-gapped**: everything stays on the sensor console; threat intelligence is uploaded manually; integrate with on-premises SIEM.\n- **Hybrid** of both.\n\nThe legacy **on-premises management console** is retired (not downloadable after 1 January 2025). Map detections to **MITRE ATT&CK for ICS** and align sensor placement to the network architecture (often the Purdue model).",
+      "terms": [
+        {
+          "t": "SPAN port",
+          "d": "Switch port that mirrors traffic to a monitoring device."
+        },
+        {
+          "t": "Network TAP",
+          "d": "Hardware device that copies traffic passively from a link."
+        },
+        {
+          "t": "Air-gapped sensor",
+          "d": "Locally managed sensor with no cloud connection; data stays on-premises."
+        },
+        {
+          "t": "MITRE ATT&CK for ICS",
+          "d": "Knowledge base of adversary techniques against industrial control systems."
+        }
+      ],
+      "trap": "OT answers must be passive and agentless; options that install agents on PLCs or run active vulnerability scans against OT are wrong.",
+      "example": "A water utility with no internet at its treatment plant deploys locally managed sensors on SPAN ports and forwards alerts to its on-premises SIEM.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "PLCs/HMIs",
+          "Switch SPAN/TAP",
+          "OT sensor (DPI)",
+          "Azure / Sentinel"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.2.05",
+      "objective": "d3.2",
+      "seq": 5,
+      "title": "Security baselines for server and client endpoints",
+      "short": "A security baseline is a Microsoft-recommended group of settings. Use Intune security baselines for managed Windows clients, Group Policy baselines from the Security Compliance Toolkit for domain-joined servers, and Azure Policy machine configuration to audit Azure and Arc servers against the MCSB compute baseline.",
+      "deep": "Baselines save you from designing hundreds of settings yourself. Pick the tool by how the device is managed:\n- **Intune security baselines** (Endpoint security > Security baselines): Windows security baseline, **Microsoft Defender for Endpoint** baseline, **Microsoft Edge**, **Microsoft 365 Apps for enterprise**, **Windows 365** and others. Baselines are versioned: when a newer version ships, older profiles become read-only for settings, and you update a profile to the newer version. Baselines can conflict with other device configuration profiles, so check per-setting status.\n- **Security Compliance Toolkit (SCT)**: Group Policy baseline packs plus **Policy Analyzer** (compare GPOs and find conflicts) and **LGPO** (apply to a standalone machine). Suits AD DS-joined servers.\n- **Azure Policy machine configuration**: audits (and can configure) OS settings in Azure VMs and **Arc-enabled servers** against the Windows and Linux **Azure compute security baseline**; findings surface as Defender for Cloud recommendations (OS configuration assessment in Defender for Servers Plan 2).\n- **Defender for Endpoint security settings management** can push some endpoint security policies from Intune to devices not enrolled in Intune.\n\nStart in audit, test in a pilot ring, then enforce.",
+      "terms": [
+        {
+          "t": "Security baseline",
+          "d": "Pre-configured group of recommended security settings from Microsoft."
+        },
+        {
+          "t": "Policy Analyzer",
+          "d": "SCT tool that compares GPO sets and highlights conflicts or redundancy."
+        },
+        {
+          "t": "Azure compute security baseline",
+          "d": "MCSB-aligned OS settings audited by machine configuration."
+        }
+      ],
+      "trap": "Intune baselines apply to Intune-managed devices; for domain-joined servers not in Intune, use Group Policy (SCT) or machine configuration through Arc.",
+      "example": "Windows 11 laptops get the Intune Windows and Defender for Endpoint baselines, while Arc-enabled file servers are audited with machine configuration.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Device type",
+          "Baseline tool"
+        ],
+        "rows": [
+          [
+            "Intune clients",
+            "Intune baselines"
+          ],
+          [
+            "AD DS servers",
+            "GPO via SCT"
+          ],
+          [
+            "Azure/Arc servers",
+            "Machine configuration"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d3.2.06",
+      "objective": "d3.2",
+      "seq": 6,
+      "title": "Windows LAPS",
+      "short": "Windows Local Administrator Password Solution (Windows LAPS) is built into Windows. It rotates a local administrator password per device and backs it up to either Microsoft Entra ID or Active Directory, stopping attackers reusing one shared local password for lateral movement.",
+      "deep": "If every machine shares the same local admin password, one stolen hash unlocks the estate (pass-the-hash lateral movement). **Windows LAPS** gives each device a unique, rotating password.\n\nKey facts:\n- **Built in** to supported Windows 10/11 and Windows Server 2019/2022/2025 (April 2023 update or later); the legacy Microsoft LAPS MSI is deprecated.\n- **Backup target**: Entra-joined devices back up to **Microsoft Entra ID**; AD-joined to **Windows Server AD**; hybrid-joined devices pick **one** (not both). Entra backup needs only Entra ID Free; you must enable LAPS in Entra device settings.\n- **Configuration**: Intune (LAPS CSP) for Entra and hybrid devices, Group Policy for AD-joined devices.\n- **AD features**: password **encryption** (needs Windows Server 2016 domain functional level; encrypted to a principal, Domain Admins by default), **encrypted password history**, and backup of the **DSRM** password on domain controllers (AD only).\n- **Post-authentication actions**: after the managed account is used, rotate the password (optionally sign out or reboot) after a grace period.\n- **Read access**: in Entra, Global Administrator, Cloud Device Administrator and Intune Administrator can read passwords by default; use custom roles for least privilege.\n- **Legacy LAPS emulation mode** eases migration but stores passwords in clear text.",
+      "terms": [
+        {
+          "t": "Windows LAPS",
+          "d": "Built-in Windows feature that rotates and backs up a local admin password per device."
+        },
+        {
+          "t": "DSRM password",
+          "d": "Directory Services Restore Mode password on domain controllers; LAPS can back it up to AD."
+        },
+        {
+          "t": "Post-authentication actions",
+          "d": "Rotate password, and optionally sign out or reboot, after the managed account is used."
+        },
+        {
+          "t": "Legacy LAPS emulation",
+          "d": "Mode honouring old LAPS GPOs; stores passwords in clear text."
+        }
+      ],
+      "trap": "A hybrid-joined device cannot back up to both Entra ID and AD; and DSRM backup and password encryption apply only to the AD target.",
+      "example": "Hybrid-joined laptops back up LAPS passwords to Entra ID so helpdesk can retrieve them in the Intune portal, while DCs back up DSRM passwords to AD with encryption.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Policy (Intune/GPO)",
+          "Device rotates pwd",
+          "Entra ID or AD",
+          "Authorized reader"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-100.d3.q031",
+      "lesson": "sc-100.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your server standard states that no Azure VM may expose RDP or SSH to the internet, yet administrators must still be able to connect from the Azure portal over TLS without a VPN. What should you include?",
+      "options": [
+        "Azure Bastion",
+        "A public IP with an NSG rule allowing TCP 3389 from Any",
+        "Azure Front Door",
+        "Azure Application Gateway"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Azure Bastion provides browser-based RDP/SSH over TLS to VMs with no public IPs. Opening 3389 to Any violates the standard, and Front Door and Application Gateway are HTTP(S) load balancers, not admin access services."
+    },
+    {
+      "id": "sc-100.d3.q032",
+      "lesson": "sc-100.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are writing security requirements for Linux VMs in Azure. Which TWO requirements reduce credential theft risk for administrative sign-in? Select TWO.",
+      "options": [
+        "Use Microsoft Entra ID login for Linux with Azure RBAC roles",
+        "Use SSH key authentication and disable password authentication",
+        "Use the same local root password on all VMs for break-glass access",
+        "Allow SSH from the internet but change the port to 2222",
+        "Store SSH private keys in the VM's custom data"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Entra ID login applies RBAC and Conditional Access, and SSH keys remove password guessing. A shared root password enables lateral movement, moving the port is obscurity not control, and custom data is readable metadata, not a secret store."
+    },
+    {
+      "id": "sc-100.d3.q033",
+      "lesson": "sc-100.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Litware runs Windows Server and Red Hat Linux servers in Azure, in AWS EC2 and in two on-premises datacenters. The architecture board wants a single requirement that guarantees all servers receive EDR, appear in one posture score, and can be audited against an OS baseline using the same tooling regardless of location.",
+      "stem": "What should you specify?",
+      "options": [
+        "Install Defender for Endpoint manually on every server and track posture in a spreadsheet",
+        "Arc for all non-Azure servers, plus Defender for Servers and machine configuration at management group scope",
+        "Defender for Servers Plan 1 on Azure subscriptions only, and AWS Inspector for EC2",
+        "Microsoft Intune enrolment for all servers with the Windows security baseline"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Arc brings non-Azure servers into Azure Resource Manager so Defender for Servers and machine configuration apply uniformly, and management group scope covers new subscriptions. Manual onboarding gives no unified posture, splitting tools breaks consistency, and Intune baselines target clients, not Linux servers."
+    },
+    {
+      "id": "sc-100.d3.q034",
+      "lesson": "sc-100.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Contractors use personal Android phones and refuse to enrol them in Intune. You must stop corporate email data being copied into personal apps and be able to remove only corporate data. What should you recommend?",
+      "options": [
+        "An Intune device compliance policy with 'Require device to be marked as compliant'",
+        "Android Enterprise fully managed enrolment",
+        "An Intune app protection policy, enforced with the Conditional Access grant 'Require app protection policy'",
+        "A Conditional Access policy that blocks all Android platforms"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "App protection (MAM) policies work without enrolment, restrict data transfer and support selective wipe; Conditional Access enforces them. Compliance requires enrolment, fully managed is for corporate devices, and blocking Android stops the work entirely."
+    },
+    {
+      "id": "sc-100.d3.q035",
+      "lesson": "sc-100.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about mobile device security, select Yes if true.",
+      "statements": [
+        {
+          "s": "Microsoft Defender for Endpoint on iOS and Android can detect phishing websites and report a device risk level to Intune.",
+          "a": true
+        },
+        {
+          "s": "A selective wipe removes all personal photos and apps from a BYOD phone.",
+          "a": false
+        },
+        {
+          "s": "Intune compliance policies can mark jailbroken or rooted devices as noncompliant.",
+          "a": true
+        }
+      ],
+      "explain": "Defender for Endpoint mobile provides web protection and a risk signal usable in compliance. Selective wipe removes only corporate app data. Compliance policies include jailbreak/root detection."
+    },
+    {
+      "id": "sc-100.d3.q036",
+      "lesson": "sc-100.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Tailspin issues corporate iPhones to executives and allows staff to use personal phones for Teams. After a phishing incident, the CISO wants corporate phones that visit malicious sites to lose access to Microsoft 365 automatically until the threat is cleared, without affecting personal phones' privacy.",
+      "stem": "Which design meets the requirement for the corporate iPhones?",
+      "options": [
+        "Require an app protection policy in Conditional Access for all phones",
+        "Create a sign-in risk policy in Microsoft Entra ID Protection that blocks medium risk",
+        "Apply an app protection policy that requires a six-digit PIN",
+        "Defender for Endpoint on iOS feeding an Intune device threat level compliance rule, plus CA requiring compliance"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Defender for Endpoint's device threat level feeds an Intune compliance rule, and Conditional Access then blocks noncompliant devices until the threat clears. App protection policies and PINs do not react to device threats, and sign-in risk evaluates the authentication, not device compromise."
+    },
+    {
+      "id": "sc-100.d3.q037",
+      "lesson": "sc-100.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A manufacturer will ship 50,000 connected devices that report to Azure IoT Hub. Which identity design should you require?",
+      "options": [
+        "A unique X.509 certificate per device, hardware-protected and enrolled through Device Provisioning Service",
+        "One shared access signature key embedded in the firmware of every device",
+        "A single Microsoft Entra service principal shared by all devices",
+        "Device authentication disabled, relying on an IP filter on the IoT hub"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Per-device X.509 identity with hardware-protected keys and DPS supports secure, revocable, zero-touch enrolment. A shared key or service principal lets one compromised device impersonate the fleet, and IP filtering is not authentication."
+    },
+    {
+      "id": "sc-100.d3.q038",
+      "lesson": "sc-100.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Office printers, VoIP phones and conference room displays cannot run security agents. Which TWO requirements should you specify? Select TWO.",
+      "options": [
+        "Discover and assess the devices agentlessly with Defender for IoT Enterprise IoT through Defender for Endpoint",
+        "Place the devices in a segmented network that allows only required flows",
+        "Install the Defender for IoT micro agent on each device as the long-term standard",
+        "Run Defender for Servers Plan 2 on each device",
+        "Allow the devices inbound access from the internet for vendor support"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Enterprise IoT discovery through Defender for Endpoint and network segmentation suit agentless devices. The micro agent is scheduled to retire in June 2027 and needs device builder integration, Defender for Servers is for servers, and inbound internet access increases exposure."
+    },
+    {
+      "id": "sc-100.d3.q039",
+      "lesson": "sc-100.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "How do Microsoft Defender for IoT OT network sensors usually receive the traffic they analyse?",
+      "options": [
+        "From an agent installed on each PLC",
+        "From a SPAN (mirror) port or network TAP",
+        "From active scanning of every IP in the OT subnet",
+        "From Windows event forwarding on HMI workstations"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "OT sensors passively receive mirrored traffic from a SPAN port or TAP and apply deep packet inspection. Agents on PLCs are not possible, active scanning risks disrupting OT, and event forwarding is not the sensor's data source."
+    },
+    {
+      "id": "sc-100.d3.q040",
+      "lesson": "sc-100.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A power generation company must monitor ICS networks at a plant that, by regulation, has no connection to the internet or to Azure. The SOC must still see alerts in its on-premises SIEM, and the security team will update threat intelligence during monthly maintenance windows.",
+      "stem": "Which Defender for IoT design should you recommend?",
+      "options": [
+        "Cloud-connected OT sensors sending alerts to Microsoft Sentinel",
+        "Deploy the legacy on-premises management console to aggregate sensors",
+        "Locally managed OT sensors, manual threat intelligence updates, alerts forwarded to the on-premises SIEM",
+        "Defender for Endpoint on each HMI with Enterprise IoT discovery"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Locally managed sensors keep all data on-premises, support manual threat intelligence updates and can forward alerts to partner systems. Cloud-connected sensors need Azure connectivity, the on-premises management console is retired, and endpoint agents do not cover ICS protocol traffic."
+    },
+    {
+      "id": "sc-100.d3.q041",
+      "lesson": "sc-100.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Defender for IoT in OT environments, select Yes if true.",
+      "statements": [
+        {
+          "s": "OT sensors process and analyse traffic locally and send only telemetry and insights to the cloud.",
+          "a": true
+        },
+        {
+          "s": "A policy violation alert is raised when traffic deviates from the learned or configured baseline.",
+          "a": true
+        },
+        {
+          "s": "Cloud-connected sensors require threat intelligence packages to be uploaded manually.",
+          "a": false
+        }
+      ],
+      "explain": "Sensors analyse on the box, which suits low-bandwidth sites. The policy violation engine detects deviations from the baseline. Cloud-connected sensors receive threat intelligence automatically; manual upload applies to locally managed sensors."
+    },
+    {
+      "id": "sc-100.d3.q042",
+      "lesson": "sc-100.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are deploying a cloud-connected Defender for IoT OT sensor at a factory. Put the steps in order.",
+      "options": [
+        "Map the OT network and choose the switches to mirror",
+        "Configure a SPAN port or install a TAP on the selected switch",
+        "Onboard the sensor in the Azure portal and download its activation file",
+        "Upload the activation file in the installed sensor's console",
+        "Review the device inventory and baseline during the learning period"
+      ],
+      "explain": "Plan traffic sources, provide mirrored traffic, onboard in Azure to obtain the activation file, activate the sensor with it, and finally review inventory while the sensor learns the baseline."
+    },
+    {
+      "id": "sc-100.d3.q043",
+      "lesson": "sc-100.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Security Compliance Toolkit component compares sets of Group Policy Objects against a baseline and highlights conflicting or redundant settings?",
+      "options": [
+        "LGPO",
+        "Microsoft Defender Vulnerability Management",
+        "Intune Settings catalog",
+        "Policy Analyzer"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Policy Analyzer compares GPO sets and flags conflicts. LGPO applies policy to a local machine, Defender Vulnerability Management assesses vulnerabilities and configuration, and the Settings catalog is an Intune profile type."
+    },
+    {
+      "id": "sc-100.d3.q044",
+      "lesson": "sc-100.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Windows Server machines in an on-premises datacenter are Azure Arc-enabled but not managed by Intune. You must continuously audit them against the Microsoft-recommended Windows OS baseline and show results in Defender for Cloud. What should you use?",
+      "options": [
+        "Azure Policy machine configuration with the Azure compute security baseline",
+        "An Intune Windows security baseline profile",
+        "Microsoft Purview Compliance Manager",
+        "Azure Automation State Configuration"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Machine configuration audits Azure and Arc-enabled servers against the compute security baseline, and results appear as Defender for Cloud recommendations. Intune baselines require Intune management, Compliance Manager tracks regulatory controls, and machine configuration is the recommended successor to Automation State Configuration."
+    },
+    {
+      "id": "sc-100.d3.q045",
+      "lesson": "sc-100.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Intune security baselines, select Yes if true.",
+      "statements": [
+        {
+          "s": "When a new baseline version is released, profiles on the older version become read-only for settings until you update them.",
+          "a": true
+        },
+        {
+          "s": "Intune security baselines can never conflict with other Intune device configuration profiles.",
+          "a": false
+        },
+        {
+          "s": "Separate baselines exist for Microsoft Defender for Endpoint and Microsoft Edge.",
+          "a": true
+        }
+      ],
+      "explain": "Older baseline versions become read-only for settings; you update the profile to the new version. Baselines can conflict with other profiles that manage the same settings. Intune offers Defender for Endpoint, Edge, Windows and Microsoft 365 Apps baselines, among others."
+    },
+    {
+      "id": "sc-100.d3.q046",
+      "lesson": "sc-100.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Adatum has Intune-managed Windows 11 laptops, AD DS-joined Windows Server 2022 file servers in a branch that will not be Arc-enabled this year, and Azure VMs. The architect must specify one baseline mechanism per platform that matches how each is managed.",
+      "stem": "Which TWO mechanisms should the architect specify? Select TWO.",
+      "options": [
+        "Intune Windows and Defender for Endpoint security baselines for the laptops",
+        "Group Policy baselines from the Security Compliance Toolkit for the branch file servers",
+        "Intune security baselines for the AD DS-joined file servers",
+        "Azure Policy machine configuration for the branch file servers",
+        "Local Group Policy edited by hand on each laptop"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Intune-managed laptops take Intune baselines, and AD DS-joined servers without Arc or Intune take GPO baselines from the SCT. Intune baselines need Intune management, machine configuration needs Azure or Arc, and hand-editing local policy does not scale."
+    },
+    {
+      "id": "sc-100.d3.q047",
+      "lesson": "sc-100.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What attack does Windows LAPS mainly mitigate?",
+      "options": [
+        "Phishing of user cloud credentials",
+        "Lateral movement using a local administrator password shared across many devices",
+        "Ransomware encryption of file shares",
+        "Token replay against Microsoft Graph"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Unique, rotated local admin passwords stop an attacker reusing one stolen local credential or hash across the estate. Phishing, ransomware encryption and token replay are addressed by other controls such as phishing-resistant MFA, backups and CAE."
+    },
+    {
+      "id": "sc-100.d3.q048",
+      "lesson": "sc-100.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Windows LAPS, select Yes if true.",
+      "statements": [
+        {
+          "s": "A Microsoft Entra hybrid joined device can back up its password to both Entra ID and Active Directory at the same time.",
+          "a": false
+        },
+        {
+          "s": "Windows LAPS can back up the DSRM account password of domain controllers to Active Directory.",
+          "a": true
+        },
+        {
+          "s": "Password encryption in Active Directory requires the Windows Server 2016 domain functional level or later.",
+          "a": true
+        }
+      ],
+      "explain": "Hybrid-joined devices choose one backup target, not both. DSRM password backup is supported for domain controllers to AD (with encryption). AD password encryption requires the Windows Server 2016 domain functional level."
+    },
+    {
+      "id": "sc-100.d3.q049",
+      "lesson": "sc-100.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A helpdesk lead must retrieve the current Windows LAPS password for an Entra-joined device from PowerShell. Complete the command.",
+      "code": "Connect-MgGraph -Scopes \"Device.Read.All\",\"DeviceLocalCredential.Read.All\"\n____ -DeviceIds \"LAPTOP-0042\" -IncludePasswords -AsPlainText",
+      "options": [
+        "Get-LapsADPassword",
+        "Reset-LapsPassword",
+        "Get-LapsAADPassword",
+        "Get-LapsDiagnostics"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Get-LapsAADPassword queries passwords backed up to Microsoft Entra ID through Microsoft Graph. Get-LapsADPassword reads from Active Directory, Reset-LapsPassword rotates on the local device, and Get-LapsDiagnostics collects troubleshooting logs."
+    },
+    {
+      "id": "sc-100.d3.q050",
+      "lesson": "sc-100.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Northwind uses legacy Microsoft LAPS (MSI) on AD DS-joined servers and stores passwords in clear text attributes. Auditors require that LAPS passwords be encrypted at rest in the directory, that previous passwords be recoverable after a server image rollback, and that the old MSI be removed. Domain functional level is Windows Server 2016.",
+      "stem": "What should you recommend?",
+      "options": [
+        "Keep legacy LAPS and enable legacy LAPS emulation mode",
+        "Back up the passwords to Microsoft Entra ID using Intune",
+        "Enable BitLocker on domain controllers to encrypt the AD database",
+        "Migrate to native Windows LAPS with AD backup, password encryption and encrypted password history enabled"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Native Windows LAPS supports AD password encryption and encrypted history at the 2016 functional level. Emulation mode stores passwords in clear text without history, AD-joined servers cannot back up to Entra ID, and BitLocker protects disks, not attribute access."
+    },
+    {
+      "id": "sc-100.d3.q051",
+      "lesson": "sc-100.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your helpdesk needs to read LAPS passwords for Entra-joined devices, but you must avoid granting Intune Administrator or Cloud Device Administrator. What should you do?",
+      "options": [
+        "Create a custom Microsoft Entra role with the device local credential password read permission and assign it",
+        "Assign the Global Reader role",
+        "Assign the Helpdesk Administrator role",
+        "Grant the helpdesk group Read access on the computer objects in AD"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A custom role with the device local credential password read permission gives least privilege. Global Reader and Helpdesk Administrator do not read LAPS passwords, and AD ACLs do not apply to passwords stored in Entra ID."
+    },
+    {
+      "id": "sc-100.d3.q052",
+      "lesson": "sc-100.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Azure service enables zero-touch, just-in-time enrolment of large numbers of IoT devices into the correct IoT hub using per-device attestation?",
+      "options": [
+        "Azure Arc-enabled servers",
+        "Azure IoT Hub Device Provisioning Service",
+        "Microsoft Intune Autopilot",
+        "Azure Digital Twins"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "DPS performs attestation (X.509, TPM or symmetric key) and assigns devices to IoT hubs at scale. Arc connects servers, Autopilot provisions Windows PCs, and Digital Twins models environments."
+    }
+  ]
+}

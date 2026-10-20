@@ -1,0 +1,445 @@
+{
+  "exam": "secai-plus",
+  "domain": "d1",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "secai-plus.d1.q029",
+      "lesson": "secai-plus.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which phase comes FIRST in the AI life cycle and is where security, privacy and risk requirements should first be defined?",
+      "options": [
+        "Business use case definition",
+        "Data collection",
+        "Model development and selection",
+        "Deployment"
+      ],
+      "answer": [0],
+      "explain": "The life cycle starts by defining the business use case: the problem, owner, success criteria and risk requirements. Data collection, model selection and deployment all depend on decisions made there, and adding security only at deployment is bolting it on."
+    },
+    {
+      "id": "secai-plus.d1.q030",
+      "lesson": "secai-plus.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A marketing director asks IT to launch a customer-facing generative AI chatbot within a month because competitors have one. No one has defined what problems it should solve, how success will be measured, which data it may access or who owns the risk. Several staff are already pasting customer emails into a public chatbot to draft replies.",
+      "stem": "What should the security architect recommend FIRST?",
+      "options": [
+        "Benchmark three commercial LLMs and select the most accurate",
+        "Export all historical customer emails so they are ready for fine-tuning",
+        "Block every AI website at the proxy and close the project",
+        "Define a business use case aligned to corporate objectives, with an owner, success metrics, data boundaries and risk assessment"
+      ],
+      "answer": [3],
+      "explain": "Without a defined use case there are no success criteria, data limits or risk owner, which also drives shadow AI. Model selection and data export come later and depend on those decisions. A blanket block ignores the business need and pushes usage further underground."
+    },
+    {
+      "id": "secai-plus.d1.q031",
+      "lesson": "secai-plus.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A third-party supplier delivers a labeled phishing dataset for training. Which action BEST verifies the dataset's authenticity before it is ingested?",
+      "options": [
+        "Oversampling the phishing class to balance the dataset",
+        "Removing duplicate emails and normalizing encodings",
+        "Merging it with a larger dataset scraped from public forums",
+        "Validating the supplier's digital signature or published hash for the archive"
+      ],
+      "answer": [3],
+      "explain": "A valid signature or matching published hash shows the data genuinely came from the supplier and was not altered in transit. Balancing and cleansing improve quality but say nothing about origin, and adding unverified scraped data reduces trustworthiness."
+    },
+    {
+      "id": "secai-plus.d1.q032",
+      "lesson": "secai-plus.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about data collection for AI, select Yes if true.",
+      "statements": [
+        { "s": "Data minimization means collecting only the data fields needed for the defined use case.", "a": true },
+        { "s": "Content scraped from the public web is trustworthy by default because it is publicly available.", "a": false },
+        { "s": "Recording provenance metadata at collection time supports later trust and authenticity decisions.", "a": true }
+      ],
+      "explain": "Minimization limits collection to what the purpose needs. Public web content can be deliberately poisoned and must be vetted. Provenance captured at collection lets teams verify source and licensing later."
+    },
+    {
+      "id": "secai-plus.d1.q033",
+      "lesson": "secai-plus.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A team's model scores far higher on its test set than in production. Investigation shows many near-duplicate tickets appear in both the training and test sets. What should the team change during data preparation?",
+      "options": [
+        "Deduplicate records and split the data so related records cannot appear in both training and test sets",
+        "Train for more epochs so the model generalizes better",
+        "Quantize the model to reduce production latency",
+        "Add more examples to the system prompt"
+      ],
+      "answer": [0],
+      "explain": "Overlap between training and test data is data leakage, which inflates evaluation scores. Deduplicating and splitting by group fixes it. More epochs, quantization or prompt examples do not address contaminated test data."
+    },
+    {
+      "id": "secai-plus.d1.q034",
+      "lesson": "secai-plus.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put these early AI life cycle phases in order.",
+      "options": [
+        "Business use case",
+        "Data collection",
+        "Data preparation",
+        "Model development/selection",
+        "Model evaluation"
+      ],
+      "explain": "The life cycle starts with a business use case, then gathers data, prepares it, develops or selects a model and evaluates that model before deployment."
+    },
+    {
+      "id": "secai-plus.d1.q035",
+      "lesson": "secai-plus.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A company will fine-tune a model on help desk tickets. Which TWO data preparation steps MOST reduce the risk of the model memorizing and later revealing personal data? Select TWO.",
+      "options": [
+        "Redacting or masking names, email addresses and passwords in the tickets",
+        "Replacing customer IDs with pseudonymous tokens",
+        "Increasing the number of training epochs",
+        "Oversampling tickets from the smallest category",
+        "Watermarking the training files"
+      ],
+      "answer": [0, 1],
+      "explain": "Removing or pseudonymizing personal data before training means the model never learns it. More epochs increase memorization risk, oversampling addresses imbalance, and watermarking marks origin without removing sensitive content."
+    },
+    {
+      "id": "secai-plus.d1.q036",
+      "lesson": "secai-plus.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A data scientist finds a popular open-weight model on a public model hub with over a million downloads. The repository is from an unfamiliar publisher, and the weights are distributed only as a Python pickle file. She plans to load it on a training server that has access to production datasets.",
+      "stem": "What should the security team require BEFORE the model is loaded?",
+      "options": [
+        "Fine-tune the model first so any hidden behaviour is overwritten",
+        "Quantize the model to 4-bit so it uses less memory on the server",
+        "Approve it because the download count shows the community trusts it",
+        "Verify the publisher and file hashes, prefer a weights-only format such as safetensors, and scan and test it in an isolated environment"
+      ],
+      "answer": [3],
+      "explain": "Pickle files can execute code when loaded, and popularity isn't verification. Treat the model as a supply chain component: verify source and integrity, prefer safe formats, scan and sandbox. Fine-tuning or quantizing would require loading the untrusted file first."
+    },
+    {
+      "id": "secai-plus.d1.q037",
+      "lesson": "secai-plus.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about model development and selection, select Yes if true.",
+      "statements": [
+        { "s": "A model card documents a model's intended use, training data and known limitations.", "a": true },
+        { "s": "Calling a third-party public model API keeps all prompt data inside the organization's network.", "a": false },
+        { "s": "An AI bill of materials inventories the models, datasets and dependencies that make up an AI system.", "a": true }
+      ],
+      "explain": "Model cards and AI-BOMs support informed, auditable selection. A public model API sends prompts to the provider's infrastructure, so data leaves the organization unless a private model is used."
+    },
+    {
+      "id": "secai-plus.d1.q038",
+      "lesson": "secai-plus.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A security team wants an assistant that answers staff questions about internal security policies. Policies are revised almost every week, answers must cite the policy section they come from, and the team has no budget for repeated training runs.",
+      "stem": "Which approach BEST meets the requirements?",
+      "options": [
+        "Use a pretrained model with retrieval-augmented generation over the policy repository",
+        "Train a new language model from scratch on the policy documents",
+        "Fine-tune a foundation model on the policies every week",
+        "Use zero-shot prompting with no policy content supplied"
+      ],
+      "answer": [0],
+      "explain": "RAG retrieves current policy chunks at query time, supports citations, and only needs re-indexing when documents change. Training from scratch or weekly fine-tuning is costly and lags behind changes. Zero-shot prompting without context can't know internal policies and will hallucinate."
+    },
+    {
+      "id": "secai-plus.d1.q039",
+      "lesson": "secai-plus.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "For an intrusion detection model, missed attacks are far more costly than extra alerts. Which evaluation metric should the team prioritize?",
+      "options": [
+        "Precision",
+        "Recall",
+        "Accuracy",
+        "Training loss"
+      ],
+      "answer": [1],
+      "explain": "Recall measures the share of real attacks the model catches, so it directly reflects missed attacks (false negatives). Precision concerns false alarms, accuracy is misleading on rare-event data, and training loss says nothing about performance on new data."
+    },
+    {
+      "id": "secai-plus.d1.q040",
+      "lesson": "secai-plus.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "An analyst writes a helper to compute a detector's precision from confusion matrix counts. Complete the code.",
+      "code": "def precision(tp, fp, fn, tn):\n    # share of flagged events that were truly malicious\n    return tp / (tp + ____)",
+      "options": [
+        "fn",
+        "fp",
+        "tn",
+        "fp + fn"
+      ],
+      "answer": [1],
+      "explain": "Precision = TP / (TP + FP): of everything flagged, how much was really malicious. TP / (TP + FN) is recall. True negatives aren't part of precision, and adding FN as well would give a different metric."
+    },
+    {
+      "id": "secai-plus.d1.q041",
+      "lesson": "secai-plus.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Before releasing a customer-facing generative AI assistant, which TWO evaluation activities test its security rather than only its accuracy? Select TWO.",
+      "options": [
+        "Red-team attempts at prompt injection and jailbreaks",
+        "Testing whether responses disclose sensitive data from training or connected sources",
+        "Measuring GPU utilization during inference",
+        "Counting how many epochs were used during training",
+        "Converting the evaluation dataset from JSON to CSV"
+      ],
+      "answer": [0, 1],
+      "explain": "Red teaming for injection and jailbreaks and testing for sensitive data disclosure are security evaluations. GPU utilization is capacity planning, epoch count is a training detail, and file format conversion is data handling."
+    },
+    {
+      "id": "secai-plus.d1.q042",
+      "lesson": "secai-plus.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "The business use case for a network intrusion model requires catching at least 90% of known intrusions. In the held-out test set, 1% of sessions are intrusions. The candidate model achieves 99.4% accuracy, 88% precision and 35% recall.",
+      "stem": "What should the evaluation team conclude?",
+      "options": [
+        "Approve the model because its accuracy exceeds 99%",
+        "Approve the model because its precision is high",
+        "Deploy the model and rely on production monitoring to improve recall",
+        "Reject the model for now, because 35% recall misses the 90% detection criterion and accuracy is misleading on imbalanced data"
+      ],
+      "answer": [3],
+      "explain": "Recall shows only 35% of intrusions are caught, far below the 90% acceptance criterion. Accuracy looks high only because 99% of sessions are benign. High precision doesn't offset missed attacks, and monitoring isn't a substitute for passing evaluation."
+    },
+    {
+      "id": "secai-plus.d1.q043",
+      "lesson": "secai-plus.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A team is releasing a new alert-triage model and wants to limit impact if the false-negative rate rises in production. Which deployment approach BEST supports this?",
+      "options": [
+        "Canary release to a small share of traffic with automated rollback when metrics breach thresholds",
+        "Replacing the old model for all traffic at once after evaluation passes",
+        "Copying the weights to production hosts manually from the data scientist's workstation",
+        "Disabling prompt and output logging to reduce latency during the release"
+      ],
+      "answer": [0],
+      "explain": "A canary limits exposure and automated rollback reverts quickly if false negatives rise. A big-bang cutover exposes all traffic, manual copying bypasses the registry and pipeline integrity checks, and disabling logging removes the visibility needed to detect the problem."
+    },
+    {
+      "id": "secai-plus.d1.q044",
+      "lesson": "secai-plus.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "An organization is exposing an internal LLM to several business applications. Which THREE controls should be part of the secure deployment? Select THREE.",
+      "options": [
+        "Authenticating and authorizing every calling application through an API gateway",
+        "Enforcing rate limits and token quotas per caller",
+        "Storing the model provider's API keys in a secrets manager",
+        "Embedding the API keys in the system prompt so the model can call other services",
+        "Running the model's tool-calling agent under a domain administrator account for reliability"
+      ],
+      "answer": [0, 1, 2],
+      "explain": "Gateway authentication, rate limits and quotas, and a secrets manager are standard deployment controls. Keys in a prompt can be extracted through injection, and a domain admin account for an agent violates least privilege."
+    },
+    {
+      "id": "secai-plus.d1.q045",
+      "lesson": "secai-plus.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A help desk deploys an AI agent that resets user passwords on request. To avoid permission errors, the agent runs under a domain administrator service account. A penetration tester shows that a crafted chat message makes the agent add an account to a privileged group.",
+      "stem": "Which change BEST reduces the impact of this weakness?",
+      "options": [
+        "Add a system prompt rule stating that the agent may only reset passwords",
+        "Rotate the domain administrator password every 30 days",
+        "Run the agent under a dedicated account scoped only to password resets for standard user accounts",
+        "Increase the agent's logging verbosity and review the logs weekly"
+      ],
+      "answer": [2],
+      "explain": "Least privilege limits what an injected instruction can achieve: a scoped account cannot change group membership. Prompt rules can be overridden, password rotation doesn't reduce the account's power, and logging detects misuse after the fact without preventing it."
+    },
+    {
+      "id": "secai-plus.d1.q046",
+      "lesson": "secai-plus.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put these later AI life cycle phases in order, starting after model evaluation.",
+      "options": [
+        "Deployment",
+        "Validation",
+        "Monitoring and maintenance",
+        "Feedback and iteration"
+      ],
+      "explain": "After evaluation, the model is deployed, the deployed system is validated in context, then it is monitored and maintained, and finally feedback drives the next iteration."
+    },
+    {
+      "id": "secai-plus.d1.q047",
+      "lesson": "secai-plus.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about validation in the AI life cycle, select Yes if true.",
+      "statements": [
+        { "s": "Quantizing a production model to reduce cost should trigger re-validation before it replaces the current version.", "a": true },
+        { "s": "Validation can include confirming the running model's hash matches the approved version in the model registry.", "a": true },
+        { "s": "Once a system passes validation at launch, later changes to its system prompt or guardrails do not need re-testing.", "a": false }
+      ],
+      "explain": "Compression changes model behaviour, and confirming the deployed artifact is part of validation. Prompt and guardrail changes alter system behaviour too, so they also require re-validation."
+    },
+    {
+      "id": "secai-plus.d1.q048",
+      "lesson": "secai-plus.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "Statistical checks show production emails have similar features to the phishing model's training data. However, more and more emails the model labels benign are later confirmed as phishing because attackers changed their lures. No code or model changes were made. What is MOST likely happening?",
+      "options": [
+        "Concept drift",
+        "Data drift",
+        "Overfitting",
+        "Model inversion"
+      ],
+      "answer": [0],
+      "explain": "The inputs look the same, but what makes an email malicious has changed: concept drift, fixed by retraining on recent labeled data. Data drift is a change in the input distribution itself. Overfitting would appear at evaluation, and model inversion is an attack that extracts training data."
+    },
+    {
+      "id": "secai-plus.d1.q049",
+      "lesson": "secai-plus.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A review finds that the prompt logs of an internal AI assistant contain user passwords and customer personal data. The SOC still needs these logs to monitor for prompt injection. What is the BEST action?",
+      "options": [
+        "Stop logging prompts entirely",
+        "Extend log retention so investigations have more history",
+        "Apply log sanitization to redact or mask sensitive values before storage, and restrict log access",
+        "Watermark the log files so leaks can be traced"
+      ],
+      "answer": [2],
+      "explain": "Log sanitization keeps the monitoring value while removing secrets and personal data, and access control limits who can read the logs. Stopping logging blinds the SOC, longer retention increases exposure, and watermarking only helps trace a leak afterwards."
+    },
+    {
+      "id": "secai-plus.d1.q050",
+      "lesson": "secai-plus.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Monitoring shows a production detection model's recall has dropped below its threshold. Put the steps in order.",
+      "options": [
+        "Confirm the drop and identify drift in the monitoring data",
+        "Collect and prepare recent labeled samples",
+        "Retrain the model on the refreshed dataset",
+        "Evaluate and validate the new version against acceptance criteria",
+        "Deploy the new version with a staged rollout"
+      ],
+      "explain": "Confirm the problem first, then gather fresh labeled data, retrain, evaluate and validate the new version, and only then redeploy it gradually so it can be rolled back if needed."
+    },
+    {
+      "id": "secai-plus.d1.q051",
+      "lesson": "secai-plus.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A spam filter retrains nightly on user 'not spam' feedback, which goes straight into the training set. Over two weeks, 40 newly created accounts submit thousands of 'not spam' votes on a malicious campaign, and the filter begins delivering those messages.",
+      "stem": "Which control would BEST have prevented this?",
+      "options": [
+        "Retraining every hour so the model reacts faster",
+        "Validating feedback before training, using per-account rate limits, anomaly checks and human review of samples",
+        "Increasing the number of training epochs per nightly run",
+        "Disabling production monitoring to reduce processing load"
+      ],
+      "answer": [1],
+      "explain": "Feedback is untrusted input; validating it, limiting per-account volume, flagging anomalies and sampling for human review stops feedback poisoning. Faster retraining or more epochs would absorb the poisoned votes sooner, and disabling monitoring removes detection."
+    },
+    {
+      "id": "secai-plus.d1.q052",
+      "lesson": "secai-plus.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about feedback and iteration, select Yes if true.",
+      "statements": [
+        { "s": "Feedback can send a project back to any earlier life cycle phase, including the business use case.", "a": true },
+        { "s": "User feedback is trusted input and can be added directly to training data without review.", "a": false },
+        { "s": "Each new iteration should pass evaluation and validation again before release.", "a": true }
+      ],
+      "explain": "Iteration may revisit any phase, from use case to deployment. Feedback channels can be abused, so feedback must be validated before training. Every new version is re-evaluated and re-validated."
+    },
+    {
+      "id": "secai-plus.d1.q053",
+      "lesson": "secai-plus.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An AI system recommends isolating a compromised server, but no action is taken until a SOC analyst reviews the evidence and clicks Approve. Which design principle does this represent?",
+      "options": [
+        "Human oversight",
+        "Human-in-the-loop",
+        "Human validation",
+        "Reinforcement learning"
+      ],
+      "answer": [1],
+      "explain": "A required human decision before each action executes is human-in-the-loop. Oversight means supervising a system that may act on its own, with power to intervene. Validation is reviewing outputs for accuracy, and reinforcement learning is a training technique."
+    },
+    {
+      "id": "secai-plus.d1.q054",
+      "lesson": "secai-plus.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A company deploys an AI agent that takes some remediation actions automatically. Which TWO design features make human oversight of the agent meaningful? Select TWO.",
+      "options": [
+        "Showing confidence levels and supporting evidence with each recommendation or action",
+        "Giving supervisors the ability to pause, override or stop the agent at any time",
+        "Hiding confidence scores so reviewers aren't biased",
+        "Auto-approving any pending action after a 10-second timeout",
+        "Disabling logs of the agent's actions to protect privacy"
+      ],
+      "answer": [0, 1],
+      "explain": "Confidence and evidence let humans judge rather than rubber-stamp, and the power to intervene or halt is the core of oversight. Hiding confidence, auto-approval timeouts and removing logs all weaken human control and accountability."
+    }
+  ]
+}

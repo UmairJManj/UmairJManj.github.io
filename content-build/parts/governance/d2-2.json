@@ -1,0 +1,488 @@
+{
+  "exam": "governance",
+  "domain": "d2",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "governance.d2.q031",
+      "lesson": "governance.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "How many reference controls does Annex A of ISO/IEC 42001:2023 contain?",
+      "options": [
+        "38",
+        "93",
+        "114",
+        "72"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "ISO/IEC 42001 Annex A lists 38 controls across nine areas, A.2 to A.10. 93 is the number of controls in ISO/IEC 27001:2022 Annex A, and 114 was the number in ISO/IEC 27001:2013. 72 is not an Annex A control count."
+    },
+    {
+      "id": "governance.d2.q032",
+      "lesson": "governance.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about ISO/IEC 42001 Annex A, select Yes if true.",
+      "statements": [
+        {
+          "s": "Annex A is normative.",
+          "a": true
+        },
+        {
+          "s": "Every Annex A control must be implemented, whatever the risk assessment says.",
+          "a": false
+        },
+        {
+          "s": "Excluding an Annex A control requires a justification in the Statement of Applicability.",
+          "a": true
+        }
+      ],
+      "explain": "Annex A is normative, but controls are selected through AI risk treatment. The SoA records the necessary controls and justifies including or excluding each Annex A control. The organization may also add controls that are not in Annex A."
+    },
+    {
+      "id": "governance.d2.q033",
+      "lesson": "governance.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A data scientist wants a confidential way to raise concerns that a model is being used in ways it was not validated for. Which ISO/IEC 42001 Annex A control does this BEST map to?",
+      "options": [
+        "A.8.3 External reporting",
+        "A.3.3 Reporting of concerns",
+        "A.8.4 Communication of incidents",
+        "A.2.4 Review of the AI policy"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A.3.3 requires a process for people in the organization to report concerns about its role with respect to an AI system throughout its life cycle. A.8.3 lets external interested parties report adverse impacts. A.8.4 covers communicating incidents to users, and A.2.4 covers reviewing the AI policy."
+    },
+    {
+      "id": "governance.d2.q034",
+      "lesson": "governance.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which resource types are covered by controls in area A.4, Resources for AI systems? Select THREE.",
+      "options": [
+        "Data resources",
+        "Tooling resources",
+        "System and computing resources",
+        "Marketing resources",
+        "Legal privilege resources"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "A.4 includes resource documentation (A.4.2), data resources (A.4.3), tooling resources (A.4.4), system and computing resources (A.4.5) and human resources (A.4.6). Marketing and legal privilege are not Annex A resource categories."
+    },
+    {
+      "id": "governance.d2.q035",
+      "lesson": "governance.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An impact assessment for a news-recommendation AI considers its potential effect on public discourse and the spread of misinformation. Which Annex A control does this MOST directly address?",
+      "options": [
+        "A.5.4 Assessing AI system impact on individuals or groups of individuals",
+        "A.7.4 Quality of data for AI systems",
+        "A.5.5 Assessing societal impacts of AI systems",
+        "A.9.4 Intended use of the AI system"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Effects on public discourse and misinformation are society-wide, which is A.5.5. A.5.4 covers impacts on specific individuals or groups, such as discrimination against a user group. Data quality (A.7.4) and intended use (A.9.4) are related, but they are not impact assessment controls."
+    },
+    {
+      "id": "governance.d2.q036",
+      "lesson": "governance.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A team confirms that a credit model meets its documented requirements and is fit for its intended lending use before release. Which Annex A control covers this activity?",
+      "options": [
+        "A.6.2.6 AI system operation and monitoring",
+        "A.6.2.8 AI system recording of event logs",
+        "A.7.6 Data preparation",
+        "A.6.2.4 AI system verification and validation"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Checking that requirements are met (verification) and that the system is fit for its intended use (validation) is A.6.2.4. Operation and monitoring (A.6.2.6) happens after deployment, event logging (A.6.2.8) records system events, and data preparation (A.7.6) covers cleaning and labelling data."
+    },
+    {
+      "id": "governance.d2.q037",
+      "lesson": "governance.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Under control A.6.2.8, at what point in the life cycle must event logging of an AI system be enabled as a minimum?",
+      "options": [
+        "During data acquisition only",
+        "While the AI system is in use",
+        "Only during verification and validation",
+        "Only after an incident has occurred"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A.6.2.8 asks the organization to decide at which life cycle phases event logs are recorded, and at a minimum this includes when the AI system is in use. Logging only during acquisition or testing, or only after an incident, would lose the operational traceability the control aims for."
+    },
+    {
+      "id": "governance.d2.q038",
+      "lesson": "governance.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Six months after launch, a demand-forecasting model's accuracy falls steadily as customer behaviour shifts. Nobody notices until quarterly results are missed. The model had passed validation before deployment.",
+      "stem": "Which Annex A control was MOST likely implemented ineffectively?",
+      "options": [
+        "A.6.2.6 AI system operation and monitoring",
+        "A.6.2.4 AI system verification and validation",
+        "A.10.3 Suppliers",
+        "A.2.3 Alignment with other organizational policies"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The model was valid at release but drifted in production without detection. That is a failure of operation and monitoring (A.6.2.6), which covers ongoing performance monitoring, repairs and updates. Validation (A.6.2.4) passed, and suppliers and policy alignment are not involved."
+    },
+    {
+      "id": "governance.d2.q039",
+      "lesson": "governance.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Annex A control requires an organization to record the origin of data used in its AI systems and how that data has changed across the life cycle?",
+      "options": [
+        "A.7.4 Quality of data for AI systems",
+        "A.7.3 Acquisition of data",
+        "A.7.6 Data preparation",
+        "A.7.5 Data provenance"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Data provenance (A.7.5) means recording where data came from and how it was processed over the data and AI system life cycles. A.7.3 covers how data is acquired and selected, A.7.4 covers data quality requirements, and A.7.6 covers the methods used to prepare data."
+    },
+    {
+      "id": "governance.d2.q040",
+      "lesson": "governance.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO controls belong to area A.8, Information for interested parties of AI systems? Select TWO.",
+      "options": [
+        "Communication of incidents",
+        "Reporting of concerns",
+        "External reporting",
+        "Allocating responsibilities",
+        "Intended use of the AI system"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "A.8 contains system documentation and information for users (A.8.2), external reporting (A.8.3), communication of incidents (A.8.4) and information for interested parties (A.8.5). Reporting of concerns is A.3.3, allocating responsibilities is A.10.2 and intended use is A.9.4."
+    },
+    {
+      "id": "governance.d2.q041",
+      "lesson": "governance.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Members of the public say a city's AI chatbot gives them wrong information about benefit eligibility. They have no way to tell the city. Separately, a training-data audit shows that 30% of records have missing income fields.",
+      "stem": "Which pair of Annex A controls MOST directly addresses these two gaps?",
+      "options": [
+        "A.3.3 Reporting of concerns, and A.7.5 Data provenance",
+        "A.8.3 External reporting, and A.7.4 Quality of data for AI systems",
+        "A.8.2 System documentation for users, and A.7.3 Acquisition of data",
+        "A.5.5 Societal impacts, and A.4.3 Data resources"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Giving outside parties a way to report adverse impacts is A.8.3. Missing fields are a data quality problem, which is A.7.4. A.3.3 is an internal channel, and provenance tracks origin rather than completeness. User documentation, acquisition, societal assessment and resource documentation do not close these specific gaps."
+    },
+    {
+      "id": "governance.d2.q042",
+      "lesson": "governance.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Staff begin using an AI summarization tool, approved for internal meeting notes, to draft legal advice for clients. Which Annex A control is MOST directly at issue?",
+      "options": [
+        "A.6.2.2 AI system requirements and specification",
+        "A.10.4 Customers",
+        "A.9.4 Intended use of the AI system",
+        "A.4.6 Human resources"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A.9.4 requires the AI system to be used according to its intended use and documentation. Drafting client legal advice goes well beyond the approved use. Requirements specification (A.6.2.2), customer expectations (A.10.4) and human resources (A.4.6) do not directly address use outside the approved purpose."
+    },
+    {
+      "id": "governance.d2.q043",
+      "lesson": "governance.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "A company builds products on a third-party foundation model. For each statement about Annex A area A.10, select Yes if true.",
+      "statements": [
+        {
+          "s": "Responsibilities across the AI life cycle should be allocated between the company and the model supplier.",
+          "a": true
+        },
+        {
+          "s": "The company should have a process so that what suppliers provide aligns with its responsible AI approach.",
+          "a": true
+        },
+        {
+          "s": "Because the model is external, A.10 lets the company transfer all accountability to the supplier.",
+          "a": false
+        }
+      ],
+      "explain": "A.10.2 requires responsibilities to be allocated among the organization, partners, suppliers and customers, and A.10.3 requires supplier offerings to align with the organization's responsible AI approach. Using an external model does not remove the organization's accountability for its own AIMS."
+    },
+    {
+      "id": "governance.d2.q044",
+      "lesson": "governance.d2.4.07",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Where would an implementer find guidance on how to implement each ISO/IEC 42001 Annex A control?",
+      "options": [
+        "ISO/IEC 27002",
+        "Annex B of ISO/IEC 42001",
+        "Annex D of ISO/IEC 42001",
+        "ISO/IEC 22989"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Annex B of 42001 gives implementation guidance for each Annex A control. ISO/IEC 27002 is the guidance for ISO/IEC 27001 controls, Annex D covers use across domains and sectors, and ISO/IEC 22989 defines AI terminology."
+    },
+    {
+      "id": "governance.d2.q045",
+      "lesson": "governance.d2.4.07",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A risk workshop wants a starting list of AI risk sources, such as 'level of automation' and 'technology readiness'. Which part of ISO/IEC 42001 provides this?",
+      "options": [
+        "Annex A",
+        "Clause 6.2",
+        "Annex C",
+        "Annex B"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Informative Annex C lists potential AI-related organizational objectives and risk sources, including level of automation, technology readiness, complexity of environment and machine learning-specific risk sources. Annex A lists controls, Annex B gives control guidance, and clause 6.2 sets requirements for AI objectives."
+    },
+    {
+      "id": "governance.d2.q046",
+      "lesson": "governance.d2.5.01",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement BEST describes how an AI system impact assessment differs from an AI risk assessment in ISO/IEC 42001?",
+      "options": [
+        "Impact assessment focuses on people and society; risk assessment weighs risks to AI objectives against criteria",
+        "Impact assessment is optional, while risk assessment is mandatory",
+        "Impact assessment covers only financial losses to the organization",
+        "Impact assessment replaces risk assessment for high-risk systems"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "42001 requires both processes. The impact assessment (6.1.4) is centred on people and society. The risk assessment (6.1.2) evaluates risks to the organization's AI objectives against its criteria, and impact results feed into it. Neither replaces the other, and impact is not limited to financial loss."
+    },
+    {
+      "id": "governance.d2.q047",
+      "lesson": "governance.d2.5.01",
+      "objective": "d2.5",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A recruitment platform's AI risk assessment rates its CV-ranking model as low risk, because complaints are rare and the contracts limit liability. A later analysis shows candidates over 50 are ranked lower far more often.",
+      "stem": "Which process should have surfaced this harm, and what should happen with the finding?",
+      "options": [
+        "Internal audit, which should raise a minor nonconformity only",
+        "Management review, which should update the AI policy only",
+        "Supplier evaluation under A.10.3, which should end the contract",
+        "The AI system impact assessment, whose results should feed into AI risk assessment and treatment"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Harm to a group of individuals is what the impact assessment is designed to surface, even when organizational risk looks low. Its results feed AI risk assessment and treatment, for example bias mitigation or human review. Audit, management review and supplier evaluation are not the primary mechanisms."
+    },
+    {
+      "id": "governance.d2.q048",
+      "lesson": "governance.d2.5.02",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which factors should an AI system impact assessment take into account? Select THREE.",
+      "options": [
+        "Reasonably foreseeable misuse of the system",
+        "The jurisdictions where the system will be deployed",
+        "The technical and societal context of the system",
+        "The vendor's share price",
+        "The number of ISO standards the organization holds"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Impact assessments consider intended use and reasonably foreseeable misuse, the specific technical and societal context, and the jurisdictions of deployment. A vendor's share price and the organization's other certificates say nothing about consequences for people."
+    },
+    {
+      "id": "governance.d2.q049",
+      "lesson": "governance.d2.5.02",
+      "objective": "d2.5",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A company built a voice-cloning feature for audiobook narrators. Its impact assessment covers only narrators using their own voices with consent. The feature will launch in four countries next quarter.",
+      "stem": "What is the MOST important weakness in this impact assessment?",
+      "options": [
+        "It should have been done by the certification body",
+        "It ignores foreseeable misuse, such as cloning others' voices for fraud, and differences between jurisdictions",
+        "It should cover only the country with the largest market",
+        "It should cover only data quality, not the use of the feature"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Looking only at intended use misses foreseeable misuse such as impersonation and fraud, and ignores the different legal and social context in each deployment country. The organization performs its own assessment, and limiting it to one country or to data quality would make it narrower still."
+    },
+    {
+      "id": "governance.d2.q050",
+      "lesson": "governance.d2.5.03",
+      "objective": "d2.5",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about AI system impact assessment results under ISO/IEC 42001, select Yes if true.",
+      "statements": [
+        {
+          "s": "Results are documented and retained.",
+          "a": true
+        },
+        {
+          "s": "Results can be an input to AI risk assessment and risk treatment.",
+          "a": true
+        },
+        {
+          "s": "Every impact assessment must be published in full on the organization's website.",
+          "a": false
+        }
+      ],
+      "explain": "Clauses 6.1.4 and 8.4 and control A.5.3 require results to be documented and retained, and they feed into risk assessment and treatment. Sharing with interested parties is decided where appropriate. 42001 does not require full public publication of every assessment."
+    },
+    {
+      "id": "governance.d2.q051",
+      "lesson": "governance.d2.5.04",
+      "objective": "d2.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which standard gives guidance specifically on how to carry out an AI system impact assessment?",
+      "options": [
+        "ISO/IEC 42006",
+        "ISO/IEC 23894",
+        "ISO/IEC 17021-1",
+        "ISO/IEC 42005"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "ISO/IEC 42005:2025 gives guidance on assessing the impacts of AI systems on individuals, groups and society. ISO/IEC 23894 gives guidance on AI risk management, ISO/IEC 42006 sets requirements for AIMS certification bodies, and ISO/IEC 17021-1 covers certification bodies in general."
+    },
+    {
+      "id": "governance.d2.q052",
+      "lesson": "governance.d2.5.04",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company choosing an auditor for its ISO/IEC 42001 certification wants assurance that the auditors have AI-specific competence. Which standard should the certification body operate under?",
+      "options": [
+        "ISO/IEC 42006",
+        "ISO/IEC 42005",
+        "ISO/IEC 22989",
+        "ISO/IEC 23894"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "ISO/IEC 42006:2025 sets requirements for bodies that audit and certify AI management systems, including AI-specific auditor competence. It builds on ISO/IEC 17021-1. ISO/IEC 42005 and ISO/IEC 23894 are guidance for organizations, and ISO/IEC 22989 is terminology."
+    },
+    {
+      "id": "governance.d2.q053",
+      "lesson": "governance.d2.5.04",
+      "objective": "d2.5",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "ISO/IEC 23894, which supports AI risk assessment under ISO/IEC 42001, adapts which general risk management standard to AI?",
+      "options": [
+        "ISO/IEC 27005",
+        "ISO 22301",
+        "ISO 31000",
+        "ISO/IEC 27701"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "ISO/IEC 23894 gives AI-specific guidance based on ISO 31000, Risk management guidelines. ISO/IEC 27005 is information security risk guidance, ISO 22301 covers business continuity, and ISO/IEC 27701 covers privacy information management."
+    },
+    {
+      "id": "governance.d2.q054",
+      "lesson": "governance.d2.5.05",
+      "objective": "d2.5",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A team is scoping the impact assessment for a large generative AI model trained on huge compute clusters and used by millions of people. Which TWO impact areas are MOST clearly relevant beyond individual privacy? Select TWO.",
+      "options": [
+        "Environmental impact from energy use in training and operation",
+        "Office floor-space utilization",
+        "Societal effects such as misinformation and information integrity",
+        "The model's file format",
+        "Brand colour consistency"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Typical impact areas include fairness, accountability, transparency, privacy, safety, human rights and the environment. At this scale, energy use (environmental impact, also an Annex C objective) and societal effects such as misinformation are clearly relevant. Floor space, file formats and branding are not AI impact areas."
+    }
+  ]
+}

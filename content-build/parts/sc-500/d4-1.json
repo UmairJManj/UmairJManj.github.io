@@ -1,0 +1,1666 @@
+{
+ "exam": "sc-500",
+ "domain": "d4",
+ "lessons": [
+  {
+   "id": "sc-500.d4.1.01",
+   "objective": "d4.1",
+   "seq": 1,
+   "title": "Defender CSPM: finding real risk",
+   "short": "Defender for Cloud has a free Foundational CSPM tier and a paid Defender CSPM plan. Defender CSPM adds attack path analysis, the cloud security explorer, risk prioritization, agentless scanning and critical asset protection to show which weaknesses an attacker could really chain together.",
+   "deep": "**Cloud security posture management (CSPM)** means continuously checking cloud resources for misconfigurations and weaknesses.\n\n**Foundational CSPM** (free) gives you asset inventory, security recommendations based on the Microsoft cloud security benchmark, **secure score**, remediation tools and workflow automation across Azure, AWS and GCP.\n\n**Defender CSPM** (paid, billed per billable resource such as VMs, storage accounts and SQL servers) builds a **cloud security graph** of how resources connect, then adds:\n- **Attack path analysis**: paths that start at an external entry point (for example an internet-exposed VM) and lead to a critical target. Requires agentless scanning to be on.\n- **Cloud security explorer**: graph queries such as 'internet-exposed VMs with high-severity CVEs that can reach a storage account holding sensitive data'.\n- **Risk prioritization**, internet exposure analysis, critical assets protection, data security posture management, governance rules, custom recommendations and AI security posture management.\n\nAfter you fix a path it can take up to 24 hours to disappear from the list.",
+   "terms": [
+    {
+     "t": "Defender CSPM",
+     "d": "Paid posture plan adding attack paths, security explorer and agentless scanning."
+    },
+    {
+     "t": "Attack path analysis",
+     "d": "Shows exploitable chains from an external entry point to a critical asset."
+    },
+    {
+     "t": "Cloud security explorer",
+     "d": "Query builder over the cloud security graph for proactive risk hunting."
+    },
+    {
+     "t": "Secure score",
+     "d": "Posture percentage derived from recommendations; included free."
+    }
+   ],
+   "trap": "Exams pair attack path analysis or cloud security explorer with 'Foundational CSPM' as a wrong answer; both need the paid Defender CSPM plan.",
+   "example": "A security engineer turns on Defender CSPM and finds an attack path from an internet-facing VM with a critical CVE to a storage account holding customer data, then fixes the VM first.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Capability",
+     "Foundational",
+     "Defender CSPM"
+    ],
+    "rows": [
+     [
+      "Secure score",
+      "Yes",
+      "Yes"
+     ],
+     [
+      "Recommendations",
+      "Yes",
+      "Yes"
+     ],
+     [
+      "Attack paths",
+      "No",
+      "Yes"
+     ],
+     [
+      "Security explorer",
+      "No",
+      "Yes"
+     ],
+     [
+      "Agentless scanning",
+      "No",
+      "Yes"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.1.02",
+   "objective": "d4.1",
+   "seq": 2,
+   "title": "Regulatory compliance dashboard",
+   "short": "Defender for Cloud measures you against security standards such as the Microsoft cloud security benchmark, PCI DSS or ISO 27001. Standards are Azure Policy initiatives shown in the Regulatory compliance dashboard, where each control is passing, failing or not automatically assessable.",
+   "deep": "A **security standard** is a set of **compliance controls**, and each control is a group of related recommendations.\n\n**Defaults:** Azure subscriptions get the **Microsoft cloud security benchmark (MCSB)**. AWS accounts get MCSB plus **AWS Foundational Security Best Practices**; GCP projects get MCSB plus **GCP Default**.\n\n**Adding standards** (NIST SP 800-53, PCI DSS v4.0.1, ISO/IEC 27001:2022, SOC 2, HIPAA, CIS benchmarks and more):\n- You need any Defender plan enabled **except Defender for Servers Plan 1 or Defender for APIs Plan 1** (in practice usually Defender CSPM).\n- You need **Owner** or **Policy Contributor**.\n- Path: Defender for Cloud > Regulatory compliance > **Manage compliance policies** > pick the scope > **Security policies** > toggle the standard **On**.\n- Assign at the highest useful scope (management group, AWS management account, GCP organization).\n\nIn Defender for Cloud, these standards are implemented as **Azure Policy initiatives**. Control states: green = compliant, red = failing, greyed out = can't be automatically assessed. A standard with no relevant resources doesn't appear on the dashboard. You assign standards in the Azure portal; the Defender portal is for tracking them. You can also download audit reports and build compliance-over-time workbooks.",
+   "terms": [
+    {
+     "t": "Microsoft cloud security benchmark",
+     "d": "Default standard for Azure, AWS and GCP in Defender for Cloud."
+    },
+    {
+     "t": "Compliance control",
+     "d": "Logical group of recommendations mapped to a requirement."
+    },
+    {
+     "t": "Policy Contributor",
+     "d": "Azure role that can add standards, along with Owner."
+    }
+   ],
+   "trap": "A common wrong answer is that a standard can be added with only Defender for Servers Plan 1 or with Security Reader. Neither is enough.",
+   "example": "An auditor asks for PCI DSS evidence. The engineer enables Defender CSPM, adds PCI DSS v4.0.1 at the management group, and downloads the audit report.",
+   "diagram": null
+  },
+  {
+   "id": "sc-500.d4.1.03",
+   "objective": "d4.1",
+   "seq": 3,
+   "title": "Workload protection plans",
+   "short": "Cloud workload protection (CWP) plans add threat detection per resource type: Defender for Servers, Storage, Databases, Containers, App Service, Key Vault, Resource Manager, APIs and AI services. You turn them on per subscription under Environment settings > Defender plans.",
+   "deep": "CSPM finds weaknesses. **Workload protection plans** detect active attacks and raise **security alerts**. Enable them in **Defender for Cloud > Environment settings > [subscription] > Defender plans**, and use the **Settings** link of a plan to configure its components.\n\n**Plans to know:**\n- **Defender for Servers**: Plan 1 or Plan 2, covered in the next lesson.\n- **Defender for Storage**: agentless. Includes **activity monitoring**, **malware scanning** of blobs on upload or on demand (Microsoft Defender Antivirus engine, billed per GB scanned; default cap **10,000 GB per storage account per month**) and **sensitive data threat detection**. Priced per storage account. Enable at subscription level with per-account overrides.\n- **Defender for Containers**: posture, agentless vulnerability assessment of images, and runtime threat protection. Its components are the **Defender sensor** and **Azure Policy for Kubernetes** (admission control, for example blocking privileged containers).\n- **Defender for Databases**: Azure SQL, SQL servers on machines, open-source relational databases, Cosmos DB.\n- **Defender for App Service**, **Key Vault** (unusual secret access), **Resource Manager** (suspicious control-plane operations), **APIs**, and **AI services** threat protection.\n\nFor new subscriptions, DNS alerts are included in Defender for Servers Plan 2 rather than a separate plan.",
+   "terms": [
+    {
+     "t": "CWP",
+     "d": "Cloud workload protection: per-resource threat detection plans that raise alerts."
+    },
+    {
+     "t": "Malware scanning",
+     "d": "Defender for Storage feature that scans uploaded blobs with Defender Antivirus."
+    },
+    {
+     "t": "Defender sensor",
+     "d": "Defender for Containers component for runtime detections on nodes."
+    },
+    {
+     "t": "Defender for Resource Manager",
+     "d": "Detects suspicious Azure management operations."
+    }
+   ],
+   "trap": "Look out for distractors that swap the plans. Suspicious ARM operations belong to Defender for Resource Manager, not Key Vault or CSPM, and malware on upload belongs to Defender for Storage.",
+   "example": "An app lets customers upload files to blob storage. Defender for Storage malware scanning checks each upload, and an Event Grid trigger moves infected blobs to quarantine.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Servers (P1/P2)",
+     "Storage",
+     "Databases",
+     "Containers",
+     "App Service / Key Vault",
+     "Resource Manager / APIs / AI"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.1.04",
+   "objective": "d4.1",
+   "seq": 4,
+   "title": "Defender for Servers Plan 1 vs Plan 2",
+   "short": "Defender for Servers Plan 1 gives Defender for Endpoint integration and agent-based vulnerability management. Plan 2 adds agentless scanning, MDVM premium features, file integrity monitoring, just-in-time VM access, OS update assessment and 500 MB of free daily data ingestion.",
+   "deep": "Both plans onboard machines to **Microsoft Defender for Endpoint (MDE)** for EDR, and both include agent-based **Defender Vulnerability Management (MDVM)** software inventory and vulnerability scanning.\n\n**Plan 2 only:**\n- **Agentless scanning**: vulnerabilities, secrets and malware, read from disk snapshots.\n- **MDVM premium** features, used in the Defender portal.\n- **File integrity monitoring (FIM)**.\n- **Just-in-time (JIT) VM access**: management ports stay closed until someone requests access for a limited time.\n- **500 MB free data ingestion** per day for security tables in Log Analytics.\n- OS system updates assessment for Arc-onboarded machines, and DNS threat alerts.\n\n**Scope:** Microsoft recommends enabling at **subscription** level. **Plan 1 can be enabled or disabled per resource.** Plan 2 can't be enabled per resource; it can only be disabled for a resource.\n\nNon-Azure machines (on-premises, AWS, GCP) are covered through Azure Arc or the multicloud connectors. The legacy Log Analytics agent (MMA) is retired, so its features now come from MDE integration or agentless scanning.",
+   "terms": [
+    {
+     "t": "JIT VM access",
+     "d": "Opens management ports only on approved, time-limited requests. Plan 2 only."
+    },
+    {
+     "t": "FIM",
+     "d": "File integrity monitoring: tracks changes to critical files and registry. Plan 2 only."
+    },
+    {
+     "t": "MDE",
+     "d": "Microsoft Defender for Endpoint, the EDR used by both plans."
+    }
+   ],
+   "trap": "Questions ask which plan includes JIT, FIM or agentless scanning, and the answer is always Plan 2. They also test that only Plan 1 can be enabled on individual resources.",
+   "example": "A company needs EDR on five VMs in a large subscription and wants to pay only for those. It enables Plan 1 at resource level on those five VMs.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Feature",
+     "Plan 1",
+     "Plan 2"
+    ],
+    "rows": [
+     [
+      "MDE integration",
+      "Yes",
+      "Yes"
+     ],
+     [
+      "Agentless scanning",
+      "No",
+      "Yes"
+     ],
+     [
+      "JIT / FIM",
+      "No",
+      "Yes"
+     ],
+     [
+      "500 MB free ingest",
+      "No",
+      "Yes"
+     ],
+     [
+      "Enable per resource",
+      "Yes",
+      "No"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.1.05",
+   "objective": "d4.1",
+   "seq": 5,
+   "title": "Connecting AWS, GCP and hybrid machines",
+   "short": "Use Environment settings > Add environment to connect AWS accounts or GCP projects with a native connector. No long-lived secrets are stored: AWS uses a CloudFormation (or Terraform) deployment with federated trust, and GCP uses workload identity federation. On-premises servers join through Azure Arc.",
+   "deep": "**Prerequisite:** Contributor on the Azure subscription that will hold the connector. The connector is an **Azure resource** with a subscription, resource group and location.\n\n**AWS:** Defender for Cloud > Environment settings > **Add environment > Amazon Web Services**.\n- **Management account** onboarding creates connectors for all member accounts, including new ones, using **CloudFormation StackSets** (needs trusted access for AWS Organizations). **Single account** covers one account.\n- Choose regions, a **scan interval of 4, 6, 12 or 24 hours**, the plans, and **Default access** or **Least privilege access**.\n- Deploy with **AWS CloudFormation** or **Terraform**, then Review and generate > Create.\n\n**GCP:** Add environment > **Google Cloud Platform**. Choose a single project or an organization (APIs enabled in a **management project**), then run the generated **gcloud** script in Cloud Shell. The script creates a workload identity pool, providers and service accounts, so Defender for Cloud uses **workload identity federation** and **service account impersonation**.\n\n**Hybrid:** Onboard on-premises and other-cloud servers with **Azure Arc** so Defender for Servers can protect them. Multicloud connectors can auto-provision Arc.\n\nCheck connector health in the **Connectivity status** column. Update the template or script when you change plans.",
+   "terms": [
+    {
+     "t": "Security connector",
+     "d": "Azure resource representing a connected AWS account or GCP project."
+    },
+    {
+     "t": "CloudFormation StackSet",
+     "d": "Deploys the Defender roles across all accounts in an AWS organization."
+    },
+    {
+     "t": "Workload identity federation",
+     "d": "GCP trust that issues short-lived tokens to Defender for Cloud without stored keys."
+    },
+    {
+     "t": "Azure Arc",
+     "d": "Projects non-Azure servers into Azure so Defender plans can protect them."
+    }
+   ],
+   "trap": "Distractors include storing AWS access keys or GCP JSON keys in Key Vault, and using Azure Lighthouse. Connectors use federation, and onboarding the management account covers future member accounts.",
+   "example": "A retailer onboards its AWS management account with StackSets, and its 40 member accounts and any new ones appear in Defender for Cloud.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Add environment",
+     "Account details",
+     "Select plans",
+     "Configure access",
+     "Deploy template",
+     "Create"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.1.06",
+   "objective": "d4.1",
+   "seq": 6,
+   "title": "Defender Vulnerability Management for Azure VMs",
+   "short": "Defender for Servers uses Microsoft Defender Vulnerability Management (MDVM) as its built-in vulnerability scanner. Turn on Vulnerability assessment for machines in the Defender for Servers settings. Findings come from the MDE sensor (agent-based) or from disk snapshots (agentless).",
+   "deep": "**Where to configure:** Defender for Cloud > **Environment settings** > select the subscription > Defender for Servers **Settings** (Settings and monitoring / Monitoring coverage) > turn on **Vulnerability assessment for machines** > **Edit configuration** to confirm Microsoft Defender Vulnerability Management > Apply > Save. It's on by default when you enable Defender for Servers.\n\n**Two scanning methods:**\n- **Agent-based**: uses the Defender for Endpoint sensor. Needs Defender for Servers **Plan 1 or Plan 2**, and the MDE integration (Endpoint protection) setting turned on.\n- **Agentless**: on by default with **Plan 2 or Defender CSPM**. Defender for Cloud snapshots the OS and data disks, analyses the copy in the same region, then deletes it. The VM's performance isn't affected. **Customer-managed key** disks need extra Key Vault key permissions (read, wrap, unwrap).\n\n**Permissions:** Owner at resource group level to deploy the scanner. Security Reader to view findings.\n\nFindings show up as recommendations listing CVEs per machine, and in the Defender portal's Vulnerability management pages, where Plan 2 adds the MDVM premium features. You can also turn the setting on per VM through the REST API resource `serverVulnerabilityAssessments/mdetvm`.",
+   "terms": [
+    {
+     "t": "MDVM",
+     "d": "Microsoft Defender Vulnerability Management: inventory and CVE assessment engine."
+    },
+    {
+     "t": "Agentless scanning",
+     "d": "Snapshot-based scanning with no agent. Plan 2 or Defender CSPM."
+    },
+    {
+     "t": "CMK",
+     "d": "Customer-managed key. Encrypted disks need Key Vault permissions for agentless scans."
+    }
+   ],
+   "trap": "The exam may claim agent-based MDVM scanning needs Plan 2. It works with Plan 1 too. Agentless scanning and premium features are the Plan 2 / Defender CSPM extras.",
+   "example": "An admin turns on Plan 2. Within a day, agentless scanning lists Log4j CVEs on VMs that have no MDE sensor yet.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Disk snapshot",
+     "Scan in region",
+     "Delete snapshot",
+     "Findings",
+     "Recommendation"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.1.07",
+   "objective": "d4.1",
+   "seq": 7,
+   "title": "Defender EASM: the outside-in view",
+   "short": "Microsoft Defender External Attack Surface Management (EASM) starts from discovery seeds such as domains, IP blocks and ASNs. It crawls the internet to find your externally reachable assets, including forgotten ones, then shows their vulnerabilities and hygiene issues in inventory and dashboards.",
+   "deep": "**Defender EASM** is an Azure resource that maps your **external attack surface**, meaning what an attacker sees from the internet.\n\n**Discovery:**\n- You supply **discovery seeds**: organization names, domains, IP blocks, hosts, email contacts, ASNs and Whois organizations. **Private IP addresses can't be seeds.**\n- Seeds sit in **discovery groups**, each with its own schedule (default **Weekly**; **Never** runs once). **Exclusions** stop unrelated entities from being added.\n- Many organizations have a **prebuilt attack surface** to start from ('Build my Attack Surface').\n\n**Inventory states:** **Approved** (the default inventory view), **Candidate**, **Dependency**, **Monitor only** and **Requires investigation**. You can also add labels to assets.\n\n**Dashboards:** Overview, Inventory changes, Attack surface summary, Security posture, GDPR compliance, **OWASP Top 10**, **CWE top 25** and **CISA known exploits**.\n\n**Access:** Azure RBAC on the resource (Owner/Contributor to edit, Reader to view). Cross-tenant access, including Azure Lighthouse, isn't supported.\n\n**With Defender CSPM:** the EASM integration is included **without a separate EASM licence**. It adds internet-exposure validation, attack paths that start from internet-exposed IPs, and explorer queries.",
+   "terms": [
+    {
+     "t": "Discovery seed",
+     "d": "Known asset EASM recursively expands from."
+    },
+    {
+     "t": "Approved inventory",
+     "d": "Assets confirmed as yours. The default inventory view."
+    },
+    {
+     "t": "Discovery group",
+     "d": "A set of seeds with its own recurrence schedule and exclusions."
+    }
+   ],
+   "trap": "Watch for 'use a private IP range as a seed' (not allowed) and 'buy EASM to get internet exposure in Defender CSPM' (it's already included).",
+   "example": "A merger brings unknown web estates. The team seeds EASM with the acquired company's domains, and a forgotten staging host with an expired certificate turns up.",
+   "diagram": {
+    "kind": "cycle",
+    "items": [
+     "Seeds",
+     "Discover",
+     "Inventory",
+     "Insights",
+     "Remediate"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.01",
+   "objective": "d4.2",
+   "seq": 1,
+   "title": "Creating and connecting Sentinel workspaces",
+   "short": "Microsoft Sentinel runs on top of a Log Analytics workspace. You enable Sentinel on the workspace, then connect it to the Defender portal. Each tenant has one primary workspace there and any number of secondary workspaces.",
+   "deep": "**Enable:** Create or pick a **Log Analytics workspace**, then add Microsoft Sentinel to it. You need **Contributor** on the subscription to enable it, and Microsoft Sentinel Reader or Contributor on the resource group to use it. Workspaces created by Defender for Cloud don't appear in the list. After deployment, Sentinel **doesn't support moving the workspace** to another resource group or subscription.\n\n**Defender portal (unified SecOps):** Microsoft Sentinel in the Azure portal retires after **March 31, 2027**. Customers who are new and hold Owner or User Access Administrator are onboarded to the Defender portal automatically.\n- One **primary workspace** per tenant receives the **Defender XDR connector**. Its alerts are correlated with XDR data in one incident queue.\n- **Secondary workspaces** (no limit) don't receive XDR incidents but can still ingest Defender tables.\n- To change the primary, go to **System > Settings > Microsoft Sentinel > Workspaces**. The XDR connector moves automatically.\n- To onboard or change the primary you need Security Administrator, Owner, or User Access Administrator plus Microsoft Sentinel Contributor.\n\n**Design:** Keep one workspace where possible. Add workspaces for data residency, billing or strict access separation. Query across them with the `workspace()` function.",
+   "terms": [
+    {
+     "t": "Log Analytics workspace",
+     "d": "The data store Microsoft Sentinel is enabled on."
+    },
+    {
+     "t": "Primary workspace",
+     "d": "The Defender portal workspace that gets the Defender XDR connector and unified incidents."
+    },
+    {
+     "t": "workspace()",
+     "d": "KQL function that references a table in another workspace."
+    }
+   ],
+   "trap": "A trap is assuming every connected workspace receives Defender XDR incidents. Only the primary does.",
+   "example": "A company with EU and US data residency runs two workspaces. EU is primary for XDR correlation, and hunters use workspace() to search both.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Defender portal",
+     "Primary workspace + XDR",
+     "Secondary workspaces",
+     "Log Analytics"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.02",
+   "objective": "d4.2",
+   "seq": 2,
+   "title": "Microsoft Sentinel roles",
+   "short": "Sentinel uses Azure RBAC roles: Microsoft Sentinel Reader, Responder, Contributor, Playbook Operator and Automation Contributor. Playbooks also need Logic App Contributor, and creating workbooks needs Workbook Contributor. Assign roles at the resource group that holds the workspace.",
+   "deep": "**Built-in Sentinel roles** (Reader, Responder and Contributor each include the rights of the role before them):\n- **Microsoft Sentinel Reader**: view data, incidents, workbooks and other resources.\n- **Microsoft Sentinel Responder**: Reader plus **manage incidents** (assign, change status, comment).\n- **Microsoft Sentinel Contributor**: Responder plus create and edit analytics rules, workbooks and other resources, and **install or update content hub solutions**.\n- **Microsoft Sentinel Playbook Operator**: list, view and **manually run** playbooks.\n- **Microsoft Sentinel Automation Contributor**: lets the **Sentinel service** add playbooks to automation rules. It's **not for user accounts**.\n\n**Other Azure roles you'll need:**\n- **Logic App Contributor**: create and edit playbooks, which are Logic Apps.\n- **Workbook Contributor**: create and delete workbooks, alongside a Sentinel role.\n- **Owner** on the playbook resource group: grant Sentinel permission to run playbooks.\n- Write permission on the workspace: connect data sources. Each connector may add requirements.\n\nAssign at **resource group** scope so related Logic Apps are covered. For finer control use **resource-context RBAC** or **table-level RBAC**. The Sentinel data lake uses Entra roles such as Security Reader or Security Operator.",
+   "terms": [
+    {
+     "t": "Microsoft Sentinel Responder",
+     "d": "Can manage incidents but not create rules."
+    },
+    {
+     "t": "Playbook Operator",
+     "d": "Can run playbooks manually but not edit them."
+    },
+    {
+     "t": "Automation Contributor",
+     "d": "Service-only role used by Sentinel to attach playbooks."
+    }
+   ],
+   "trap": "Questions often offer Automation Contributor for a human user. It's meant only for the Sentinel service. Editing playbooks needs Logic App Contributor.",
+   "example": "Tier-1 analysts get Responder, detection engineers get Contributor, and the automation team gets Logic App Contributor on the playbooks resource group.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Contributor: rules, solutions",
+     "Responder: incidents",
+     "Reader: view"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.03",
+   "objective": "d4.2",
+   "seq": 3,
+   "title": "Content hub solutions",
+   "short": "The content hub is where you install packaged Sentinel solutions (connectors, analytics rule templates, workbooks, hunting queries, parsers and playbooks) and standalone content. Installing deploys templates, and you then create active rules and connectors from them.",
+   "deep": "Find it in the Defender portal under **Microsoft Sentinel > Content management > Content hub** (or in the Azure portal under Content management).\n\n**Two kinds of content:**\n- **Solutions**: end-to-end packages for a product or domain, from Microsoft or partners. A solution must be **installed as a whole** before you can use any of its items.\n- **Standalone content**: single items, many from Microsoft's GitHub, that **update automatically**.\n\n**Installing:** use **Install/Update** in bulk, or View details > Create. Some solutions depend on others (for example AMA-based CEF/Syslog connectors). Use **Install with dependencies** for those. New versions show **Update** and add to the Updates count.\n\n**Installing doesn't turn anything on.** Use **Manage** to work with each item:\n- Data connectors: open the connector page and finish the configuration.\n- Analytics rules: **create rules from the templates**.\n- Hunting queries: run them or clone them.\n- Workbooks: save a copy of the template.\n- Parsers: use them as workspace functions.\n- Playbooks: create one from the template.\n\n**Role:** **Microsoft Sentinel Contributor** at resource group level to install, update or delete content.",
+   "terms": [
+    {
+     "t": "Solution",
+     "d": "Packaged set of Sentinel content installed as one unit."
+    },
+    {
+     "t": "Standalone content",
+     "d": "Individual items that update automatically."
+    },
+    {
+     "t": "Rule template",
+     "d": "Inactive analytics rule definition you create active rules from."
+    }
+   ],
+   "trap": "A classic trap: after installing a solution, no detections run. You still have to create analytics rules from its templates and configure its connectors.",
+   "example": "The SOC installs the Microsoft Entra ID solution, enables its connector, and creates rules from five of its analytics templates.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Content hub",
+     "Install solution",
+     "Manage",
+     "Create from template",
+     "Active content"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.04",
+   "objective": "d4.2",
+   "seq": 4,
+   "title": "Microsoft and Azure data connectors",
+   "short": "Microsoft service connectors connect in one of three ways: API-based (Entra ID, Defender XDR), diagnostic settings-based (Azure resources, often managed by Azure Policy) or Windows agent-based. Each connector writes to known tables such as SigninLogs, AzureActivity or SecurityAlert.",
+   "deep": "**API-based:** for example **Microsoft Entra ID**. Pick the log types you want, and each goes to its own table: `SigninLogs`, `AADNonInteractiveUserSignInLogs`, `AADServicePrincipalSignInLogs`, `AADManagedIdentitySignInLogs`, `AuditLogs`, `AADProvisioningLogs`, `AADRiskyUsers`, `AADUserRiskEvents` and others. **Sign-in logs need Entra ID P1 or P2**. You need **Security Administrator** on the tenant and Microsoft Sentinel Contributor on the workspace.\n\n**Diagnostic settings-based:** Azure resources send resource logs through diagnostic settings, configured either:\n- **Standalone**: per resource, under Diagnostic settings > Send to Log Analytics workspace.\n- **Azure Policy-managed**: **Launch Azure Policy Assignment wizard**, pick a scope and the workspace, and tick **Create a remediation task** so existing resources are covered as well as new ones. Requires **Owner** on the assignment scope. **Azure Activity** works this way and writes to `AzureActivity`. Policy-managed connectors show Connected only if data arrived in the last 14 days.\n\n**Defender for Cloud connector:** subscription-based (legacy) or tenant-based (preview). It writes alerts to `SecurityAlert` with ProductName \"Azure Security Center\". **Bi-directional sync** closes the Defender for Cloud alert when you close the Sentinel incident. Once Sentinel is in the Defender portal, these alerts already arrive through Defender XDR.",
+   "terms": [
+    {
+     "t": "Diagnostic settings",
+     "d": "Azure feature that streams resource logs to a destination such as a workspace."
+    },
+    {
+     "t": "Remediation task",
+     "d": "Azure Policy job that applies a deployIfNotExists policy to existing resources."
+    },
+    {
+     "t": "Bi-directional sync",
+     "d": "Closing the Sentinel incident also closes the Defender for Cloud alert."
+    }
+   ],
+   "trap": "Watch for 'sign-in logs work with Entra ID Free' (they need P1/P2) and for skipping the remediation task, which leaves existing resources unconfigured.",
+   "example": "To capture Key Vault and Activity logs across 30 subscriptions, an engineer assigns the connector's Azure Policy with a remediation task instead of configuring each resource by hand.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Method",
+     "Example",
+     "Table"
+    ],
+    "rows": [
+     [
+      "API-based",
+      "Entra ID",
+      "SigninLogs"
+     ],
+     [
+      "Diagnostic/Policy",
+      "Azure Activity",
+      "AzureActivity"
+     ],
+     [
+      "Agent-based",
+      "Windows events",
+      "SecurityEvent"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.05",
+   "objective": "d4.2",
+   "seq": 5,
+   "title": "Syslog and CEF via AMA",
+   "short": "Linux machines and network appliances send logs to a Linux log forwarder that runs rsyslog or syslog-ng and the Azure Monitor Agent (AMA). A data collection rule (DCR) from the Syslog via AMA or CEF via AMA connector decides which facilities and severities go to the Syslog or CommonSecurityLog table.",
+   "deep": "**Syslog** is the standard Unix logging protocol. **Common Event Format (CEF)** is a syslog message with a structured `CEF:` payload that many firewalls and proxies use.\n\n**Setup:**\n1. Install the **Syslog** or **Common Event Format** solution from the content hub.\n2. On the **Syslog via AMA** or **CEF via AMA** connector, choose **+Create data collection rule**. On Resources, select the forwarder, and AMA installs when the DCR is created. On Collect, choose a **minimum log level per facility**. Picking LOG_ERR also collects crit, alert and emerg.\n3. Run **Forwarder_AMA_installer.py** on the forwarder. It sets the daemon to listen on **port 514 over UDP and TCP**.\n4. Point the appliances at the forwarder, then query `CommonSecurityLog` (CEF) or `Syslog`. Allow up to 20 minutes for data to appear.\n\n**Requirements:** a supported Linux VM. A non-Azure forwarder needs the **Azure Arc Connected Machine agent**. You need Python 2.7/3 and rsyslog or syslog-ng. To create DCRs you need **Monitoring Contributor**, and to deploy the agent you need VM Contributor or Azure Connected Machine Resource Administrator.\n\n**Gotchas:** using the **same facility** for both Syslog and CEF DCRs duplicates data. A full disk stops AMA, so don't let the daemon store logs it doesn't need. Scale out with a load-balanced scale set.",
+   "terms": [
+    {
+     "t": "CEF",
+     "d": "Common Event Format, a structured syslog payload stored in CommonSecurityLog."
+    },
+    {
+     "t": "Log forwarder",
+     "d": "Linux host with rsyslog/syslog-ng and AMA that relays appliance logs."
+    },
+    {
+     "t": "Facility",
+     "d": "Syslog source category such as auth, authpriv or local4."
+    }
+   ],
+   "trap": "Common traps are the retired Log Analytics agent (MMA) offered as the collector, and 'port 514 UDP only'. The installer opens both UDP and TCP.",
+   "example": "A Palo Alto firewall sends CEF to an Arc-enabled forwarder on-premises. The CEF via AMA DCR lands the events in CommonSecurityLog.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Appliance",
+     "rsyslog :514",
+     "AMA + DCR",
+     "Workspace",
+     "CommonSecurityLog"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.06",
+   "objective": "d4.2",
+   "seq": 6,
+   "title": "Windows Security events with DCRs",
+   "short": "The Windows Security Events via AMA connector creates a DCR that collects Security log events into the SecurityEvent table. Choose an event set (All, Common, Minimal) or write Custom XPath queries to control which events you collect and how much they cost.",
+   "deep": "**Connector:** Windows Security Events via AMA. Select the target machines (Azure VMs, or **Azure Arc-enabled** servers for on-premises), and the DCR deploys AMA and the collection settings.\n\n**Event sets:**\n- **All**: every Security and AppLocker event. Highest volume.\n- **Common**: a full user audit trail, including logon/logoff (4624, 4634), group changes and key Kerberos events, at lower volume.\n- **Minimal**: a small set of events that may indicate a threat, such as 4624, 4625 and process creation 4688. No full audit trail (no 4634).\n- **Custom**: your own **XPath** queries.\n\n**XPath format:** `LogName!XPathQuery`, for example `Security!*[System[(EventID=4624 or EventID=4625)]]`. Test it first with `Get-WinEvent -LogName Security -FilterXPath '<query>'`. DCRs accept a limited number of expressions, and XPath functions such as `contains` aren't supported.\n\n**Table matters:** this connector writes to **SecurityEvent**, which most built-in Windows analytics rules query. If you collect the Security log with a generic Azure Monitor Windows event DCR instead, events land in the **Event** table.\n\n**Cost tip:** filter in the DCR (XPath or transformations) instead of ingesting everything.",
+   "terms": [
+    {
+     "t": "Event set",
+     "d": "Predefined Security event filter: All, Common, Minimal or Custom."
+    },
+    {
+     "t": "XPath query",
+     "d": "Filter in LogName!query form used by DCRs to select Windows events."
+    },
+    {
+     "t": "SecurityEvent",
+     "d": "Sentinel table for Windows Security events collected by AMA."
+    }
+   ],
+   "trap": "Look out for 'Minimal includes logoff events' (it doesn't) and for answers that put AMA Security events in the Event table when the Sentinel connector is used.",
+   "example": "To cut cost, an engineer moves domain controllers from All to Common and adds a custom XPath for 4740 lockouts on member servers.",
+   "diagram": null
+  },
+  {
+   "id": "sc-500.d4.2.07",
+   "objective": "d4.2",
+   "seq": 7,
+   "title": "Windows Event Forwarding (WEF) into Sentinel",
+   "short": "With Windows Event Forwarding, many Windows machines push events to a Windows Event Collector server's ForwardedEvents log. AMA on that collector, set up through the Windows Forwarded Events connector, sends them to the WindowsEvent table.",
+   "deep": "**Windows Event Forwarding (WEF)** is built into Windows. Source computers, usually configured by Group Policy, send selected events through WinRM subscriptions to a **Windows Event Collector (WEC)**. The events land in that server's **ForwardedEvents** channel.\n\n**Why use it:** you don't have to install AMA on thousands of endpoints. You deploy AMA on one or a few collectors, and those can be Arc-enabled if they're on-premises.\n\n**In Sentinel:**\n- Install the Windows Forwarded Events solution and connector, then create a DCR targeting the collector servers.\n- Events are stored in the **WindowsEvent** table, which is not SecurityEvent.\n- Many built-in analytics rules query **SecurityEvent**. If forwarded events don't trigger a rule, change the rule to query WindowsEvent, or collect those machines with the Windows Security Events via AMA connector instead.\n\n**Design tips:** size collectors for the event rate, use XPath in the WEF subscription and DCR to drop noise, and run more than one collector for resilience.",
+   "terms": [
+    {
+     "t": "WEF",
+     "d": "Windows Event Forwarding: push or pull of events to a collector by WinRM subscription."
+    },
+    {
+     "t": "WEC",
+     "d": "Windows Event Collector server that receives forwarded events."
+    },
+    {
+     "t": "WindowsEvent",
+     "d": "Table used by the Windows Forwarded Events connector."
+    }
+   ],
+   "trap": "The exam tests the table difference. Forwarded events go to WindowsEvent, so rules written for SecurityEvent won't see them.",
+   "example": "A bank forwards workstation security events to two WEC servers through GPO and installs AMA only on those servers.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Endpoints (GPO)",
+     "WEC ForwardedEvents",
+     "AMA + DCR",
+     "WindowsEvent"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.08",
+   "objective": "d4.2",
+   "seq": 8,
+   "title": "Custom log tables",
+   "short": "Data with no built-in table goes into a custom table whose name ends in _CL. Feed it from text files with the Custom Logs via AMA connector, or from any app through the Logs Ingestion API. Both use a data collection rule that can transform the data with KQL.",
+   "deep": "**Naming:** custom tables end in **`_CL`**, and custom columns added to Azure tables end in **`_CF`**.\n\n**Text files from servers (Custom Logs via AMA, preview):**\n1. Create the table first, with only **TimeGenerated** (datetime) and **RawData** (string). Use **Message** instead of RawData when logs arrive through a forwarder. In the Defender portal you create it from Advanced hunting.\n2. Install the solution for the app, or the generic Custom Logs via AMA solution.\n3. Create a DCR with the **file pattern** (wildcards allowed), the table name and a transform (`source` by default).\n\n**Logs Ingestion API (REST):**\n- A **DCR** declares the input stream (`Custom-<name>`), the destination workspace, a **transformKql** (`source` to pass through, or KQL to filter and reshape) and the **outputStream** `Custom-<table>_CL`.\n- The client authenticates as a **Microsoft Entra app registration** (client credentials). The app needs **Monitoring Metrics Publisher** on the DCR.\n- A **data collection endpoint (DCE)** is only needed with Private Link or older DCRs that have no logs ingestion endpoint.\n- It can also write to some standard tables, through `Microsoft-<table>` streams.",
+   "terms": [
+    {
+     "t": "_CL",
+     "d": "Required suffix for custom log tables."
+    },
+    {
+     "t": "transformKql",
+     "d": "KQL in a DCR that filters or reshapes data before ingestion."
+    },
+    {
+     "t": "Monitoring Metrics Publisher",
+     "d": "Role on the DCR that lets an app send data through the Logs Ingestion API."
+    }
+   ],
+   "trap": "The usual trap is giving the sending app Log Analytics Contributor. The Logs Ingestion API checks Monitoring Metrics Publisher on the DCR.",
+   "example": "A SaaS HR app posts JSON audit events to the Logs Ingestion API. The DCR drops debug rows and writes the rest to HRAudit_CL.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "App (Entra app)",
+     "Logs Ingestion API",
+     "DCR transformKql",
+     "Table_CL"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.09",
+   "objective": "d4.2",
+   "seq": 9,
+   "title": "Automation rules",
+   "short": "Automation rules are lightweight if-then logic for incidents and alerts. A trigger (incident created, incident updated, alert created) plus conditions decides when to run actions: change status, severity or owner, add tags or tasks, or run a playbook.",
+   "deep": "**Triggers:**\n- **When incident is created**: from analytics rules, Defender XDR, or manual creation.\n- **When incident is updated**: status, owner or severity changes, alerts added, comments, tags or tactics. Conditions can check state changes ('changed to') and **Updated by**.\n- **When alert is created**: only for alerts from **Scheduled, NRT and Microsoft security** analytics rules. Its only condition is which analytics rules it applies to.\n\n**Actions:** run a playbook, change status (closing reason and comment needed when closing), change severity, assign owner, add tags, add tasks. Incident-trigger rules run only incident-trigger playbooks, and alert-trigger rules run only alert-trigger playbooks.\n\n**Order:** rules run **sequentially** by order number, never in parallel. Create-trigger rules run before update-trigger rules. A later rule sees the changes earlier rules made. After a playbook action, the next action waits for it to finish, up to two minutes.\n\n**Expiration:** a rule can expire on a set date. This is ideal for temporary suppression, for example auto-closing incidents from a pen-test IP for a week.\n\nUse automation rules for triage housekeeping, and playbooks for complex or external actions.",
+   "terms": [
+    {
+     "t": "Automation rule",
+     "d": "Trigger + conditions + actions evaluated centrally for incidents and alerts."
+    },
+    {
+     "t": "Expiration date",
+     "d": "Automatically disables a rule, useful for temporary suppression."
+    },
+    {
+     "t": "NRT rule",
+     "d": "Near-real-time analytics rule. Its alerts can trigger alert-created rules."
+    }
+   ],
+   "trap": "Exams test that automation rules run in order rather than in parallel, and that 'alert created' doesn't fire for every alert source.",
+   "example": "During a two-week pen test, a rule with an expiration date auto-closes incidents whose entities include the testers' IP, tagging them 'pentest'.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Trigger",
+     "Conditions",
+     "Actions in order",
+     "Next rule"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.10",
+   "objective": "d4.2",
+   "seq": 10,
+   "title": "Playbooks (Logic Apps)",
+   "short": "A playbook is an Azure Logic Apps workflow that uses the Microsoft Sentinel connector. Triggers can be incident, alert or entity. Automation rules run playbooks through Sentinel's own service account, so Sentinel needs explicit permission on the playbook's resource group.",
+   "deep": "**Building playbooks:** create them from content hub or automation templates, or build a Logic App directly. A playbook has a **trigger** (Microsoft Sentinel **incident**, **alert** or **entity**), **actions** (for example block a user in Entra ID, isolate a device, post to Teams, open a ServiceNow ticket) and **dynamic fields**.\n\n**Logic app types:**\n- **Consumption**: multitenant, pay per run, supports templates.\n- **Standard**: single-tenant, better networking and CI/CD. But **no playbook templates**, **stateful workflows only**, and private endpoints need an access restriction policy.\n\n**Permissions:**\n- To create or edit: **Logic App Contributor**. To run manually: **Microsoft Sentinel Playbook Operator**.\n- To let automation rules run playbooks: Sentinel uses the **Azure Security Insights** service account. Grant it access under Settings > **Playbook permissions** for the playbook's resource group. This needs **Owner** on that resource group. In multitenant setups, grant it in the tenant where the playbook lives.\n- The playbook authenticates to Sentinel and other services through its connectors. A **managed identity** is the common choice.\n\nIncident-trigger playbooks are the recommended default. Use alert-trigger playbooks for rules that don't create incidents.",
+   "terms": [
+    {
+     "t": "Playbook",
+     "d": "Logic Apps workflow run in response to Sentinel incidents, alerts or entities."
+    },
+    {
+     "t": "Entity trigger",
+     "d": "Lets an analyst run a playbook on a single entity such as an IP or account."
+    },
+    {
+     "t": "Azure Security Insights",
+     "d": "Sentinel service identity that runs playbooks from automation rules."
+    }
+   ],
+   "trap": "If an automation rule can't run a playbook, the fix is usually granting Sentinel permissions on the playbook resource group. Giving the analyst more rights doesn't help.",
+   "example": "A high-severity incident triggers an automation rule. Its playbook disables the user in Entra ID and posts a summary to the SOC Teams channel.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Incident",
+     "Automation rule",
+     "Playbook trigger",
+     "Actions",
+     "Update incident"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.11",
+   "objective": "d4.2",
+   "seq": 11,
+   "title": "Data retention in Sentinel",
+   "short": "Sentinel data sits in an analytics tier (hot, for detections and hunting; 30 days by default, up to 2 years) and a data lake tier (cheap long-term storage up to 12 years). Set each table's tier and retention in the Defender portal under Microsoft Sentinel > Configuration > Tables.",
+   "deep": "**Analytics tier:** supports analytics rules, alerting, advanced hunting and custom detections. The default is **30 days**, extendable up to **2 years**. Microsoft Sentinel solution tables get **90 days at no storage charge**.\n\n**Data lake tier:** low-cost storage. **Total retention** can reach **12 years**. Analytics-tier data is mirrored to the lake, so total retention covers both. Data that lives only in the lake can't feed real-time analytics rules or normal hunting. Use **KQL jobs** to promote it back into an analytics table (new tables get the `_KQL_CL` suffix) or to search it.\n\n**Configuring:** Defender portal > Microsoft Sentinel > Configuration > **Tables** > select a table > **Manage table**. Viewing needs Security data basics (read) or Log Analytics Reader. Changing settings needs Data (manage) or **Log Analytics Contributor**.\n\n**Behaviours to remember:**\n- Moving a table from Analytics to Data lake **stops** its analytics rules and hunting.\n- Some XDR and solution tables must stay in the analytics tier.\n- Lowering analytics retention takes effect immediately. The data moves to the lake if total retention is longer.\n- Lowering **total** retention has a **30-day grace period** before deletion.\n- Defender XDR advanced hunting keeps data for 30 days by default.",
+   "terms": [
+    {
+     "t": "Analytics tier",
+     "d": "Hot tier for detections and hunting. 30 days to 2 years."
+    },
+    {
+     "t": "Data lake tier",
+     "d": "Low-cost long-term tier. Total retention up to 12 years."
+    },
+    {
+     "t": "KQL job",
+     "d": "Scheduled or one-time query that promotes or searches data lake data."
+    }
+   ],
+   "trap": "A typical trap is '7-year analytics retention'. The analytics tier stops at 2 years, so long-term retention goes in the data lake.",
+   "example": "Firewall logs must be kept for 7 years. The team keeps 90 days in the analytics tier for detections and sets total retention to 7 years in the data lake.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Tier",
+     "Retention",
+     "Detections"
+    ],
+    "rows": [
+     [
+      "Analytics",
+      "30 d to 2 yrs",
+      "Yes"
+     ],
+     [
+      "Data lake",
+      "Up to 12 yrs",
+      "No (KQL jobs)"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.2.12",
+   "objective": "d4.2",
+   "seq": 12,
+   "title": "Querying Microsoft Purview Audit in Defender XDR",
+   "short": "The Microsoft Defender portal includes the same Audit search as the Purview portal, at security.microsoft.com/auditlogsearch, for searching the unified audit log. For KQL, advanced hunting's CloudAppEvents table holds Microsoft 365 activity once the Defender for Cloud Apps Microsoft 365 connector is on.",
+   "deep": "**The unified audit log** records user and admin activity across Exchange, SharePoint, OneDrive, Teams, Entra ID and more.\n\n**Audit search in Defender:** **Audit** in the Defender portal (`/auditlogsearch`) works the same as Purview's. Filter by date range, activities, users and record types, then export results.\n\n**Permissions:** the **Audit Logs** or **View-Only Audit Logs** role in Exchange Online. By default these come through the **Organization Management** and **Compliance Management** role groups. The Entra Compliance Administrator role also works. Use least privilege rather than Global Administrator.\n\n**Tiers:**\n- **Audit (Standard)**: on by default, **180-day** retention.\n- **Audit (Premium)**: **1 year** for Exchange, SharePoint, OneDrive and Entra ID records. Adds custom retention policies, intelligent insights such as **MailItemsAccessed**, and higher API bandwidth. The **10-Year Audit Log Retention** add-on extends this, but it isn't retroactive.\n\n**Scripting:** `Search-UnifiedAuditLog` in Exchange Online PowerShell.\n\n**KQL in advanced hunting:** **CloudAppEvents** holds Office 365 and connected-app activity. It needs Settings > Cloud apps > App connectors > Microsoft 365 > **Microsoft 365 activities**. Useful columns include `ActionType`, `AccountDisplayName`, `IsAdminOperation`, `IsExternalUser`, `IsImpersonated`, `IPAddress`, `ObjectName` and `RawEventData`.",
+   "terms": [
+    {
+     "t": "Unified audit log",
+     "d": "Tenant-wide Microsoft 365 activity record searched by Audit."
+    },
+    {
+     "t": "CloudAppEvents",
+     "d": "Advanced hunting table of Microsoft 365 and cloud-app activity."
+    },
+    {
+     "t": "View-Only Audit Logs",
+     "d": "Exchange Online role that allows searching the audit log."
+    }
+   ],
+   "trap": "Don't confuse the Entra `AuditLogs` table with Purview Audit, or assume Audit (Standard) keeps records for a year.",
+   "example": "An investigator searches Audit in the Defender portal for FileDownloaded by a departing user, then pivots to CloudAppEvents to correlate IP addresses.",
+   "diagram": null
+  },
+  {
+   "id": "sc-500.d4.3.01",
+   "objective": "d4.3",
+   "seq": 1,
+   "title": "Security Copilot workspaces",
+   "short": "A Security Copilot workspace is a separate environment with its own capacity (SCUs), data storage location, prompt evaluation setting, data sharing choice, plugins and role assignments. Teams such as SOC, compliance and sandbox can be kept apart.",
+   "deep": "Create workspaces at securitycopilot.microsoft.com from the workspace breadcrumb (**New workspace**) or **Owner settings > Manage workspaces**.\n\n**Decisions at creation:**\n- **Name**: unique in the tenant. Letters, numbers, hyphens and underscores only, no spaces. It can't be renamed later without Microsoft Support.\n- **Capacity**: an Azure capacity resource with **provisioned SCUs** (Security Compute Units) plus optional **overage SCUs**. A capacity can serve **only one workspace at a time**. A workspace must always have one, but you can switch it later.\n- **Data storage location**: where session data is stored at rest: Australia (ANZ), Europe (EU), Switzerland, UK or US. It's **immutable**, so changing it means creating a new workspace.\n- **Prompt evaluation location**: the same geography, or **Evaluate anywhere with available capacity** for speed, which gives looser geographic control.\n- **Data sharing**: opt in or out of Microsoft using prompts and responses to improve the service.\n\n**Per-workspace owner settings:** capacity, data sharing, file upload permissions (owners only or all contributors) and plugins. **Audit logging to Purview is tenant-wide** and changed by a Security Administrator.\n\n**Inclusion model:** Microsoft 365 E5/E7 tenants get a default capacity of **400 SCUs per month per 1,000 user licences** (capped at 10,000). Unused SCUs don't roll over.",
+   "terms": [
+    {
+     "t": "SCU",
+     "d": "Security Compute Unit, the billing and capacity unit for Security Copilot."
+    },
+    {
+     "t": "Capacity",
+     "d": "Azure resource holding provisioned and overage SCUs, linked to one workspace."
+    },
+    {
+     "t": "Data storage location",
+     "d": "Geography where workspace data is stored at rest. Can't be changed."
+    }
+   ],
+   "trap": "A typical trap is 'change the data storage location later'. It's fixed. Another is 'share one capacity between two workspaces', which isn't allowed.",
+   "example": "Contoso builds an EU compliance workspace with EU storage and EU prompt evaluation, and a sandbox workspace that opts in to data sharing for testing.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Workspace",
+     "Capacity (SCUs)",
+     "Storage + prompt location",
+     "Plugins + roles"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.3.02",
+   "objective": "d4.3",
+   "seq": 2,
+   "title": "Security Copilot roles and permissions",
+   "short": "Security Copilot has two roles of its own, Copilot owner and Copilot contributor, scoped per workspace. They control access to Copilot features only. What data a user sees still depends on their roles in each underlying product, such as Microsoft Sentinel Reader for the Sentinel plugin.",
+   "deep": "**Copilot owner:** manages capacity, data sharing, file upload settings, plugin availability, custom plugins, role assignments and agents, and can view the usage dashboard.\n**Copilot contributor:** creates sessions, submits prompts, runs and shares promptbooks, and uploads files if allowed.\n\n**Key ideas:**\n- These **aren't Microsoft Entra roles** and give **no access to security data** on their own. Copilot works **on behalf of the user**. To query Sentinel the user needs an Azure role such as **Microsoft Sentinel Reader**. For Intune, they need an Intune role, and so on.\n- Some Entra and product roles **automatically inherit owner**: Global Administrator, Security Administrator, Billing Administrator, Compliance Administrator, Intune Administrator, and certain Purview roles.\n- For new instances, contributor access goes by default to the **Recommended Microsoft Security roles** group (users who already hold security roles). Older tenants may still have **Everyone** as contributor. Microsoft recommends removing it, and once removed it can't be added back.\n- Assign roles in **Owner settings > Role assignments** to users, **security groups** (recommended), Entra roles or managed identities. Roles apply **per workspace**. New members can take a few minutes to see the workspace.\n- Don't hand out Security Administrator just to give someone Copilot access. Use a group with the Copilot role instead.",
+   "terms": [
+    {
+     "t": "Copilot owner",
+     "d": "Security Copilot role that manages settings, plugins, capacity and roles."
+    },
+    {
+     "t": "Copilot contributor",
+     "d": "Security Copilot role that uses prompts, sessions and promptbooks."
+    },
+    {
+     "t": "On-behalf-of access",
+     "d": "Copilot reaches data only through the user's own product permissions."
+    }
+   ],
+   "trap": "A common wrong answer gives a user Copilot owner so they can see Sentinel incidents. Data access comes from the product role, such as Microsoft Sentinel Reader.",
+   "example": "SOC analysts are added to a group with Copilot contributor, and the same group holds Microsoft Sentinel Reader on the SOC workspace.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Copilot role: features",
+     "Product role: data",
+     "Result: scoped answers"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.3.03",
+   "objective": "d4.3",
+   "seq": 3,
+   "title": "Enabling and configuring plugins",
+   "short": "Plugins connect Security Copilot to data and skills: preinstalled Microsoft plugins (Defender XDR, Sentinel, Entra, Intune, Purview, Threat Intelligence), non-Microsoft plugins, and custom plugins you upload. Owners control who can add custom plugins and whether preinstalled plugins are open to all users.",
+   "deep": "**Manage plugins:** select the **Sources** icon in the prompt bar > **Manage plugins** and turn plugins on or off. These choices apply to the **current workspace**. Some plugins need per-user **Set up**, such as an API key or a workspace selection.\n\n**Owner controls (Owner settings > Plugin settings):**\n- **Preinstalled plugin availability**: **All users** or **Owners only**. Restricting takes effect immediately, including in embedded experiences such as Copilot in Defender.\n- **Custom plugins, personal scope**: who can add their own plugins, **Owners only (default)** or Contributors and Owners.\n- **Custom plugins, organization scope**: who can publish plugins to everyone. This option **appears only when personal scope allows contributors**.\n\n**Custom plugins:** Manage plugins > Custom > **Upload plugin**. Choose the scope (just me or anyone in the organization) and the type: **Security Copilot plugin** or **OpenAI plugin**. A Security Copilot plugin manifest is **YAML or JSON** with the top-level keys **Descriptor** and **SkillGroups**. Skills can call REST APIs described with OpenAPI 3.0/3.0.1, run KQL against Sentinel, Defender or other sources, or use GPT prompts. Contributors can't edit plugins that owners created.",
+   "terms": [
+    {
+     "t": "Plugin",
+     "d": "Connector that gives Security Copilot data access and skills."
+    },
+    {
+     "t": "Descriptor",
+     "d": "Manifest section naming and describing a custom plugin."
+    },
+    {
+     "t": "SkillGroups",
+     "d": "Manifest section defining the plugin's skills and their format."
+    }
+   ],
+   "trap": "Look for wording that says contributors can add custom plugins by default. They can't, and the organization-scope option stays hidden until personal scope allows contributors.",
+   "example": "The owner restricts preinstalled third-party plugins to owners, then uploads a YAML plugin for the company's ticketing API with organization scope.",
+   "diagram": null
+  },
+  {
+   "id": "sc-500.d4.3.04",
+   "objective": "d4.3",
+   "seq": 4,
+   "title": "Microsoft-built Security Copilot agents",
+   "short": "Security Copilot agents are autonomous, goal-driven workflows that run on a trigger and use plugins, an identity and SCUs. Microsoft-built examples include the Phishing Triage Agent in Defender and the Conditional Access Optimization Agent in Entra.",
+   "deep": "**Setting up an agent:** Security Copilot > **Agents** > pick an agent > **Set up**. Choose an **identity**: **create an agent identity** (a Microsoft Entra **Agent ID**, recommended and scoped to the permissions you grant) or **use an existing user account**, which inherits that account's rights. Accounts that rely on PIM elevation can make runs fail. Provide the input parameters, then let it run on its **trigger** or select **Run** for a one-time run. Agents consume **SCUs** like other features.\n\n**Setup parameters you'll see:** trigger, permissions, identity, plugins, required products, role-based access.\n\n**Phishing Triage Agent (Defender):** classifies user-reported phishing as true or false positive and explains its verdict. It needs **Defender for Office 365 Plan 2**, Security Copilot SCUs, unified RBAC for Defender for Office 365, user-reported settings, and the **'Email reported by user as malware or phish'** alert policy. Disable auto-resolve tuning rules for that alert. **Security Administrator** manages its settings.\n\n**Conditional Access Optimization Agent (Entra):** each run (it can be set to run every 24 hours) checks new users and apps against Conditional Access, and suggests or creates policies **in report-only mode**. It needs **Entra ID P1** and a **Security Administrator** to activate it the first time.\n\nAnalysts teach agents through feedback stored in the agent's **memory**, which owners can review or reject.",
+   "terms": [
+    {
+     "t": "Agent",
+     "d": "Autonomous Security Copilot workflow with trigger, identity, plugins and permissions."
+    },
+    {
+     "t": "Agent ID",
+     "d": "Dedicated Microsoft Entra identity created for an agent."
+    },
+    {
+     "t": "Report-only mode",
+     "d": "Conditional Access state that logs results without enforcing."
+    }
+   ],
+   "trap": "A trap is assuming agent-created Conditional Access policies take effect immediately. New ones are created in report-only mode.",
+   "example": "The SOC enables the Phishing Triage Agent with a new Agent ID. False-positive phishing reports now close automatically, and real ones stay open for analysts.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Agents",
+     "Set up",
+     "Identity",
+     "Parameters",
+     "Trigger/Run"
+    ]
+   }
+  },
+  {
+   "id": "sc-500.d4.3.05",
+   "objective": "d4.3",
+   "seq": 5,
+   "title": "Security Store agents",
+   "short": "Microsoft Security Store is a security storefront, built on Microsoft Marketplace, for buying and deploying Microsoft and partner agents, SaaS solutions, Sentinel content and services. You buy an agent against an Azure billing subscription, then set it up in Security Copilot.",
+   "deep": "**What's in it:** SaaS solutions, **agents** (manifest-defined components for triage, enrichment and remediation), Sentinel connectors and content, and professional services. Billing uses Marketplace infrastructure, including private offers and **MACC** (Azure consumption commitment) eligibility.\n\n**Requirements to get an agent:**\n- **Contributor or Owner on the Azure billing subscription**.\n- **Security Copilot owner or contributor** to set up the agent.\n- Possibly a **Global Administrator** to grant the agent's permissions.\n\n**Steps:** Security Store > Security agents > **Explore agents** > filter by product, publisher or rating > open the agent > **Get solution** > choose the billing subscription, resource group and a purchase name > if the agent uses Sentinel data lake resources, select a Sentinel workspace > review the terms > **Place order** > **Open Microsoft Security Copilot** to configure it.\n\n**Partner agents and approval:** if a partner agent reaches Microsoft products (Intune, Entra, Sentinel, Defender, Threat Intelligence) through Microsoft skills, a **Global Administrator must approve its permissions**. Until then, **Set up** is disabled. Owners or contributors send the approval link, and the admin selects **Start approval**.\n\n**Manage:** Security Store > Management > **My solutions** > View details. Agents also show up in the Defender portal for SOC scenarios.",
+   "terms": [
+    {
+     "t": "Security Store",
+     "d": "Microsoft security marketplace for agents, SaaS, content and services."
+    },
+    {
+     "t": "Get solution",
+     "d": "Starts the purchase and deployment of a Store offering."
+    },
+    {
+     "t": "Start approval",
+     "d": "Global Administrator step that grants a partner agent its permissions."
+    }
+   ],
+   "trap": "When Set up is greyed out for a partner agent, the fix is Global Administrator approval of its permissions. More SCUs or a Copilot owner role won't help.",
+   "example": "A SOC buys a partner enrichment agent through Security Store with its Azure subscription. The Global Administrator approves it, and an owner finishes setup in Security Copilot.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Explore agents",
+     "Get solution",
+     "Billing + RG",
+     "Place order",
+     "Set up in Copilot"
+    ]
+   }
+  }
+ ],
+ "questions": [
+  {
+   "id": "sc-500.d4.q001",
+   "lesson": "sc-500.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which Microsoft Defender for Cloud capability requires the paid Defender CSPM plan?",
+   "options": [
+    "Attack path analysis",
+    "Secure score",
+    "Security recommendations based on the Microsoft cloud security benchmark",
+    "Asset inventory"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Attack path analysis is a Defender CSPM feature built on the cloud security graph. Secure score, the MCSB recommendations and asset inventory all come with free Foundational CSPM."
+  },
+  {
+   "id": "sc-500.d4.q002",
+   "lesson": "sc-500.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A security engineer wants to search proactively for internet-exposed VMs that have high-severity vulnerabilities and permissions to reach storage accounts holding sensitive data. What should the engineer use?",
+   "options": [
+    "The Regulatory compliance dashboard",
+    "Cloud security explorer in Defender CSPM",
+    "Workflow automation in Defender for Cloud",
+    "Secure score recommendations grouped by control"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Cloud security explorer runs graph queries that combine exposure, vulnerabilities and access paths. The compliance dashboard shows control status, workflow automation runs Logic Apps on events, and secure score controls don't correlate resources with each other."
+  },
+  {
+   "id": "sc-500.d4.q003",
+   "lesson": "sc-500.d4.1.01",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "Attack path analysis requires Defender CSPM with agentless scanning turned on.",
+     "a": true
+    },
+    {
+     "s": "Secure score is only available after you enable the Defender CSPM plan.",
+     "a": false
+    },
+    {
+     "s": "After you remediate an attack path, it can take up to 24 hours to disappear from the list.",
+     "a": true
+    }
+   ],
+   "explain": "Attack paths need Defender CSPM and agentless scanning. Secure score is part of free Foundational CSPM. Resolved paths can stay listed for up to 24 hours."
+  },
+  {
+   "id": "sc-500.d4.q004",
+   "lesson": "sc-500.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "An administrator must add the PCI DSS v4.0.1 standard to a subscription in Defender for Cloud. Which two Azure roles allow this? Select TWO.",
+   "options": [
+    "Owner",
+    "Security Reader",
+    "Policy Contributor",
+    "Log Analytics Contributor",
+    "Reader"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "To add a regulatory standard you need Owner or Policy Contributor, because standards are Azure Policy initiatives. Security Reader and Reader can only view, and Log Analytics Contributor manages workspaces, not policy."
+  },
+  {
+   "id": "sc-500.d4.q005",
+   "lesson": "sc-500.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "A subscription has only Defender for Servers Plan 1 enabled. An auditor asks you to add ISO/IEC 27001:2022 to the Regulatory compliance dashboard, but the standard can't be assigned. What should you do first?",
+   "options": [
+    "Assign the Security Reader role to the auditor",
+    "Enable Foundational CSPM on the subscription",
+    "Enable the Defender CSPM plan on the subscription",
+    "Upgrade the tenant to Microsoft Entra ID P2"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Extra standards need a Defender plan other than Servers Plan 1 or APIs Plan 1, and Defender CSPM is the usual choice. Foundational CSPM is already on and free. The other two changes have no effect on standards."
+  },
+  {
+   "id": "sc-500.d4.q006",
+   "lesson": "sc-500.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which security standard does Defender for Cloud assign by default to Azure subscriptions?",
+   "options": [
+    "CIS Microsoft Azure Foundations Benchmark",
+    "NIST SP 800-53 Rev. 5",
+    "ISO/IEC 27001:2022",
+    "Microsoft cloud security benchmark"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The Microsoft cloud security benchmark (MCSB) is the default for Azure, and it's also applied to AWS and GCP. The others are optional standards you add yourself."
+  },
+  {
+   "id": "sc-500.d4.q007",
+   "lesson": "sc-500.d4.1.02",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You need to add a regulatory compliance standard in Defender for Cloud. Put the steps in order.",
+   "options": [
+    "Open Microsoft Defender for Cloud > Regulatory compliance",
+    "Select Manage compliance policies",
+    "Select the subscription, management group, AWS account or GCP project",
+    "Select Security policies",
+    "Set the standard's status to On and provide any parameters"
+   ],
+   "explain": "Go from Regulatory compliance to Manage compliance policies, pick the scope, open Security policies, then turn the standard on. Some standards then ask for parameters."
+  },
+  {
+   "id": "sc-500.d4.q008",
+   "lesson": "sc-500.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Customers upload files to an Azure Blob Storage account. You need every uploaded blob scanned for malware. Which plan should you enable?",
+   "options": [
+    "Microsoft Defender for Resource Manager",
+    "Microsoft Defender for Key Vault",
+    "Microsoft Defender for Storage",
+    "Defender CSPM"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Malware scanning on upload is a Defender for Storage feature that uses the Microsoft Defender Antivirus engine. Resource Manager watches control-plane operations, Key Vault watches secret access, and CSPM covers posture rather than content scanning."
+  },
+  {
+   "id": "sc-500.d4.q009",
+   "lesson": "sc-500.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "You need alerts when someone runs unusual Azure management operations, such as mass deployments from an unfamiliar IP address, against your subscriptions. Which plan should you enable?",
+   "options": [
+    "Microsoft Defender for Resource Manager",
+    "Microsoft Defender for APIs",
+    "Microsoft Defender for App Service",
+    "Microsoft Defender for Key Vault"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Defender for Resource Manager monitors Azure control-plane (ARM) operations for suspicious activity. Defender for APIs protects published APIs, App Service protects web apps, and Key Vault protects vault access."
+  },
+  {
+   "id": "sc-500.d4.q010",
+   "lesson": "sc-500.d4.1.03",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "By default, Defender for Storage malware scanning has a cap of 10,000 GB scanned per storage account per month.",
+     "a": true
+    },
+    {
+     "s": "Defender for Storage requires an agent installed on a VM next to the storage account.",
+     "a": false
+    },
+    {
+     "s": "Azure Policy for Kubernetes is a component of Defender for Containers.",
+     "a": true
+    }
+   ],
+   "explain": "The default malware-scanning cap is 10,000 GB per account per month. Defender for Storage is agentless. Defender for Containers uses the Defender sensor and Azure Policy for Kubernetes."
+  },
+  {
+   "id": "sc-500.d4.q011",
+   "lesson": "sc-500.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Fabrikam runs 300 Azure VMs in one subscription. Security wants RDP and SSH ports closed unless an admin requests time-limited access. Changes to critical system files must be tracked, and vulnerabilities must be found even on VMs where the Defender for Endpoint sensor isn't healthy.",
+   "stem": "Which Defender for Servers configuration meets the requirements?",
+   "options": [
+    "Enable Defender for Servers Plan 1 on the subscription",
+    "Enable Defender CSPM on the subscription",
+    "Enable Plan 1 and turn on Foundational CSPM recommendations",
+    "Enable Defender for Servers Plan 2 on the subscription"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Just-in-time VM access, file integrity monitoring and agentless scanning are all Plan 2 features. Plan 1 gives EDR through Defender for Endpoint and agent-based vulnerability management. Defender CSPM has agentless scanning but not JIT or FIM."
+  },
+  {
+   "id": "sc-500.d4.q012",
+   "lesson": "sc-500.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A subscription holds 200 VMs. Only 10 of them need Defender for Endpoint EDR protection, and you must keep cost as low as possible. What should you do?",
+   "options": [
+    "Enable Defender for Servers Plan 2 at resource level on the 10 VMs",
+    "Enable Defender for Servers Plan 1 at resource level on the 10 VMs",
+    "Enable Defender CSPM on the 10 VMs only",
+    "Enable Defender for Servers Plan 1 on the management group"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Plan 1 can be enabled per resource and includes Defender for Endpoint integration. Plan 2 can't be enabled per resource. Defender CSPM doesn't provide EDR, and a management group assignment would cover all 200 VMs."
+  },
+  {
+   "id": "sc-500.d4.q013",
+   "lesson": "sc-500.d4.1.04",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which three capabilities are included in Defender for Servers Plan 2 but not Plan 1? Select THREE.",
+   "options": [
+    "500 MB of free daily data ingestion",
+    "Microsoft Defender for Endpoint integration",
+    "Agent-based vulnerability scanning with Defender Vulnerability Management",
+    "Agentless vulnerability scanning",
+    "Just-in-time VM access"
+   ],
+   "answer": [
+    0,
+    3,
+    4
+   ],
+   "explain": "Agentless scanning, JIT VM access and the 500 MB daily ingestion benefit are Plan 2 only. Both plans include Defender for Endpoint integration and agent-based MDVM scanning."
+  },
+  {
+   "id": "sc-500.d4.q014",
+   "lesson": "sc-500.d4.1.05",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Your company uses AWS Organizations with 60 member accounts, and new accounts are created every month. Every account, including future ones, must appear in Defender for Cloud with the least administrative effort. What should you do?",
+   "options": [
+    "Create a single-account connector for each member account by using IAM access keys",
+    "Onboard the AWS management account and deploy the CloudFormation StackSet",
+    "Delegate the AWS accounts with Azure Lighthouse",
+    "Connect each account by using the Microsoft Sentinel Amazon Web Services S3 connector"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Onboarding the management account auto-provisions connectors for current and new member accounts through StackSets. The connectors use federated trust instead of access keys. Lighthouse manages Azure tenants, and the Sentinel S3 connector only ingests logs."
+  },
+  {
+   "id": "sc-500.d4.q015",
+   "lesson": "sc-500.d4.1.05",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "How does the Defender for Cloud GCP connector authenticate to Google Cloud?",
+   "options": [
+    "A service account JSON key stored in Azure Key Vault",
+    "An OAuth consent grant to a multitenant Microsoft Entra app",
+    "The Azure Arc Connected Machine agent on each GCP instance",
+    "Workload identity federation with service account impersonation, created by the generated gcloud script"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The onboarding script creates a workload identity pool, providers and service accounts, so Defender for Cloud never stores long-lived keys. Azure Arc onboards servers, but that isn't how the connector authenticates."
+  },
+  {
+   "id": "sc-500.d4.q016",
+   "lesson": "sc-500.d4.1.05",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You are connecting an AWS account to Defender for Cloud in the Azure portal. Put the steps in order.",
+   "options": [
+    "Go to Environment settings > Add environment > Amazon Web Services",
+    "Enter the connector name, AWS account ID, regions and scan interval",
+    "Select the Defender plans to enable",
+    "Configure access by choosing a permissions type and a deployment method",
+    "Select Review and generate, then select Create"
+   ],
+   "explain": "The wizard runs from account details to plan selection to access configuration (CloudFormation or Terraform), and ends with review and create."
+  },
+  {
+   "id": "sc-500.d4.q017",
+   "lesson": "sc-500.d4.1.05",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "A scan interval of 4 hours can be selected for an AWS connector.",
+     "a": true
+    },
+    {
+     "s": "The AWS connector stores long-lived AWS access keys in Defender for Cloud.",
+     "a": false
+    },
+    {
+     "s": "On-premises servers are protected by Defender for Servers after onboarding to Azure Arc.",
+     "a": true
+    }
+   ],
+   "explain": "AWS scan intervals are 4, 6, 12 or 24 hours. The connector uses federated trust and short-lived credentials. Azure Arc brings on-premises servers under Defender for Servers."
+  },
+  {
+   "id": "sc-500.d4.q018",
+   "lesson": "sc-500.d4.1.06",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Where do you turn on Microsoft Defender Vulnerability Management as the vulnerability assessment solution for Azure VMs?",
+   "options": [
+    "Defender for Cloud > Environment settings > subscription > Defender for Servers settings > Vulnerability assessment for machines",
+    "Defender portal > Settings > Endpoints > Advanced features > Microsoft Intune connection",
+    "Defender for Cloud > Regulatory compliance > Manage compliance policies",
+    "Azure Policy > Assign the 'Deploy Log Analytics agent' initiative"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Vulnerability assessment for machines is a component setting of the Defender for Servers plan in Environment settings. The Intune connection, compliance policies and the retired Log Analytics agent don't configure MDVM."
+  },
+  {
+   "id": "sc-500.d4.q019",
+   "lesson": "sc-500.d4.1.06",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Several Azure VMs have no Defender for Endpoint sensor, and policy forbids installing new software on them. You still need vulnerability findings. What should you enable?",
+   "options": [
+    "File integrity monitoring",
+    "Just-in-time VM access",
+    "Agentless scanning for machines, with Defender for Servers Plan 2 or Defender CSPM",
+    "The Azure Monitor Agent with a Windows Security Events DCR"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Agentless scanning reads a disk snapshot and needs nothing installed on the VM. FIM tracks file changes and JIT controls ports, and neither finds CVEs. AMA is an agent and collects logs, not vulnerabilities."
+  },
+  {
+   "id": "sc-500.d4.q020",
+   "lesson": "sc-500.d4.1.06",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "Agent-based vulnerability scanning with Defender Vulnerability Management is available with Defender for Servers Plan 1.",
+     "a": true
+    },
+    {
+     "s": "For agentless scanning, disk snapshots are copied to another Azure region for analysis.",
+     "a": false
+    },
+    {
+     "s": "Agentless scanning of disks encrypted with customer-managed keys requires extra Key Vault key permissions.",
+     "a": true
+    }
+   ],
+   "explain": "Both plans include agent-based MDVM scanning. The snapshot stays in the VM's region and is deleted after analysis. CMK disks need key read, wrap and unwrap permissions."
+  },
+  {
+   "id": "sc-500.d4.q021",
+   "lesson": "sc-500.d4.1.07",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which of these can't be used as a discovery seed in Microsoft Defender External Attack Surface Management?",
+   "options": [
+    "The private address range 10.0.0.0/8",
+    "The domain contoso.com",
+    "An autonomous system number (ASN)",
+    "A Whois organization name"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Defender EASM works from the outside in, so private IP addresses aren't accepted as seeds. Domains, ASNs, Whois organizations, hosts, IP blocks and email contacts are all valid seeds."
+  },
+  {
+   "id": "sc-500.d4.q022",
+   "lesson": "sc-500.d4.1.07",
+   "objective": "d4.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Your company already pays for Defender CSPM. You want attack paths that start from internet-exposed IP addresses, without extra licensing. What should you do?",
+   "options": [
+    "Buy a standalone Defender EASM resource and link it to each subscription",
+    "Use the Defender EASM integration that Defender CSPM already includes",
+    "Enable Defender for APIs on every subscription",
+    "Enable Defender for Servers Plan 2 on every subscription"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Defender CSPM includes the EASM integration for internet-exposure validation, attack paths and explorer queries, and it doesn't need a separate EASM licence. A standalone EASM resource is only needed to work with EASM inventory directly."
+  },
+  {
+   "id": "sc-500.d4.q023",
+   "lesson": "sc-500.d4.1.07",
+   "objective": "d4.1",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which two dashboards are available in Defender EASM? Select TWO.",
+   "options": [
+    "MITRE ATT&CK coverage",
+    "Attack path analysis",
+    "Secure score over time",
+    "CISA known exploits",
+    "OWASP Top 10"
+   ],
+   "answer": [
+    3,
+    4
+   ],
+   "explain": "Defender EASM dashboards include Overview, Inventory changes, Attack surface summary, Security posture, GDPR compliance, OWASP Top 10, CWE top 25 and CISA known exploits. Attack paths and secure score belong to Defender for Cloud."
+  },
+  {
+   "id": "sc-500.d4.q024",
+   "lesson": "sc-500.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Two Microsoft Sentinel workspaces are onboarded to the Defender portal. Defender XDR incidents are correlated with Sentinel alerts for WS-EU but not for WS-US. What is the most likely reason?",
+   "options": [
+    "WS-US analysts need the Microsoft Sentinel Responder role",
+    "WS-US must first be migrated to the Sentinel data lake tier",
+    "WS-EU is the primary workspace, and only the primary workspace receives the Defender XDR connector",
+    "Defender XDR incidents are routed by Azure region"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "In the Defender portal, one primary workspace per tenant gets the Defender XDR connector and unified incidents. Secondary workspaces can ingest Defender tables but don't get XDR incidents. Roles and regions don't change this."
+  },
+  {
+   "id": "sc-500.d4.q025",
+   "lesson": "sc-500.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "After deployment, a Microsoft Sentinel workspace can be moved to another resource group.",
+     "a": false
+    },
+    {
+     "s": "The Defender portal supports one primary workspace and multiple secondary workspaces per tenant.",
+     "a": true
+    },
+    {
+     "s": "When you change the primary workspace, the Defender XDR connector moves to the new primary automatically.",
+     "a": true
+    }
+   ],
+   "explain": "Sentinel doesn't support moving the workspace after deployment. The Defender portal allows one primary and unlimited secondary workspaces, and changing the primary moves the XDR connector automatically."
+  },
+  {
+   "id": "sc-500.d4.q026",
+   "lesson": "sc-500.d4.2.01",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Hunters must query sign-ins from the current workspace and from the contoso-eu workspace in one query. Complete the query.",
+   "code": "union SigninLogs, ____(\"contoso-eu\").SigninLogs\n| where TimeGenerated > ago(1d)\n| summarize count() by UserPrincipalName",
+   "options": [
+    "app",
+    "cluster",
+    "database",
+    "workspace"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "workspace() references a table in another Log Analytics workspace. app() targets Application Insights, while cluster() and database() target Azure Data Explorer."
+  },
+  {
+   "id": "sc-500.d4.q027",
+   "lesson": "sc-500.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Tier-1 analysts must assign incidents and change their status. They must not create analytics rules. Which role should you assign?",
+   "options": [
+    "Microsoft Sentinel Reader",
+    "Microsoft Sentinel Contributor",
+    "Microsoft Sentinel Responder",
+    "Microsoft Sentinel Automation Contributor"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Responder adds incident management to Reader permissions. Reader can't change incidents, Contributor can also create rules, and Automation Contributor is a service role, not one for analysts."
+  },
+  {
+   "id": "sc-500.d4.q028",
+   "lesson": "sc-500.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "An analyst must be able to list and manually run existing playbooks but not edit them. Which role meets this requirement with the least privilege?",
+   "options": [
+    "Microsoft Sentinel Playbook Operator",
+    "Logic App Contributor",
+    "Microsoft Sentinel Automation Contributor",
+    "Microsoft Sentinel Contributor"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Playbook Operator lets a user list, view and manually run playbooks. Logic App Contributor can also edit them. Automation Contributor is for the Sentinel service, and Sentinel Contributor grants far more than needed."
+  },
+  {
+   "id": "sc-500.d4.q029",
+   "lesson": "sc-500.d4.2.02",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "multi",
+   "case": "A detection engineer at Contoso must create and tune analytics rules in Microsoft Sentinel. They must also build and edit the Logic Apps playbooks that run when incidents are created. All Sentinel resources are in the RG-SOC resource group. Assign the fewest roles that meet the requirements.",
+   "stem": "Which two roles should you assign to the detection engineer? Select TWO.",
+   "options": [
+    "Logic App Contributor",
+    "Microsoft Sentinel Responder",
+    "Microsoft Sentinel Contributor",
+    "Microsoft Sentinel Automation Contributor",
+    "Microsoft Sentinel Playbook Operator"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "Sentinel Contributor allows creating analytics rules and installing content. Playbooks are Logic Apps, so editing them needs Logic App Contributor. Playbook Operator only runs them, Responder only manages incidents, and Automation Contributor is for the service."
+  },
+  {
+   "id": "sc-500.d4.q030",
+   "lesson": "sc-500.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You installed the Microsoft Entra ID solution from the content hub and connected its data connector. Two days later, no incidents have been created from Entra ID data. What should you do?",
+   "options": [
+    "Wait for the solution's rules to be enabled automatically after 72 hours",
+    "Assign the Microsoft Sentinel Automation Contributor role to the SOC",
+    "Reinstall the solution as standalone content",
+    "Create analytics rules from the solution's rule templates"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Installing a solution only deploys templates. You must create active analytics rules from them before any detections run. Rules are never enabled automatically, and roles or reinstalling won't create them."
+  },
+  {
+   "id": "sc-500.d4.q031",
+   "lesson": "sc-500.d4.2.03",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You need to deploy detections from a content hub solution. Put the steps in order.",
+   "options": [
+    "Open Content hub and find the solution",
+    "Select Install (or Install with dependencies)",
+    "Select Manage on the installed solution",
+    "Select an analytics rule template and choose Create rule",
+    "Complete the rule wizard and save the rule as enabled"
+   ],
+   "explain": "Install the solution, use Manage to see its content, then create and save rules from the templates. Until you do that, the content is only templates."
+  },
+  {
+   "id": "sc-500.d4.q032",
+   "lesson": "sc-500.d4.2.04",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "You enabled the Microsoft Entra ID connector, but the SigninLogs table stays empty while AuditLogs fills normally. The tenant has only Microsoft Entra ID Free. What is the cause?",
+   "options": [
+    "The Azure Monitor Agent isn't installed on a domain controller",
+    "Sign-in logs require a Microsoft Entra ID P1 or P2 licence",
+    "The connector needs a data collection endpoint",
+    "Sign-in logs are only sent to the AADProvisioningLogs table"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Exporting sign-in logs needs Entra ID P1 or P2. Audit logs work with any licence. The connector is API-based, so it needs no agent or DCE, and sign-ins go to SigninLogs."
+  },
+  {
+   "id": "sc-500.d4.q033",
+   "lesson": "sc-500.d4.2.04",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "You assigned the Azure Policy for a diagnostic settings-based Sentinel connector. New Key Vaults now send logs, but existing Key Vaults don't. What should you have done?",
+   "options": [
+    "Assigned the Microsoft Sentinel Reader role to every Key Vault",
+    "Selected Create a remediation task in the policy assignment",
+    "Installed the Azure Monitor Agent on each Key Vault",
+    "Configured a Logs Ingestion API DCR for the Key Vaults"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "A policy assignment by itself only applies to new or updated resources. A remediation task applies the diagnostic setting to resources that already exist. Key Vault has no agent, and the Logs Ingestion API isn't used for this."
+  },
+  {
+   "id": "sc-500.d4.q034",
+   "lesson": "sc-500.d4.2.04",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "You enable the Microsoft Entra ID connector with Sign-in logs and Non-interactive user sign-in logs selected. Which two tables will receive data? Select TWO.",
+   "options": [
+    "SigninLogs",
+    "AADNonInteractiveUserSignInLogs",
+    "AzureActivity",
+    "SecurityEvent",
+    "IdentityLogonEvents"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "Interactive sign-ins go to SigninLogs and non-interactive ones go to AADNonInteractiveUserSignInLogs. IdentityLogonEvents is a Defender XDR table, SecurityEvent holds Windows events, and AzureActivity holds Azure control-plane events."
+  },
+  {
+   "id": "sc-500.d4.q035",
+   "lesson": "sc-500.d4.2.04",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "You need a list of role assignment writes from the Azure Activity connector that shows only the time, caller and resource group. Complete the query.",
+   "code": "AzureActivity\n| where OperationNameValue =~ \"MICROSOFT.AUTHORIZATION/ROLEASSIGNMENTS/WRITE\"\n| ____ TimeGenerated, Caller, ResourceGroup",
+   "options": [
+    "extend",
+    "summarize",
+    "render",
+    "project"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "project returns only the listed columns. extend adds columns and keeps all the others, summarize needs an aggregation, and render draws a chart."
+  },
+  {
+   "id": "sc-500.d4.q036",
+   "lesson": "sc-500.d4.2.04",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+   "statements": [
+    {
+     "s": "Defender for Cloud alerts ingested by the Microsoft Defender for Cloud connector are stored in the SecurityAlert table.",
+     "a": true
+    },
+    {
+     "s": "With bi-directional sync enabled, closing the Sentinel incident also closes the original Defender for Cloud alert.",
+     "a": true
+    },
+    {
+     "s": "Assigning the Azure Policy for a policy-managed connector requires only the Microsoft Sentinel Reader role.",
+     "a": false
+    }
+   ],
+   "explain": "Defender for Cloud alerts land in SecurityAlert, and bi-directional sync closes the source alert. Policy assignment needs Owner on the assignment scope."
+  },
+  {
+   "id": "sc-500.d4.q037",
+   "lesson": "sc-500.d4.2.05",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which table stores events collected by the Common Event Format (CEF) via AMA connector?",
+   "options": [
+    "CommonSecurityLog",
+    "Syslog",
+    "SecurityEvent",
+    "WindowsEvent"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "CEF messages are parsed into CommonSecurityLog. Plain syslog goes to Syslog, while SecurityEvent and WindowsEvent hold Windows events."
+  },
+  {
+   "id": "sc-500.d4.q038",
+   "lesson": "sc-500.d4.2.05",
+   "objective": "d4.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You will use an on-premises Linux server as a log forwarder for firewall CEF logs. Which component must you install before you can target it with a data collection rule?",
+   "options": [
+    "The Log Analytics agent (MMA/OMS)",
+    "A Windows Event Collector subscription",
+    "The Azure Arc Connected Machine agent",
+    "A data collection endpoint on the server"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "A non-Azure machine needs Azure Arc so the DCR can target it and deploy the Azure Monitor Agent. The Log Analytics agent is retired, WEC is for Windows, and a DCE is an Azure resource, not something you install on the server."
+  },
+  {
+   "id": "sc-500.d4.q039",
+   "lesson": "sc-500.d4.2.05",
+   "objective": "d4.2",
+   "difficulty": 3,
+   "type": "single",
+   "case": "A forwarder receives CEF from firewalls on facility local4 and Linux auth logs on facility auth. The engineer created a Syslog via AMA DCR that collects all facilities at LOG_DEBUG, and a CEF via AMA DCR for local4. Firewall events now appear in both the Syslog and CommonSecurityLog tables, which doubles ingestion cost.",
+   "stem": "What should you do to stop the duplicates?",
+   "options": [
+    "Use different syslog facilities for the Syslog via AMA DCR and the CEF via AMA DCR",
+    "Change the forwarder to listen on TCP port 514 only",
+    "Move CommonSecurityLog to the data lake tier",
+    "Replace the forwarder's Azure Monitor Agent with the Log Analytics agent"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "When both DCRs collect the same facility, each message is ingested twice. Separate the facilities, for example local4 for CEF and auth for Syslog. Ports, tiers and the retired legacy agent don't fix duplication."
+  },
+  {
+   "id": "sc-500.d4.q040",
+   "lesson": "sc-500.d4.2.05",
+   "objective": "d4.2",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "You need to count today's Palo Alto Networks firewall events for each action the firewall took, such as allow or deny. Complete the query.",
+   "code": "CommonSecurityLog\n| where TimeGenerated > ago(1d)\n| where DeviceVendor == \"Palo Alto Networks\"\n| summarize Events = count() by ____",
+   "options": [
+    "Facility",
+    "DeviceAction",
+    "EventID",
+    "ResultType"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "DeviceAction is the CommonSecurityLog column for the action the device took. Facility belongs to Syslog, EventID to Windows event tables, and ResultType to sign-in logs."
+  }
+ ]
+}

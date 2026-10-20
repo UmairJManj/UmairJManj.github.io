@@ -1,0 +1,727 @@
+{
+  "exam": "sc-900",
+  "domain": "d2",
+  "lessons": [
+    {
+      "id": "sc-900.d2.1.01",
+      "objective": "d2.1",
+      "seq": 1,
+      "title": "Microsoft Entra ID",
+      "short": "Microsoft Entra ID is Microsoft's cloud-based identity and access management (IAM) service. Each organization gets a tenant: a dedicated directory of users, groups, apps and devices used to sign in to Microsoft 365, Azure and thousands of SaaS apps. It comes in Free, P1 and P2 editions.",
+      "deep": "Microsoft Entra ID (formerly Azure Active Directory) is an **identity as a service (IDaaS)** platform. When an organization signs up for a Microsoft commercial cloud service such as Microsoft 365 or Azure, it gets a **tenant**: a dedicated, trusted instance of Entra ID that holds its users, groups, devices and application registrations.\n\nWhat it does:\n- **Authentication**: verifies who is signing in (passwords, MFA, passwordless).\n- **Authorization**: issues tokens using modern web protocols (OAuth 2.0, OpenID Connect, SAML) that apps trust.\n- **Single sign-on (SSO)** to Microsoft 365, Azure and thousands of SaaS and on-premises apps.\n\nIt is not AD DS in the cloud: there are no domain controllers, OUs or Group Policy, and it doesn't rely on Kerberos/LDAP for cloud apps.\n\n**Editions**:\n- **Free**: included with Microsoft commercial online subscriptions; users, groups, SSO, security defaults.\n- **P1**: adds Conditional Access, dynamic groups, SSPR with on-premises writeback (included in Microsoft 365 E3 and Business Premium).\n- **P2**: adds Microsoft Entra ID Protection and Privileged Identity Management (included in Microsoft 365 E5).\n\nThe wider **Microsoft Entra** family also includes ID Governance, External ID, Verified ID, Workload ID and Global Secure Access (Internet Access and Private Access).",
+      "terms": [
+        { "t": "Tenant", "d": "A dedicated, trusted instance of Microsoft Entra ID representing one organization." },
+        { "t": "IDaaS", "d": "Identity as a service: identity and access management delivered from the cloud." },
+        { "t": "Entra ID P1 / P2", "d": "Paid editions; P1 adds Conditional Access, P2 adds ID Protection and PIM." }
+      ],
+      "trap": "Older material says Azure Active Directory; the current name is Microsoft Entra ID, and it is not the same as on-premises AD DS (no OUs, GPOs or domain controllers).",
+      "example": "A startup buys Microsoft 365 Business Standard; a new Entra ID tenant is created automatically and every employee signs in to Teams and Outlook with an Entra ID account.",
+      "diagram": { "kind": "compare", "cols": ["Free", "P1", "P2"], "rows": [["Users, groups, SSO", "+ Conditional Access", "+ ID Protection"], ["Security defaults", "+ Dynamic groups", "+ PIM"]] }
+    },
+    {
+      "id": "sc-900.d2.1.02",
+      "objective": "d2.1",
+      "seq": 2,
+      "title": "Users, guests and external identities",
+      "short": "Human identities in Microsoft Entra ID are user accounts. Members are internal users (cloud-only or synced from AD DS); guests are external users invited through B2B collaboration. Microsoft Entra External ID covers B2B collaboration, B2B direct connect and external tenants for customer-facing (CIAM) apps.",
+      "deep": "**Users** can be created directly in the cloud (cloud-only) or synchronized from on-premises AD DS. Users are organized into **groups**: security groups (for access) and Microsoft 365 groups (for collaboration). Membership is either assigned or **dynamic** (rule-based, requires P1).\n\n**Microsoft Entra External ID** handles people outside your organization:\n- **B2B collaboration**: you invite a partner; a **guest** user object is created in your directory, but the guest authenticates with their own home identity provider (their Entra organization, a Microsoft account, Google, or an email one-time passcode). You never manage their password.\n- **B2B direct connect**: a mutual trust between two Entra organizations, mainly for **Teams shared channels**. Users are **not** added as guests to your directory.\n- **External tenant**: a separate tenant for apps you publish to consumers or business customers (**CIAM**). It supports self-service sign-up with email, one-time passcodes or social accounts such as Google and Facebook, plus custom branding.\n\nCross-tenant access settings control inbound and outbound B2B trust. External ID is billed on **monthly active users (MAU)**. Azure AD B2C is the legacy CIAM product and is no longer sold to new customers.",
+      "terms": [
+        { "t": "Member user", "d": "An internal user of the organization, created in the cloud or synced from AD DS." },
+        { "t": "Guest user", "d": "An external user invited via B2B collaboration who signs in with their home identity." },
+        { "t": "B2B direct connect", "d": "Mutual trust between Entra organizations, used for Teams shared channels; no guest object is created." },
+        { "t": "External tenant", "d": "A separate tenant for customer-facing apps (CIAM) with self-service sign-up." }
+      ],
+      "trap": "B2B collaboration creates a guest object in your directory; B2B direct connect does not, and 'Teams shared channels' is the usual hint for direct connect.",
+      "example": "Contoso invites an auditor from Tailspin as a B2B guest to a SharePoint site; she signs in with her Tailspin work account and Contoso never stores her password.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d2.1.03",
+      "objective": "d2.1",
+      "seq": 3,
+      "title": "Workload identities",
+      "short": "Workload identities are non-human identities given to software (apps, services, scripts, containers) so it can authenticate and access resources. In Microsoft Entra they are applications, service principals and managed identities. AI agents get dedicated agent identities through Microsoft Entra Agent ID.",
+      "deep": "Software needs an identity too. Microsoft Entra has three kinds of **workload identity**:\n- **Application (app registration)**: the global *application object*, a template that describes the app, the tokens it can get and the APIs it needs.\n- **Service principal**: the local instance of an application in a specific tenant. It defines what the app can do there and which resources it can reach. One is created in every tenant where the app is used.\n- **Managed identity**: a special service principal that Azure manages for you, so developers **don't store or rotate secrets**.\n  - **System-assigned**: enabled on one Azure resource, shares its lifecycle (deleted with it), can't be shared.\n  - **User-assigned**: a standalone Azure resource that can be attached to many resources and must be deleted explicitly.\n\n**Workload identity federation** lets external workloads (for example GitHub Actions) get Entra tokens without secrets. **Workload ID Premium** adds Conditional Access and ID Protection for workload identities and app health recommendations.\n\n**Microsoft Entra Agent ID** extends identity to AI agents with *agent identities*, each with a human sponsor accountable for it.",
+      "terms": [
+        { "t": "Service principal", "d": "The local representation of an application in a tenant, holding its permissions there." },
+        { "t": "Managed identity", "d": "An Azure-managed service principal that removes the need to handle credentials." },
+        { "t": "Workload identity federation", "d": "Lets external workloads exchange a trusted token for an Entra token without secrets." },
+        { "t": "Agent identity", "d": "An Entra identity built specifically to authenticate an AI agent." }
+      ],
+      "trap": "If the stem says an Azure resource must access another resource without storing credentials in code, the answer is a managed identity, not an app registration with a client secret.",
+      "example": "An Azure Function uses its system-assigned managed identity to read blobs from a storage account; no connection string or secret lives in the code.",
+      "diagram": { "kind": "compare", "cols": ["System-assigned", "User-assigned"], "rows": [["Tied to 1 resource", "Standalone resource"], ["Deleted with resource", "Delete explicitly"], ["Can't be shared", "Shareable"]] }
+    },
+    {
+      "id": "sc-900.d2.1.04",
+      "objective": "d2.1",
+      "seq": 4,
+      "title": "Device identities",
+      "short": "A device identity is a device object in Microsoft Entra ID. Devices can be Microsoft Entra registered (personal/BYOD), Microsoft Entra joined (organization-owned, cloud-joined Windows) or Microsoft Entra hybrid joined (joined to AD DS and registered in Entra ID). Device identity enables device-based Conditional Access and Intune management.",
+      "deep": "Devices are a second kind of non-human identity. Entra ID offers three ways to give a device an identity:\n- **Microsoft Entra registered**: for **bring-your-own-device (BYOD)** and mobile devices (Windows, iOS, Android, macOS). The user keeps signing in to the device with a personal/local account but adds a work account to reach apps.\n- **Microsoft Entra joined**: for **organization-owned** Windows 10/11 devices (and Windows Server 2019+ VMs in Azure). Users sign in to the device with their Entra ID account and get SSO to cloud and on-premises resources. No on-premises domain needed.\n- **Microsoft Entra hybrid joined**: devices joined to **on-premises AD DS** and also registered in Entra ID. A transition step for organizations that still rely on AD and Group Policy.\n\nAll three can coexist. Once a device has an identity, admins can manage it with **Microsoft Intune**, mark it **compliant**, and use Conditional Access grant controls such as *Require device to be marked as compliant* or *Require Microsoft Entra hybrid joined device*.",
+      "terms": [
+        { "t": "Microsoft Entra registered", "d": "Personal or mobile devices registered for access to work resources." },
+        { "t": "Microsoft Entra joined", "d": "Organization-owned devices joined directly to Entra ID; users sign in with Entra accounts." },
+        { "t": "Microsoft Entra hybrid joined", "d": "Devices joined to on-premises AD DS and registered in Entra ID." }
+      ],
+      "trap": "BYOD = registered; company-owned cloud-only = joined; existing domain-joined PCs = hybrid joined. Mixing up joined and hybrid joined is the common mistake.",
+      "example": "A company keeps its existing domain-joined desktops as hybrid joined while new laptops shipped to remote staff are Microsoft Entra joined straight out of the box.",
+      "diagram": { "kind": "compare", "cols": ["Registered", "Joined", "Hybrid joined"], "rows": [["BYOD / personal", "Org-owned", "Org-owned"], ["Personal sign-in", "Entra ID sign-in", "AD DS + Entra ID"]] }
+    },
+    {
+      "id": "sc-900.d2.1.05",
+      "objective": "d2.1",
+      "seq": 5,
+      "title": "Hybrid identity: synchronization",
+      "short": "Hybrid identity gives users one identity across on-premises AD DS and Microsoft Entra ID. Synchronization copies users, groups and other objects from AD DS to Entra ID using Microsoft Entra Connect Sync (an on-premises sync server) or Microsoft Entra Cloud Sync (lightweight agents with configuration held in the cloud).",
+      "deep": "Many organizations still run **Active Directory Domain Services (AD DS)** on-premises. **Hybrid identity** means users get a common identity for on-premises and cloud resources. It relies on **provisioning** (creating, updating and deleting objects) and **synchronization** (keeping on-premises and cloud copies matched).\n\nTwo Microsoft tools sync AD DS to Entra ID:\n- **Microsoft Entra Connect Sync**: software installed on an on-premises Windows server. It also configures the sign-in method (PHS, PTA or federation with AD FS) and features like password writeback. **Microsoft Entra Connect Health** monitors it.\n- **Microsoft Entra Cloud Sync**: a lightweight **provisioning agent** on-premises with outbound-only connections; configuration lives in the Entra admin center. Multiple active agents give high availability, and it can sync **multiple disconnected forests** into one tenant, useful after mergers.\n\nFor synced users, AD DS is normally the **source of authority**, so admins edit attributes on-premises and the change flows to the cloud. Hybrid identity features are included at no extra cost.",
+      "terms": [
+        { "t": "Microsoft Entra Connect Sync", "d": "On-premises server software that syncs AD DS objects to Entra ID." },
+        { "t": "Microsoft Entra Cloud Sync", "d": "Cloud-managed sync using lightweight on-premises provisioning agents." },
+        { "t": "Source of authority", "d": "The directory where an object is mastered and edited (usually AD DS for synced users)." }
+      ],
+      "trap": "Don't confuse the sync tool (Connect Sync or Cloud Sync) with the sign-in method (PHS, PTA, federation); Microsoft Entra Domain Services is not a sync tool for hybrid identity.",
+      "example": "After acquiring a company with its own disconnected AD forest, IT deploys Cloud Sync agents in both forests to bring all users into a single Entra tenant.",
+      "diagram": { "kind": "flow", "items": ["AD DS (on-prem)", "Connect/Cloud Sync", "Microsoft Entra ID", "Cloud apps"] }
+    },
+    {
+      "id": "sc-900.d2.1.06",
+      "objective": "d2.1",
+      "seq": 6,
+      "title": "Hybrid identity: PHS, PTA and federation",
+      "short": "Hybrid users authenticate in one of three ways: password hash synchronization (PHS) validates a hash of the password hash in the cloud; pass-through authentication (PTA) validates passwords against on-premises AD DS through agents; federation hands authentication to a trusted IdP such as AD FS. Microsoft recommends enabling PHS even as a backup.",
+      "deep": "**Password hash synchronization (PHS)**: Entra Connect syncs a hash of each user's password hash to Entra ID, which then validates sign-ins in the cloud. It needs the least infrastructure, keeps working if on-premises is down, and is required for ID Protection's **leaked credentials** detection.\n\n**Pass-through authentication (PTA)**: Entra ID receives the sign-in, but the password is validated against on-premises AD DS by lightweight **authentication agents** that use outbound connections only (Microsoft recommends three for availability). Because AD DS checks each sign-in, on-premises policies like disabled accounts, password expiry and logon hours are enforced immediately. Passwords are never validated in the cloud.\n\n**Federation**: Entra ID redirects authentication to a trusted federation system, typically **AD FS** (multiple AD FS servers plus Web Application Proxy servers in the perimeter network). Choose it for needs such as a third-party MFA that requires a federated IdP, or sign-in with sAMAccountName. It is the most complex to run.\n\n**Seamless SSO** works with PHS and PTA to avoid extra prompts on domain-joined devices.",
+      "terms": [
+        { "t": "PHS", "d": "Password hash synchronization: a hash of the password hash is synced and validated in the cloud." },
+        { "t": "PTA", "d": "Pass-through authentication: on-premises agents validate passwords against AD DS." },
+        { "t": "Federation", "d": "Entra ID trusts an external IdP, such as AD FS, to authenticate users." },
+        { "t": "Seamless SSO", "d": "Automatic sign-in for users on domain-joined devices on the corporate network." }
+      ],
+      "trap": "Leaked-credential detection needs PHS; if the stem demands on-premises policies enforced at every sign-in with no perimeter servers, the answer is PTA, not federation.",
+      "example": "A bank must enforce AD logon hours for cloud sign-ins but refuses to run servers in its DMZ, so it chooses PTA and also enables PHS as a backup.",
+      "diagram": { "kind": "compare", "cols": ["PHS", "PTA", "Federation"], "rows": [["Validated in cloud", "Validated on-prem", "Validated by IdP"], ["Least infrastructure", "Agents on-prem", "AD FS + WAP servers"], ["Leaked creds: yes", "Needs PHS too", "Needs PHS too"]] }
+    },
+    {
+      "id": "sc-900.d2.2.01",
+      "objective": "d2.2",
+      "seq": 1,
+      "title": "Authentication methods",
+      "short": "Authentication proves who you are. Microsoft Entra ID supports passwords plus methods such as SMS, voice call, Microsoft Authenticator (push notifications, passwordless phone sign-in, passkeys), software and hardware OATH tokens and email one-time passcodes. Admins enable methods for users and groups in the Authentication methods policy.",
+      "deep": "**Passwords** are the most common and weakest method: they can be guessed, sprayed, phished and reused across sites.\n\nOther methods in Microsoft Entra ID:\n- **SMS**: a code sent by text; usable for MFA and SSPR, and as a primary method when **SMS sign-in** is enabled.\n- **Voice call**: an automated call; usable for MFA and SSPR only, **not** as a primary sign-in method.\n- **Microsoft Authenticator**: push notifications with **number matching** (the user types the number shown on screen), passwordless phone sign-in, passkeys, and one-time codes.\n- **OATH tokens**: **software** (an authenticator app showing a time-based one-time passcode, TOTP) or **hardware** (a key-fob that displays a code).\n- **Email one-time passcode**: for SSPR by members and for guest sign-in.\n\nSome methods are **primary** (first factor), some **secondary** (MFA only), some both. Methods are managed centrally in the **Authentication methods policy**, which has replaced method management in the legacy MFA and SSPR policies. Microsoft rates Authenticator and passkeys as stronger than SMS and voice, which are exposed to SIM-swap and interception.",
+      "terms": [
+        { "t": "Primary authentication", "d": "The first factor used to sign in, such as a password or passkey." },
+        { "t": "OATH TOTP", "d": "A time-based one-time passcode generated by an app or hardware token." },
+        { "t": "Number matching", "d": "Authenticator push requires typing the number shown on the sign-in screen." },
+        { "t": "Authentication methods policy", "d": "Central policy where admins enable methods for users and groups." }
+      ],
+      "trap": "Voice call can't be a primary sign-in method; SMS and voice are the weakest phone methods, so they're the wrong answer when the stem asks for the most secure option.",
+      "example": "An admin enables Microsoft Authenticator for all users and limits SMS to a small group of frontline workers who don't have smartphones.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d2.2.02",
+      "objective": "d2.2",
+      "seq": 2,
+      "title": "Passwordless methods and Temporary Access Pass",
+      "short": "Passwordless methods replace the password with something you have plus a PIN or biometric. Microsoft Entra ID supports Windows Hello for Business, passkeys (FIDO2 security keys or passkeys in Microsoft Authenticator), Authenticator phone sign-in and certificate-based authentication. A Temporary Access Pass helps users onboard or recover them.",
+      "deep": "Passwordless sign-in is both more secure and easier.\n- **Windows Hello for Business (WHfB)**: a credential bound to a specific Windows device; a **PIN or biometric** (face, fingerprint) unlocks a private key. The PIN stays on the device and is never sent to a server.\n- **Passkeys (FIDO2)**: public/private key pairs stored on a hardware security key, in Microsoft Authenticator, or synced by a platform. The key is bound to the website's origin, so it can't be replayed on a phishing site.\n- **Microsoft Authenticator phone sign-in**: approve the sign-in on the phone with a number match and biometric/PIN.\n- **Certificate-based authentication (CBA)**: X.509 certificates, such as smart cards, validated directly by Entra ID without AD FS.\n\n**Phishing-resistant** methods are passkeys (FIDO2), WHfB and multifactor CBA.\n\n**Temporary Access Pass (TAP)**: a time-limited passcode (configurable from 10 minutes to 30 days, single- or multi-use) that an Authentication Administrator issues so a user can sign in and register a passwordless method on day one or after losing a device.",
+      "terms": [
+        { "t": "Windows Hello for Business", "d": "Device-bound credential unlocked by PIN or biometrics on Windows." },
+        { "t": "Passkey (FIDO2)", "d": "Phishing-resistant key-pair credential on a security key or authenticator." },
+        { "t": "Certificate-based authentication", "d": "Sign-in with an X.509 certificate, such as a smart card." },
+        { "t": "Temporary Access Pass", "d": "Time-limited passcode used to onboard or recover passwordless methods." }
+      ],
+      "trap": "Phishing-resistant means passkeys/FIDO2, Windows Hello for Business or certificate-based authentication; Authenticator push and SMS are not phishing-resistant.",
+      "example": "A new hire receives a Temporary Access Pass from the helpdesk, signs in once and registers a passkey in Microsoft Authenticator, never needing a password.",
+      "diagram": { "kind": "flow", "items": ["Admin issues TAP", "User signs in w/ TAP", "Registers passkey", "Passwordless sign-in"] }
+    },
+    {
+      "id": "sc-900.d2.2.03",
+      "objective": "d2.2",
+      "seq": 3,
+      "title": "Multifactor authentication (MFA)",
+      "short": "Multifactor authentication (MFA) requires two or more different factor types: something you know (password, PIN), something you have (phone, security key) and something you are (fingerprint, face). Microsoft Entra enforces MFA through security defaults, Conditional Access and ID Protection risk policies; authentication strengths define which methods count.",
+      "deep": "A **factor** is a category of evidence:\n- **Something you know**: password, PIN.\n- **Something you have**: phone with Authenticator, OATH token, security key.\n- **Something you are**: biometrics such as fingerprint or face.\n\nMFA needs at least **two different categories**. A password plus a security question is two things you know, so it is **not** MFA.\n\n**Microsoft Entra MFA** can use Authenticator push (with number matching to resist *MFA fatigue* push-bombing), OATH codes, SMS, voice, or passkeys. Users register methods once through combined security info registration.\n\nWays to require MFA:\n- **Security defaults** (free, all-or-nothing).\n- **Conditional Access** policies (P1), the recommended, granular approach.\n- **ID Protection** sign-in risk policies (P2).\n\n**Authentication strengths** in Conditional Access specify which method combinations satisfy a policy. Built-in strengths are **MFA strength**, **Passwordless MFA strength** and **Phishing-resistant MFA strength**; admins can also create custom strengths. Microsoft also enforces MFA for sign-in to admin portals such as the Azure portal.",
+      "terms": [
+        { "t": "Factor", "d": "A category of proof: something you know, have or are." },
+        { "t": "MFA fatigue", "d": "Attack that floods users with push prompts hoping one is approved." },
+        { "t": "Authentication strength", "d": "Conditional Access control defining which method combinations are allowed." }
+      ],
+      "trap": "Two items from the same category (password + PIN, password + security question) are not MFA; the exam often hides this in an option.",
+      "example": "Contoso requires the Phishing-resistant MFA strength for all admin role holders, so admins must use passkeys or Windows Hello for Business.",
+      "diagram": { "kind": "compare", "cols": ["Know", "Have", "Are"], "rows": [["Password, PIN", "Phone, security key", "Fingerprint, face"]] }
+    },
+    {
+      "id": "sc-900.d2.2.04",
+      "objective": "d2.2",
+      "seq": 4,
+      "title": "Security defaults",
+      "short": "Security defaults are a free, single-switch set of identity protections in Microsoft Entra ID: all users register for MFA, administrators do MFA at every sign-in, users do MFA when needed, legacy authentication is blocked and privileged activities like the Azure portal require MFA. They're enabled by default in new tenants.",
+      "deep": "Not every organization has P1 licences or time to design policies. **Security defaults** give a baseline at no cost.\n\nWhat they enforce:\n- **All users register for MFA** (Microsoft Authenticator by default).\n- **Administrators** in key roles (Global, Security, Conditional Access, Exchange, SharePoint, User Administrator and others) must perform MFA **every sign-in**.\n- **Users** are prompted for MFA when Entra ID judges it necessary.\n- **Legacy authentication** (older protocols such as POP, IMAP and SMTP basic auth that can't do MFA) is **blocked**.\n- **Privileged activities** such as the Azure portal, Azure PowerShell and Azure CLI require MFA.\n\nTenants created on or after 22 October 2019 have them on automatically.\n\nLimits: they are all-or-nothing, with no custom exclusions, locations or app targeting. **Security defaults and Conditional Access can't be used together**: an organization with P1 that wants granular policies must turn security defaults off and recreate the protections in Conditional Access (Microsoft-managed policies help).",
+      "terms": [
+        { "t": "Security defaults", "d": "Free preconfigured identity protections enabled with one switch." },
+        { "t": "Legacy authentication", "d": "Older protocols using basic auth that can't perform MFA." },
+        { "t": "Microsoft-managed policies", "d": "Conditional Access policies Microsoft creates to replicate baseline protections." }
+      ],
+      "trap": "When a stem needs exceptions, named locations or targeting specific apps, the answer is Conditional Access, and security defaults must be disabled first.",
+      "example": "A 20-person charity with only free Entra ID licences leaves security defaults on, giving everyone MFA and blocking legacy email protocols without writing any policy.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d2.2.05",
+      "objective": "d2.2",
+      "seq": 5,
+      "title": "Self-service password reset (SSPR)",
+      "short": "Self-service password reset (SSPR) lets users reset a forgotten password or unlock their account without calling the helpdesk, after verifying with one or two registered methods. For hybrid users, password writeback sends the new password back to on-premises AD DS.",
+      "deep": "**Password change** means you know your current password and choose a new one. **Password reset** means you forgot it and must prove your identity another way. **SSPR** handles reset and account unlock.\n\nHow it works:\n- Admins enable SSPR for selected users or all users and require **one or two methods** to reset.\n- Users register methods (Authenticator, SMS, voice call, OATH code, email, security questions) through combined registration, and can be prompted to reconfirm them periodically.\n- At sign-in the user selects *Forgot my password*, verifies with the required methods and sets a new password that must pass password protection checks.\n- Users and admins can be notified when a reset happens.\n- Admin accounts get a stricter **two-gate** policy (two methods, no security questions).\n\n**Password writeback** (configured with Microsoft Entra Connect or Cloud Sync) writes cloud resets back to AD DS, so hybrid users can reset once and use the password everywhere.\n\n**Licensing**: cloud-only password change works with Entra ID Free; SSPR reset needs Entra ID P1/P2 or Microsoft 365 Business Standard/Premium; writeback needs P1/P2 or Business Premium.",
+      "terms": [
+        { "t": "SSPR", "d": "Self-service password reset: users reset or unlock their own accounts." },
+        { "t": "Password writeback", "d": "Writes cloud password changes and resets back to on-premises AD DS." },
+        { "t": "Two-gate policy", "d": "Stronger SSPR rule for admins requiring two verification methods." }
+      ],
+      "trap": "Hybrid users can't use SSPR for their on-premises password unless password writeback is enabled; and reset (not change) needs at least P1.",
+      "example": "On a Saturday a synced user forgets her password, resets it through SSPR with an Authenticator approval and an SMS code, and writeback lets her unlock her domain laptop on Monday.",
+      "diagram": { "kind": "flow", "items": ["Forgot password", "Verify 1-2 methods", "Set new password", "Writeback to AD DS"] }
+    },
+    {
+      "id": "sc-900.d2.2.06",
+      "objective": "d2.2",
+      "seq": 6,
+      "title": "Password protection and smart lockout",
+      "short": "Microsoft Entra Password Protection blocks weak passwords using a global banned password list maintained by Microsoft and an optional custom banned password list of up to 1,000 organization-specific terms. Smart lockout locks out attackers guessing passwords while letting the real user keep working. Both protections can extend to on-premises AD DS.",
+      "deep": "**Microsoft Entra Password Protection** checks new passwords when users change or reset them.\n- **Global banned password list**: built by Microsoft from Entra security telemetry, applied automatically to all users; it **can't be edited or disabled**.\n- **Custom banned password list**: up to **1,000** base terms specific to you (brand names, products, locations, local sports teams). Requires **P1 or P2**.\n\nThe algorithm normalizes passwords (lowercase; 0 becomes o, @ becomes a, $ becomes s), fuzzy-matches banned terms, checks the user's name and tenant name, then scores the result; a password needs **at least 5 points** to be accepted. So variations like *C0nt0s0!* are still blocked.\n\n**On-premises**: install the **DC agent** on domain controllers plus the **proxy service** to enforce the same lists for AD DS password changes (start in audit mode, then enforce).\n\n**Smart lockout** is always on. It tracks failed sign-ins and locks the account temporarily (by default after 10 failed attempts, for 60 seconds, increasing on repeat), and tries to tell familiar locations from attackers. Customizing threshold and duration needs P1.",
+      "terms": [
+        { "t": "Global banned password list", "d": "Microsoft-maintained list of weak passwords applied to everyone." },
+        { "t": "Custom banned password list", "d": "Up to 1,000 organization-specific terms you block (P1/P2)." },
+        { "t": "Smart lockout", "d": "Temporary lockout that targets attackers while sparing the genuine user." },
+        { "t": "DC agent", "d": "Service on domain controllers that enforces Password Protection in AD DS." }
+      ],
+      "trap": "The custom list is not meant for huge breach dumps (1,000-term limit) and the global list can't be edited; protecting AD DS needs the on-premises DC agent, not password writeback.",
+      "example": "Fabrikam adds 'fabrikam', 'widget' and 'seattle' to the custom banned list, so 'F@brikam2026!' is rejected in the cloud and on domain controllers.",
+      "diagram": null
+    },
+    {
+      "id": "sc-900.d2.3.01",
+      "objective": "d2.3",
+      "seq": 1,
+      "title": "Conditional Access: signals and decisions",
+      "short": "Conditional Access is Microsoft Entra ID's policy engine: if-then policies that combine signals (user or group, location, device, application, real-time risk) to make an access decision (block, grant, or grant with requirements such as MFA). Policies are evaluated after first-factor authentication and are central to Zero Trust.",
+      "deep": "A Conditional Access policy reads like **if this, then that**: *if* a user in Finance signs in to the payroll app from outside the office, *then* require MFA.\n\n**Assignments (the 'if')**:\n- **Users, groups, directory roles, guests**, and with Workload ID Premium, **workload identities**.\n- **Target resources**: cloud apps, user actions (such as registering security info) or authentication contexts.\n- **Conditions**: **sign-in risk** and **user risk** from ID Protection (P2), **device platforms**, **locations** (named locations by IP range or country/region), **client apps** (for example legacy authentication) and **filter for devices**.\n\n**Access controls (the 'then')**: **block access**, or **grant access** optionally requiring controls.\n\nKey behaviour:\n- Policies are enforced **after first-factor authentication**, so CA isn't a first-line defence against denial-of-service.\n- All applicable policies apply together; every requirement must be met, and **Block wins** over grant.\n- Exclude **emergency access accounts** so you can't lock yourself out.",
+      "terms": [
+        { "t": "Signal", "d": "Information CA evaluates, such as user, location, device, app or risk." },
+        { "t": "Named location", "d": "A defined IP range or set of countries/regions used as a CA condition." },
+        { "t": "Assignment", "d": "The 'who and what' a policy applies to: users, resources and conditions." }
+      ],
+      "trap": "Conditional Access runs after the first factor succeeds; when several policies apply, all requirements combine and a Block policy overrides any grant.",
+      "example": "A policy blocks all sign-ins from countries where Contoso has no staff, while a second policy requires MFA for every sign-in to the HR app.",
+      "diagram": { "kind": "flow", "items": ["Signals", "Policy (if-then)", "Decision", "Access or block"] }
+    },
+    {
+      "id": "sc-900.d2.3.02",
+      "objective": "d2.3",
+      "seq": 2,
+      "title": "Conditional Access: grant and session controls",
+      "short": "Conditional Access grant controls block access or grant it with requirements: MFA, an authentication strength, a compliant device, a Microsoft Entra hybrid joined device, an app protection policy, a password change or terms of use. Session controls limit the experience after sign-in. Conditional Access requires Microsoft Entra ID P1.",
+      "deep": "**Grant controls** decide whether access is allowed:\n- Block access, or grant with: require MFA, require authentication strength, require compliant device, require Microsoft Entra hybrid joined device, require app protection policy, require password change, require terms of use. (The older *Require approved client app* grant was retired in 2026; use *Require app protection policy* instead.)\n- With several controls you choose **require all** or **require one**.\n\n**Session controls** shape what happens after sign-in:\n- **Sign-in frequency**: how often users must reauthenticate.\n- **Persistent browser session**: whether users stay signed in after closing the browser.\n- **Application enforced restrictions**: apps such as SharePoint give limited access to unmanaged devices.\n- **Conditional Access App Control**: routes sessions through **Microsoft Defender for Cloud Apps** as a reverse proxy for real-time monitoring and control (for example block downloads).\n- Continuous access evaluation (CAE) settings and **token protection**.\n\n**Operations**: start policies in **report-only** mode to see impact without enforcing, and use the What If tool to test. Conditional Access needs **P1**; risk-based conditions need **P2**. If a licence lapses, policies remain but can't be edited.",
+      "terms": [
+        { "t": "Grant control", "d": "Requirement that must be met before access is allowed, such as MFA." },
+        { "t": "Session control", "d": "Restriction applied after sign-in, such as sign-in frequency." },
+        { "t": "Report-only mode", "d": "Policy evaluates and logs results without enforcing them." },
+        { "t": "Conditional Access App Control", "d": "Session control proxying traffic via Defender for Cloud Apps." }
+      ],
+      "trap": "Sign-in frequency and App Control are session controls, not grant controls; CA itself needs P1, but sign-in/user risk conditions need P2.",
+      "example": "Before enforcing 'require compliant device' for everyone, an admin runs it in report-only mode for two weeks and reviews which sign-ins would have failed.",
+      "diagram": { "kind": "compare", "cols": ["Grant controls", "Session controls"], "rows": [["Require MFA", "Sign-in frequency"], ["Compliant device", "Persistent browser"], ["Auth strength", "App Control (MDCA)"], ["Terms of use", "Token protection"]] }
+    },
+    {
+      "id": "sc-900.d2.3.03",
+      "objective": "d2.3",
+      "seq": 3,
+      "title": "Microsoft Entra built-in roles",
+      "short": "Microsoft Entra built-in roles grant administrative permissions over Entra ID and Microsoft services, such as Global Administrator, User Administrator, Helpdesk Administrator and Global Reader. Follow least privilege: assign the narrowest role, keep fewer than five Global Administrators, and keep two cloud-only emergency access accounts.",
+      "deep": "Admin tasks are delegated with **Microsoft Entra roles**. Built-in roles fall into three groups:\n- **Microsoft Entra-specific roles**: manage Entra resources only, e.g. **User Administrator**, **Groups Administrator**, **Application Administrator**, **Helpdesk Administrator** (reset passwords and invalidate refresh tokens for non-admins).\n- **Service-specific roles**: manage one Microsoft 365 service, e.g. **Exchange Administrator**, **SharePoint Administrator**, **Intune Administrator**, **Teams Administrator**.\n- **Cross-service roles**: span services, e.g. **Global Administrator** (almost everything), **Global Reader** (read-only version of Global Admin), **Security Administrator**, **Security Reader**, **Compliance Administrator**.\n\n**Privileged Role Administrator** manages role assignments and PIM settings. Built-in roles' permissions **can't be changed**.\n\nMicrosoft best practice:\n- **Least privilege**: choose the narrowest role and scope.\n- **Fewer than five Global Administrators**.\n- **Two cloud-only emergency access (break-glass) accounts** with Global Administrator, excluded from normal policies.\n- Use **cloud-only accounts** for admin roles, not synced on-premises accounts.\n- Use **PIM** for just-in-time access.",
+      "terms": [
+        { "t": "Global Administrator", "d": "Role with access to nearly all admin features across Entra and Microsoft services." },
+        { "t": "Global Reader", "d": "Read-only counterpart of Global Administrator." },
+        { "t": "Privileged Role Administrator", "d": "Manages role assignments and Privileged Identity Management." },
+        { "t": "Emergency access account", "d": "Cloud-only break-glass admin account for when normal admins are locked out." }
+      ],
+      "trap": "When a stem asks for read-only visibility, Global Reader or Security Reader is right; Global Administrator 'because it works' violates least privilege.",
+      "example": "Service desk staff get Helpdesk Administrator so they can reset user passwords, while only three senior engineers hold Global Administrator through PIM.",
+      "diagram": { "kind": "compare", "cols": ["Category", "Examples"], "rows": [["Entra-specific", "User, Helpdesk Admin"], ["Service-specific", "Exchange, SharePoint"], ["Cross-service", "Global, Security Admin"]] }
+    },
+    {
+      "id": "sc-900.d2.3.04",
+      "objective": "d2.3",
+      "seq": 4,
+      "title": "Role-based access control model",
+      "short": "Microsoft Entra RBAC grants permissions through role assignments: a role definition (set of permissions) assigned to a security principal (user, role-assignable group or service principal) at a scope (tenant, administrative unit or a specific resource). Custom roles need P1. Entra roles manage directory objects; Azure RBAC roles manage Azure resources.",
+      "deep": "**RBAC** means permissions come from roles, not from individual grants. A **role assignment** has three parts:\n- **Security principal**: who gets access (user, role-assignable group, service principal).\n- **Role definition**: what they can do, a collection of permissions. Either **built-in** (fixed) or **custom** (built from the same permission list; needs **P1** for users assigned them).\n- **Scope**: where it applies: the whole **tenant**, an **administrative unit** (a container of users/groups/devices, e.g. one region or department), or a single **resource** such as one app registration.\n\nAssign roles to **role-assignable groups** (P1) to manage access by membership, and use **PIM** (P2) for just-in-time activation.\n\n**Entra RBAC vs Azure RBAC**: same model, different planes.\n- **Entra roles** (Global Administrator, User Administrator...) control Entra resources such as users, groups and apps via Microsoft Graph.\n- **Azure roles** (**Owner, Contributor, Reader, User Access Administrator**) control Azure resources at management group, subscription, resource group or resource scope via Azure Resource Manager.\n\nOwning a subscription does not let you create Entra users, and vice versa.",
+      "terms": [
+        { "t": "Role definition", "d": "A named collection of permissions." },
+        { "t": "Role assignment", "d": "Attaching a role definition to a principal at a scope." },
+        { "t": "Scope", "d": "The set of resources the assignment applies to." },
+        { "t": "Administrative unit", "d": "Container that limits an Entra role's scope to a subset of objects." }
+      ],
+      "trap": "Owner, Contributor and Reader are Azure RBAC roles for Azure resources; to limit Entra admins to a department, use administrative units, not management groups.",
+      "example": "Contoso creates an administrative unit for its German users and gives the Berlin helpdesk the Helpdesk Administrator role scoped to that unit only.",
+      "diagram": { "kind": "compare", "cols": ["Entra RBAC", "Azure RBAC"], "rows": [["Users, groups, apps", "VMs, storage, etc."], ["Global/User Admin", "Owner, Contributor"], ["Tenant, AU, resource", "MG, sub, RG, resource"], ["Microsoft Graph", "Azure Resource Manager"]] }
+    },
+    {
+      "id": "sc-900.d2.4.01",
+      "objective": "d2.4",
+      "seq": 1,
+      "title": "Microsoft Entra ID Governance and the identity lifecycle",
+      "short": "Microsoft Entra ID Governance makes sure the right people have the right access to the right resources at the right time, and that auditors can prove it. It covers the identity lifecycle (joiner, mover, leaver), access lifecycle and privileged access with lifecycle workflows, entitlement management, access reviews and PIM.",
+      "deep": "**Identity governance** answers four questions: which identities should have access to which resources; what they are doing with it; whether there are controls for managing access; and whether auditors can verify the controls work.\n\n**Identity lifecycle** (joiner, mover, leaver):\n- **Joiner**: inbound provisioning from HR systems (Workday, SAP SuccessFactors) creates accounts in AD DS or Entra ID so new staff are productive on day one.\n- **Mover**: attribute changes (new department) update group and app access.\n- **Leaver**: access is removed and the account disabled, then deleted.\n\n**Lifecycle workflows** automate these events using templates and triggers such as the employee hire date or leave date: generate a **Temporary Access Pass** and email it to the manager before day one, send a welcome email, add to groups, remove from groups and disable the account on the last day. **App provisioning** (for example via SCIM) creates and removes accounts in SaaS apps.\n\n**Licensing**: Entra ID Governance (or Microsoft Entra Suite) on top of P1/P2. PIM and core access reviews/entitlement management also work with P2, but **lifecycle workflows require ID Governance**.",
+      "terms": [
+        { "t": "Identity lifecycle", "d": "Joiner, mover and leaver stages of an identity's existence." },
+        { "t": "Lifecycle workflows", "d": "ID Governance automation for joiner, mover and leaver tasks." },
+        { "t": "Inbound provisioning", "d": "Creating accounts automatically from an HR system of record." },
+        { "t": "SCIM", "d": "Standard protocol used to provision users into applications." }
+      ],
+      "trap": "Lifecycle workflows need an ID Governance licence (not just P2); recertifying existing access is an access review, not a lifecycle workflow.",
+      "example": "Two days before a new nurse starts, a lifecycle workflow emails her manager a Temporary Access Pass; on her final day another workflow removes her group memberships and disables the account.",
+      "diagram": { "kind": "cycle", "items": ["Joiner", "Mover", "Review access", "Leaver"] }
+    },
+    {
+      "id": "sc-900.d2.4.02",
+      "objective": "d2.4",
+      "seq": 2,
+      "title": "Entitlement management and terms of use",
+      "short": "Entitlement management lets users request access through access packages: bundles of groups, Teams, applications and SharePoint sites with policies for who can request, who approves and when access expires. Resources are organized in catalogs, users request in the My Access portal, and users from connected organizations are onboarded as guests.",
+      "deep": "Handing out access one group at a time doesn't scale. **Entitlement management** automates access request workflows.\n- **Catalog**: a container of resources (groups and Teams, apps, SharePoint Online sites) and access packages, which can be delegated to catalog owners.\n- **Access package**: a bundle of resource roles a user needs for a project or job, requested as one unit.\n- **Policy** on the package: **who can request** (internal users, specific connected organizations, any external user), **approval** (single or multi-stage, by managers, sponsors or named approvers), **expiration** of assignments, requestor justification and recurring **access reviews**.\n- **Separation of duties**: mark packages as incompatible so one person can't hold both.\n- **Connected organizations**: partner organizations whose users may request; approved users are added as **B2B guests** and automatically removed when their last assignment ends.\n- Users browse and request in the **My Access portal** (myaccess.microsoft.com).\n\n**Terms of use**: admins upload a PDF and enforce acceptance with the Conditional Access grant control **Require terms of use** before users reach an app.",
+      "terms": [
+        { "t": "Access package", "d": "A requestable bundle of groups, apps and sites with policies." },
+        { "t": "Catalog", "d": "Container holding resources and access packages, with delegated owners." },
+        { "t": "Connected organization", "d": "A partner organization whose users can request access packages." },
+        { "t": "My Access portal", "d": "End-user portal for requesting and viewing access packages." }
+      ],
+      "trap": "'Bundle resources so people can request them with approval and automatic expiry' is entitlement management, not dynamic groups, access reviews or B2B direct connect.",
+      "example": "For a six-month joint project, Fabrikam's engineers request a 'Project Falcon' access package; the project lead approves and the guests are removed automatically when it expires.",
+      "diagram": { "kind": "flow", "items": ["Catalog", "Access package", "Policy", "User request", "Approval", "Assignment"] }
+    },
+    {
+      "id": "sc-900.d2.4.03",
+      "objective": "d2.4",
+      "seq": 3,
+      "title": "Access reviews",
+      "short": "Access reviews let organizations regularly recertify who has access to groups, Microsoft 365 groups and Teams, enterprise applications, access packages and privileged roles. Reviewers (resource owners, managers, named people or the users themselves) approve or deny access, and results can be applied automatically to remove access that's no longer needed.",
+      "deep": "Access tends to pile up as people change jobs (**access creep**). **Access reviews** fight this by asking the right people, on a schedule, whether access is still needed.\n\nWhat can be reviewed:\n- **Group memberships** (security groups, Microsoft 365 groups and Teams), including guests.\n- **Users assigned to enterprise applications**.\n- **Access package assignments** (entitlement management).\n- **Microsoft Entra roles and Azure resource roles** (configured through PIM).\n\n**Reviewers**: group owners, specified users or groups, users' managers, or **self-review** (users attest their own access). Multi-stage reviews can chain reviewers.\n\n**Settings**: one-time or recurring (weekly through annually); duration; **recommendations** (for example flag users inactive recently); what to do if reviewers don't respond (no change, remove access, approve access, take recommendations); and **auto apply results to resource** so denied users are removed without manual work.\n\n**Licensing**: P2 or Entra ID Governance; newer features such as inactive-user-only reviews and machine-learning-assisted reviews need ID Governance.",
+      "terms": [
+        { "t": "Access review", "d": "Periodic attestation of whether existing access is still required." },
+        { "t": "Self-review", "d": "Users confirm or give up their own access." },
+        { "t": "Auto apply results", "d": "Automatically removes access that reviewers denied when the review ends." }
+      ],
+      "trap": "Access reviews recertify existing access; they don't grant new access (entitlement management) or activate roles (PIM).",
+      "example": "Every quarter, owners of the 'Partners-Extranet' group review guest members; guests who are denied or haven't signed in are removed automatically.",
+      "diagram": { "kind": "cycle", "items": ["Create review", "Reviewers decide", "Apply results", "Recur"] }
+    },
+    {
+      "id": "sc-900.d2.4.04",
+      "objective": "d2.4",
+      "seq": 4,
+      "title": "Privileged Identity Management (PIM)",
+      "short": "Microsoft Entra Privileged Identity Management (PIM) reduces standing admin access. Users are made eligible for Microsoft Entra roles, Azure resource roles or group membership/ownership (PIM for Groups) and activate them just in time, for a limited period, with MFA, justification and optional approval. It needs Microsoft Entra ID P2 or ID Governance.",
+      "deep": "Permanent admin rights are a gift to attackers. **PIM** applies **just-in-time (JIT)** and **time-bound** access.\n\n**Assignment types**:\n- **Eligible**: the user must **activate** the role before using it.\n- **Active**: the user has the permissions without doing anything.\nEither type can be **permanent** or **time-bound** (start and end dates).\n\n**Activation settings** (per role): maximum activation duration, **require MFA**, **require justification**, require ticket information, **require approval** from designated approvers, and Conditional Access authentication context.\n\n**Oversight**:\n- **Notifications** when roles are activated or assigned.\n- **Access reviews** of role assignments.\n- **Audit history** you can download for auditors.\n- **Alerts**, for example too many Global Administrators or roles assigned outside PIM.\n- Protection against removing the last Global Administrator.\n\n**Scope**: Microsoft Entra roles, **Azure resource roles** (subscriptions, resource groups) and **PIM for Groups**. Licensing: **Entra ID P2 or Entra ID Governance**; the Privileged Role Administrator manages PIM.",
+      "terms": [
+        { "t": "Eligible assignment", "d": "User can activate the role when needed but doesn't hold it standing." },
+        { "t": "Active assignment", "d": "User holds the role's permissions without activation." },
+        { "t": "Just-in-time access", "d": "Privileges granted only when needed and removed automatically." },
+        { "t": "PIM for Groups", "d": "JIT membership or ownership of groups through PIM." }
+      ],
+      "trap": "If the stem mentions standing admin access, activation on demand, approval for elevation or time-limited roles, the answer is PIM, not Conditional Access or entitlement management.",
+      "example": "An engineer eligible for Exchange Administrator activates it for two hours, completes MFA, types the change ticket number, and loses the role automatically afterwards.",
+      "diagram": { "kind": "flow", "items": ["Eligible", "Request activation", "MFA + justify", "Approval", "Active (timed)"] }
+    },
+    {
+      "id": "sc-900.d2.4.05",
+      "objective": "d2.4",
+      "seq": 5,
+      "title": "Microsoft Entra ID Protection: risk detections",
+      "short": "Microsoft Entra ID Protection uses Microsoft threat intelligence and machine learning to detect identity risk. Sign-in risk is the probability a specific sign-in isn't from the account owner; user risk is the probability the account itself is compromised. Detections are real-time or offline and rated low, medium or high.",
+      "deep": "**ID Protection** analyses huge volumes of signals across Microsoft to spot compromised identities.\n\n**Sign-in risk** (is *this sign-in* suspicious?) examples:\n- **Anonymous IP address** (Tor or anonymizer VPN).\n- **Atypical travel**: two sign-ins from locations too far apart to travel between in the time.\n- **Unfamiliar sign-in properties**, **malicious IP address**, **password spray**.\n\n**User risk** (is *the account* compromised?) examples:\n- **Leaked credentials**: the user's username/password pair was found in a public or dark-web leak (needs PHS for synced users).\n- **Anomalous user activity**, **Microsoft Entra threat intelligence**.\n- **Admin confirmed user compromised**.\n\nDetections are **real-time** (during sign-in) or **offline** (calculated afterwards), and each risk is **low, medium or high**. Risky sign-ins accumulate into user risk.\n\n**Licensing**: full detections and risk-based policies need **P2**; Free/P1 tenants see limited information (premium detections show only as 'Additional risk detected'). Workload ID Premium adds risk detection for workload identities.",
+      "terms": [
+        { "t": "Sign-in risk", "d": "Probability that a given authentication request isn't from the identity owner." },
+        { "t": "User risk", "d": "Probability that an identity or account is compromised." },
+        { "t": "Leaked credentials", "d": "User risk detection when credentials are found in a leak." },
+        { "t": "Real-time detection", "d": "Risk calculated during the sign-in itself." }
+      ],
+      "trap": "Leaked credentials raise USER risk (the account is compromised), while anonymous IP and atypical travel raise SIGN-IN risk; swapping them is the classic distractor.",
+      "example": "A user signs in from London and, 30 minutes later, from Singapore; ID Protection flags atypical travel and marks the second sign-in as medium risk.",
+      "diagram": { "kind": "compare", "cols": ["Sign-in risk", "User risk"], "rows": [["Is this sign-in bad?", "Is account compromised"], ["Anonymous IP", "Leaked credentials"], ["Atypical travel", "Anomalous activity"], ["Password spray", "Threat intelligence"]] }
+    },
+    {
+      "id": "sc-900.d2.4.06",
+      "objective": "d2.4",
+      "seq": 6,
+      "title": "ID Protection: risk policies, remediation and reports",
+      "short": "ID Protection risk feeds Conditional Access: a sign-in risk policy typically requires MFA for medium or high risk, and a user risk policy requires a secure password change (or risk remediation) for high-risk users. Admins investigate in the risky users, risky sign-ins and risk detections reports. It requires Microsoft Entra ID P2.",
+      "deep": "Detection is only useful if something happens next. ID Protection risk is consumed by **risk-based Conditional Access policies** (P2):\n- **Sign-in risk policy**: for example, if sign-in risk is medium or high, **require MFA**. Passing MFA proves it's the real user and closes the risky sign-in (**self-remediation**).\n- **User risk policy**: for example, if user risk is high, **require a secure password change** or **require risk remediation**, which revokes sessions and, for password users, forces a secure password change.\n- **MFA registration policy**: makes users register for MFA so they can self-remediate; users without registered MFA can't satisfy a risk policy and are blocked.\n\nThe legacy user risk and sign-in risk policies configured inside ID Protection have been retired; risk policies are now built as Conditional Access policies.\n\n**Investigation reports**: **risky users**, **risky sign-ins**, **risk detections** (and risky workload identities). Admin actions include **confirm compromised**, **confirm safe**, **dismiss user risk**, reset password and block user. Feedback improves the model.\n\nRisk data can be exported to Log Analytics or Microsoft Sentinel and appears in Microsoft Defender XDR.",
+      "terms": [
+        { "t": "Self-remediation", "d": "User clears their own risk by completing MFA or a secure password change." },
+        { "t": "Risky users report", "d": "Lists users at risk with their detection history." },
+        { "t": "Confirm safe", "d": "Admin feedback that a detection was a false positive." },
+        { "t": "MFA registration policy", "d": "Requires users to register MFA so they can self-remediate." }
+      ],
+      "trap": "Sign-in risk maps to MFA; user risk maps to a secure password change. MFA alone does not remediate user risk.",
+      "example": "A user whose credentials leaked is forced to change her password at next sign-in after MFA; her user risk drops to none without a helpdesk call.",
+      "diagram": { "kind": "flow", "items": ["Risk detected", "CA risk policy", "MFA / pwd change", "Risk remediated"] }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-900.d2.q001",
+      "lesson": "sc-900.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Your company is adopting Microsoft 365. Which service provides the cloud directory that stores users and groups and authenticates them to Microsoft 365 and Azure?",
+      "options": ["Microsoft Entra ID", "Active Directory Domain Services", "Microsoft Purview", "Microsoft Intune"],
+      "answer": [0],
+      "explain": "Microsoft Entra ID is Microsoft's cloud identity and access management service used by Microsoft 365 and Azure. AD DS is the on-premises directory. Purview handles data governance and compliance, and Intune manages devices and apps; neither is the identity directory."
+    },
+    {
+      "id": "sc-900.d2.q002",
+      "lesson": "sc-900.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Microsoft Entra ID editions, select Yes if true.",
+      "statements": [
+        { "s": "Microsoft Entra ID Free is included with subscriptions to Microsoft commercial online services such as Microsoft 365 and Azure.", "a": true },
+        { "s": "Conditional Access is included in Microsoft Entra ID Free.", "a": false },
+        { "s": "Microsoft Entra ID Protection is a Microsoft Entra ID P2 capability.", "a": true }
+      ],
+      "explain": "Entra ID Free comes with Microsoft commercial cloud subscriptions. Conditional Access needs P1 (Free tenants rely on security defaults instead). ID Protection, along with PIM, is part of P2."
+    },
+    {
+      "id": "sc-900.d2.q003",
+      "lesson": "sc-900.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam runs Active Directory Domain Services on-premises for file servers and Group Policy. It is moving to SaaS applications and wants users to sign in to them with single sign-on from anywhere on the internet. The CIO asks how Microsoft Entra ID differs from the existing directory.",
+      "stem": "Which statement best describes the difference?",
+      "options": [
+        "Microsoft Entra ID is AD DS running on Azure virtual machines that Microsoft patches for you",
+        "Microsoft Entra ID manages Windows devices with organizational units and Group Policy Objects",
+        "Microsoft Entra ID is a cloud IAM service using web protocols such as OAuth 2.0, OpenID Connect and SAML",
+        "Microsoft Entra ID requires a domain controller in each office to authenticate users"
+      ],
+      "answer": [2],
+      "explain": "Entra ID is a cloud identity service that issues tokens with modern web protocols, ideal for SaaS SSO. It has no OUs, GPOs or domain controllers. Managed AD DS on Microsoft-run servers is a different product (Microsoft Entra Domain Services), not Entra ID."
+    },
+    {
+      "id": "sc-900.d2.q004",
+      "lesson": "sc-900.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A consultant from a partner company needs access to one of your SharePoint sites using the consultant's own corporate credentials. Which Microsoft Entra capability should you use?",
+      "options": [
+        "A managed identity for the consultant",
+        "B2B collaboration to invite the consultant as a guest",
+        "An external tenant with self-service sign-up",
+        "Microsoft Entra Domain Services"
+      ],
+      "answer": [1],
+      "explain": "B2B collaboration invites the partner as a guest who authenticates with their home organization. External tenants are for customer-facing apps, not partner access to your Microsoft 365. Managed identities are for Azure workloads, and Domain Services provides managed domain services."
+    },
+    {
+      "id": "sc-900.d2.q005",
+      "lesson": "sc-900.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Two companies both use Microsoft Entra ID. They want users to collaborate in Microsoft Teams shared channels without creating guest accounts in each other's directories. Which feature should they configure?",
+      "options": [
+        "B2B collaboration",
+        "Entitlement management connected organizations",
+        "An external tenant for customer identity",
+        "B2B direct connect"
+      ],
+      "answer": [3],
+      "explain": "B2B direct connect establishes mutual trust between Entra organizations, mainly for Teams shared channels, and does not create guest objects. B2B collaboration and entitlement management connected organizations both add users as guests. An external tenant serves consumer apps."
+    },
+    {
+      "id": "sc-900.d2.q006",
+      "lesson": "sc-900.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements describe a Microsoft Entra External ID external tenant? Select TWO.",
+      "options": [
+        "It is used for apps that you publish to consumers or business customers",
+        "It supports self-service sign-up with social identities such as Google or Facebook",
+        "It stores guests in the same directory as your employees",
+        "It provides customers with single sign-on to Microsoft 365 apps",
+        "It is required before you can use B2B direct connect"
+      ],
+      "answer": [0, 1],
+      "explain": "An external tenant is a separate directory for customer identity (CIAM) apps, with self-service and social sign-up. It is isolated from the workforce directory, doesn't support Microsoft 365 apps for customers, and isn't needed for B2B direct connect, which works between workforce tenants."
+    },
+    {
+      "id": "sc-900.d2.q007",
+      "lesson": "sc-900.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about external identities, select Yes if true.",
+      "statements": [
+        { "s": "A user invited through B2B collaboration is represented by a guest user object in the inviting organization's directory.", "a": true },
+        { "s": "A B2B collaboration guest must have a password created and stored in the inviting tenant.", "a": false },
+        { "s": "Microsoft Entra External ID is billed based on monthly active users (MAU).", "a": true }
+      ],
+      "explain": "B2B guests get a user object in your directory but authenticate with their home identity provider, so you never store their password. External ID uses a monthly active users billing model."
+    },
+    {
+      "id": "sc-900.d2.q008",
+      "lesson": "sc-900.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Entra object is the local representation of an application in a specific tenant and defines what the app can do in that tenant?",
+      "options": ["Application object", "Administrative unit", "Service principal", "Security group"],
+      "answer": [2],
+      "explain": "A service principal is the tenant-specific instance of an application and holds its permissions there. The application object is the global template in the home tenant. Administrative units scope admin roles, and security groups collect users for access."
+    },
+    {
+      "id": "sc-900.d2.q009",
+      "lesson": "sc-900.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Developers run an internal app on an Azure virtual machine. The app reads secrets from Azure Key Vault by using a client secret stored in a configuration file. Security reviewers flagged the stored secret, and the team wants Azure to handle credentials for the app so nobody has to store or rotate them.",
+      "stem": "What should the team use?",
+      "options": [
+        "A managed identity for the virtual machine",
+        "An app registration with a longer-lived client secret",
+        "A Temporary Access Pass issued to the app",
+        "A service account synchronized from AD DS"
+      ],
+      "answer": [0],
+      "explain": "A managed identity is a service principal whose credentials Azure manages, so no secret lives in code or config. A longer client secret still has to be stored. A Temporary Access Pass is for users onboarding authentication methods, and a synced service account still needs a password."
+    },
+    {
+      "id": "sc-900.d2.q010",
+      "lesson": "sc-900.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Several Azure Functions apps and a virtual machine scale set must all use the same identity and permissions. The identity must remain when individual resources are deleted and recreated. Which identity type should you use?",
+      "options": [
+        "System-assigned managed identity",
+        "User-assigned managed identity",
+        "Guest user account",
+        "Microsoft Entra registered device identity"
+      ],
+      "answer": [1],
+      "explain": "A user-assigned managed identity is a standalone Azure resource that can be attached to many resources and has its own lifecycle. A system-assigned identity is tied to one resource and deleted with it. Guest and device identities aren't designed for workloads."
+    },
+    {
+      "id": "sc-900.d2.q011",
+      "lesson": "sc-900.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about workload identities, select Yes if true.",
+      "statements": [
+        { "s": "A managed identity is a special type of service principal.", "a": true },
+        { "s": "A system-assigned managed identity can be shared by multiple Azure resources.", "a": false },
+        { "s": "Workload identities are machine (non-human) identities.", "a": true }
+      ],
+      "explain": "Managed identities are service principals whose credentials Azure manages. A system-assigned identity belongs to a single resource and can't be shared (use user-assigned for sharing). Workload identities, like device identities, are non-human."
+    },
+    {
+      "id": "sc-900.d2.q012",
+      "lesson": "sc-900.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE are types of workload identity in Microsoft Entra? Select THREE.",
+      "options": ["Applications", "Service principals", "Managed identities", "Guest users", "Microsoft Entra registered devices"],
+      "answer": [0, 1, 2],
+      "explain": "Microsoft Entra defines workload identities as applications, service principals and managed identities. Guest users are human identities, and registered devices are device identities, which are non-human but not workload identities."
+    },
+    {
+      "id": "sc-900.d2.q013",
+      "lesson": "sc-900.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "An app on an Azure virtual machine must read a secret from Azure Key Vault by using a system-assigned managed identity. Put the steps in order.",
+      "options": [
+        "Enable the system-assigned managed identity on the virtual machine",
+        "Grant the managed identity access to the key vault, for example with an Azure role",
+        "The app requests an access token for Key Vault from the managed identity endpoint on the VM",
+        "The app presents the token to Key Vault and reads the secret"
+      ],
+      "explain": "The identity must exist before it can be granted permissions. At runtime the app asks the local managed identity endpoint for a token, then uses that token to call Key Vault. No secret is stored anywhere in the app."
+    },
+    {
+      "id": "sc-900.d2.q014",
+      "lesson": "sc-900.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Employees want to access company email and Teams from their personal iPhones. Which device identity option fits this bring-your-own-device scenario?",
+      "options": [
+        "Microsoft Entra joined",
+        "Microsoft Entra hybrid joined",
+        "Joined to a Microsoft Entra Domain Services managed domain",
+        "Microsoft Entra registered"
+      ],
+      "answer": [3],
+      "explain": "Microsoft Entra registered is designed for personal (BYOD) and mobile devices. Entra joined is for organization-owned Windows devices, and hybrid joined needs an on-premises AD DS domain join. Domain Services join is for VMs needing legacy domain services, not phones."
+    },
+    {
+      "id": "sc-900.d2.q015",
+      "lesson": "sc-900.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An organization has thousands of Windows PCs joined to its on-premises AD DS domain. It wants these PCs to also have identities in Microsoft Entra ID for Conditional Access, without rebuilding them. Which option should it use?",
+      "options": [
+        "Microsoft Entra registered",
+        "Microsoft Entra joined",
+        "Microsoft Entra hybrid joined",
+        "User-assigned managed identities"
+      ],
+      "answer": [2],
+      "explain": "Hybrid joined devices stay joined to AD DS and are also registered in Entra ID, so existing domain-joined PCs get a cloud identity. Entra joined would require leaving the domain. Registered is for personal devices, and managed identities are for Azure workloads."
+    },
+    {
+      "id": "sc-900.d2.q016",
+      "lesson": "sc-900.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement about Microsoft Entra joined devices is correct?",
+      "options": [
+        "Users sign in to the device with their Microsoft Entra account and get SSO to cloud and on-premises resources",
+        "The device must also be joined to an on-premises AD DS domain",
+        "The option is intended mainly for personal devices that employees bring to work",
+        "The option is supported only for iOS and Android devices"
+      ],
+      "answer": [0],
+      "explain": "Entra joined is for organization-owned Windows devices; users sign in with Entra ID and get SSO to cloud and on-premises resources. Needing an AD DS join describes hybrid joined. Personal and mobile devices are the registered scenario."
+    },
+    {
+      "id": "sc-900.d2.q017",
+      "lesson": "sc-900.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso has acquired Litware. Each company has its own AD DS forest and there is no trust or network connectivity between them. Contoso wants users from both forests synchronized into its single Microsoft Entra tenant. It wants minimal on-premises infrastructure, configuration managed from the cloud, and high availability through multiple lightweight agents.",
+      "stem": "Which solution should Contoso use?",
+      "options": [
+        "Microsoft Entra Domain Services",
+        "Active Directory Federation Services (AD FS)",
+        "A single Microsoft Entra Connect Sync server in the Contoso forest",
+        "Microsoft Entra Cloud Sync"
+      ],
+      "answer": [3],
+      "explain": "Cloud Sync uses lightweight provisioning agents with outbound connections, keeps configuration in the cloud, supports multiple active agents for high availability and syncs disconnected forests. A single Connect Sync server can't reach the unconnected forest. AD FS federates sign-in and Domain Services provides a managed domain; neither syncs identities."
+    },
+    {
+      "id": "sc-900.d2.q018",
+      "lesson": "sc-900.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO tools synchronize identities from on-premises AD DS to Microsoft Entra ID? Select TWO.",
+      "options": [
+        "Microsoft Entra Domain Services",
+        "Microsoft Entra Connect Sync",
+        "Active Directory Federation Services (AD FS)",
+        "Microsoft Entra Cloud Sync",
+        "Microsoft Entra Verified ID"
+      ],
+      "answer": [1, 3],
+      "explain": "Connect Sync and Cloud Sync are the two Microsoft sync tools for hybrid identity. AD FS is a federation service for authentication, Domain Services offers managed domain services such as LDAP and Kerberos, and Verified ID issues verifiable credentials."
+    },
+    {
+      "id": "sc-900.d2.q019",
+      "lesson": "sc-900.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A user is synchronized from on-premises AD DS to Microsoft Entra ID with Microsoft Entra Connect Sync. By default, where should an administrator change the user's department attribute?",
+      "options": [
+        "In the Microsoft Entra admin center",
+        "In on-premises AD DS",
+        "In the Microsoft 365 admin center",
+        "In the Microsoft Intune admin center"
+      ],
+      "answer": [1],
+      "explain": "For synced users, AD DS is the source of authority, so attributes are edited on-premises and synchronized to the cloud. Cloud portals generally block or overwrite edits to synced attributes. Intune manages devices, not directory attributes."
+    },
+    {
+      "id": "sc-900.d2.q020",
+      "lesson": "sc-900.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which hybrid authentication method allows Microsoft Entra ID Protection to detect leaked credentials for synchronized users?",
+      "options": [
+        "Pass-through authentication (PTA)",
+        "Federation with AD FS",
+        "Password hash synchronization (PHS)",
+        "Seamless single sign-on"
+      ],
+      "answer": [2],
+      "explain": "Leaked credentials detection compares leaked passwords against synchronized password hashes, so it requires PHS. PTA and federation validate passwords on-premises and need PHS added for this detection. Seamless SSO only reduces prompts on domain-joined devices."
+    },
+    {
+      "id": "sc-900.d2.q021",
+      "lesson": "sc-900.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A financial firm is connecting its AD DS to Microsoft Entra ID. Compliance requires that on-premises account policies, such as logon hours and disabled accounts, are enforced at the moment users sign in to cloud apps, and that passwords are never validated in the cloud. The firm refuses to deploy servers in its perimeter network.",
+      "stem": "Which sign-in method meets the requirements?",
+      "options": [
+        "Password hash synchronization",
+        "Pass-through authentication",
+        "Federation with AD FS and Web Application Proxy",
+        "Microsoft Entra Cloud Sync with password writeback"
+      ],
+      "answer": [1],
+      "explain": "PTA validates each password against AD DS through on-premises agents that need only outbound connections, enforcing on-premises policies in real time. PHS validates in the cloud. Federation can enforce policies but needs Web Application Proxy servers in the perimeter. Cloud Sync is a sync tool, not a sign-in method."
+    },
+    {
+      "id": "sc-900.d2.q022",
+      "lesson": "sc-900.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A hybrid user signs in to a cloud app with pass-through authentication. Put the steps in order.",
+      "options": [
+        "The user enters a username and password on the Microsoft Entra sign-in page",
+        "Microsoft Entra ID places the encrypted credential validation request in a queue",
+        "An on-premises authentication agent retrieves the request over its outbound connection and validates it against AD DS",
+        "The agent returns the result and Microsoft Entra ID issues a token to the user"
+      ],
+      "explain": "With PTA, Entra ID receives the sign-in and queues it. The on-premises agent, which holds a persistent outbound connection, picks up the request, validates it with AD DS and returns the result. Entra ID then completes the sign-in and issues the token."
+    }
+  ]
+}

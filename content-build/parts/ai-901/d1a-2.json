@@ -1,0 +1,611 @@
+{
+  "exam": "ai-901",
+  "domain": "d1",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "ai-901.d1a.q029",
+      "lesson": "ai-901.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Your company sends prompts to an Azure OpenAI model deployed in Microsoft Foundry. According to Microsoft's data privacy commitments, how are those prompts and completions handled?",
+      "options": [
+        "They are shared with OpenAI to improve future GPT models",
+        "They are added to the model's weights so it remembers your users",
+        "They are not used to train foundation models without your permission and are not available to OpenAI",
+        "They are published in the model catalog as anonymized benchmark data"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "For models sold directly by Azure, prompts and completions aren't available to OpenAI or other customers and aren't used to train foundation models without permission. The models are stateless, so prompts aren't stored in the weights. Nothing is published as benchmark data."
+    },
+    {
+      "id": "ai-901.d1a.q030",
+      "lesson": "ai-901.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Your security policy forbids API keys in application code. You want a Python app to authenticate to an Azure OpenAI deployment by using Microsoft Entra ID. Complete the code.",
+      "code": "from azure.identity import DefaultAzureCredential, get_bearer_token_provider\nfrom openai import AzureOpenAI\n\ntoken_provider = get_bearer_token_provider(\n    DefaultAzureCredential(), \"https://cognitiveservices.azure.com/.default\")\nclient = AzureOpenAI(\n    azure_endpoint=endpoint,\n    ____=token_provider,\n    api_version=\"2024-10-21\")",
+      "options": [
+        "api_key",
+        "azure_ad_token_provider",
+        "credential_scope",
+        "managed_identity"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "azure_ad_token_provider passes a Microsoft Entra ID token provider, so no key is stored in code, and DefaultAzureCredential can use a managed identity. api_key would need a secret. credential_scope and managed_identity aren't parameters of the AzureOpenAI client."
+    },
+    {
+      "id": "ai-901.d1a.q031",
+      "lesson": "ai-901.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are hardening a Microsoft Foundry chat application that handles confidential HR data. Which THREE actions improve privacy and security? Select THREE.",
+      "options": [
+        "Authenticate with a managed identity instead of an API key in code",
+        "Raise the model's temperature to make answers less predictable",
+        "Grant users the minimum Azure RBAC roles they need",
+        "Expose the Foundry endpoint publicly so mobile users can reach it",
+        "Use a private endpoint to keep traffic on a private network"
+      ],
+      "answer": [
+        0,
+        2,
+        4
+      ],
+      "explain": "Managed identities remove stored secrets, least-privilege RBAC limits access and private endpoints keep traffic off the public internet. Temperature only changes output randomness, and a public endpoint increases exposure."
+    },
+    {
+      "id": "ai-901.d1a.q032",
+      "lesson": "ai-901.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A law firm builds a RAG assistant in Microsoft Foundry over its document library. The library includes privileged files for specific client teams. In testing, a junior employee asked a general question and the assistant quoted from a merger agreement that only partners are allowed to see.",
+      "stem": "Which change BEST addresses this privacy and security issue?",
+      "options": [
+        "Add a disclaimer to the chat window saying answers may be inaccurate",
+        "Apply document-level access control so retrieval returns only content the signed-in user may see",
+        "Set the hate and fairness content filter to block low severity",
+        "Lower max tokens so responses contain fewer quotations"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The assistant retrieved data the user isn't authorized to see. Security trimming at retrieval enforces least privilege. A disclaimer is a transparency measure, content filters target harmful content rather than permissions, and shorter answers can still leak data."
+    },
+    {
+      "id": "ai-901.d1a.q033",
+      "lesson": "ai-901.d1.1.06",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure OpenAI models in Microsoft Foundry, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "The deployed models are stateless and do not store your prompts inside the model.",
+          "a": true
+        },
+        {
+          "s": "Your completions are available to other Azure customers who use the same model.",
+          "a": false
+        },
+        {
+          "s": "Data you store for fine-tuning is encrypted at rest by default.",
+          "a": true
+        }
+      ],
+      "explain": "Models are stateless, and stored data is encrypted at rest with Microsoft-managed AES-256 keys by default. Prompts, completions and training data are never available to other customers."
+    },
+    {
+      "id": "ai-901.d1a.q034",
+      "lesson": "ai-901.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A voice-based banking assistant also shows real-time text captions so that customers with hearing impairments can use it. Which responsible AI principle does this support?",
+      "options": [
+        "Fairness",
+        "Accountability",
+        "Privacy and security",
+        "Inclusiveness"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Making the system usable by people with disabilities is inclusiveness. Fairness is about equal outcomes from decisions, accountability about responsibility and oversight, and privacy and security about protecting data."
+    },
+    {
+      "id": "ai-901.d1a.q035",
+      "lesson": "ai-901.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement describes Microsoft's inclusive design principle 'Solve for one, extend to many'?",
+      "options": [
+        "A solution designed for people with a specific need often benefits many other users",
+        "One AI model should be deployed for all users to keep outcomes consistent",
+        "A single owner should be accountable for each AI system",
+        "One test dataset is enough to validate a model for every region"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The principle says designs for one group, such as captions for deaf users, often help everyone, for example people in noisy places. The other options describe unrelated ideas or poor practice."
+    },
+    {
+      "id": "ai-901.d1a.q036",
+      "lesson": "ai-901.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A city council is building an AI assistant for public services. Which TWO actions MOST directly support inclusiveness? Select TWO.",
+      "options": [
+        "Support speech, text and screen-reader interaction",
+        "Encrypt chat transcripts at rest",
+        "Include people with disabilities in user testing",
+        "Publish the model's accuracy metrics",
+        "Assign a review board to approve releases"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Offering several ways to interact and testing with people with disabilities widen access, which is inclusiveness. Encryption supports privacy and security, publishing metrics supports transparency and a review board supports accountability."
+    },
+    {
+      "id": "ai-901.d1a.q037",
+      "lesson": "ai-901.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A speech recognition app works well for native speakers but often fails for users with strong regional accents, so those users can't complete tasks. Which action BEST improves inclusiveness?",
+      "options": [
+        "Publish a Transparency Note explaining that accents reduce accuracy",
+        "Add a content filter for the self-harm category",
+        "Train and test the model with speech from a wide range of accents and dialects",
+        "Require users to sign in with Microsoft Entra ID"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Using diverse speech data lets everyone use the app, which is the aim of inclusiveness. Documenting the limitation is transparent but doesn't remove the barrier. Content filters and sign-in don't affect recognition of accents."
+    },
+    {
+      "id": "ai-901.d1a.q038",
+      "lesson": "ai-901.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about inclusiveness, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Recognizing exclusion, meaning understanding who might be left out and why, is one of Microsoft's inclusive design principles.",
+          "a": true
+        },
+        {
+          "s": "An app that cannot be used with a screen reader raises an inclusiveness concern.",
+          "a": true
+        },
+        {
+          "s": "Inclusiveness is fully achieved when a model's accuracy is the same for every demographic group.",
+          "a": false
+        }
+      ],
+      "explain": "Recognizing exclusion is an inclusive design principle, and screen-reader support is a core accessibility need. Equal accuracy across groups is mainly a fairness measure. A system can be equally accurate and still exclude people who can't access it."
+    },
+    {
+      "id": "ai-901.d1a.q039",
+      "lesson": "ai-901.d1.1.07",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A government agency launches an AI chatbot for benefit applications. It is available only in English through a text chat window that times out after 60 seconds of inactivity. Complaints come from older residents, people who use assistive technology and recent immigrants. All of them say they can't finish their applications. Analysis shows the AI's eligibility decisions are accurate and consistent for those who do finish.",
+      "stem": "Which responsible AI principle is MOST at risk?",
+      "options": [
+        "Reliability and safety",
+        "Fairness",
+        "Transparency",
+        "Inclusiveness"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The decisions are accurate and consistent, so the problem is that groups can't access the service at all: English only, text only and short time-outs. That is an inclusiveness failure. Fairness would be at risk if completed applications got unequal decisions."
+    },
+    {
+      "id": "ai-901.d1a.q040",
+      "lesson": "ai-901.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A bank tells loan applicants that an AI system helps assess their application and describes the types of data the model considers. Which responsible AI principle does this demonstrate?",
+      "options": [
+        "Transparency",
+        "Inclusiveness",
+        "Fairness",
+        "Reliability and safety"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Disclosing AI use and explaining what data it relies on is transparency. Inclusiveness is about access, fairness about equal outcomes and reliability and safety about consistent operation."
+    },
+    {
+      "id": "ai-901.d1a.q041",
+      "lesson": "ai-901.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A loan officer needs to know why the model rejected one specific applicant. Which type of explanation provides this?",
+      "options": [
+        "A global explanation",
+        "A local explanation",
+        "A fairness assessment",
+        "A confusion matrix for the whole test set"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A local explanation shows which features drove one individual prediction. A global explanation shows overall feature importance. A fairness assessment compares groups, and a confusion matrix summarizes accuracy across the whole test set."
+    },
+    {
+      "id": "ai-901.d1a.q042",
+      "lesson": "ai-901.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about transparency, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Transparency requires an organization to publish its model's source code.",
+          "a": false
+        },
+        {
+          "s": "Telling users they are talking to an AI system, not a person, supports transparency.",
+          "a": true
+        },
+        {
+          "s": "Intelligibility helps stakeholders find bias, errors and unintended outcomes in an AI system.",
+          "a": true
+        }
+      ],
+      "explain": "Transparency means people understand how the system works and its limits. It doesn't require disclosing source code or confidential details. Disclosing AI use and making the system intelligible are core transparency practices."
+    },
+    {
+      "id": "ai-901.d1a.q043",
+      "lesson": "ai-901.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO actions MOST directly support transparency? Select TWO.",
+      "options": [
+        "Share the key characteristics of the training dataset with developers",
+        "Delete personal data once it is no longer needed",
+        "Show users the main factors that influenced a recommendation",
+        "Set a confidence threshold for automated actions",
+        "Add keyboard navigation to the app"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Documenting dataset characteristics and explaining what drove a result both make the system understandable. Deleting data is privacy, confidence thresholds are reliability and safety, and keyboard navigation is inclusiveness."
+    },
+    {
+      "id": "ai-901.d1a.q044",
+      "lesson": "ai-901.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An online retailer uses a generative AI agent built in Microsoft Foundry to answer product questions. Customers think they are chatting with human staff, and some have made purchases based on confident but wrong answers. The retailer's legal team has asked for changes that follow Microsoft's responsible AI principles.",
+      "stem": "Which change MOST directly addresses the transparency concern?",
+      "options": [
+        "Move the agent to a provisioned throughput deployment",
+        "Add more training examples written by customer service staff",
+        "Clearly tell users they are talking to an AI agent and that its answers may contain mistakes",
+        "Enable Prompt Shields for user prompt attacks"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Customers don't know they are talking to an AI or what its limits are. Disclosure fixes that directly. Provisioned throughput affects capacity, extra training examples may help accuracy, and Prompt Shields block attacks, but none of them tells users what they are dealing with."
+    },
+    {
+      "id": "ai-901.d1a.q045",
+      "lesson": "ai-901.d1.1.08",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Responsible AI dashboard component, built on InterpretML, gives global and local explanations of a model's predictions?",
+      "options": [
+        "Error analysis",
+        "Causal analysis",
+        "Data analysis",
+        "Model interpretability"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The model interpretability component uses InterpretML to show which features drive predictions overall (global) and for individual cases (local). Error analysis finds weak cohorts, causal analysis estimates treatment effects and data analysis looks at dataset distribution."
+    },
+    {
+      "id": "ai-901.d1a.q046",
+      "lesson": "ai-901.d1.1.09",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You want to find Microsoft's official description of an Azure AI service's capabilities, limitations and intended uses. Which document should you consult?",
+      "options": [
+        "The Transparency Note for the service",
+        "The Azure Service Level Agreement",
+        "The Microsoft Product Terms price list",
+        "The Azure Well-Architected cost optimization checklist"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Transparency Notes explain what a service can and cannot do, and where it should and shouldn't be used. The SLA covers uptime, the Product Terms cover licensing, and the cost checklist covers spending."
+    },
+    {
+      "id": "ai-901.d1a.q047",
+      "lesson": "ai-901.d1.1.09",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A news agency needs to check whether an image was created by a GPT-image-1 model in Azure OpenAI. Which feature makes this possible?",
+      "options": [
+        "Prompt Shields",
+        "Content Credentials based on the C2PA standard",
+        "Protected material detection for text",
+        "Image captioning in Azure Vision"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Azure OpenAI automatically attaches signed C2PA Content Credentials to DALL-E and GPT-image-1 images, marking them as AI-generated. Prompt Shields and protected material detection are guardrails, and captioning describes an image without proving where it came from."
+    },
+    {
+      "id": "ai-901.d1a.q048",
+      "lesson": "ai-901.d1.1.09",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Content Credentials in Azure OpenAI, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Content Credentials are added automatically to images generated by DALL-E and GPT-image-1 series models.",
+          "a": true
+        },
+        {
+          "s": "Content Credentials prevent anyone from copying or editing the generated image.",
+          "a": false
+        },
+        {
+          "s": "The Content Credentials manifest is cryptographically signed and identifies the image as AI-generated.",
+          "a": true
+        }
+      ],
+      "explain": "Credentials are applied automatically and contain a signed manifest that says the image is 'AI Generated Image'. They are tamper-evident disclosure, not copy protection, so images can still be copied or edited."
+    },
+    {
+      "id": "ai-901.d1a.q049",
+      "lesson": "ai-901.d1.1.09",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Before deploying a model from the Microsoft Foundry model catalog, you want to read about its intended uses, benchmarks and known limitations. Where should you look?",
+      "options": [
+        "The deployment's rate limit settings",
+        "The content filter configuration page",
+        "The model card in the model catalog",
+        "The Azure Activity log"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Model cards describe each model's purpose, training, benchmarks and limitations, which supports transparency and responsible model choice. Rate limits, content filter settings and the Activity log are about operations and safety configuration, not model documentation."
+    },
+    {
+      "id": "ai-901.d1a.q050",
+      "lesson": "ai-901.d1.1.10",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A company sets up an internal review board to oversee its AI systems and approve high-impact uses. Which responsible AI principle does this MOST directly support?",
+      "options": [
+        "Inclusiveness",
+        "Transparency",
+        "Fairness",
+        "Accountability"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Review boards and governance frameworks make people answerable for AI systems, which is accountability. They may help the other principles indirectly, but oversight and ownership are what define accountability."
+    },
+    {
+      "id": "ai-901.d1a.q051",
+      "lesson": "ai-901.d1.1.10",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An insurer uses AI to recommend whether to deny claims. To follow the accountability principle, what should the insurer do?",
+      "options": [
+        "Let the AI make final decisions so outcomes are consistent",
+        "Have a qualified claims adjuster review and be able to override each AI recommendation",
+        "Hide AI involvement to avoid customer disputes",
+        "Increase the training data so the AI never needs oversight"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Accountability says AI shouldn't be the final authority on decisions that significantly affect people. Qualified humans must stay in the loop with the power to override. Hiding AI use breaks transparency, and no amount of data removes the need for oversight."
+    },
+    {
+      "id": "ai-901.d1a.q052",
+      "lesson": "ai-901.d1.1.10",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO practices are MOST directly associated with the accountability principle? Select TWO.",
+      "options": [
+        "Defining a governance framework with clear owners for each AI system",
+        "Captioning audio output for deaf users",
+        "Establishing a process to remediate models that behave harmfully",
+        "Encrypting training data with customer-managed keys",
+        "Rebalancing training data across age groups"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Governance with named owners and remediation processes make people answerable for AI behaviour. Captioning is inclusiveness, encryption is privacy and security, and rebalancing data is a fairness mitigation."
+    },
+    {
+      "id": "ai-901.d1a.q053",
+      "lesson": "ai-901.d1.1.10",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A software vendor sells an AI hiring tool built on a third-party foundation model. A customer finds the tool has been wrongly rejecting qualified candidates. The vendor says the problem lies with the foundation model provider, and the customer says it lies with the vendor. No one has a process for investigating or fixing the problem.",
+      "stem": "Which responsible AI principle does the lack of ownership and remediation process MOST directly violate?",
+      "options": [
+        "Accountability",
+        "Transparency",
+        "Reliability and safety",
+        "Inclusiveness"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The core failure here is that no one owns the outcome and no remediation process exists. That is accountability, which can't be passed on to a model provider. The wrong rejections may also raise fairness or reliability concerns, but the question asks about ownership."
+    },
+    {
+      "id": "ai-901.d1a.q054",
+      "lesson": "ai-901.d1.1.10",
+      "objective": "d1.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about accountability, select Yes if it is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "The people who design and deploy an AI system are accountable for how it operates.",
+          "a": true
+        },
+        {
+          "s": "When an organization uses a third-party model, it is no longer accountable for the outcomes of its own solution.",
+          "a": false
+        },
+        {
+          "s": "Training employees to recognize when to escalate an AI decision to an expert supports accountability.",
+          "a": true
+        }
+      ],
+      "explain": "Accountability stays with the people and organizations that build and deploy AI, even when they use third-party models. Training staff to use systems responsibly and escalate when needed is a recommended accountability practice."
+    },
+    {
+      "id": "ai-901.d1a.q055",
+      "lesson": "ai-901.d1.1.11",
+      "objective": "d1.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are following Microsoft's recommended process for building a responsible generative AI solution. Put the stages in order.",
+      "options": [
+        "Identify potential harms",
+        "Measure the presence of those harms",
+        "Mitigate the harms at several layers",
+        "Operate the solution with a deployment and readiness plan"
+      ],
+      "explain": "Microsoft's guidance goes identify, measure, mitigate, operate. You can't measure harms you haven't identified, and you need measurements to know whether mitigations work before you go live and monitor the solution."
+    },
+    {
+      "id": "ai-901.d1a.q056",
+      "lesson": "ai-901.d1.1.11",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A startup is preparing to launch a generative AI homework helper for teenagers in Microsoft Foundry. The team has written a list of potential harms. Then they added a strict system message and stricter content filters. They now want to launch immediately.",
+      "stem": "According to Microsoft's guidance, what should the team do NEXT?",
+      "options": [
+        "Launch immediately, because mitigation is the final stage",
+        "Request Limited Access approval for the chat model",
+        "Measure the harms again to confirm the mitigations work, then plan a phased rollout with monitoring and incident response",
+        "Replace the system message with few-shot examples"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Mitigations must be measured again to prove they work. The operate stage then needs a readiness plan with phased delivery, feedback and incident response. Standard Azure OpenAI chat doesn't need Limited Access, and swapping the system message for examples skips validation."
+    },
+    {
+      "id": "ai-901.d1a.q057",
+      "lesson": "ai-901.d1.1.11",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A security company plans three AI features: (1) a chat assistant that uses a standard Azure OpenAI model with default content filters, (2) identifying known people from camera footage with the Face service, and (3) a branded synthetic voice created with Custom Neural Voice Pro.",
+      "stem": "Which TWO features require registration and approval under Microsoft's Limited Access policy? Select TWO.",
+      "options": [
+        "The chat assistant with default content filters",
+        "Face identification of known people",
+        "The Custom Neural Voice Pro synthetic voice",
+        "Translating the chat assistant's interface into Spanish"
+      ],
+      "answer": [
+        1,
+        2
+      ],
+      "explain": "Face identify and verify, and Custom Neural Voice Pro features, are Limited Access because they can be misused. Standard Azure OpenAI usage with default filters needs no registration, and changing the UI language isn't an AI feature that is gated."
+    },
+    {
+      "id": "ai-901.d1a.q058",
+      "lesson": "ai-901.d1.1.04",
+      "objective": "d1.1",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "Before sending user posts to a model, your app screens them for harmful content and logs the severity for each harm category. You use the content safety client library for Python. Complete the code.",
+      "code": "from azure.ai.contentsafety import ContentSafetyClient\nfrom azure.ai.contentsafety.models import AnalyzeTextOptions\nfrom azure.core.credentials import AzureKeyCredential\n\nclient = ContentSafetyClient(endpoint, AzureKeyCredential(key))\nresult = client.____(AnalyzeTextOptions(text=user_post))\nfor item in result.categories_analysis:\n    print(item.category, item.severity)",
+      "options": [
+        "analyze_image",
+        "detect_jailbreak",
+        "recognize_pii_entities",
+        "analyze_text"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "analyze_text takes AnalyzeTextOptions and returns a severity for each harm category (hate, sexual, violence, self-harm). analyze_image is for images. detect_jailbreak isn't a method of this client, and recognize_pii_entities belongs to the Azure Language client."
+    }
+  ]
+}

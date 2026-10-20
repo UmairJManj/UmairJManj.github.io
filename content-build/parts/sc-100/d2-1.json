@@ -1,0 +1,1212 @@
+{
+  "exam": "sc-100",
+  "domain": "d2",
+  "lessons": [
+    {
+      "id": "sc-100.d2.1.01",
+      "objective": "d2.1",
+      "seq": 1,
+      "title": "Detection and response with XDR and SIEM",
+      "short": "XDR (Microsoft Defender XDR) gives deep, correlated detection and response across endpoints, identities, email, cloud apps and cloud workloads. SIEM (Microsoft Sentinel) adds broad log collection from any source, custom analytics and long retention. An architect designs them together in the unified Defender portal.",
+      "deep": "**XDR** (extended detection and response) means native, deep telemetry from Microsoft's own protection products, correlated automatically into **incidents**. Microsoft Defender XDR covers Defender for Endpoint, Defender for Office 365, Defender for Identity, Defender for Cloud Apps and Defender for Cloud alerts, and can take built-in response actions (isolate a device, disable a user, soft-delete an email).\n\n**SIEM** (security information and event management) is broad: it ingests logs from firewalls, Linux, AWS, SaaS and line-of-business apps, runs your own **analytics rules** (scheduled or NRT), keeps data for long periods and supports compliance reporting. Microsoft Sentinel is the cloud-native SIEM, built on a Log Analytics workspace, with an optional **data lake** tier for cheap long-term storage.\n\nDesign pattern Microsoft recommends:\n- Turn on Defender XDR for deep coverage of Microsoft workloads.\n- Connect Defender XDR to Sentinel and onboard Sentinel to the **Microsoft Defender portal** (unified security operations), so one incident queue spans XDR and SIEM.\n- Use Sentinel for third-party and custom sources, and for detections that need data XDR doesn't have.\n- Alerts and incidents from Microsoft Defender products are free to ingest into Sentinel; raw advanced hunting tables are billed.\n\nThe Azure portal experience for Sentinel is being retired in favour of the Defender portal.",
+      "terms": [
+        {
+          "t": "XDR",
+          "d": "Extended detection and response: native, correlated detection and response across a vendor's own security products."
+        },
+        {
+          "t": "SIEM",
+          "d": "Security information and event management: broad log collection, correlation, analytics and retention from any source."
+        },
+        {
+          "t": "Unified security operations",
+          "d": "Running Microsoft Sentinel and Defender XDR together in the Microsoft Defender portal with one incident queue."
+        },
+        {
+          "t": "NRT rule",
+          "d": "Near-real-time Sentinel analytics rule that runs about every minute."
+        }
+      ],
+      "trap": "Exams contrast 'deep vs broad': choosing Sentinel alone for endpoint response, or Defender XDR alone for firewall or AWS logs, is the usual wrong answer.",
+      "example": "A retailer uses Defender XDR for its Microsoft 365 estate and connects Sentinel for Palo Alto firewall and AWS CloudTrail logs, triaging everything in the Defender portal.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Defender XDR",
+          "Microsoft Sentinel"
+        ],
+        "rows": [
+          [
+            "Scope",
+            "Deep, MS workloads",
+            "Broad, any source"
+          ],
+          [
+            "Detections",
+            "Built-in, correlated",
+            "Built-in + custom KQL"
+          ],
+          [
+            "Retention",
+            "30 days hunting",
+            "Long, plus data lake"
+          ],
+          [
+            "Response",
+            "Native actions",
+            "Playbooks (Logic Apps)"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.1.02",
+      "objective": "d2.1",
+      "seq": 2,
+      "title": "Centralized logging and Microsoft Purview Audit",
+      "short": "Centralized logging sends identity, cloud, endpoint and app logs to one governed place (usually a Sentinel workspace) with defined retention. Microsoft Purview Audit records user and admin activity across Microsoft 365: Audit (Standard) keeps records 180 days; Audit (Premium) keeps key services' records one year, extendable to 10 years with an add-on.",
+      "deep": "A logging design answers: **what** to collect, **where** to store it, **how long**, and **who** can read it.\n\n**Where:** Microsoft recommends as few Log Analytics workspaces as possible (often one per region or per tenant). Extra workspaces are justified by data residency, separate billing, different retention, or strict access separation. Use **resource-context** and **table-level RBAC** before splitting workspaces.\n\n**Microsoft Purview Audit** is the Microsoft 365 unified audit log:\n- **Audit (Standard):** on by default, records kept **180 days**, search in the Purview portal, `Search-UnifiedAuditLog` or the Audit Search Graph API.\n- **Audit (Premium):** Exchange, SharePoint, OneDrive and Entra ID records kept **one year** by default, **custom audit retention policies** (by service, activity or user), intelligent insights for forensic investigations, and about twice the Office 365 Management Activity API bandwidth.\n- **10-year retention** needs Audit (Premium) plus the per-user **10-Year Audit Log Retention add-on**; the policy is not retroactive.\n\nFor correlation and longer retention, stream Microsoft 365 activity into Sentinel (OfficeActivity table) and Entra sign-in and audit logs through diagnostic settings.",
+      "terms": [
+        {
+          "t": "Audit (Standard)",
+          "d": "Default Purview audit tier: unified audit log, 180-day retention."
+        },
+        {
+          "t": "Audit (Premium)",
+          "d": "Adds 1-year default retention for key services, custom retention policies, intelligent insights and higher API bandwidth."
+        },
+        {
+          "t": "Audit retention policy",
+          "d": "Premium policy that keeps chosen records for a set period, up to 1 year or 10 years with the add-on."
+        },
+        {
+          "t": "Table-level RBAC",
+          "d": "Restricting who can read specific tables in a Log Analytics workspace, avoiding extra workspaces."
+        }
+      ],
+      "trap": "A 10-year requirement is not met by Audit (Premium) alone; it needs the 10-Year Audit Log Retention add-on, and it doesn't cover records created before the policy.",
+      "example": "A bank must keep mailbox access records for seven years, so it licenses Audit (Premium) plus the 10-year add-on for in-scope users and creates a matching retention policy.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Audit (Standard)",
+          "Audit (Premium)"
+        ],
+        "rows": [
+          [
+            "Default retention",
+            "180 days",
+            "1 year (key services)"
+          ],
+          [
+            "Custom policies",
+            "No",
+            "Yes"
+          ],
+          [
+            "10 years",
+            "No",
+            "With add-on"
+          ],
+          [
+            "API bandwidth",
+            "Baseline",
+            "About 2x"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.1.03",
+      "objective": "d2.1",
+      "seq": 3,
+      "title": "Monitoring hybrid and multicloud environments",
+      "short": "To monitor on-premises, AWS and GCP alongside Azure, onboard servers with Azure Arc, collect logs with the Azure Monitor Agent and data collection rules, connect AWS and GCP to Defender for Cloud and Sentinel, and use Defender for Cloud Apps for SaaS.",
+      "deep": "Hybrid and multicloud monitoring has two layers: **posture/protection** and **log collection**.\n\n**Protection and posture**\n- **Defender for Cloud** connects AWS accounts and GCP projects with native connectors. CSPM is agentless once the connector is onboarded.\n- Non-Azure servers (on-premises, EC2, GCP VMs) are projected into Azure with **Azure Arc**, so Defender for Servers, Azure Policy and extensions apply to them. On AWS and GCP, Arc auto-provisioning is done through the SSM agent or OS Config agent.\n- **Defender for Containers** covers EKS and GKE using the Arc agent and Defender sensor.\n\n**Log collection into Sentinel**\n- Windows and Linux machines use the **Azure Monitor Agent (AMA)** with **data collection rules (DCRs)**; the legacy Log Analytics agent (MMA) is retired.\n- Network appliances send **Syslog/CEF** to a Linux log forwarder running AMA.\n- **AWS**: the S3 connector reads CloudTrail, VPC Flow Logs, GuardDuty and CloudWatch logs via an SQS queue and an IAM role trusted through OIDC.\n- **GCP**: Pub/Sub-based connectors.\n- **SaaS**: Defender for Cloud Apps and vendor connectors.\n\nMSSPs and multi-tenant groups use **Azure Lighthouse** and Sentinel workspace manager or multi-tenant management in the Defender portal.",
+      "terms": [
+        {
+          "t": "Azure Arc",
+          "d": "Projects non-Azure servers and Kubernetes clusters into Azure Resource Manager so Azure services can manage them."
+        },
+        {
+          "t": "Azure Monitor Agent (AMA)",
+          "d": "Current agent for collecting logs from machines, configured by data collection rules."
+        },
+        {
+          "t": "Data collection rule (DCR)",
+          "d": "Defines what data AMA collects, how it's transformed and where it's sent."
+        },
+        {
+          "t": "Azure Lighthouse",
+          "d": "Delegated cross-tenant resource management, used by MSSPs to operate many customers' Sentinel workspaces."
+        }
+      ],
+      "trap": "Choosing the retired Log Analytics agent or 'install Defender for Servers directly' without Azure Arc for on-premises/AWS servers is a common wrong answer.",
+      "example": "A manufacturer onboards 400 on-premises Linux servers to Azure Arc, applies a DCR for Syslog via AMA, and gets Defender for Servers coverage on the same machines.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "On-prem / AWS VM",
+          "Azure Arc",
+          "AMA + DCR",
+          "Log Analytics",
+          "Sentinel"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.1.04",
+      "objective": "d2.1",
+      "seq": 4,
+      "title": "SOAR with Sentinel and Defender XDR",
+      "short": "SOAR automates triage and response. In Sentinel, automation rules handle simple incident actions and can run playbooks built on Azure Logic Apps. Defender XDR adds automated investigation and response (AIR) and attack disruption for built-in, automatic containment.",
+      "deep": "**SOAR** (security orchestration, automation and response) reduces analyst toil and time-to-contain.\n\n**Microsoft Sentinel**\n- **Automation rules**: lightweight, ordered rules triggered when an incident is created or updated, or an alert is created. Without code they can assign an owner, change status or severity, add tags, add **task lists**, close noisy incidents and **run playbooks**.\n- **Playbooks**: workflows built on **Azure Logic Apps** (Consumption or Standard) that call APIs: open a ServiceNow ticket, block an IP on a firewall, post to Teams, disable a user. They run from automation rules or manually on an incident, alert or entity.\n- Permissions: the Sentinel service account needs **Microsoft Sentinel Automation Contributor** on the playbook's resource group before automation rules can run it; analysts need **Microsoft Sentinel Playbook Operator** to run playbooks manually.\n\n**Defender XDR**\n- **Automated investigation and response (AIR)** investigates alerts and proposes or takes remediation actions, depending on the automation level.\n- **Automatic attack disruption** contains in-progress attacks such as ransomware or business email compromise (for example, by containing devices or users) with high confidence.\n\nDesign tip: use built-in XDR actions first, automation rules for routing and hygiene, and playbooks only for cross-system orchestration.",
+      "terms": [
+        {
+          "t": "SOAR",
+          "d": "Security orchestration, automation and response: automating triage and response steps across tools."
+        },
+        {
+          "t": "Automation rule",
+          "d": "Sentinel rule that acts on incidents/alerts (assign, tag, close, add tasks, run playbook)."
+        },
+        {
+          "t": "Playbook",
+          "d": "Logic Apps workflow of response actions, run automatically or manually."
+        },
+        {
+          "t": "Automatic attack disruption",
+          "d": "Defender XDR capability that automatically contains assets during high-confidence attacks."
+        }
+      ],
+      "trap": "A playbook is not needed just to assign, tag or close incidents; an automation rule does that. And a playbook won't run from an automation rule until Sentinel has the Automation Contributor role on its resource group.",
+      "example": "An automation rule tags all incidents from the 'Impossible travel' rule, assigns them to Tier 1, and runs a playbook that posts a Teams adaptive card asking the user to confirm the sign-in.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Analytics rule",
+          "Incident",
+          "Automation rule",
+          "Playbook",
+          "Ticket / block"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.1.05",
+      "objective": "d2.1",
+      "seq": 5,
+      "title": "Incident response and incident management workflows",
+      "short": "Incident response follows a lifecycle: preparation, detection and analysis, containment/eradication/recovery, and post-incident lessons learned (NIST SP 800-61). Incident management in the Defender portal adds severity, ownership, tasks, classification and integration with ITSM.",
+      "deep": "An architect designs the **process**, the **people** and the **tooling**.\n\n**Lifecycle (NIST SP 800-61 style)**\n1. **Preparation**: playbooks, roles, contact lists, break-glass procedures, out-of-band communications.\n2. **Detection and analysis**: alerts become incidents; analysts confirm scope using the attack story and entity pages.\n3. **Containment, eradication and recovery**: isolate devices, disable or reset accounts, revoke sessions, restore from clean backups.\n4. **Post-incident activity**: lessons learned, new detections, control gaps fed back into preparation.\n\n**Incident management in Microsoft tools**\n- Single incident queue in the Defender portal for XDR and Sentinel incidents.\n- Assign owners, set status and severity, use **tasks** for standard steps, and **classify** at closure (true positive, informational/expected activity, false positive) so tuning data is captured.\n- Integrate with ITSM (ServiceNow, Jira) through playbooks or connectors.\n- Use **Microsoft Security Copilot** to summarise incidents, explain scripts and draft reports.\n\nFor major incidents, Microsoft's guidance stresses separating roles (incident lead, investigators, communications), protecting privileged accounts first, and assuming the attacker can read normal email channels.",
+      "terms": [
+        {
+          "t": "NIST SP 800-61",
+          "d": "NIST computer security incident handling guide defining the incident response lifecycle."
+        },
+        {
+          "t": "Incident classification",
+          "d": "Closure label (true positive, false positive, informational) used to measure and tune detections."
+        },
+        {
+          "t": "Out-of-band communication",
+          "d": "A channel separate from the possibly compromised environment, used during a major incident."
+        }
+      ],
+      "trap": "Eradication before containment, or skipping post-incident review, is the classic wrong ordering; lessons learned feed back into preparation.",
+      "example": "During a ransomware incident the response lead moves comms to a separate Teams tenant and phones, isolates affected devices via Defender for Endpoint, then restores from immutable backups.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Preparation",
+          "Detect & analyse",
+          "Contain / eradicate / recover",
+          "Lessons learned"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.1.06",
+      "objective": "d2.1",
+      "seq": 6,
+      "title": "Threat hunting workflows",
+      "short": "Threat hunting is proactive, hypothesis-driven searching for attackers that detections missed. Use advanced hunting (KQL) in the Defender portal across XDR and Sentinel data, hunting queries and bookmarks in Sentinel, and turn successful hunts into custom detections.",
+      "deep": "Hunting assumes breach: some attacker activity has slipped past existing detections.\n\n**Workflow**\n1. **Hypothesis**: from threat intelligence, a new technique, or a MITRE ATT&CK coverage gap (for example, 'attackers delete shadow copies before encrypting').\n2. **Query**: run KQL in **advanced hunting** across Defender XDR tables (DeviceProcessEvents, IdentityLogonEvents, EmailEvents, CloudAppEvents) and Sentinel tables in one place.\n3. **Investigate**: pivot on entities; save interesting rows as **bookmarks** (Sentinel) and attach them to incidents.\n4. **Operationalise**: convert reliable logic into a **custom detection rule** (Defender XDR) or **analytics rule** (Sentinel) and map it to ATT&CK techniques.\n\n**Tools**\n- Sentinel **hunting queries** and the **Hunts** feature to track hunting projects.\n- **Livestream** for real-time watch of a query (Sentinel).\n- **Notebooks** (Jupyter) and the Sentinel data lake for long-range, large-volume hunts.\n- **Microsoft Security Copilot** can generate KQL from natural language.\n- Defender XDR advanced hunting keeps 30 days of raw data; Sentinel keeps what your retention allows.\n\nHunting differs from incident response: there's no alert yet, and success includes 'found nothing, added a detection'.",
+      "terms": [
+        {
+          "t": "Advanced hunting",
+          "d": "KQL-based query experience in the Defender portal over XDR and Sentinel data."
+        },
+        {
+          "t": "Bookmark",
+          "d": "Saved hunting result in Sentinel that can be added to an incident as evidence."
+        },
+        {
+          "t": "Custom detection rule",
+          "d": "Defender XDR rule that runs a hunting query on a schedule and raises alerts or takes actions."
+        }
+      ],
+      "trap": "Hunting is not 'waiting for alerts'; answers that rely only on analytics rules firing describe detection, not hunting.",
+      "example": "After a report on a new LSASS-dumping tool, a hunter queries DeviceProcessEvents for 30 days, bookmarks two hits, and publishes a custom detection rule.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Hypothesis",
+          "Query (KQL)",
+          "Investigate",
+          "Detection rule"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.1.07",
+      "objective": "d2.1",
+      "seq": 7,
+      "title": "Evaluating detection coverage with MITRE ATT&CK",
+      "short": "MITRE ATT&CK catalogues adversary tactics and techniques in three matrices: Enterprise, Mobile and ICS. Architects map detections to techniques to find gaps; Sentinel's MITRE ATT&CK page shows active and simulated coverage from analytics rules.",
+      "deep": "**MITRE ATT&CK** is a public knowledge base of real-world adversary behaviour. **Tactics** are the attacker's goal (Initial Access, Persistence, Lateral Movement, Exfiltration, Impact); **techniques** and sub-techniques are how they achieve it (T1003 OS Credential Dumping).\n\nThree matrices:\n- **Enterprise**: Windows, macOS, Linux, cloud (identity providers, SaaS, IaaS, Office suite), network devices and containers.\n- **Mobile**: Android and iOS devices.\n- **ICS**: industrial control systems and operational technology, with ICS-specific tactics such as **Inhibit Response Function** and **Impair Process Control**.\n\n**Evaluating coverage**\n- In Sentinel, the **MITRE ATT&CK** page (Threat management) shows **active** coverage from enabled scheduled and NRT analytics rules, and **simulated** coverage from available rules you haven't enabled.\n- Tag your analytics rules, hunting queries and bookmarks with techniques; incidents inherit them.\n- Map product coverage too: Defender for Endpoint (Enterprise), Defender for Endpoint on Android/iOS and mobile threat defense (Mobile), Defender for IoT (ICS/OT).\n- Prioritise gaps by threat intelligence relevant to your sector, not by filling every cell.",
+      "terms": [
+        {
+          "t": "Tactic",
+          "d": "The adversary's objective at a stage of an attack, such as Credential Access."
+        },
+        {
+          "t": "Technique",
+          "d": "A specific method used to achieve a tactic, with an ID such as T1566 Phishing."
+        },
+        {
+          "t": "Simulated coverage",
+          "d": "Sentinel view of coverage you would have if available-but-disabled rules were enabled."
+        },
+        {
+          "t": "ATT&CK for ICS",
+          "d": "Matrix for attacks on industrial control systems and OT environments."
+        }
+      ],
+      "trap": "OT/PLC attacks map to the ICS matrix and phones to the Mobile matrix; answering 'Enterprise' for everything is the trap. Also, 100% cell coverage is not the goal.",
+      "example": "A water utility maps Defender for IoT alerts to ATT&CK for ICS and finds no coverage for 'Modify Parameter', so it adds a detection for unexpected PLC write commands.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Matrix",
+          "Covers",
+          "Microsoft tool"
+        ],
+        "rows": [
+          [
+            "Enterprise",
+            "Windows, Linux, cloud",
+            "Defender XDR, Sentinel"
+          ],
+          [
+            "Mobile",
+            "Android, iOS",
+            "MDE mobile"
+          ],
+          [
+            "ICS",
+            "OT, PLCs, SCADA",
+            "Defender for IoT"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.2.01",
+      "objective": "d2.2",
+      "seq": 1,
+      "title": "Agent identities with Microsoft Entra Agent ID",
+      "short": "Microsoft Entra Agent ID gives AI agents first-class identities. An agent identity blueprint is a template that creates agent identities and holds their credentials; agents can also have an agent user account. Conditional Access can target agent identities or whole blueprints.",
+      "deep": "AI agents need identities that can be governed like users and apps. **Microsoft Entra Agent ID** introduces:\n- **Agent identity blueprint**: a reusable template that defines a 'kind' of agent (name, publisher, roles, permissions). The blueprint **holds the credentials** (federated identity credentials, certificates or secrets) and acquires tokens on behalf of its agent identities. Admins can disable, revoke or apply policy to every agent of that kind at once.\n- **Agent identity**: a special single-tenant service principal created from a blueprint. It has **no credentials of its own**.\n- **Agent user account** (optional): a user object 'decorated as an AI agent' for systems that require a user account, with a 1:1 link to the agent identity.\n- **Sponsor**: a human or group accountable for the agent.\n\n**Conditional Access for agents**\n- App-only calls: target the agent identity or the **blueprint** (covers future agents created from it).\n- On-behalf-of calls: the subject is the **user**, so user policies apply.\n- Agent users are **not** covered by 'All users' policies; target them under **Agents**.\n- Example policies: block agents at high risk, use custom security attributes to scope agents.\n- CA can't help if an agent uses an **API key** instead of Entra tokens, or with security defaults.\n\nLicensing: Microsoft Agent 365 (with Entra P1 or Microsoft 365 E3) or Microsoft 365 E7.",
+      "terms": [
+        {
+          "t": "Agent identity blueprint",
+          "d": "Template that creates agent identities, holds their credentials and lets admins manage all agents of a kind together."
+        },
+        {
+          "t": "Agent identity",
+          "d": "Special service principal representing an AI agent; has no credentials of its own."
+        },
+        {
+          "t": "Agent user account",
+          "d": "Optional user object paired 1:1 with an agent identity for systems that need a user."
+        },
+        {
+          "t": "Sponsor",
+          "d": "Accountable human or group recorded on an agent identity."
+        }
+      ],
+      "trap": "Assuming an 'All users' Conditional Access policy also covers agent user accounts, or that a policy on an agent identity covers its on-behalf-of user calls, is wrong.",
+      "example": "A company creates one blueprint for its invoice-processing agents and applies a Conditional Access policy to the blueprint that blocks any of its agents flagged as high risk.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Blueprint (creds)",
+          "Agent identity",
+          "Token request",
+          "Conditional Access",
+          "Resource"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.2.02",
+      "objective": "d2.2",
+      "seq": 2,
+      "title": "Access to SaaS, PaaS, IaaS, on-premises and multicloud",
+      "short": "Make Microsoft Entra ID the single control plane for access: SSO and SCIM provisioning for SaaS, Azure RBAC and managed identities for PaaS/IaaS, Entra Private Access or Application Proxy for on-premises apps, and federation for AWS and GCP consoles.",
+      "deep": "Zero Trust access design centralises **authentication and policy** in Entra ID so Conditional Access applies everywhere.\n\n- **SaaS**: add apps from the Entra app gallery with **SAML or OpenID Connect SSO**; automate account lifecycle with **SCIM provisioning**; discover unsanctioned apps and enforce session controls with **Defender for Cloud Apps** (Conditional Access app control).\n- **PaaS and IaaS (Azure)**: control-plane access with **Azure RBAC** at management group, subscription, resource group or resource scope; data-plane access with RBAC roles where supported (Key Vault, Storage, SQL with Entra authentication). Workloads use **managed identities** instead of secrets.\n- **On-premises apps**: **Microsoft Entra Private Access** (part of Global Secure Access, the Security Service Edge) replaces VPNs with per-app access for any TCP/UDP app; **Application Proxy** publishes on-premises web apps. Both bring Conditional Access and MFA to legacy apps. Kerberos apps can use Kerberos constrained delegation through the connector.\n- **Multicloud**: federate AWS IAM Identity Center and Google Cloud with Entra ID (SAML SSO plus SCIM) so the same identities, MFA and access reviews apply.\n\nAvoid duplicating local accounts in each platform; every separate identity store is a separate attack surface.",
+      "terms": [
+        {
+          "t": "SCIM",
+          "d": "System for Cross-domain Identity Management: standard for automatic user provisioning to apps."
+        },
+        {
+          "t": "Microsoft Entra Private Access",
+          "d": "Zero Trust network access to private/on-premises apps without a traditional VPN."
+        },
+        {
+          "t": "Application Proxy",
+          "d": "Entra feature that publishes on-premises web apps through an outbound connector."
+        },
+        {
+          "t": "Managed identity",
+          "d": "Azure-managed Entra identity for a resource, with no secret to store or rotate."
+        }
+      ],
+      "trap": "Picking a site-to-site VPN or new local accounts for on-premises or AWS access, when the requirement says 'apply Conditional Access' or 'single identity', is the wrong answer.",
+      "example": "A firm retires its VPN: staff reach the on-premises ERP through Entra Private Access with a compliant-device policy, and admins sign in to AWS through IAM Identity Center federated to Entra ID.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Resource",
+          "Access method"
+        ],
+        "rows": [
+          [
+            "SaaS",
+            "SAML/OIDC SSO + SCIM"
+          ],
+          [
+            "Azure PaaS/IaaS",
+            "Azure RBAC, managed ID"
+          ],
+          [
+            "On-prem apps",
+            "Private Access, App Proxy"
+          ],
+          [
+            "AWS / GCP",
+            "Federation + SCIM"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.2.03",
+      "objective": "d2.2",
+      "seq": 3,
+      "title": "Hybrid identity: sync and authentication methods",
+      "short": "Hybrid identity syncs AD DS users to Microsoft Entra ID with Entra Connect Sync or the lighter Entra Cloud Sync, then authenticates with password hash sync (recommended), pass-through authentication or federation. Cloud Sync is Microsoft's recommended path for most organizations.",
+      "deep": "**Synchronization**\n- **Microsoft Entra Cloud Sync**: lightweight agents, configuration in the cloud, multiple agents for high availability, handles **disconnected forests** natively, supports password hash sync, password writeback and Exchange hybrid. Limits: groups up to 50,000 members, limited attribute filtering, no **device writeback**, no attribute merging across forests, PTA/federation configured separately.\n- **Microsoft Entra Connect Sync**: full server-based engine; needed for features such as merging attributes from multiple forests, rich attribute filtering and very large groups.\n- Both can run side by side for different scopes during migration.\n\n**Authentication**\n- **Password hash sync (PHS)**: a hash of the password hash is synced; sign-in happens in the cloud. Simplest, most resilient, and enables **leaked credential detection** in ID Protection. Recommended, at least as a backup.\n- **Pass-through authentication (PTA)**: on-premises agents validate passwords, so on-premises policy (logon hours) applies, but outages affect cloud sign-in.\n- **Federation (AD FS)**: most complex; a common golden-SAML attack target. Microsoft recommends migrating to cloud authentication using **staged rollout**.\n\nAdd **Seamless SSO** or Entra hybrid join for domain-joined devices, and protect the sync server as **Tier 0 / control plane**.",
+      "terms": [
+        {
+          "t": "Password hash sync (PHS)",
+          "d": "Syncs a hash of the AD password hash so Entra ID can authenticate users in the cloud."
+        },
+        {
+          "t": "Pass-through authentication (PTA)",
+          "d": "Cloud sign-ins validated by on-premises agents against AD DS."
+        },
+        {
+          "t": "Staged rollout",
+          "d": "Moves selected groups from federation to cloud authentication before converting the domain."
+        },
+        {
+          "t": "Entra Cloud Sync",
+          "d": "Agent-based, cloud-configured sync from AD DS to Entra ID."
+        }
+      ],
+      "trap": "Requirements like 'disconnected forests, minimal on-premises footprint' point to Cloud Sync; 'merge attributes from several forests' or 'device writeback' point to Connect Sync.",
+      "example": "After acquiring a company with an untrusted AD forest, the architect installs Cloud Sync agents in that forest so its users land in the same tenant without a forest trust.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "PHS",
+          "PTA",
+          "Federation"
+        ],
+        "rows": [
+          [
+            "Auth happens",
+            "Cloud",
+            "On-prem agent",
+            "AD FS"
+          ],
+          [
+            "On-prem outage",
+            "No impact",
+            "Sign-in fails",
+            "Sign-in fails"
+          ],
+          [
+            "Leaked creds",
+            "Yes",
+            "No",
+            "No"
+          ],
+          [
+            "Complexity",
+            "Low",
+            "Medium",
+            "High"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.2.04",
+      "objective": "d2.2",
+      "seq": 4,
+      "title": "Workload identities across hybrid and multicloud",
+      "short": "Workloads need identities too. Use managed identities for Azure resources, workload identity federation for GitHub Actions, Kubernetes, AWS and GCP workloads, and Azure Arc managed identities for on-premises servers, so no long-lived secrets are stored.",
+      "deep": "A **workload identity** is an identity used by software: an app registration's service principal, a managed identity, or an agent identity.\n\n**Design order of preference**\n1. **Managed identities** for anything running in Azure (App Service, Functions, VMs, AKS via workload identity). System-assigned lives and dies with the resource; user-assigned can be shared and pre-authorised.\n2. **Workload identity federation**: configure a **federated identity credential** on an app registration or user-assigned managed identity to trust tokens from an external OIDC issuer (GitHub Actions, Kubernetes service accounts, Google Cloud, AWS). The workload swaps its own token for an Entra token, with no secret.\n3. **Azure Arc-enabled servers** get a managed identity, so on-premises and other-cloud servers can call Azure APIs without secrets.\n4. Certificates (stored in Key Vault) only when federation isn't possible; client secrets last.\n\n**Governing workload identities**\n- **Conditional Access for workload identities** (Workload Identities Premium) can block single-tenant service principals by location or service principal risk; it doesn't apply to managed identities.\n- **ID Protection** detects risky workload identities.\n- Review app permissions and owners with access reviews and app governance in Defender for Cloud Apps.",
+      "terms": [
+        {
+          "t": "Workload identity federation",
+          "d": "Lets external OIDC tokens (GitHub, Kubernetes, GCP, AWS) be exchanged for Entra tokens without secrets."
+        },
+        {
+          "t": "Federated identity credential",
+          "d": "Trust configuration on an app or user-assigned managed identity naming the external issuer and subject."
+        },
+        {
+          "t": "User-assigned managed identity",
+          "d": "Standalone managed identity that can be attached to many resources."
+        },
+        {
+          "t": "Workload Identities Premium",
+          "d": "License needed for Conditional Access and risk features for service principals."
+        }
+      ],
+      "trap": "Storing a client secret in a GitHub repository secret is the 'works but wrong' answer when workload identity federation is available.",
+      "example": "A GitHub Actions pipeline deploys to Azure using a federated credential that trusts only the main branch of one repository, so no secret exists to leak.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "GitHub OIDC token",
+          "Federated credential",
+          "Entra token",
+          "Azure resource"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.2.05",
+      "objective": "d2.2",
+      "seq": 5,
+      "title": "External identities: B2B collaboration and cross-tenant access",
+      "short": "Microsoft Entra External ID lets partners use their own identities. B2B collaboration creates guest user objects; B2B direct connect creates no guest object and needs mutual trust. Cross-tenant access settings control inbound/outbound access and whether to trust partners' MFA and device claims.",
+      "deep": "**B2B collaboration**: partners are invited (or self-sign-up) and appear as **guest users** in your directory. They sign in with their home Entra ID, Microsoft account, Google, email one-time passcode or SAML/WS-Fed identity provider. You can assign them to apps, groups and access packages.\n\n**B2B direct connect**: a mutual trust with another Entra organization; users get access without a guest object, used for Teams shared channels. **Blocked by default** and must be enabled by both organizations.\n\n**Cross-tenant access settings**\n- **Default** settings apply to all external Entra orgs; **organizational** settings override them per partner.\n- **Inbound/outbound** controls for users, groups and applications.\n- **Trust settings**: accept the partner's **MFA**, **compliant device** and **hybrid joined device** claims so guests aren't prompted twice. Not trusted by default.\n- **Automatic redemption** and **cross-tenant synchronization** for multitenant organizations.\n- **Tenant restrictions v2** controls which external tenants your users can sign in to from your devices.\n\n**Customers (CIAM)**: External ID in an **external tenant** gives branded sign-up/sign-in for consumer apps.\n\nGovern guests with **entitlement management** (connected organizations, expiring access packages) and **access reviews**.",
+      "terms": [
+        {
+          "t": "B2B collaboration",
+          "d": "External users added as guest objects in your tenant."
+        },
+        {
+          "t": "B2B direct connect",
+          "d": "Mutual Entra-to-Entra trust without guest objects, e.g. Teams shared channels."
+        },
+        {
+          "t": "Inbound trust settings",
+          "d": "Accept another tenant's MFA and device compliance claims."
+        },
+        {
+          "t": "Cross-tenant synchronization",
+          "d": "Automates creating B2B users across tenants of a multitenant organization."
+        }
+      ],
+      "trap": "Guests prompted for MFA twice? The fix is inbound trust settings for MFA in cross-tenant access, not excluding guests from Conditional Access.",
+      "example": "A law firm trusts a client's MFA and compliant-device claims in organizational cross-tenant settings, so client staff reach the shared SharePoint site under the firm's Conditional Access without re-registering MFA.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "B2B collaboration",
+          "B2B direct connect"
+        ],
+        "rows": [
+          [
+            "Guest object",
+            "Yes",
+            "No"
+          ],
+          [
+            "Default",
+            "Enabled",
+            "Blocked"
+          ],
+          [
+            "Typical use",
+            "Apps, SharePoint",
+            "Teams shared channels"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.2.06",
+      "objective": "d2.2",
+      "seq": 6,
+      "title": "Decentralized identity with Microsoft Entra Verified ID",
+      "short": "Decentralized identity lets people hold verifiable credentials in a wallet and present them to anyone who trusts the issuer. Microsoft Entra Verified ID issues and verifies these credentials using decentralized identifiers (DIDs), with the did:web trust system and Microsoft Authenticator as the wallet.",
+      "deep": "In classic federation, the relying party calls the identity provider every time. In **decentralized identity**, the trust triangle is:\n- **Issuer**: verifies facts about a person (employer, university, government) and issues a **verifiable credential (VC)** signed with the issuer's **DID**.\n- **Holder**: the user stores the VC in a digital wallet (**Microsoft Authenticator**) and controls when to share it.\n- **Verifier**: checks the VC's signature against the issuer's DID and decides whether to trust it, without contacting the issuer during each presentation.\n\n**Microsoft Entra Verified ID** is the issuance and verification service. It uses the **did:web** method, which anchors trust in a domain the issuer controls. Verifiers use the Request Service API or open standards.\n\nArchitect use cases:\n- **Onboarding** remote hires: verify a government ID or employment credential before issuing a Temporary Access Pass.\n- **Help desk and account recovery**: require a VC (optionally with **Face Check** liveness matching) before resetting credentials, defeating social engineering.\n- **Partner access**: require a partner-issued 'employed by' credential in an **entitlement management** access package (Entra ID Governance feature).\n- Privacy: users share only the claims needed.",
+      "terms": [
+        {
+          "t": "Verifiable credential (VC)",
+          "d": "Tamper-evident, issuer-signed set of claims held by the user."
+        },
+        {
+          "t": "Decentralized identifier (DID)",
+          "d": "Globally unique identifier controlled by its owner, resolving to public keys."
+        },
+        {
+          "t": "did:web",
+          "d": "DID method that ties trust to a web domain; used by Entra Verified ID."
+        },
+        {
+          "t": "Verifier",
+          "d": "Party that requests and validates a credential presentation."
+        }
+      ],
+      "trap": "Verified ID doesn't replace B2B for granting access; it proves claims. Picking 'B2B guest invite' when the requirement is 'prove identity/employment without contacting the issuer' is wrong.",
+      "example": "A hospital requires contractors to present a 'licensed nurse' credential from the regulator in Authenticator before an access package grants them the clinical app.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Issuer signs VC",
+          "Holder wallet",
+          "Presentation",
+          "Verifier checks DID"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.2.07",
+      "objective": "d2.2",
+      "seq": 7,
+      "title": "Conditional Access, authentication strengths and authentication context",
+      "short": "Conditional Access is Entra ID's Zero Trust policy engine: if a sign-in matches assignments and conditions, it must satisfy grant and session controls. Authentication strengths require specific methods such as phishing-resistant MFA; authentication context protects sensitive actions inside apps.",
+      "deep": "**Conditional Access (CA)** evaluates when Entra ID issues a token.\n- **Assignments**: users/groups/roles, agents, workload identities; target resources (cloud apps, user actions, authentication context).\n- **Conditions**: user risk, sign-in risk, device platform, locations (named locations), client apps (legacy auth), filter for devices.\n- **Grant controls**: block, require MFA, require **authentication strength**, compliant device, hybrid joined device, approved app, app protection policy, terms of use, password change.\n- **Session controls**: sign-in frequency, persistent browser, app-enforced restrictions, Conditional Access app control (Defender for Cloud Apps), continuous access evaluation customisation.\n\n**Authentication strengths** (built in):\n- *Multifactor authentication*: any MFA method.\n- *Passwordless MFA*: FIDO2, Windows Hello for Business/platform credential, certificate-based (multifactor), Authenticator phone sign-in.\n- *Phishing-resistant MFA*: only **FIDO2 security keys, Windows Hello for Business/platform credential and multifactor CBA**.\nCustom strengths can be created.\n\n**Authentication context** labels sensitive resources (a SharePoint site with a sensitivity label, a Defender for Cloud Apps action, a PIM activation or an Entra protected action) so a stricter policy applies only there.\n\nCA requires Entra ID P1; risk conditions require P2.",
+      "terms": [
+        {
+          "t": "Authentication strength",
+          "d": "Grant control requiring specific combinations of authentication methods."
+        },
+        {
+          "t": "Phishing-resistant MFA",
+          "d": "Methods bound to the sign-in origin: FIDO2, Windows Hello for Business, multifactor CBA."
+        },
+        {
+          "t": "Authentication context",
+          "d": "Tag (c1, c2…) used to apply CA to sensitive data or actions within apps."
+        },
+        {
+          "t": "Report-only mode",
+          "d": "CA policy state that logs the result without enforcing it."
+        }
+      ],
+      "trap": "Microsoft Authenticator push or phone sign-in is not phishing-resistant; choosing it when 'phishing-resistant' is required is wrong.",
+      "example": "Admins must use FIDO2 keys, so the architect assigns the built-in Phishing-resistant MFA strength to all directory roles and a SharePoint site labelled Highly Confidential uses authentication context c1.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Sign-in",
+          "Assignments",
+          "Conditions",
+          "Grant / session",
+          "Token"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.2.08",
+      "objective": "d2.2",
+      "seq": 8,
+      "title": "Continuous access evaluation, risk scoring and protected actions",
+      "short": "Continuous access evaluation (CAE) lets services revoke access in near real time on critical events. Entra ID Protection scores user and sign-in risk for risk-based Conditional Access. Protected actions require Conditional Access (via authentication context) when an admin performs sensitive operations.",
+      "deep": "**Continuous access evaluation (CAE)**\n- CAE-aware services (Exchange Online, SharePoint Online, Teams, Microsoft Graph) react to **critical events**: account disabled or deleted, password change/reset, MFA enabled, refresh tokens revoked, **high user risk** detected. Propagation can take up to 15 minutes.\n- They also enforce **IP-based named location** policies instantly.\n- Because revocation is event-driven, CAE tokens can live **up to 28 hours** instead of 1 hour. Strict location enforcement is an option for stable networks.\n\n**Risk scoring (Microsoft Entra ID Protection, P2)**\n- **Sign-in risk**: probability a sign-in isn't from the owner (anonymous IP, atypical travel, token anomalies).\n- **User risk**: probability the account is compromised (leaked credentials, threat intelligence).\n- Recommended CA: user risk High -> **Require risk remediation**; sign-in risk Medium and High -> require MFA strength with sign-in frequency Every time. Use separate policies. Legacy ID Protection risk policies retire **1 October 2026**, so they must be migrated to CA.\n\n**Protected actions** (P1)\n- Assign an **authentication context** to sensitive permissions: managing CA policies, named locations, cross-tenant access settings, hard-deleting directory objects.\n- Enforced when the action is attempted, regardless of how the role was obtained; complements PIM activation policies.",
+      "terms": [
+        {
+          "t": "Continuous access evaluation (CAE)",
+          "d": "Near-real-time token revocation and policy enforcement by resource providers."
+        },
+        {
+          "t": "Sign-in risk",
+          "d": "ID Protection score that a given authentication isn't by the account owner."
+        },
+        {
+          "t": "User risk",
+          "d": "ID Protection score that the user account itself is compromised."
+        },
+        {
+          "t": "Protected actions",
+          "d": "Entra permissions guarded by a CA policy through authentication context."
+        }
+      ],
+      "trap": "CAE doesn't evaluate country-based named locations in real time, only IP ranges; and protected actions are configured with authentication context, not with directory-role assignments.",
+      "example": "A Conditional Access Administrator tries to delete a CA policy and is prompted for a FIDO2 key because that permission is a protected action tied to authentication context c3.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Critical event",
+          "Entra ID",
+          "CAE resource",
+          "Token revoked"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.2.09",
+      "objective": "d2.2",
+      "seq": 9,
+      "title": "Validating Conditional Access against Zero Trust",
+      "short": "Validate Conditional Access by checking it against Zero Trust principles: verify explicitly, use least privilege, assume breach. Use a persona-based policy set, report-only mode, the What If tool, sign-in logs and the CA insights and reporting workbook to find gaps and exclusions.",
+      "deep": "Microsoft's Zero Trust guidance recommends a **persona-based** CA framework (global, admins, internal users, guests, workload identities, agents) with consistent naming.\n\n**Baseline policies to look for**\n- Block **legacy authentication** (it can't do MFA).\n- Require MFA (ideally an authentication strength) for **all users** and all resources.\n- Require **phishing-resistant MFA** for admin roles.\n- Require **compliant or hybrid joined devices** for corporate resources.\n- Risk-based policies for user and sign-in risk.\n- Secure **security info registration** and device registration.\n- Block or restrict unknown platforms and high-risk countries.\n\n**Validation techniques**\n- **What If** tool: simulate a user/app/condition to see which policies apply.\n- **Report-only** mode before enforcement; analyse with the **Conditional Access insights and reporting** workbook (needs sign-in logs in Log Analytics).\n- Query **SigninLogs** for sign-ins with `ConditionalAccessStatus == \"notApplied\"` and for legacy client apps.\n- Review **exclusions**: only emergency access accounts should be excluded broadly, and exclusion groups should have access reviews.\n- The **Conditional Access optimization agent** in Security Copilot can flag users and apps not covered by baseline policies.\n\nGaps usually come from excluded groups, unprotected apps and legacy protocols.",
+      "terms": [
+        {
+          "t": "What If tool",
+          "d": "CA simulator showing which policies would apply to a given sign-in."
+        },
+        {
+          "t": "Persona-based CA",
+          "d": "Organising policies by user type (admins, internals, guests, workloads)."
+        },
+        {
+          "t": "CA insights and reporting workbook",
+          "d": "Azure Monitor workbook that shows report-only and enforced policy impact."
+        },
+        {
+          "t": "Emergency access account",
+          "d": "Highly protected cloud-only account excluded from most CA to prevent lockout."
+        }
+      ],
+      "trap": "Excluding a large 'service accounts' or 'VIP' group from MFA to fix complaints breaks Zero Trust; the right answer narrows exclusions and reviews them.",
+      "example": "Report-only results show 3% of sign-ins use IMAP; the team migrates those mailboxes to modern auth, then turns the block-legacy-auth policy on.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Design persona",
+          "Report-only",
+          "Analyse logs",
+          "Enforce",
+          "Review gaps"
+        ]
+      }
+    },
+    {
+      "id": "sc-100.d2.2.10",
+      "objective": "d2.2",
+      "seq": 10,
+      "title": "Hardening requirements for AD DS",
+      "short": "AD DS remains a top ransomware target. Hardening requirements include tiered administration, few Domain Admins, Windows LAPS, the Protected Users group, disabling NTLM and SMBv1 where possible, LDAP signing and channel binding, secure AD CS templates, and Microsoft Defender for Identity on all identity servers.",
+      "deep": "Specify AD DS hardening as **measurable requirements**:\n\n**Privileged accounts**\n- Minimal, separate Tier 0 admin accounts; empty or near-empty **Domain Admins/Enterprise Admins/Schema Admins**.\n- Add privileged users to **Protected Users** (no NTLM, no delegation, no RC4/DES, short TGT lifetime).\n- Mark sensitive accounts 'Account is sensitive and cannot be delegated'.\n- Admins log on only from **PAWs**; deny Tier 0 logon to lower-tier systems.\n\n**Credentials**\n- **Windows LAPS** for unique, rotated local admin passwords (backed up to AD DS or Entra ID).\n- **gMSA** for service accounts; long random passwords and AES only to resist **Kerberoasting**.\n- Rotate **krbtgt** periodically and twice after compromise.\n\n**Protocols and configuration**\n- Reduce/disable **NTLM** and **SMBv1**; enforce **SMB signing**, **LDAP signing** and **channel binding**.\n- Fix unconstrained delegation, weak ACLs and old GPP passwords.\n- Harden **AD CS**: remove vulnerable certificate templates (enrollee-supplied subject, overly broad enrol rights).\n\n**Monitoring and recovery**\n- **Microsoft Defender for Identity** sensors on domain controllers, AD FS, AD CS and Entra Connect servers; review its **identity posture assessments** in Secure Score.\n- Offline/immutable DC backups and a tested **forest recovery** plan.",
+      "terms": [
+        {
+          "t": "Protected Users",
+          "d": "AD security group that enforces stronger Kerberos-only protections for its members."
+        },
+        {
+          "t": "Windows LAPS",
+          "d": "Built-in Windows feature that manages and rotates unique local admin passwords."
+        },
+        {
+          "t": "gMSA",
+          "d": "Group managed service account with an automatically managed, complex password."
+        },
+        {
+          "t": "Microsoft Defender for Identity",
+          "d": "Sensor-based detection of identity attacks against AD DS, AD CS, AD FS and Entra Connect."
+        }
+      ],
+      "trap": "Adding service accounts to Protected Users breaks them (no delegation/NTLM); the requirement for service accounts is gMSA, not Protected Users.",
+      "example": "An audit finds 41 Domain Admins and RC4 service tickets; the architect specifies a Tier 0 group of four PIM-reviewed admins, gMSAs with AES, and MDI sensors on every DC and AD CS server.",
+      "diagram": null
+    },
+    {
+      "id": "sc-100.d2.2.11",
+      "objective": "d2.2",
+      "seq": 11,
+      "title": "Managing secrets, keys and certificates",
+      "short": "Azure Key Vault stores secrets, keys and certificates; Managed HSM gives single-tenant, FIPS 140-3 Level 3 key storage you fully control. Design with Azure RBAC, soft delete and purge protection, private endpoints, rotation policies, and managed identities so apps never hold credentials.",
+      "deep": "**Choosing the service**\n- **Key Vault Standard**: software-protected keys, secrets, certificates.\n- **Key Vault Premium**: adds HSM-backed keys in a multitenant service.\n- **Managed HSM**: dedicated, **single-tenant** HSM pools with their own **security domain**, **local RBAC** that subscription owners can't override, FIPS 140-3 Level 3. Choose it for strict key-custody requirements or high-throughput CMK.\n\n**Design rules**\n- **One vault per application per environment per region** to limit blast radius.\n- **Azure RBAC** for data-plane access (now the default model): Key Vault Secrets User for apps, Key Vault Crypto Officer for key admins, Key Vault Crypto Service Encryption User for services doing wrap/unwrap (CMK).\n- **Soft delete** is always on (7–90 days, default 90). Enable **purge protection** (can't be turned off once on) — required for many CMK scenarios.\n- Network: disable public access, use **private endpoints**.\n- **Rotation**: key rotation policies; certificate auto-renewal with integrated CAs (DigiCert, GlobalSign); **Event Grid** near-expiry events to trigger automation.\n- Apps authenticate with **managed identities**.\n- Log to Log Analytics via diagnostic settings; Defender for Key Vault detects unusual access.\n- Find hard-coded secrets in code with **GitHub Advanced Security** secret scanning.",
+      "terms": [
+        {
+          "t": "Managed HSM",
+          "d": "Single-tenant, customer-controlled HSM pool with local RBAC and its own security domain."
+        },
+        {
+          "t": "Purge protection",
+          "d": "Prevents permanent deletion of a soft-deleted vault/object until retention expires."
+        },
+        {
+          "t": "Security domain",
+          "d": "Encrypted blob of Managed HSM's root keys, held by the customer for recovery."
+        },
+        {
+          "t": "Key rotation policy",
+          "d": "Key Vault setting that rotates key versions automatically on a schedule."
+        }
+      ],
+      "trap": "Vault access policies are legacy; Azure RBAC is the recommended model. And soft delete alone doesn't stop a malicious admin purging keys — purge protection does.",
+      "example": "A payments team stores its CMK in Managed HSM so cloud subscription owners can't grant themselves key access, and enables purge protection to satisfy the storage CMK requirement.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Key Vault Premium",
+          "Managed HSM"
+        ],
+        "rows": [
+          [
+            "Tenancy",
+            "Multitenant",
+            "Single-tenant"
+          ],
+          [
+            "Access model",
+            "Azure RBAC",
+            "Local RBAC"
+          ],
+          [
+            "Key custody",
+            "Shared service",
+            "Customer security domain"
+          ]
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-100.d2.q001",
+      "lesson": "sc-100.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your organization uses Microsoft Defender XDR for endpoints, email and identities. You must also detect attacks using Palo Alto firewall logs and AWS CloudTrail, and analysts want one incident queue. What should you recommend?",
+      "options": [
+        "Deploy Microsoft Sentinel, connect Defender XDR, and onboard Sentinel to the Microsoft Defender portal",
+        "Enable Defender for Cloud Apps and connect the firewall as an app connector",
+        "Create Defender XDR custom detection rules over the firewall logs",
+        "Deploy a second Defender XDR tenant dedicated to third-party logs"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Sentinel (SIEM) ingests third-party and multicloud logs; onboarding it to the Defender portal with the Defender XDR connector gives a single incident queue. Defender XDR alone doesn't ingest arbitrary firewall logs, Defender for Cloud Apps uses firewall logs only for Shadow IT discovery, and a second tenant splits rather than unifies operations."
+    },
+    {
+      "id": "sc-100.d2.q002",
+      "lesson": "sc-100.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about XDR and SIEM in Microsoft security operations, select Yes if true.",
+      "statements": [
+        {
+          "s": "Microsoft Defender XDR correlates alerts from Defender for Endpoint, Defender for Office 365 and Defender for Identity into incidents.",
+          "a": true
+        },
+        {
+          "s": "Microsoft Sentinel requires all data to come from Microsoft products.",
+          "a": false
+        },
+        {
+          "s": "Microsoft Sentinel can be used in the Microsoft Defender portal together with Defender XDR.",
+          "a": true
+        }
+      ],
+      "explain": "Defender XDR natively correlates its products' alerts into incidents. Sentinel is a SIEM that ingests data from any source, including third-party appliances and other clouds. Sentinel can be onboarded to the Defender portal for unified security operations with Defender XDR."
+    },
+    {
+      "id": "sc-100.d2.q003",
+      "lesson": "sc-100.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Fabrikam runs Microsoft Sentinel and Defender XDR. The CFO wants Sentinel ingestion costs cut without losing incident visibility. Today Fabrikam streams every Defender XDR advanced hunting table (DeviceEvents, DeviceNetworkEvents, EmailEvents and others) into the analytics tier for 2 years, although analysts only query them during investigations from the last 30 days.",
+      "stem": "Which TWO actions should you recommend to reduce cost while keeping incident visibility? Select TWO.",
+      "options": [
+        "Keep the Defender XDR incidents and alerts connector enabled",
+        "Stop streaming raw XDR tables you don't need for custom detections and query them in advanced hunting instead",
+        "Disconnect the Defender XDR connector entirely",
+        "Move all data to Basic Audit in Microsoft Purview",
+        "Raise the analytics tier retention to 12 years"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Defender XDR incidents and alerts are free to ingest and give visibility, so keep them. Raw advanced hunting tables are billed and are already queryable in the Defender portal for 30 days, so stream only what custom Sentinel detections need (long-term copies can go to the data lake tier). Disconnecting loses incidents; Purview Audit isn't a SIEM store; more retention costs more."
+    },
+    {
+      "id": "sc-100.d2.q004",
+      "lesson": "sc-100.d2.1.01",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Sentinel analytics rule type is designed to run approximately every minute for fast detection?",
+      "options": [
+        "Scheduled query rule",
+        "Near-real-time (NRT) rule",
+        "Anomaly rule",
+        "Fusion rule"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "NRT rules run roughly once a minute for low-latency detection. Scheduled rules run at a configurable interval (minimum 5 minutes). Anomaly rules use machine learning baselines, and Fusion is the multistage attack correlation engine; neither is defined by a one-minute cadence."
+    },
+    {
+      "id": "sc-100.d2.q005",
+      "lesson": "sc-100.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A company with Microsoft Purview Audit (Standard) asks how long user activity records are kept by default in the unified audit log. What do you answer?",
+      "options": [
+        "30 days",
+        "90 days",
+        "180 days",
+        "1 year"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Audit (Standard) retains records for 180 days by default (it was 90 days for records created before October 2023). One year is the Audit (Premium) default for Exchange, SharePoint, OneDrive and Entra ID records. 30 days is the Defender XDR advanced hunting window, not Purview Audit."
+    },
+    {
+      "id": "sc-100.d2.q006",
+      "lesson": "sc-100.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso Bank must keep Exchange Online and SharePoint audit records for executives for seven years to satisfy a regulator, and investigators must be able to search them in Microsoft Purview. Executives already have Microsoft 365 E5 licences. Records from before the project start don't need to be retained.",
+      "stem": "What should you recommend?",
+      "options": [
+        "Create an Audit (Standard) retention policy set to seven years",
+        "Assign executives the 10-Year Audit Log Retention add-on and a 10-year audit retention policy",
+        "Enable Audit (Premium) only, because it extends retention to 10 years automatically",
+        "Export the audit log monthly to a CSV file in a SharePoint site with a retention label"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Retention beyond one year needs Audit (Premium) (included in E5) plus the per-user 10-Year Audit Log Retention add-on and a matching policy; it isn't retroactive, which matches the requirement. Standard has no custom retention policies, Premium alone defaults to one year, and CSV exports aren't searchable in Purview Audit."
+    },
+    {
+      "id": "sc-100.d2.q007",
+      "lesson": "sc-100.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "An investigator needs to search the Microsoft 365 unified audit log from Exchange Online PowerShell for MailItemsAccessed events for one user over the last 30 days. Complete the command.",
+      "code": "____ -StartDate (Get-Date).AddDays(-30) -EndDate (Get-Date) -Operations MailItemsAccessed -UserIds ceo@contoso.com -ResultSize 5000",
+      "options": [
+        "Search-AdminAuditLog",
+        "Search-UnifiedAuditLog",
+        "Get-AdminAuditLogConfig",
+        "Get-MessageTrace"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Search-UnifiedAuditLog queries the Purview unified audit log and supports -Operations and -UserIds. Search-AdminAuditLog covers only Exchange admin cmdlet activity, Get-AdminAuditLogConfig shows audit settings, and Get-MessageTrace tracks mail flow rather than audited activities."
+    },
+    {
+      "id": "sc-100.d2.q008",
+      "lesson": "sc-100.d2.1.02",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A global company plans one Microsoft Sentinel workspace per business unit (12 in total) so each unit sees only its own data. All data can legally stay in one region. What should you recommend instead?",
+      "options": [
+        "Keep 12 workspaces and use Azure Lighthouse to join them",
+        "Use a single workspace with resource-context and table-level RBAC to separate access",
+        "Use a single workspace and give every analyst the Microsoft Sentinel Reader role on it",
+        "Create 12 Microsoft 365 tenants, one per business unit"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Microsoft recommends the fewest workspaces possible; access separation is achieved with resource-context RBAC and table-level RBAC. Lighthouse is for cross-tenant management, not access separation inside one tenant. Workspace-wide Reader shows everything to everyone, and new tenants add huge overhead."
+    },
+    {
+      "id": "sc-100.d2.q009",
+      "lesson": "sc-100.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You must protect 300 on-premises Windows servers with Microsoft Defender for Servers and apply Azure Policy machine configuration to them. What must you deploy first?",
+      "options": [
+        "Azure Arc agent (Connected Machine agent) on each server",
+        "The Log Analytics agent (MMA) on each server",
+        "A site-to-site VPN to an Azure virtual network",
+        "Azure Bastion in the on-premises network"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Azure Arc projects non-Azure servers into Azure Resource Manager, which lets Defender for Servers, Azure Policy and extensions manage them. The Log Analytics agent is retired. A VPN gives connectivity but no resource projection, and Azure Bastion is an Azure PaaS jump service, not an on-premises onboarding tool."
+    },
+    {
+      "id": "sc-100.d2.q010",
+      "lesson": "sc-100.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are configuring the Microsoft Sentinel Amazon Web Services S3 connector to ingest CloudTrail and VPC Flow Logs. Which TWO AWS components are part of the design? Select TWO.",
+      "options": [
+        "An SQS queue that receives notifications of new log files",
+        "An IAM role that Sentinel assumes through an OIDC web identity provider",
+        "An AWS Direct Connect circuit to Azure",
+        "An Azure Arc agent installed on CloudTrail",
+        "A Kinesis data stream pushing events to Event Hubs"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "The S3 connector reads logs from S3 buckets after being notified through SQS, using an IAM role trusted via an OIDC web identity provider. No private circuit is needed; Arc is for servers and Kubernetes, not AWS managed services; Kinesis-to-Event Hubs isn't how this connector works."
+    },
+    {
+      "id": "sc-100.d2.q011",
+      "lesson": "sc-100.d2.1.03",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You need a Sentinel query listing non-Azure machines (on-premises or other clouds) that have reported to the workspace in the last day, to verify agent coverage. Complete the query.",
+      "code": "____\n| where TimeGenerated > ago(1d)\n| where ComputerEnvironment == \"Non-Azure\"\n| summarize LastSeen = max(TimeGenerated) by Computer, OSType",
+      "options": [
+        "SecurityEvent",
+        "Heartbeat",
+        "AzureActivity",
+        "SigninLogs"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Heartbeat table records agent check-ins and includes ComputerEnvironment and OSType, making it the right table for coverage checks. SecurityEvent holds Windows security events only, AzureActivity holds control-plane operations, and SigninLogs holds Entra ID sign-ins."
+    },
+    {
+      "id": "sc-100.d2.q012",
+      "lesson": "sc-100.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Analysts want every incident created by the 'Brute force against Azure Portal' rule to be tagged, assigned to the Tier 1 group and given a standard checklist. No external systems are involved. What should you use?",
+      "options": [
+        "A Logic Apps playbook triggered by the alert",
+        "A Defender XDR custom detection rule",
+        "A Sentinel watchlist",
+        "A Sentinel automation rule"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Automation rules can tag, assign owners and add task lists to incidents without code. A playbook is meant for cross-system orchestration and is overkill here. Custom detection rules create alerts rather than manage incidents, and watchlists are reference data for queries."
+    },
+    {
+      "id": "sc-100.d2.q013",
+      "lesson": "sc-100.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You need high-severity Sentinel incidents to automatically open a ServiceNow ticket. Put the steps in order.",
+      "options": [
+        "Create a Logic Apps playbook with the Microsoft Sentinel incident trigger and a ServiceNow action",
+        "Grant the Sentinel service account Microsoft Sentinel Automation Contributor on the playbook's resource group",
+        "Create an automation rule for incidents with severity High that runs the playbook",
+        "Test with a sample high-severity incident and check the playbook run history"
+      ],
+      "explain": "Build the playbook first, then grant Sentinel permission to run playbooks in that resource group (otherwise the automation rule can't trigger it), then create the automation rule that calls it, and finally test end to end."
+    },
+    {
+      "id": "sc-100.d2.q014",
+      "lesson": "sc-100.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Microsoft Sentinel playbooks are built on which Azure service?",
+      "options": [
+        "Azure Functions",
+        "Azure Automation runbooks",
+        "Azure Logic Apps",
+        "Azure Data Factory"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Sentinel playbooks are Azure Logic Apps workflows (Consumption or Standard) using the Sentinel trigger and connectors. Functions and Automation runbooks can be called from a playbook but aren't the playbook platform; Data Factory is for data pipelines."
+    },
+    {
+      "id": "sc-100.d2.q015",
+      "lesson": "sc-100.d2.1.04",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": "Tailspin wants ransomware attacks contained within minutes even when no analyst is online at night. It uses Defender XDR (all workloads) and Sentinel in the Defender portal. Its devices are onboarded to Defender for Endpoint and users are in Entra ID.",
+      "stem": "For each statement, select Yes if it meets the requirement appropriately.",
+      "statements": [
+        {
+          "s": "Automatic attack disruption in Defender XDR can contain compromised assets during a high-confidence ransomware attack without analyst action.",
+          "a": true
+        },
+        {
+          "s": "Automated investigation and response (AIR) can be configured to remediate threats automatically on devices.",
+          "a": true
+        },
+        {
+          "s": "A Sentinel automation rule alone can isolate a Defender for Endpoint device without any playbook or built-in action.",
+          "a": false
+        }
+      ],
+      "explain": "Attack disruption automatically contains devices and users during high-confidence attacks, and AIR's automation level can be set to full remediation. Automation rules manage incidents (assign, tag, close, run playbooks); device isolation needs a playbook calling the Defender for Endpoint API or Defender's own response actions."
+    },
+    {
+      "id": "sc-100.d2.q016",
+      "lesson": "sc-100.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put the phases of the incident response lifecycle (NIST SP 800-61) in order.",
+      "options": [
+        "Preparation",
+        "Detection and analysis",
+        "Containment, eradication and recovery",
+        "Post-incident activity (lessons learned)"
+      ],
+      "explain": "NIST's lifecycle starts with preparation, then detection and analysis, then containment, eradication and recovery, and ends with post-incident activity whose lessons feed back into preparation."
+    },
+    {
+      "id": "sc-100.d2.q017",
+      "lesson": "sc-100.d2.1.05",
+      "objective": "d2.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "During a human-operated ransomware incident at Litware, investigators find the attacker has Global Administrator rights and has been reading the security team's mailboxes. The CISO asks for the first design decision for running the response.",
+      "stem": "What should you recommend first?",
+      "options": [
+        "Email all staff from the corporate tenant explaining the incident",
+        "Restore all servers from the most recent backup immediately",
+        "Wipe all endpoints using Intune before investigating",
+        "Move incident communications to an out-of-band channel separate from the compromised tenant"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "When the attacker controls identity and can read mail, responders must communicate out of band so their plans aren't seen. Corporate email is compromised; restoring before scoping and evicting the attacker risks reinfection from tainted backups or persistence; wiping destroys evidence and doesn't remove the attacker's cloud admin access."
+    },
+    {
+      "id": "sc-100.d2.q018",
+      "lesson": "sc-100.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A hunter's hypothesis is that attackers delete volume shadow copies before encryption. Complete the Defender XDR advanced hunting query.",
+      "code": "____\n| where Timestamp > ago(30d)\n| where FileName =~ \"vssadmin.exe\" and ProcessCommandLine has \"delete shadows\"\n| project Timestamp, DeviceName, AccountName, ProcessCommandLine",
+      "options": [
+        "DeviceNetworkEvents",
+        "DeviceFileEvents",
+        "DeviceProcessEvents",
+        "IdentityLogonEvents"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "DeviceProcessEvents records process creation with FileName and ProcessCommandLine, which is what this hypothesis needs. DeviceNetworkEvents covers connections, DeviceFileEvents covers file creation/modification, and IdentityLogonEvents covers authentication events from Defender for Identity and Entra."
+    },
+    {
+      "id": "sc-100.d2.q019",
+      "lesson": "sc-100.d2.1.06",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A hunting query finds a reliable pattern of credential theft that no current rule detects. Which TWO actions turn the hunt into ongoing protection? Select TWO.",
+      "options": [
+        "Create a Defender XDR custom detection rule from the query",
+        "Create a Microsoft Sentinel scheduled analytics rule from the query and map it to the ATT&CK technique",
+        "Save the results as a bookmark only",
+        "Add the query results to a watchlist",
+        "Run the query in Livestream once"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Operationalising a hunt means converting it into a scheduled detection: a custom detection rule in Defender XDR or an analytics rule in Sentinel, tagged with MITRE techniques. Bookmarks capture evidence, watchlists store reference data, and a single Livestream session watches temporarily; none provides ongoing detection."
+    },
+    {
+      "id": "sc-100.d2.q020",
+      "lesson": "sc-100.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A water utility wants to measure detection coverage for attacks that manipulate PLC set points and inhibit safety responses in its plants. Which framework view should it map its Defender for IoT detections to?",
+      "options": [
+        "MITRE ATT&CK for ICS",
+        "MITRE ATT&CK Enterprise",
+        "MITRE ATT&CK Mobile",
+        "MITRE D3FEND"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "ATT&CK for ICS covers industrial control systems, with tactics such as Impair Process Control and Inhibit Response Function. Enterprise covers IT systems and cloud, Mobile covers Android and iOS, and D3FEND is a catalogue of defensive countermeasures rather than adversary behaviour."
+    },
+    {
+      "id": "sc-100.d2.q021",
+      "lesson": "sc-100.d2.1.07",
+      "objective": "d2.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about evaluating coverage with the MITRE ATT&CK page in Microsoft Sentinel, select Yes if true.",
+      "statements": [
+        {
+          "s": "Active coverage is based on the scheduled and NRT analytics rules enabled in the workspace.",
+          "a": true
+        },
+        {
+          "s": "Simulated coverage shows what coverage you could have by enabling available rules that aren't configured yet.",
+          "a": true
+        },
+        {
+          "s": "The goal of a coverage review is to place an enabled rule in every technique cell regardless of threat relevance.",
+          "a": false
+        }
+      ],
+      "explain": "The MITRE page shows active coverage from enabled scheduled and NRT rules, and simulated coverage from available but unconfigured rules. Coverage work should be prioritised by threats relevant to the organization; chasing every cell creates noise without reducing real risk."
+    }
+  ]
+}

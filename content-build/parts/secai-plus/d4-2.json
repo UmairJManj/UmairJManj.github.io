@@ -1,0 +1,578 @@
+{
+ "exam": "secai-plus",
+ "domain": "d4",
+ "lessons": [],
+ "questions": [
+  {
+   "id": "secai-plus.d4.q032",
+   "lesson": "secai-plus.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which official regulation number is the EU AI Act?",
+   "options": [
+    "Regulation (EU) 2024/1689",
+    "Regulation (EU) 2016/679",
+    "Directive (EU) 2022/2555",
+    "Regulation (EU) 2022/2065"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "The AI Act is 2024/1689. 2016/679 is GDPR, 2022/2555 is NIS2, 2022/2065 is the Digital Services Act."
+  },
+  {
+   "id": "secai-plus.d4.q033",
+   "lesson": "secai-plus.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "How many risk levels does the EU AI Act's risk-based approach use for AI systems?",
+   "options": [
+    "Five, matching NIST CSF functions",
+    "Four: unacceptable, high, limited and minimal",
+    "Two: allowed and banned",
+    "Three: low, medium and high"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "The Act uses unacceptable (prohibited), high, limited (transparency) and minimal risk."
+  },
+  {
+   "id": "secai-plus.d4.q034",
+   "lesson": "secai-plus.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Under the EU AI Act, which practice is prohibited (unacceptable risk)?",
+   "options": [
+    "Product recommendations in an online shop",
+    "A spam filter",
+    "Social scoring of people by public authorities leading to unjustified detrimental treatment",
+    "A chatbot that discloses it is an AI"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Social scoring is among the prohibited practices; the others are minimal or limited risk."
+  },
+  {
+   "id": "secai-plus.d4.q035",
+   "lesson": "secai-plus.d4.3.01",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A customer-service chatbot must tell users they're talking to an AI. Which EU AI Act category drives this duty?",
+   "options": [
+    "Unacceptable risk",
+    "Minimal risk with no duties",
+    "High risk",
+    "Limited risk (transparency obligations)"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Transparency duties apply to systems such as chatbots and AI-generated content."
+  },
+  {
+   "id": "secai-plus.d4.q036",
+   "lesson": "secai-plus.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Under the EU AI Act, what is the term for an organisation that uses an AI system under its authority in a professional context?",
+   "options": [
+    "Deployer",
+    "Notified body",
+    "Importer",
+    "Provider"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Providers develop or place AI on the market; deployers use it professionally; importers and distributors pass it along."
+  },
+  {
+   "id": "secai-plus.d4.q037",
+   "lesson": "secai-plus.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "What is the maximum fine tier under the EU AI Act for using prohibited AI practices?",
+   "options": [
+    "Up to €10,000",
+    "Up to €35 million or 7% of worldwide annual turnover, whichever is higher",
+    "Up to €20 million or 4%",
+    "There are no fines, only warnings"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Prohibited practices carry the highest tier: €35m or 7%. The €20m/4% tier is GDPR's."
+  },
+  {
+   "id": "secai-plus.d4.q038",
+   "lesson": "secai-plus.d4.3.02",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO obligations apply to providers of high-risk AI systems under the EU AI Act? (Select TWO)",
+   "options": [
+    "Human oversight measures and technical documentation",
+    "Banning all automated decisions",
+    "A risk management system across the lifecycle",
+    "Publishing all training data publicly",
+    "Registering with the OECD"
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "explain": "High-risk providers need risk management, documentation, data governance, logging, human oversight, accuracy and robustness."
+  },
+  {
+   "id": "secai-plus.d4.q039",
+   "lesson": "secai-plus.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "When were the OECD AI Principles first adopted, and when were they updated?",
+   "options": [
+    "Adopted 2024, updated 2026",
+    "Adopted 2023, not updated",
+    "Adopted 2019, updated 2024",
+    "Adopted 2016, updated 2018"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "The OECD AI Principles were adopted in May 2019 and updated in May 2024."
+  },
+  {
+   "id": "secai-plus.d4.q040",
+   "lesson": "secai-plus.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which statement about the OECD AI Principles is correct?",
+   "options": [
+    "They are a certifiable management system standard",
+    "They are binding law in all OECD countries",
+    "They only apply to military AI",
+    "They are non-binding, with five values-based principles and five recommendations for governments"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "They are an intergovernmental, non-binding standard."
+  },
+  {
+   "id": "secai-plus.d4.q041",
+   "lesson": "secai-plus.d4.3.03",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO are among the OECD's values-based AI principles? (Select TWO)",
+   "options": [
+    "Mandatory open-sourcing of models",
+    "Transparency and explainability",
+    "Robustness, security and safety",
+    "Maximum shareholder return",
+    "Data localisation"
+   ],
+   "answer": [
+    1,
+    2
+   ],
+   "explain": "The five principles include transparency/explainability, robustness/security/safety, accountability, human rights and democratic values, and inclusive growth."
+  },
+  {
+   "id": "secai-plus.d4.q042",
+   "lesson": "secai-plus.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What does ISO/IEC 42001:2023 specify?",
+   "options": [
+    "Requirements for an AI management system (AIMS) that organisations can be certified against",
+    "A national AI law",
+    "AI terminology only",
+    "A programming language for AI"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "42001 is the certifiable AIMS standard."
+  },
+  {
+   "id": "secai-plus.d4.q043",
+   "lesson": "secai-plus.d4.3.04",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which improvement cycle does ISO/IEC 42001 follow, like other ISO management system standards?",
+   "options": [
+    "Prepare-Detect-Contain-Recover",
+    "Plan-Do-Check-Act",
+    "Govern-Map-Measure-Manage",
+    "Identify-Protect-Detect-Respond"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "ISO management system standards follow PDCA; the others are NIST CSF, NIST AI RMF and incident response."
+  },
+  {
+   "id": "secai-plus.d4.q044",
+   "lesson": "secai-plus.d4.3.05",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which ISO/IEC standard gives guidance on AI risk management, based on ISO 31000?",
+   "options": [
+    "ISO/IEC 22989",
+    "ISO/IEC 27001",
+    "ISO/IEC 23894",
+    "ISO/IEC 42005"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "23894 is AI risk management guidance; 22989 is terminology; 27001 is the ISMS; 42005 is AI impact assessment."
+  },
+  {
+   "id": "secai-plus.d4.q045",
+   "lesson": "secai-plus.d4.3.05",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which ISO/IEC standard defines AI concepts and terminology?",
+   "options": [
+    "ISO/IEC 42001",
+    "ISO/IEC 27701",
+    "ISO/IEC 23894",
+    "ISO/IEC 22989"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "22989 covers concepts and terminology."
+  },
+  {
+   "id": "secai-plus.d4.q046",
+   "lesson": "secai-plus.d4.3.06",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What are the four core functions of the NIST AI RMF?",
+   "options": [
+    "Govern, Map, Measure, Manage",
+    "Plan, Do, Check, Act",
+    "Identify, Protect, Detect, Respond",
+    "Collect, Train, Deploy, Monitor"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "AI RMF 1.0 uses Govern, Map, Measure and Manage."
+  },
+  {
+   "id": "secai-plus.d4.q047",
+   "lesson": "secai-plus.d4.3.06",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which NIST AI RMF function is cross-cutting and informs the other three?",
+   "options": [
+    "Map",
+    "Govern",
+    "Manage",
+    "Measure"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Govern establishes culture, policies and accountability across the others."
+  },
+  {
+   "id": "secai-plus.d4.q048",
+   "lesson": "secai-plus.d4.3.06",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Is the NIST AI RMF mandatory for private companies?",
+   "options": [
+    "Yes, but only in the EU",
+    "Only for companies over 500 staff",
+    "No, it is voluntary",
+    "Yes, for all US companies"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "The AI RMF is a voluntary framework."
+  },
+  {
+   "id": "secai-plus.d4.q049",
+   "lesson": "secai-plus.d4.3.07",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "What is NIST AI 600-1?",
+   "options": [
+    "The EU AI Act's annex",
+    "An ISO certification scheme",
+    "A cryptography standard",
+    "The Generative AI Profile of the AI RMF"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "AI 600-1 tailors the AI RMF to generative AI risks."
+  },
+  {
+   "id": "secai-plus.d4.q050",
+   "lesson": "secai-plus.d4.3.07",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each item, select Yes if it is one of the NIST AI RMF trustworthy AI characteristics.",
+   "statements": [
+    {
+     "s": "Fair, with harmful bias managed",
+     "a": true
+    },
+    {
+     "s": "Privacy-enhanced",
+     "a": true
+    },
+    {
+     "s": "Fully autonomous",
+     "a": false
+    }
+   ],
+   "explain": "The characteristics include valid and reliable; safe; secure and resilient; accountable and transparent; explainable and interpretable; privacy-enhanced; fair with harmful bias managed."
+  },
+  {
+   "id": "secai-plus.d4.q051",
+   "lesson": "secai-plus.d4.3.08",
+   "objective": "d4.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Staff paste client data into a free consumer chatbot the company has not approved. What is this called?",
+   "options": [
+    "Use of unsanctioned AI (shadow AI)",
+    "Model skewing",
+    "Federated learning",
+    "Data sovereignty"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Unapproved AI tools are unsanctioned, also called shadow AI."
+  },
+  {
+   "id": "secai-plus.d4.q052",
+   "lesson": "secai-plus.d4.3.08",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO features usually distinguish a sanctioned enterprise AI tool? (Select TWO)",
+   "options": [
+    "SSO integration and audit logging",
+    "No contract or terms review",
+    "Anonymous sign-up with personal email",
+    "Enterprise contract with data-protection terms such as no training on customer data",
+    "Unlimited data export with no logging"
+   ],
+   "answer": [
+    0,
+    3
+   ],
+   "explain": "Sanctioned tools come with contractual protections and identity and logging integration."
+  },
+  {
+   "id": "secai-plus.d4.q053",
+   "lesson": "secai-plus.d4.3.09",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A bank wants to use confidential data with an LLM and must keep the data in an environment it controls. Which option fits best?",
+   "options": [
+    "A free public chatbot",
+    "A private model: self-hosted or a dedicated, contractually isolated deployment",
+    "Any model, as long as staff are trained",
+    "Posting data to a public forum for analysis"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Private deployments keep data within controlled environments."
+  },
+  {
+   "id": "secai-plus.d4.q054",
+   "lesson": "secai-plus.d4.3.10",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which practice is central to sensitive data governance for AI?",
+   "options": [
+    "Letting each employee decide case by case",
+    "Avoiding any documentation",
+    "Classifying data and defining which classes may be used with which AI systems",
+    "Allowing all data in all tools"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Classification-driven rules decide what data may go where."
+  },
+  {
+   "id": "secai-plus.d4.q055",
+   "lesson": "secai-plus.d4.3.10",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each practice, select Yes if it supports sensitive data governance for AI.",
+   "statements": [
+    {
+     "s": "Masking or redacting personal data before sending it to a model",
+     "a": true
+    },
+    {
+     "s": "Defining retention limits for prompts and outputs",
+     "a": true
+    },
+    {
+     "s": "Keeping all prompts forever by default",
+     "a": false
+    }
+   ],
+   "explain": "Minimisation, masking and retention limits are core; indefinite retention increases risk."
+  },
+  {
+   "id": "secai-plus.d4.q056",
+   "lesson": "secai-plus.d4.3.11",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which report gives evidence that a vendor's controls operated effectively OVER A PERIOD of time?",
+   "options": [
+    "A self-written blog post",
+    "A marketing whitepaper",
+    "SOC 2 Type I",
+    "SOC 2 Type II"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Type II tests operating effectiveness over a period; Type I covers design at a point in time."
+  },
+  {
+   "id": "secai-plus.d4.q057",
+   "lesson": "secai-plus.d4.3.11",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO items are useful evidence in a third-party AI compliance evaluation? (Select TWO)",
+   "options": [
+    "ISO/IEC 27001 or ISO/IEC 42001 certificates",
+    "The vendor's social media follower count",
+    "Verbal assurances only",
+    "A logo on the vendor's website",
+    "Model cards and documentation of training data and limitations"
+   ],
+   "answer": [
+    0,
+    4
+   ],
+   "explain": "Certifications and model documentation are objective evidence."
+  },
+  {
+   "id": "secai-plus.d4.q058",
+   "lesson": "secai-plus.d4.3.12",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "What does data sovereignty mean for an AI system?",
+   "options": [
+    "Data is subject to the laws of the country where it is stored or processed",
+    "Data must always be encrypted",
+    "Data belongs to the model provider",
+    "Data must be public"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Sovereignty is about which jurisdiction's laws apply; residency is where data physically sits."
+  },
+  {
+   "id": "secai-plus.d4.q059",
+   "lesson": "secai-plus.d4.3.12",
+   "objective": "d4.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO measures help meet data sovereignty requirements for an AI service? (Select TWO)",
+   "options": [
+    "Confirm where embeddings and fine-tuning data are stored",
+    "Use regional endpoints or residency commitments for prompts, outputs and logs",
+    "Ignore where logs are stored",
+    "Route all traffic through any global endpoint",
+    "Store backups in unknown regions"
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "explain": "All AI data types, including logs and embeddings, need to stay in permitted regions."
+  },
+  {
+   "id": "secai-plus.d4.q060",
+   "lesson": "secai-plus.d4.3.12",
+   "objective": "d4.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "Case: a NZ health provider's AI vendor stores prompts in-region but sends abuse-monitoring logs, which include prompt text, to another country. What is the compliance concern?",
+   "options": [
+    "It is required by the EU AI Act",
+    "Personal health information leaves the jurisdiction via logs, so cross-border disclosure rules apply",
+    "Only a performance concern",
+    "None, because the prompts are stored in-region"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Sovereignty covers every copy of the data, including logs."
+  }
+ ]
+}

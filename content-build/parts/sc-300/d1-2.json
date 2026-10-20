@@ -1,0 +1,1243 @@
+{
+  "exam": "sc-300",
+  "domain": "d1",
+  "lessons": [
+    {
+      "id": "sc-300.d1.3.01",
+      "objective": "d1.3",
+      "seq": 1,
+      "title": "External collaboration settings",
+      "short": "External collaboration settings control what guests can see, who can invite them, whether self-service sign-up is allowed, whether guests can leave on their own, and which domains invitations may go to (allow list or deny list).",
+      "deep": "Find them in **Entra ID > External Identities > External collaboration settings**. Changing them needs a role such as **External Identity Provider Administrator** (or Global Administrator).\n\n**Guest user access** (three levels):\n- Same access as members (most inclusive).\n- **Limited access to properties and memberships of directory objects** (default).\n- Restricted to their own directory objects (most restrictive).\n\n**Guest invite settings** (four levels): anyone including guests can invite (most inclusive, matches the default behaviour); members and specific admin roles; only users in specific admin roles (User Administrator or **Guest Inviter**); no one.\n\n**Enable guest self-service sign-up via user flows**: lets you build user flows so external people sign up for an app themselves.\n\n**External user leave settings**: allow guests to remove themselves; this requires privacy information (privacy contact and statement) in tenant properties.\n\n**Collaboration restrictions**: allow invitations to any domain (default), **deny** invitations to listed domains, or **allow only** listed domains. You choose one mode.\n\nThese are tenant-wide B2B settings. Per-organisation inbound/outbound control and MFA trust are set in **cross-tenant access settings**.",
+      "terms": [
+        {
+          "t": "Guest Inviter",
+          "d": "Role that lets a user invite guests even when invites are limited to admin roles."
+        },
+        {
+          "t": "Collaboration restrictions",
+          "d": "Allow list or deny list of domains for B2B invitations."
+        },
+        {
+          "t": "Self-service sign-up",
+          "d": "User flow that lets external users create their own guest account for an app."
+        }
+      ],
+      "trap": "Domain allow/deny lists here control invitations by email domain; blocking access from a specific Entra tenant's users is done in cross-tenant access settings.",
+      "example": "Contoso allows invitations only to partner domains fabrikam.com and tailspin.com and limits invites to admins and Guest Inviters.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.3.02",
+      "objective": "d1.3",
+      "seq": 2,
+      "title": "Invite external users individually or in bulk",
+      "short": "Invite a guest from Users > New user > Invite external user, in bulk with a CSV (Bulk invite), or with New-MgInvitation in Microsoft Graph PowerShell. The guest redeems the invitation by email link, a direct app link, or automatic redemption.",
+      "deep": "**Ways to invite**\n- **Single invite**: Entra admin center > Users > **New user > Invite external user**; enter the email, optional message, groups and roles.\n- **Bulk invite**: Users > Bulk operations > **Bulk invite**; the CSV needs **Email address to invite** and **Redirection url** (for example `https://myapps.microsoft.com`); a custom message is optional (avoid commas). At least **User Administrator** (or Guest Inviter for invitations only).\n- **PowerShell / Graph**: `New-MgInvitation -InvitedUserEmailAddress ... -InviteRedirectUrl ... -SendInvitationMessage` (POST `/invitations`).\n- Also: adding people to Teams, SharePoint sharing, entitlement management access packages and self-service sign-up flows create guests.\n\n**What gets created**: a user object with **UserType Guest**, a UPN like `john_fabrikam.com#EXT#@contoso.onmicrosoft.com`, and status **Pending acceptance** until redeemed.\n\n**Redemption**: the guest opens the invitation link or a direct link to an app, accepts the consent prompt, and signs in with their identity provider. **Automatic redemption** in cross-tenant access settings can suppress the consent prompt between trusted tenants.\n\nYou can **resend** an invitation for pending guests.",
+      "terms": [
+        {
+          "t": "Invitation redemption",
+          "d": "The guest accepting the invitation and linking their identity."
+        },
+        {
+          "t": "#EXT#",
+          "d": "Marker in a guest's UPN in the resource tenant."
+        },
+        {
+          "t": "New-MgInvitation",
+          "d": "Graph PowerShell cmdlet that invites a B2B user."
+        }
+      ],
+      "trap": "Bulk create makes internal members; only Bulk invite (or New-MgInvitation) makes guests and sends invitations.",
+      "example": "A project manager with the Guest Inviter role invites five Fabrikam engineers with a redirect URL to the project's SharePoint site.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Invite",
+          "Guest object created",
+          "Guest redeems",
+          "Access resources"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.3.03",
+      "objective": "d1.3",
+      "seq": 3,
+      "title": "Manage external user accounts",
+      "short": "Manage guests like other users: groups, apps, licences, sponsors and access reviews. Change UserType between Guest and Member if the relationship changes, and use Reset redemption status when a guest needs a different sign-in identity without losing access.",
+      "deep": "**Key properties**\n- **UserType**: Member or Guest; describes the relationship to your organisation, not how they sign in. You can change it.\n- **Identities**: the guest's IdP, such as `ExternalAzureAD`, `Microsoft account`, `mail` (email one-time passcode), `google.com` or a SAML/WS-Fed issuer.\n- **externalUserState**: `PendingAcceptance` or accepted.\n- **Sponsors**: the inviter by default; useful for reviews.\n\nThe four categories: **external guest** (most B2B users), **external member** (common in multitenant organisations), **internal guest** (legacy local partner accounts) and **internal member**.\n\n**Reset redemption status** (Helpdesk Administrator is the least-privileged role): when a guest's email or home account changes, reset so they redeem again with the new identity. Object ID, group memberships and app assignments are kept; no need to delete and re-invite. Also available via `New-MgInvitation -ResetRedemption`.\n\n**Other tasks**: block sign-in, delete guests (soft-deleted for 30 days), find inactive guests with **access reviews** or the sign-in activity, and govern them with entitlement management. Guests are hidden from the global address list by default.",
+      "terms": [
+        {
+          "t": "UserType",
+          "d": "Member or Guest attribute describing relationship to the organisation."
+        },
+        {
+          "t": "Reset redemption status",
+          "d": "Lets a guest redeem again with a new identity while keeping access."
+        },
+        {
+          "t": "External member",
+          "d": "User from another tenant with UserType Member."
+        }
+      ],
+      "trap": "Deleting and re-inviting a guest loses group memberships and app assignments; reset redemption status keeps them.",
+      "example": "A partner contractor's company was acquired and she has a new email address, so the admin updates her mail property and resets her redemption status.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Guest",
+          "Member"
+        ],
+        "rows": [
+          [
+            "External",
+            "External guest",
+            "External member"
+          ],
+          [
+            "Internal",
+            "Internal guest",
+            "Internal member"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.3.04",
+      "objective": "d1.3",
+      "seq": 4,
+      "title": "Cross-tenant access settings",
+      "short": "Cross-tenant access settings control B2B collaboration and B2B direct connect with other Microsoft Entra tenants, inbound and outbound, using defaults plus per-organisation overrides. Trust settings can accept a partner's MFA and device claims.",
+      "deep": "**Where**: External Identities > **Cross-tenant access settings**; at least **Security Administrator**.\n\n**Default settings** (apply to all external Entra tenants):\n- **B2B collaboration**: inbound and outbound **allowed**; partner MFA and device claims **not trusted**.\n- **B2B direct connect**: inbound and outbound **blocked**.\n\n**Organizational settings**: add a partner by tenant ID or domain to override the defaults. You can scope inbound and outbound access to specific users, groups and applications.\n\n**Inbound trust settings**: accept **MFA**, **compliant device** and **Microsoft Entra hybrid joined device** claims from the partner, so your Conditional Access is satisfied without repeat MFA.\n\n**Automatic redemption**: suppresses the consent prompt only when enabled on the home tenant's **outbound** and the resource tenant's **inbound** settings. It is required for cross-tenant synchronization.\n\n**B2B direct connect**: users from the partner get access to **Teams shared channels** without a guest object being created in your tenant. It needs **mutual** configuration (both tenants), and if your policies require MFA you must trust the partner's MFA.\n\n**Microsoft cloud settings** enable B2B collaboration with Azure Government or Microsoft Azure operated by 21Vianet. **Tenant restrictions v2** separately controls which external accounts your users can sign in with on your devices and networks.\n\nPer-user/app scoping and trust need **P1**.",
+      "terms": [
+        {
+          "t": "B2B collaboration",
+          "d": "External users get a guest object in your tenant."
+        },
+        {
+          "t": "B2B direct connect",
+          "d": "Mutual trust for Teams shared channels; no guest object."
+        },
+        {
+          "t": "Inbound trust",
+          "d": "Accepting a partner's MFA and device claims."
+        },
+        {
+          "t": "Tenant restrictions v2",
+          "d": "Controls which external tenants your users may sign in to."
+        }
+      ],
+      "trap": "B2B direct connect is blocked by default and must be enabled on both sides; trusting MFA is an inbound setting in the resource tenant.",
+      "example": "Contoso adds Fabrikam as an organisation, trusts Fabrikam's MFA inbound, and enables B2B direct connect both ways for a joint Teams shared channel.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Default",
+          "B2B collab",
+          "Direct connect"
+        ],
+        "rows": [
+          [
+            "Inbound",
+            "Allowed",
+            "Blocked"
+          ],
+          [
+            "Outbound",
+            "Allowed",
+            "Blocked"
+          ],
+          [
+            "MFA trust",
+            "Off",
+            "Off"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.3.05",
+      "objective": "d1.3",
+      "seq": 5,
+      "title": "Cross-tenant synchronization",
+      "short": "Cross-tenant synchronization automatically creates, updates and removes B2B users in a target tenant from a source tenant. It is push-based and configured in the source tenant; the target must allow inbound sync and automatic redemption.",
+      "deep": "**Use it** for organisations with multiple tenants (mergers, subsidiaries) so people in one tenant automatically exist in the others.\n\n**Model**: one-way, push from the **source**. Setup order:\n1. **Target**: in cross-tenant access settings for the source, enable inbound **Allow user synchronization into this tenant** and **Automatically redeem invitations**.\n2. **Source**: enable outbound **Automatic redemption** for the target.\n3. **Source**: create a configuration under **Cross-tenant synchronization > Configurations**, enter the target tenant ID and **Test connection**.\n4. Define scope (**Sync only assigned users** recommended), optional scoping filters, review **attribute mappings**.\n5. **Provision on demand** to test a user, then **Start provisioning**; check **provisioning logs**.\n\n**Facts**:\n- Synced users are created as **external members** by default (can be guests via the userType mapping).\n- Only **internal members** of the source are synced; groups sync needs Entra ID Governance or Entra Suite.\n- Cycles run roughly every **40 minutes**.\n- Removing a user from scope **soft-deletes** them in the target; disabling in the source blocks sign-in in the target.\n- Roles: Security Administrator for cross-tenant access settings; **Hybrid Identity Administrator** to configure the sync; Cloud Application Administrator or Application Administrator to assign users.\n- Licence: **P1** per synced user in the source tenant; none in the target.",
+      "terms": [
+        {
+          "t": "Source tenant",
+          "d": "Tenant where users live and the sync job is configured."
+        },
+        {
+          "t": "Target tenant",
+          "d": "Tenant that receives the synced B2B users."
+        },
+        {
+          "t": "Automatic redemption",
+          "d": "Suppresses consent prompts; required on both sides for this sync."
+        }
+      ],
+      "trap": "The sync job is created in the source tenant, not the target; the target only allows inbound sync and auto-redemption.",
+      "example": "After acquiring Litware, Contoso pushes all Litware staff into Contoso's tenant as external members so they appear in the Contoso GAL and Teams.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Target: allow sync",
+          "Both: auto-redeem",
+          "Source: config",
+          "Provision"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.3.06",
+      "objective": "d1.3",
+      "seq": 6,
+      "title": "Multitenant organizations",
+      "short": "A multitenant organization (MTO) groups the Microsoft Entra tenants you own into one organisational boundary, improving Teams and Viva Engage collaboration across them. It is usually paired with cross-tenant synchronization and needs Entra ID P1.",
+      "deep": "An **MTO** is a tenant group with one **owner** tenant and member tenants, up to **100 active tenants**. Each pair of tenants is still governed by **cross-tenant access settings**.\n\n**Benefits**\n- In new Microsoft Teams, users get chat, call and meeting notifications from all MTO tenants and faster tenant switching.\n- Viva Engage can work as one network across tenants.\n- Users are classified as **multitenant organization members** when they come from another MTO tenant.\n\n**How it is set up**\n1. The owner tenant creates the MTO (Microsoft 365 admin center or Entra/Graph) and adds tenants.\n2. Each other tenant joins.\n3. Users are provisioned across tenants as **external members**, typically by **cross-tenant synchronization** (Microsoft 365 admin center can configure this for you).\n\n**Licensing**: Microsoft Entra ID P1, one per employee per MTO and at least one per tenant.\n\nAn MTO doesn't merge tenants. Policies, Conditional Access and admins stay per tenant. For a single tenant with delegated admins, use administrative units instead.",
+      "terms": [
+        {
+          "t": "Multitenant organization",
+          "d": "A group of tenants your organisation owns, treated as one boundary."
+        },
+        {
+          "t": "Owner tenant",
+          "d": "The tenant that creates and manages the MTO."
+        },
+        {
+          "t": "MTO member user",
+          "d": "External member who comes from another tenant in the MTO."
+        }
+      ],
+      "trap": "An MTO doesn't provision users by itself; cross-tenant synchronization (or another provisioning method) creates the users.",
+      "example": "A holding company with four subsidiary tenants creates an MTO so staff can find and chat with each other in Teams without switching accounts.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.3.07",
+      "objective": "d1.3",
+      "seq": 7,
+      "title": "External identity providers incl. SAML and WS-Fed",
+      "short": "Guests can sign in with Microsoft Entra accounts, Microsoft accounts, email one-time passcode, Google, Facebook (self-service sign-up only) or a partner's own SAML 2.0 or WS-Federation identity provider. Configuring providers needs at least External Identity Provider Administrator.",
+      "deep": "**Built-in options**\n- **Microsoft Entra ID**: always enabled for work or school accounts.\n- **Microsoft account (MSA)**.\n- **Email one-time passcode (OTP)**: a code by email when no other IdP applies; on by default.\n- **Google**: needs an OAuth client ID and secret from Google; works for invitations and sign-up.\n- **Facebook**: **self-service sign-up user flows only**, not invitation redemption.\n\n**SAML/WS-Fed IdP federation** lets a partner's own IdP (for example AD FS, Shibboleth or another SAML provider) authenticate their users as guests in your tenant.\nYou configure (External Identities > All identity providers > **New SAML/WS-Fed IdP**):\n- The partner **domain** name(s).\n- **Issuer URI** (SAML) or entity ID (WS-Fed).\n- **Passive authentication endpoint** (https only).\n- The token-signing **certificate**, or better, a **metadata URL** so certificates renew automatically.\n\nDNS rule: if the passive endpoint isn't on the partner's domain, the partner adds a TXT record `DirectFedAuthUrl=<endpoint>`.\nRequired claims include a persistent **NameID** and the **emailaddress** claim (SAML), or **ImmutableID** and email (WS-Fed). Allow 5-10 minutes before testing. Changing the IdP for already-redeemed guests requires resetting redemption status.\n\nWS-Fed is tested with AD FS and Shibboleth.",
+      "terms": [
+        {
+          "t": "SAML/WS-Fed IdP federation",
+          "d": "B2B trust with a partner's own identity provider."
+        },
+        {
+          "t": "Issuer URI",
+          "d": "Unique identifier of the partner IdP in the token."
+        },
+        {
+          "t": "Passive authentication endpoint",
+          "d": "Partner IdP URL where users are redirected to sign in."
+        },
+        {
+          "t": "Email one-time passcode",
+          "d": "Guests sign in with a code emailed to them."
+        }
+      ],
+      "trap": "Facebook can't be used to redeem invitations, and a SAML/WS-Fed setup without a metadata URL won't auto-renew the signing certificate.",
+      "example": "Contoso federates with Fabrikam's AD FS so Fabrikam guests sign in with their own Fabrikam passwords and MFA.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Guest",
+          "Entra ID (resource)",
+          "Partner SAML IdP",
+          "Token to app"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.4.01",
+      "objective": "d1.4",
+      "seq": 1,
+      "title": "Microsoft Entra Connect Sync: architecture and install",
+      "short": "Microsoft Entra Connect Sync is the on-premises sync server that copies users, groups, contacts and devices from AD DS to Microsoft Entra ID. It also configures sign-in (PHS, PTA, federation), writeback and hybrid join, and supports a staging-mode server for failover.",
+      "deep": "**What it does**: a Windows service on a domain-joined server that reads AD DS forests through connectors, joins objects in a **metaverse**, and exports them to Entra ID. Optional features: **password hash sync**, **password writeback**, **group writeback**, **device options** (hybrid join), **Exchange hybrid** attributes, directory extensions.\n\n**Install requirements**\n- Windows Server with a full GUI (Server Core isn't supported), domain-joined, treated as a **Tier 0** asset. TLS 1.2 required.\n- SQL Server Express LocalDB by default: **10 GB, about 100,000 objects**; use full SQL Server for more.\n- **Express settings** need an on-premises **Enterprise Admin** account, plus a **Global Administrator or Hybrid Identity Administrator** (assigned directly, not through a group) in Entra ID.\n- Only **one sync engine per SQL instance**.\n\n**High availability**: only one server actively exports. A second server in **staging mode** imports and synchronises but doesn't export; switch it to active if the primary fails.\n\n**Topology**: supports multiple connected forests and merging attributes from several forests. Mandatory version updates apply, so keep it current.",
+      "terms": [
+        {
+          "t": "Metaverse",
+          "d": "Central sync store where connector space objects are joined."
+        },
+        {
+          "t": "Staging mode",
+          "d": "Standby sync server that imports and syncs but doesn't export."
+        },
+        {
+          "t": "Express settings",
+          "d": "Default install for single forest with PHS; needs Enterprise Admin."
+        }
+      ],
+      "trap": "Two active Connect Sync servers for one tenant isn't supported; the second server must be in staging mode.",
+      "example": "Contoso installs Entra Connect on SYNC01 and a staging-mode server SYNC02 in another site for disaster recovery.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "AD DS",
+          "Connector space",
+          "Metaverse",
+          "Entra ID"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.4.02",
+      "objective": "d1.4",
+      "seq": 2,
+      "title": "Connect Sync operations: scheduler and filtering",
+      "short": "Connect Sync runs a delta sync every 30 minutes by default. Use Start-ADSyncSyncCycle -PolicyType Delta for an immediate sync, Initial after configuration changes, and disable the scheduler while changing filtering or sync rules.",
+      "deep": "**Scheduler** (ADSync PowerShell module on the sync server):\n- `Get-ADSyncScheduler` shows the interval (default **30 minutes**), whether sync and maintenance are enabled, and `StagingModeEnabled`.\n- `Set-ADSyncScheduler -SyncCycleEnabled $false` before making changes; set it back to `$true` afterwards.\n- `Set-ADSyncScheduler -CustomizedSyncCycleInterval 01:00:00` changes the interval.\n- `Start-ADSyncSyncCycle -PolicyType Delta` runs delta import, delta sync and export now; `-PolicyType Initial` runs a full import and full sync (slow; needed after many configuration changes).\n\n**Filtering** decides which objects reach Entra ID:\n- **Domain** and **OU-based** filtering (in the wizard).\n- **Attribute-based** filtering with custom sync rules in the Synchronization Rules Editor.\n- **Group-based** filtering, intended for pilots only.\n\nAfter changing filtering, a **full import** (and full sync) is usually needed. Watch for accidental deletes: the **prevent accidental deletes** feature stops exports deleting more than 500 objects by default.\n\nTroubleshoot with the **Synchronization Service Manager**, the Entra Connect Health sync errors page and the provisioning or audit logs.",
+      "terms": [
+        {
+          "t": "Delta sync",
+          "d": "Processes only changes since the last run."
+        },
+        {
+          "t": "Initial (full) sync",
+          "d": "Re-reads all objects; used after rule or filtering changes."
+        },
+        {
+          "t": "OU-based filtering",
+          "d": "Selects which AD organizational units are synced."
+        },
+        {
+          "t": "Prevent accidental deletes",
+          "d": "Stops an export that would delete more than a threshold of objects."
+        }
+      ],
+      "trap": "Expect Start-ADSyncSyncCycle -PolicyType Delta for 'sync this change now', not Initial; and disable the scheduler before editing rules.",
+      "example": "An admin adds a new OU to the sync scope, then runs an initial sync so the OU's users appear in Entra ID.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.4.03",
+      "objective": "d1.4",
+      "seq": 3,
+      "title": "Microsoft Entra Cloud Sync",
+      "short": "Microsoft Entra Cloud Sync uses lightweight provisioning agents on-premises with configuration in the cloud. Multiple active agents give high availability, and it supports disconnected forests, but it lacks some Connect Sync features such as PTA configuration and advanced sync rules.",
+      "deep": "**Architecture**: the **Microsoft Entra provisioning agent** installs on domain-joined servers (or DCs) and keeps an outbound connection to Entra ID. Configuration, scheduling and monitoring are in the **Microsoft Entra admin center**; sync runs about every **2 minutes**. The agent runs as a **gMSA** (`provAgentgMSA$`). Install with a **Hybrid Identity Administrator** account; Microsoft recommends **three active agents** for HA.\n\n**Cloud Sync strengths**\n- **Disconnected forests** (for example after a merger with no trust).\n- **Multiple active agents** with automatic failover.\n- **Provision on demand** for testing.\n- **Group provisioning to AD** (cloud groups written to AD DS).\n- PHS, password writeback, Exchange hybrid attributes, device sync for hybrid join, OU scoping.\n\n**Connect Sync still needed for**\n- **Pass-through authentication** and **AD FS** configuration.\n- **Advanced custom sync rules**, full attribute-value filtering and merging attributes from several forests.\n- Very large tenants: Cloud Sync supports up to **150,000 objects per domain** and groups up to **50,000 members**.\n\nBoth can run side by side for different scopes (for example Cloud Sync for a newly acquired forest) as long as an object is synced by only one.",
+      "terms": [
+        {
+          "t": "Provisioning agent",
+          "d": "Lightweight on-premises agent used by Cloud Sync."
+        },
+        {
+          "t": "Disconnected forest",
+          "d": "AD forest without trust to other forests."
+        },
+        {
+          "t": "gMSA",
+          "d": "Group managed service account the agent runs as."
+        }
+      ],
+      "trap": "If the scenario needs PTA, custom sync rules or merging attributes across forests, the answer is Connect Sync, not Cloud Sync.",
+      "example": "After acquiring a company with an untrusted AD forest, Contoso deploys three Cloud Sync agents there instead of building a forest trust.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Feature",
+          "Connect Sync",
+          "Cloud Sync"
+        ],
+        "rows": [
+          [
+            "Disconnected forests",
+            "No",
+            "Yes"
+          ],
+          [
+            "Active agents (HA)",
+            "One + staging",
+            "Multiple"
+          ],
+          [
+            "PTA config",
+            "Yes",
+            "No"
+          ],
+          [
+            "Custom sync rules",
+            "Yes",
+            "No"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.4.04",
+      "objective": "d1.4",
+      "seq": 4,
+      "title": "Password hash synchronization",
+      "short": "Password hash synchronization (PHS) syncs a hash of the AD password hash to Microsoft Entra ID so users sign in with the same password, authenticated in the cloud. It is the simplest method, keeps working if on-premises is down, and enables leaked credential detection.",
+      "deep": "**How it works**: the sync agent pulls the MD4-based password hash from a DC, adds a per-user **salt**, and runs **PBKDF2 (HMAC-SHA256, 1,000 iterations)** before sending it over TLS. The original hash is never sent and the plaintext is never known. Changes sync roughly **every 2 minutes**, separate from the 30-minute object sync.\n\n**Why Microsoft recommends PHS**\n- Cloud authentication with no extra on-premises servers.\n- Users can still sign in if AD DS or the sync server is down.\n- Enables **leaked credentials** detection in Microsoft Entra ID Protection.\n- Can be enabled as a **backup** alongside PTA or federation.\n\n**Behaviour to know**\n- By default synced users' cloud passwords are set to **never expire**, because AD enforces expiry. Turn on `CloudPasswordPolicyForPasswordSyncedUsersEnabled` to apply Entra's policy.\n- 'User must change password at next logon' only syncs with `UserForcePasswordChangeOnLogonEnabled` (use with SSPR and password writeback).\n- An account disabled in AD is disabled in Entra at the next sync, but an **expired** AD account (accountExpires) isn't synced.\n- On-premises account lockout and logon hours aren't evaluated at cloud sign-in; Entra **smart lockout** protects cloud sign-ins.\n\nEnable it in the Entra Connect wizard (**Optional features** or **Change user sign-in**) or Cloud Sync.",
+      "terms": [
+        {
+          "t": "PHS",
+          "d": "Password hash synchronization: cloud authentication using a synced hash."
+        },
+        {
+          "t": "Leaked credentials",
+          "d": "ID Protection risk detection that requires PHS."
+        },
+        {
+          "t": "Smart lockout",
+          "d": "Entra ID lockout that blocks brute-force attempts in the cloud."
+        }
+      ],
+      "trap": "Leaked credentials detection needs PHS even when users sign in with PTA or federation, so enable PHS as well.",
+      "example": "Contoso uses PTA but also enables PHS so ID Protection flags leaked passwords and sign-in can fall back to PHS in a disaster.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "AD hash",
+          "Salt + PBKDF2",
+          "TLS to Entra",
+          "Cloud sign-in"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.4.05",
+      "objective": "d1.4",
+      "seq": 5,
+      "title": "Pass-through authentication",
+      "short": "Pass-through authentication (PTA) validates passwords directly against on-premises AD DS through lightweight agents that make outbound-only connections. Choose it when on-premises account states, password policies and sign-in hours must be enforced at sign-in, and no password hash may go to the cloud.",
+      "deep": "**Flow**: the user enters a password at Entra ID, which places the encrypted request on a queue; an on-premises **authentication agent** picks it up, validates against a DC and returns the result. No password is stored in the cloud.\n\n**Agents**\n- Install on domain-joined Windows Server 2016 or later (not Server Core). The first agent is installed with Entra Connect.\n- **Outbound only**: port **443** for traffic and **80** for certificate revocation lists. No inbound ports or perimeter network needed.\n- Microsoft recommends **at least three agents** for high availability.\n- Registering agents needs a **Hybrid Identity Administrator** account (ideally cloud-only).\n\n**Why choose PTA**: on-premises policies such as **disabled, locked-out or expired accounts, password expiry and logon hours** apply immediately at sign-in. Some organisations' security rules forbid sending any password hash to the cloud.\n\n**Considerations**\n- If all agents are unreachable, sign-in fails and there is no automatic failover, so enable **PHS as a backup** that you switch to manually in Entra Connect (it also gives leaked credentials detection).\n- Pair with **Seamless SSO** for silent sign-in on domain-joined devices.\n- Configured only with **Connect Sync**, not Cloud Sync.\n- Free; no paid Entra licence.",
+      "terms": [
+        {
+          "t": "PTA",
+          "d": "Pass-through authentication; validates passwords against on-premises AD."
+        },
+        {
+          "t": "Authentication agent",
+          "d": "On-premises PTA service that validates sign-in requests."
+        },
+        {
+          "t": "Outbound-only",
+          "d": "Agent initiates all connections; no inbound firewall rules."
+        }
+      ],
+      "trap": "PTA is the answer when on-premises account policies like logon hours must apply in real time; PHS doesn't evaluate them at sign-in.",
+      "example": "A bank whose policy forbids storing password hashes in the cloud deploys three PTA agents across two datacentres.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "User",
+          "Entra ID",
+          "PTA agent (443 out)",
+          "AD DS"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.4.06",
+      "objective": "d1.4",
+      "seq": 6,
+      "title": "Seamless single sign-on (SSO)",
+      "short": "Seamless SSO signs users on domain-joined devices inside the corporate network into Microsoft Entra ID automatically using Kerberos. It works with PHS or PTA, not AD FS, and creates the AZUREADSSOACC computer account whose key you should roll over every 30 days.",
+      "deep": "**How it works**: when enabled (Entra Connect wizard or PowerShell), a computer account **AZUREADSSOACC** is created in each AD forest. Browsers on domain-joined devices request a Kerberos ticket for Entra ID, which decrypts it with the shared key and signs the user in without a password prompt.\n\n**Requirements and setup**\n- Works with **PHS** or **PTA**; not used with AD FS (which has its own SSO).\n- Device must be **domain-joined** and have line of sight to a DC.\n- Add `https://autologon.microsoftazuread-sso.com` to the browsers' **Local intranet zone** via Group Policy.\n- Supported browsers include Edge, Chrome and (with extra configuration) Firefox and Safari.\n\n**When it's used**: mainly for **Windows 7/8.1** and non-Entra-joined scenarios. **Windows 10/11 Entra joined or hybrid joined** devices use the **Primary Refresh Token (PRT)** for SSO instead.\n\n**Maintenance**: protect AZUREADSSOACC like a DC object and **roll over its Kerberos decryption key at least every 30 days** (`Update-AzureADSSOForest`).\n\nSeamless SSO is opportunistic: if it fails, users just see the normal sign-in page. It is free and needs no paid licence.",
+      "terms": [
+        {
+          "t": "Seamless SSO",
+          "d": "Kerberos-based silent sign-in for domain-joined devices on the corporate network."
+        },
+        {
+          "t": "AZUREADSSOACC",
+          "d": "AD computer account holding the Seamless SSO Kerberos key."
+        },
+        {
+          "t": "Local intranet zone",
+          "d": "Browser zone that must include the autologon URL."
+        }
+      ],
+      "trap": "Seamless SSO doesn't work with AD FS sign-in, and modern Windows 10/11 joined devices rely on PRT rather than Seamless SSO.",
+      "example": "Contoso enables PTA with Seamless SSO and pushes the autologon URL to the intranet zone so office users reach Microsoft 365 without typing a password.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.4.07",
+      "objective": "d1.4",
+      "seq": 7,
+      "title": "Migrate authentication from AD FS",
+      "short": "Moving from AD FS to cloud authentication (PHS recommended, or PTA) reduces infrastructure and risk. Test with staged rollout groups, then convert federated domains to managed with Entra Connect or Update-MgDomain, and finally decommission AD FS.",
+      "deep": "**Plan**: document the current federation settings (`Get-MgDomainFederationConfiguration`), back up AD FS, review Conditional Access and MFA behaviour, prepare SSO (PRT for Windows 10/11, Seamless SSO for older Windows), and plan rollback.\n\n**Staged rollout** (Hybrid Identity Administrator): lets selected **security groups** use PHS, PTA or certificate-based authentication while the domain **stays federated**.\n- Up to **10 groups per feature**; **nested and dynamic groups aren't supported**; adding a group with more than 200 users at once can time out.\n- Only **synced** users are in scope; apps sending `domain_hint` still go to federation.\n- PHS must be enabled and fully synced before testing PHS.\n\n**Cut over**\n- **Option A**: if AD FS was configured by Entra Connect, use **Change user sign-in** in the wizard to switch to PHS or PTA; it converts the domains.\n- **Option B**: otherwise, enable PHS/PTA in Entra Connect, then run `Update-MgDomain -DomainId contoso.com -AuthenticationType Managed` per domain.\n- Conversion can take up to an hour; do it in a maintenance window.\n\n**After**: confirm sign-ins with Connect Health/sign-in logs, turn off staged rollout, remove the Microsoft 365 relying party trust, and keep AD FS only if it still serves other apps.",
+      "terms": [
+        {
+          "t": "Staged rollout",
+          "d": "Test cloud authentication for selected groups while the domain stays federated."
+        },
+        {
+          "t": "Managed domain",
+          "d": "Domain that authenticates in Entra ID (PHS/PTA)."
+        },
+        {
+          "t": "Update-MgDomain",
+          "d": "Graph PowerShell cmdlet used to convert a domain to Managed."
+        }
+      ],
+      "trap": "Staged rollout doesn't convert the domain; you still have to switch it to Managed, and dynamic or nested groups can't be used.",
+      "example": "Contoso adds a 50-user pilot security group to staged rollout for PHS, validates for two weeks, then converts contoso.com to Managed.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Enable PHS",
+          "Staged rollout",
+          "Convert domain",
+          "Retire AD FS"
+        ]
+      }
+    },
+    {
+      "id": "sc-300.d1.4.08",
+      "objective": "d1.4",
+      "seq": 8,
+      "title": "Migrate apps from AD FS to Entra ID",
+      "short": "Apps that use AD FS relying party trusts can move to Microsoft Entra ID as enterprise applications (SAML, WS-Fed, OIDC) or app registrations. Use the AD FS application activity report to find apps and check migration readiness.",
+      "deep": "**Discover**: the **AD FS application activity** report (Entra ID > Enterprise applications > Usage & insights) uses **Microsoft Entra Connect Health for AD FS** data to list relying parties, their sign-in counts and a **migration readiness** status with the claim rules that need attention.\n\n**Move each app**\n- **SAML 2.0 / WS-Fed SaaS apps**: add from the **gallery** or as a non-gallery enterprise application and configure SAML-based SSO (identifier, reply URL, claims).\n- **OAuth 2.0 / OpenID Connect line-of-business apps**: create an **app registration**.\n- **Legacy header or Kerberos apps**: publish with **Microsoft Entra Application Proxy** (or Private Access) or a secure hybrid access partner.\n- Re-create claim rules as Entra **claims mapping** and access rules as **Conditional Access**.\n\n**Stages**: production app on AD FS → (optional) test instance against a test tenant → test instance against production tenant → production app against Entra ID.\n\nMigrate modern-protocol apps first. When all relying parties have moved and the domains are managed, decommission the AD FS farm and Web Application Proxy servers.",
+      "terms": [
+        {
+          "t": "Relying party trust",
+          "d": "AD FS configuration for an app that trusts AD FS tokens."
+        },
+        {
+          "t": "AD FS application activity report",
+          "d": "Entra report listing AD FS apps and migration readiness."
+        },
+        {
+          "t": "Claims mapping",
+          "d": "Configuring which claims Entra ID puts in an app's token."
+        }
+      ],
+      "trap": "The AD FS application activity report needs Connect Health for AD FS agents; without them, no data appears.",
+      "example": "The report shows 23 relying parties; 18 are 'Ready', so Contoso adds them as enterprise apps and plans custom claims for the rest.",
+      "diagram": null
+    },
+    {
+      "id": "sc-300.d1.4.09",
+      "objective": "d1.4",
+      "seq": 9,
+      "title": "Microsoft Entra Connect Health",
+      "short": "Microsoft Entra Connect Health monitors hybrid identity through agents for Entra Connect Sync, AD FS and AD DS, giving alerts, sync error reports, performance data and AD FS usage analytics. It needs Microsoft Entra ID P1 or P2.",
+      "deep": "**Agents**\n- **Connect Health for sync**: installed automatically with Entra Connect; shows sync latency, alerts and **sync errors** (for example duplicate attributes).\n- **Connect Health for AD FS**: alerts, **usage analytics**, performance monitoring, the **Bad password attempts** report (top 50 users) and the **Risky IP** report. Usage analytics needs **AD FS auditing** enabled (`Set-AdfsProperties -AuditLevel Verbose` plus the Generate security audits right).\n- **Connect Health for AD DS**: DC health, replication and authentication monitoring.\n\n**Licensing**: P1 or P2. The first agent needs 1 licence and **each additional agent needs 25 more** (for example 2 agents = 26 licences). Licences don't have to be assigned to particular users.\n\n**Access**: Global Administrators always have full access; **Hybrid Identity Administrators** are Owner by default. You can grant **Owner**, **Contributor** or **Reader** for all or specific service instances.\n\n**Notifications**: alert emails go to Global Administrators by default, and you can add other recipients. Agents use outbound connections; if Azure is unreachable they buffer data locally.",
+      "terms": [
+        {
+          "t": "Connect Health agent",
+          "d": "Monitoring agent for Sync, AD FS or AD DS."
+        },
+        {
+          "t": "Usage analytics",
+          "d": "AD FS authentication traffic analysis; needs AD FS auditing."
+        },
+        {
+          "t": "Risky IP report",
+          "d": "AD FS report of IPs with many failed sign-ins."
+        }
+      ],
+      "trap": "Connect Health licensing is 1 licence for the first agent plus 25 for each additional agent, not one per server user.",
+      "example": "An alert from Connect Health warns Contoso that the sync server hasn't exported for three hours, so they fail over to the staging server.",
+      "diagram": {
+        "kind": "stack",
+        "items": [
+          "Connect Health portal",
+          "Sync agent",
+          "AD FS agent",
+          "AD DS agent"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-300.d1.q043",
+      "lesson": "sc-300.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the default guest user access level in Microsoft Entra external collaboration settings?",
+      "options": [
+        "Guest users have limited access to properties and memberships of directory objects",
+        "Guest users have the same access as members",
+        "Guest user access is restricted to properties and memberships of their own directory objects",
+        "Guest users have no access to the directory"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Limited access is the default. Same access as members is the most inclusive option and 'restricted to their own objects' the most restrictive. There is no 'no access' option."
+    },
+    {
+      "id": "sc-300.d1.q044",
+      "lesson": "sc-300.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Guest invitations are limited to users in specific admin roles. A project manager who holds no admin role must be able to invite external partners. Which role is least privileged for this?",
+      "options": [
+        "User Administrator",
+        "External Identity Provider Administrator",
+        "Helpdesk Administrator",
+        "Guest Inviter"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Guest Inviter lets a user invite guests even when invites are limited to admin roles. User Administrator also works but grants far more. External Identity Provider Administrator manages IdPs, and Helpdesk Administrator resets passwords."
+    },
+    {
+      "id": "sc-300.d1.q045",
+      "lesson": "sc-300.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about external collaboration settings, select Yes if true.",
+      "statements": [
+        {
+          "s": "You can configure collaboration restrictions so that invitations are allowed only to domains you list.",
+          "a": true
+        },
+        {
+          "s": "Letting external users remove themselves from your organisation requires privacy information in the tenant properties.",
+          "a": true
+        },
+        {
+          "s": "Trusting MFA from a partner tenant is configured in external collaboration settings.",
+          "a": false
+        }
+      ],
+      "explain": "Collaboration restrictions support an allow list or a deny list. The leave setting is only available after a privacy contact and statement are added. MFA trust is an inbound trust setting in cross-tenant access settings."
+    },
+    {
+      "id": "sc-300.d1.q046",
+      "lesson": "sc-300.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Microsoft Graph PowerShell command that invites a partner and emails them an invitation that lands on My Apps.",
+      "code": "____ -InvitedUserEmailAddress \"lee@fabrikam.com\" `\n  -InviteRedirectUrl \"https://myapps.microsoft.com\" `\n  -SendInvitationMessage",
+      "options": [
+        "New-MgUser",
+        "New-MgInvitation",
+        "New-MgUserInvitation",
+        "Add-MgGuestUser"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "New-MgInvitation calls the Graph invitations API and creates the guest. New-MgUser creates member accounts without invitations. New-MgUserInvitation and Add-MgGuestUser aren't Microsoft Graph PowerShell cmdlets."
+    },
+    {
+      "id": "sc-300.d1.q047",
+      "lesson": "sc-300.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You invite jo@fabrikam.com to the contoso.onmicrosoft.com tenant. Before Jo redeems the invitation, what does the admin center show for the account?",
+      "options": [
+        "UserType Member and status Accepted",
+        "UserType Guest and status Pending acceptance",
+        "UserType Guest and status Disabled",
+        "UserType Member and status Pending acceptance"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Invited B2B users are created with UserType Guest, and until they redeem the status shows Pending acceptance. UserType Member is for internal or external members, and the account isn't disabled."
+    },
+    {
+      "id": "sc-300.d1.q048",
+      "lesson": "sc-300.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are preparing the Bulk invite CSV in the Microsoft Entra admin center. Which TWO values are required for each row? Select TWO.",
+      "options": [
+        "Email address to invite",
+        "Initial password",
+        "Redirection url",
+        "User principal name",
+        "Usage location"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Bulk invite needs the invitee's email address and the redirection URL; the custom message is optional. Initial password and UPN are Bulk create columns, and guests aren't given a password by you. Usage location isn't required."
+    },
+    {
+      "id": "sc-300.d1.q049",
+      "lesson": "sc-300.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A guest's company was acquired and her email changed. She must keep all her group memberships and app assignments in your tenant but sign in with the new address. What should you do?",
+      "options": [
+        "Delete the guest and invite the new address",
+        "Change her UserType to Member",
+        "Update her mail property, then reset her redemption status",
+        "Add the new address as an alternate UPN suffix"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Reset redemption status lets her redeem with the new identity while keeping the object ID, groups and app assignments. Deleting loses those. UserType doesn't change sign-in identity, and UPN suffixes apply to your own domains."
+    },
+    {
+      "id": "sc-300.d1.q050",
+      "lesson": "sc-300.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about external user accounts, select Yes if true.",
+      "statements": [
+        {
+          "s": "UserType describes how the user signs in.",
+          "a": false
+        },
+        {
+          "s": "Helpdesk Administrator is the least-privileged role that can reset a guest's redemption status.",
+          "a": true
+        },
+        {
+          "s": "A user from another tenant can have UserType Member in your tenant.",
+          "a": true
+        }
+      ],
+      "explain": "UserType only describes the relationship to your organisation; the Identities property shows how the user signs in. Helpdesk Administrator is the least-privileged role for resetting redemption. External members, common in multitenant organisations, are external users with UserType Member."
+    },
+    {
+      "id": "sc-300.d1.q051",
+      "lesson": "sc-300.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso requires MFA for all users, including guests, through Conditional Access. Fabrikam guests already complete MFA in Fabrikam's own tenant and complain about being asked for MFA again by Contoso. Contoso must keep requiring MFA.",
+      "stem": "What should Contoso configure?",
+      "options": [
+        "Exclude Fabrikam guests from the Conditional Access policy",
+        "Enable B2B direct connect outbound to Fabrikam",
+        "Disable email one-time passcode",
+        "In cross-tenant access settings, add Fabrikam and enable inbound trust of multifactor authentication from Microsoft Entra tenants"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Inbound MFA trust lets Contoso's policy accept the MFA claim from Fabrikam, so MFA is still required but not repeated. Excluding guests removes the requirement. Direct connect outbound affects Contoso users going to Fabrikam, and OTP is unrelated."
+    },
+    {
+      "id": "sc-300.d1.q052",
+      "lesson": "sc-300.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Contoso and Fabrikam want users in each organisation to join each other's Teams shared channels without guest accounts. Which TWO configurations are required? Select TWO.",
+      "options": [
+        "Contoso enables B2B direct connect inbound and outbound for Fabrikam in cross-tenant access settings",
+        "Fabrikam enables B2B direct connect inbound and outbound for Contoso in cross-tenant access settings",
+        "Contoso invites all Fabrikam users as guests",
+        "Both tenants configure cross-tenant synchronization",
+        "Both tenants add each other's domains to the collaboration restrictions allow list"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "B2B direct connect, used for Teams shared channels, is blocked by default and needs mutual configuration in both tenants. It doesn't create guest objects, so invitations and cross-tenant sync aren't needed; collaboration restrictions apply to B2B invitations."
+    },
+    {
+      "id": "sc-300.d1.q053",
+      "lesson": "sc-300.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about default cross-tenant access settings, select Yes if true.",
+      "statements": [
+        {
+          "s": "B2B collaboration is allowed inbound and outbound by default.",
+          "a": true
+        },
+        {
+          "s": "B2B direct connect is allowed by default.",
+          "a": false
+        },
+        {
+          "s": "MFA claims from other Microsoft Entra tenants are trusted by default.",
+          "a": false
+        }
+      ],
+      "explain": "By default, B2B collaboration is allowed both ways, B2B direct connect is blocked both ways, and MFA and device claims from other tenants aren't trusted until you configure inbound trust."
+    },
+    {
+      "id": "sc-300.d1.q054",
+      "lesson": "sc-300.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": "Contoso (source) wants to synchronize its employees into Fabrikam (target) by using cross-tenant synchronization.",
+      "stem": "Put the steps in order.",
+      "options": [
+        "In Fabrikam, allow user synchronization into this tenant and enable automatic redemption inbound for Contoso",
+        "In Contoso, enable automatic redemption outbound for Fabrikam",
+        "In Contoso, create a cross-tenant synchronization configuration and test the connection",
+        "In Contoso, assign users to the configuration and test with provision on demand",
+        "In Contoso, start provisioning and review the provisioning logs"
+      ],
+      "explain": "The target must first allow inbound sync and auto-redemption, then the source enables outbound auto-redemption. The configuration is created and tested in the source, users are scoped and tested on demand, and then provisioning starts."
+    },
+    {
+      "id": "sc-300.d1.q055",
+      "lesson": "sc-300.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In which tenant do you create the cross-tenant synchronization configuration, and what user type does it create by default?",
+      "options": [
+        "The target tenant; external guests",
+        "The source tenant; internal members",
+        "The target tenant; external members",
+        "The source tenant; external members"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Cross-tenant synchronization is push-based and configured in the source tenant. By default it creates users as external members, which you can change to guests in the attribute mappings. Synced users are never internal members of the target."
+    },
+    {
+      "id": "sc-300.d1.q056",
+      "lesson": "sc-300.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso syncs users to Fabrikam with cross-tenant synchronization. An employee, Sam, leaves the project and is removed from the group assigned to the sync configuration in Contoso. Sam's account in Contoso stays enabled.",
+      "stem": "What happens to Sam's account in Fabrikam?",
+      "options": [
+        "Nothing; it stays until a Fabrikam admin deletes it",
+        "It is soft-deleted in Fabrikam",
+        "It is converted to an external guest",
+        "It is immediately permanently deleted"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "When a user goes out of scope (unassigned, removed from an assigned group or no longer matching a filter), cross-tenant sync soft-deletes them in the target. It doesn't convert them to guests, and soft-deleted users are only hard-deleted after 30 days."
+    },
+    {
+      "id": "sc-300.d1.q057",
+      "lesson": "sc-300.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO statements about a Microsoft Entra multitenant organization (MTO) are true? Select TWO.",
+      "options": [
+        "It merges the member tenants into one directory with shared Conditional Access policies",
+        "It improves collaboration in new Microsoft Teams, such as notifications across the organisation's tenants",
+        "Users still have to be provisioned across tenants, typically with cross-tenant synchronization",
+        "It is configured only in the target tenant",
+        "It removes the need for cross-tenant access settings"
+      ],
+      "answer": [
+        1,
+        2
+      ],
+      "explain": "An MTO is a tenant group that improves Teams and Viva Engage collaboration, and users are typically provisioned with cross-tenant sync. Tenants and their policies stay separate, an owner tenant creates it and others join, and each tenant pair is still governed by cross-tenant access settings."
+    },
+    {
+      "id": "sc-300.d1.q058",
+      "lesson": "sc-300.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which identity provider can be used for self-service sign-up user flows but NOT for redeeming B2B invitations?",
+      "options": [
+        "Facebook",
+        "Google",
+        "Microsoft account",
+        "Email one-time passcode"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Facebook is supported only in self-service sign-up user flows. Google, Microsoft accounts and email one-time passcode can all be used to redeem invitations."
+    },
+    {
+      "id": "sc-300.d1.q059",
+      "lesson": "sc-300.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Fabrikam uses a third-party SAML 2.0 identity provider. Contoso wants Fabrikam guests to sign in with their Fabrikam credentials. Fabrikam rotates its token-signing certificate every year, and Contoso wants no manual certificate updates.",
+      "stem": "Which THREE values should Contoso provide when creating the SAML/WS-Fed identity provider? Select THREE.",
+      "options": [
+        "The partner IdP's issuer URI",
+        "The partner IdP's passive authentication endpoint",
+        "The partner IdP's metadata URL",
+        "Fabrikam's tenant ID in cross-tenant access settings",
+        "A client secret issued by the partner IdP"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "SAML/WS-Fed federation needs the issuer URI and passive authentication endpoint, and a metadata URL lets Microsoft Entra ID renew the signing certificate automatically. Tenant IDs apply to Entra-to-Entra cross-tenant settings, and client secrets apply to OAuth providers like Google."
+    },
+    {
+      "id": "sc-300.d1.q060",
+      "lesson": "sc-300.d1.4.01",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need a standby Microsoft Entra Connect Sync server that can quickly take over if the primary fails, without exporting changes while the primary is healthy. What should you deploy?",
+      "options": [
+        "A second Entra Connect server in staging mode",
+        "A second active Entra Connect server for the same tenant",
+        "Three Microsoft Entra private network connectors",
+        "An Entra Connect Health agent on a second server"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "A staging-mode server imports and synchronises but doesn't export, so it's ready to become active. Two active servers for one tenant aren't supported. Private network connectors belong to Application Proxy, and Connect Health monitors but doesn't sync."
+    },
+    {
+      "id": "sc-300.d1.q061",
+      "lesson": "sc-300.d1.4.01",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about installing Microsoft Entra Connect Sync, select Yes if true.",
+      "statements": [
+        {
+          "s": "Express settings need an on-premises Enterprise Admin account.",
+          "a": true
+        },
+        {
+          "s": "Entra Connect Sync can be installed on Windows Server Core.",
+          "a": false
+        },
+        {
+          "s": "The default SQL Server Express LocalDB supports about 100,000 objects.",
+          "a": true
+        }
+      ],
+      "explain": "Express settings need Enterprise Admin on-premises. Server Core isn't supported; a full GUI is required. LocalDB has a 10 GB limit, which is about 100,000 objects; larger directories need full SQL Server."
+    },
+    {
+      "id": "sc-300.d1.q062",
+      "lesson": "sc-300.d1.4.02",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "A new hire was just created in AD DS and must appear in Microsoft Entra ID now, without waiting for the next scheduled cycle. Complete the command on the sync server.",
+      "code": "Start-ADSyncSyncCycle -PolicyType ____",
+      "options": [
+        "Initial",
+        "Full",
+        "Delta",
+        "Export"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A Delta cycle imports and exports only changes, which is what's needed for a new object. Initial runs a slow full import and sync, used after configuration changes. Full and Export aren't valid PolicyType values."
+    },
+    {
+      "id": "sc-300.d1.q063",
+      "lesson": "sc-300.d1.4.02",
+      "objective": "d1.4",
+      "difficulty": 3,
+      "type": "order",
+      "case": null,
+      "stem": "You must change OU-based filtering on Microsoft Entra Connect Sync without a scheduled cycle running mid-change. Put the steps in order.",
+      "options": [
+        "Run Set-ADSyncScheduler -SyncCycleEnabled $false",
+        "Change the OU selection in the Entra Connect wizard",
+        "Run Start-ADSyncSyncCycle -PolicyType Initial",
+        "Run Set-ADSyncScheduler -SyncCycleEnabled $true"
+      ],
+      "explain": "Disable the scheduler first so no cycle runs with a half-finished configuration. Change filtering, then run an initial (full) cycle so the new scope is fully imported, and re-enable the scheduler."
+    },
+    {
+      "id": "sc-300.d1.q064",
+      "lesson": "sc-300.d1.4.02",
+      "objective": "d1.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the default synchronization interval of the Microsoft Entra Connect Sync scheduler?",
+      "options": [
+        "2 minutes",
+        "15 minutes",
+        "60 minutes",
+        "30 minutes"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The scheduler runs a cycle every 30 minutes by default. Two minutes is the password hash sync and Cloud Sync interval. You can customise the interval with Set-ADSyncScheduler."
+    },
+    {
+      "id": "sc-300.d1.q065",
+      "lesson": "sc-300.d1.4.03",
+      "objective": "d1.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso acquired Litware. Litware's AD forest has no trust with Contoso's forests and won't get one. Contoso wants Litware users in its tenant quickly, with no single point of failure and minimal on-premises infrastructure. Litware users will use password hash sync.",
+      "stem": "What should Contoso deploy for Litware?",
+      "options": [
+        "A second Entra Connect Sync server for the same tenant pointing at Litware",
+        "Microsoft Entra Cloud Sync with three provisioning agents in Litware's forest",
+        "Cross-tenant synchronization from Litware's forest",
+        "Pass-through authentication agents in Litware's forest"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Cloud Sync supports disconnected forests, uses lightweight agents and gives HA through multiple active agents. A second active Connect Sync server for one tenant isn't supported. Cross-tenant sync works between Entra tenants, not AD forests. PTA agents authenticate but don't sync."
+    },
+    {
+      "id": "sc-300.d1.q066",
+      "lesson": "sc-300.d1.4.03",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO requirements mean you should choose Microsoft Entra Connect Sync rather than Microsoft Entra Cloud Sync? Select TWO.",
+      "options": [
+        "Users must sign in with pass-through authentication",
+        "Attributes for one user must be merged from accounts in two different forests",
+        "Sync must continue automatically if one agent server fails",
+        "Password hash synchronization must be enabled",
+        "Users from a disconnected forest must be synced"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "PTA configuration and merging attributes across forests are Connect Sync features. Cloud Sync offers multiple active agents and disconnected-forest support, and both tools support PHS."
+    },
+    {
+      "id": "sc-300.d1.q067",
+      "lesson": "sc-300.d1.4.04",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Contoso uses pass-through authentication and wants Microsoft Entra ID Protection to detect leaked credentials. What must Contoso also enable?",
+      "options": [
+        "Seamless single sign-on",
+        "Password hash synchronization",
+        "Password writeback",
+        "Microsoft Entra Connect Health for AD DS"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Leaked credentials detection compares hashes and needs password hash synchronization, which can run alongside PTA. Seamless SSO, password writeback and Connect Health don't supply password hashes."
+    },
+    {
+      "id": "sc-300.d1.q068",
+      "lesson": "sc-300.d1.4.04",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about password hash synchronization, select Yes if true.",
+      "statements": [
+        {
+          "s": "Password changes sync about every 2 minutes, separately from the 30-minute object sync cycle.",
+          "a": true
+        },
+        {
+          "s": "The plaintext password is sent to Microsoft Entra ID over TLS.",
+          "a": false
+        },
+        {
+          "s": "By default, synced users' cloud passwords are set to never expire.",
+          "a": true
+        }
+      ],
+      "explain": "PHS runs roughly every 2 minutes. Only a salted PBKDF2 hash of the AD hash is sent; the plaintext is never known. By default Entra Connect sets DisablePasswordExpiration until you enable the cloud password policy feature for synced users."
+    },
+    {
+      "id": "sc-300.d1.q069",
+      "lesson": "sc-300.d1.4.05",
+      "objective": "d1.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Woodgrove Bank's policy forbids storing any form of user password hash outside its datacentres. Logon hour restrictions in AD DS must apply to Microsoft 365 sign-ins immediately. The bank wants no inbound firewall rules and no federation servers.",
+      "stem": "Which sign-in method should Woodgrove use?",
+      "options": [
+        "Password hash synchronization",
+        "AD FS federation",
+        "Pass-through authentication",
+        "Certificate-based authentication only"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "PTA validates passwords against AD DS through outbound-only agents, so no hash goes to the cloud and on-premises policies like logon hours apply. PHS stores a hash in the cloud, AD FS needs federation servers and inbound publishing, and CBA alone doesn't evaluate AD passwords."
+    },
+    {
+      "id": "sc-300.d1.q070",
+      "lesson": "sc-300.d1.4.05",
+      "objective": "d1.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which network connectivity does a pass-through authentication agent need to Microsoft Entra ID?",
+      "options": [
+        "Inbound TCP 443 from Microsoft Entra ID",
+        "Inbound TCP 88 (Kerberos) from Microsoft Entra ID",
+        "A site-to-site VPN to Azure",
+        "Outbound TCP 443 (and 80 for CRL checks)"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "PTA agents make outbound-only connections, using 443 for service traffic and 80 to download certificate revocation lists. No inbound ports, Kerberos from the cloud or VPN are needed."
+    },
+    {
+      "id": "sc-300.d1.q071",
+      "lesson": "sc-300.d1.4.06",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You enable Seamless SSO with password hash synchronization. Which TWO statements are true? Select TWO.",
+      "options": [
+        "A computer account named AZUREADSSOACC is created in AD DS",
+        "You should roll over the Kerberos decryption key at least every 30 days",
+        "Seamless SSO is required for SSO on Windows 11 Microsoft Entra joined devices",
+        "Seamless SSO requires AD FS",
+        "Each user needs a Microsoft Entra ID P1 licence"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Enabling Seamless SSO creates AZUREADSSOACC, and Microsoft recommends rolling its key every 30 days. Entra joined Windows 10/11 devices use the PRT instead. Seamless SSO works with PHS or PTA, not AD FS, and it's free."
+    },
+    {
+      "id": "sc-300.d1.q072",
+      "lesson": "sc-300.d1.4.06",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Seamless SSO is enabled, but users on domain-joined Windows 8.1 devices in the office are still prompted for a password in the browser. What should you check first?",
+      "options": [
+        "That https://autologon.microsoftazuread-sso.com is in the browser's Local intranet zone",
+        "That the devices are Microsoft Entra registered",
+        "That staged rollout includes the users",
+        "That the users have Microsoft Authenticator registered"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Browsers send Kerberos tickets only to sites in the Local intranet zone, so the autologon URL must be added (usually via Group Policy). Device registration, staged rollout and Authenticator don't control Kerberos ticket delivery."
+    },
+    {
+      "id": "sc-300.d1.q073",
+      "lesson": "sc-300.d1.4.07",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You configured AD FS manually (not through Entra Connect). PHS is enabled and tested. Complete the command to switch contoso.com to cloud authentication.",
+      "code": "Connect-MgGraph -Scopes \"Domain.ReadWrite.All\",\"Directory.AccessAsUser.All\"\nUpdate-MgDomain -DomainId \"contoso.com\" -AuthenticationType ____",
+      "options": [
+        "\"Federated\"",
+        "\"Managed\"",
+        "\"Cloud\"",
+        "\"PasswordHashSync\""
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A domain uses either Federated or Managed authentication; setting Managed switches it to cloud authentication (PHS or PTA). Cloud and PasswordHashSync aren't valid values, and Federated is the current state."
+    },
+    {
+      "id": "sc-300.d1.q074",
+      "lesson": "sc-300.d1.4.07",
+      "objective": "d1.4",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": "Contoso wants to pilot password hash sync for 300 users while contoso.com stays federated with AD FS. The pilot users are in a dynamic group named PHS-Pilot.",
+      "stem": "For each statement about using staged rollout, select Yes if true.",
+      "statements": [
+        {
+          "s": "Contoso can add PHS-Pilot directly to staged rollout.",
+          "a": false
+        },
+        {
+          "s": "contoso.com stays federated while staged rollout is enabled.",
+          "a": true
+        },
+        {
+          "s": "Cloud-only users can be included in staged rollout.",
+          "a": false
+        }
+      ],
+      "explain": "Staged rollout supports security groups but not dynamic or nested groups, so Contoso needs an assigned group. The domain stays federated until you convert it. Only synced users are in scope; cloud-only users already use cloud authentication."
+    },
+    {
+      "id": "sc-300.d1.q075",
+      "lesson": "sc-300.d1.4.08",
+      "objective": "d1.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You plan to move apps from AD FS to Microsoft Entra ID and want a list of relying parties with their usage and migration readiness. What should you use, and what does it depend on?",
+      "options": [
+        "The Sign-in logs, which depend on Microsoft Entra ID P2",
+        "The Provisioning logs, which depend on Microsoft Entra Connect Sync",
+        "The AD FS application activity report, which depends on Connect Health for AD FS agents",
+        "Microsoft Defender for Cloud Apps Cloud Discovery, which depends on firewall logs"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The AD FS application activity report lists relying parties, usage and migration readiness from Connect Health for AD FS data. Sign-in and provisioning logs don't show AD FS relying parties, and Cloud Discovery finds SaaS usage from network logs."
+    },
+    {
+      "id": "sc-300.d1.q076",
+      "lesson": "sc-300.d1.4.09",
+      "objective": "d1.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Contoso deploys Microsoft Entra Connect Health with one agent on the Entra Connect server, two agents on AD FS servers and one agent on a domain controller.",
+      "stem": "What is the minimum number of Microsoft Entra ID P1 licences Contoso needs for Connect Health?",
+      "options": [
+        "4",
+        "25",
+        "76",
+        "100"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The first agent needs 1 licence and each additional agent needs 25 more. Four agents need 1 + 25 x 3 = 76 licences. 4 assumes one licence per agent; 25 and 100 don't follow the 1 + 25-per-additional-agent rule."
+    }
+  ]
+}

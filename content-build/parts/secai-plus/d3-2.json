@@ -1,0 +1,833 @@
+{
+  "exam": "secai-plus",
+  "domain": "d3",
+  "lessons": [
+    {
+      "id": "secai-plus.d3.2.01",
+      "objective": "d3.2",
+      "seq": 1,
+      "title": "Deepfakes: impersonation, misinformation and disinformation",
+      "short": "Deepfakes are AI-generated or AI-altered audio, video, images or text that look authentic. They enable impersonation (fake executive calls), misinformation (false content shared without intent to deceive) and disinformation (false content spread deliberately). Defenses rely on process: out-of-band verification, approval controls, provenance and awareness training.",
+      "deep": "**AI-generated content** has become cheap and convincing. A few minutes of public audio or video can be enough to clone a voice or face.\n\nThree outcomes are examined:\n- **Impersonation:** a synthetic voice or video of a trusted person, such as a CFO requesting an urgent wire transfer or a help-desk caller posing as an employee to reset MFA.\n- **Misinformation:** false or misleading content shared *without* intent to deceive, for example staff forwarding a fake news clip they believe is real.\n- **Disinformation:** false content created and spread *deliberately* to deceive, for example a fabricated video of a CEO announcing a recall to move a share price.\n\n**Detection cues** (unreliable as models improve) include unnatural blinking or lip sync, odd lighting, audio artifacts, and urgency combined with secrecy.\n\n**Defenses that work regardless of quality:**\n- Out-of-band call-back verification on a known number.\n- Dual approval for payments and credential resets.\n- Pre-agreed code words.\n- Content provenance and **watermarking**, such as C2PA content credentials.\n- Deepfake-aware training.\n- A communications plan for rapidly rebutting disinformation.",
+      "terms": [
+        {
+          "t": "Deepfake",
+          "d": "Synthetic or manipulated media created with AI to appear authentic."
+        },
+        {
+          "t": "Misinformation",
+          "d": "False information spread without intent to deceive."
+        },
+        {
+          "t": "Disinformation",
+          "d": "False information created or spread deliberately to deceive."
+        },
+        {
+          "t": "Out-of-band verification",
+          "d": "Confirming a request through a separate, trusted channel, such as calling back a known number."
+        }
+      ],
+      "trap": "Intent is the difference: deliberate equals disinformation, unknowing equals misinformation. For deepfake fraud, the best control is a process control (call-back, dual approval), not a detection tool alone.",
+      "example": "A finance clerk receives a video call from a convincing \"CFO\" who demands a confidential transfer. Policy requires a call-back to the CFO's known number, which exposes the fraud.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Term",
+          "False?",
+          "Intent to deceive?"
+        ],
+        "rows": [
+          [
+            "Misinformation",
+            "Yes",
+            "No"
+          ],
+          [
+            "Disinformation",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Impersonation",
+            "Fake identity",
+            "Yes"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.2.02",
+      "objective": "d3.2",
+      "seq": 2,
+      "title": "Adversarial networks",
+      "short": "A generative adversarial network (GAN) pits a generator against a discriminator until the generator's output is hard to tell from real data. Attackers can use the same idea to produce realistic synthetic media, or content tuned to slip past ML-based detectors. Defenders answer with adversarial training and layered controls.",
+      "deep": "A **generative adversarial network (GAN)** has two models trained against each other:\n- The **generator** creates synthetic samples.\n- The **discriminator** tries to tell real samples from generated ones.\n\nEach model improves by competing with the other, until the generator's output is very realistic.\n\n**Why this matters for security:**\n- GANs (along with diffusion models) are one engine behind **deepfake** faces and voices, and behind synthetic identities used in fraud, such as fake profile photos.\n- The adversarial principle can also be aimed at defensive ML. If attackers can repeatedly query a detector, they can tune content until it is classified as benign. This is an **evasion** concern catalogued in MITRE ATLAS.\n\n**Defender takeaways:**\n- **Adversarial training:** include perturbed or synthetic examples in training data so detectors become robust.\n- Rate-limit and monitor queries to detection models, so they can't easily be used as an oracle.\n- Don't depend on one ML detector. Layer signatures, behavior analytics and human review.\n- Use synthetic-media detection and identity proofing that checks liveness.",
+      "terms": [
+        {
+          "t": "GAN",
+          "d": "Generative adversarial network: generator and discriminator trained against each other."
+        },
+        {
+          "t": "Discriminator",
+          "d": "The GAN component that classifies samples as real or generated."
+        },
+        {
+          "t": "Adversarial training",
+          "d": "Training a model with adversarial or synthetic examples to improve robustness."
+        },
+        {
+          "t": "Evasion",
+          "d": "Crafting inputs so an ML model misclassifies them, for example labeling malicious as benign."
+        }
+      ],
+      "trap": "Know the two GAN roles: the generator creates and the discriminator judges. The defensive answer is usually adversarial training plus layered detection, not simply retraining on the same data.",
+      "example": "Fraud analysts notice a wave of account sign-ups whose profile photos have no reverse-image matches and show GAN artifacts, so they add a liveness check to onboarding.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "Generator creates",
+          "Discriminator judges",
+          "Feedback",
+          "Generator improves"
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.2.03",
+      "objective": "d3.2",
+      "seq": 3,
+      "title": "AI-enhanced reconnaissance",
+      "short": "Reconnaissance is the information-gathering phase of an attack. AI lets attackers collect and digest public data (OSINT) about staff, technology and exposed services much faster, then rank the most promising targets. Defenders shrink their public footprint and run the same OSINT review on themselves.",
+      "deep": "**Reconnaissance** maps to the first stage of attack models such as the Cyber Kill Chain and the MITRE ATT&CK Reconnaissance tactic. It can be **passive** (public sources, no contact with the target) or **active** (touching target systems, for example scanning).\n\n**What AI changes:** LLMs and ML tools can process huge volumes of open-source intelligence (**OSINT**) quickly: job postings that reveal the tech stack, staff profiles that reveal reporting lines, leaked documents, code repositories and exposed services. They summarize it into a target profile and rank the weakest points. Work that took days takes minutes, so even low-skill actors can run targeted campaigns.\n\n**What defenders should expect and do:**\n- Assume your public footprint is being analyzed at scale.\n- Run regular **OSINT self-assessments** and external attack surface management (EASM).\n- Trim unnecessary detail from job ads, org charts and public repositories. Scan repositories for leaked secrets.\n- Detect active reconnaissance (scanning patterns, directory enumeration) with IDS, WAF and rate limits.\n- Train staff that attackers may know a lot about them, so personal details in a message don't prove legitimacy.",
+      "terms": [
+        {
+          "t": "Reconnaissance",
+          "d": "Gathering information about a target before an attack."
+        },
+        {
+          "t": "OSINT",
+          "d": "Open-source intelligence: information from publicly available sources."
+        },
+        {
+          "t": "Passive reconnaissance",
+          "d": "Information gathering with no direct interaction with target systems."
+        },
+        {
+          "t": "EASM",
+          "d": "External attack surface management: continuously discovering an organization's internet-facing assets."
+        }
+      ],
+      "trap": "Passive reconnaissance doesn't touch target systems, so network monitoring can't see it. The control is reducing public exposure, not an IDS rule.",
+      "example": "An organization's quarterly OSINT review finds its job ads name the exact VPN product and version, so the ads are reworded and the VPN is patched as a priority.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Public data",
+          "AI collection",
+          "AI correlation",
+          "Target profile"
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.2.04",
+      "objective": "d3.2",
+      "seq": 4,
+      "title": "AI-enhanced social engineering",
+      "short": "Generative AI makes phishing, vishing and pretexting more convincing and scalable: fluent text in any language, messages personalized from OSINT, cloned voices and chatbots that hold real-time conversations. The old tell-tale signs (bad grammar, generic greetings) disappear, so defenses shift to verification processes, phishing-resistant MFA and behavior-focused training.",
+      "deep": "**Social engineering** manipulates people rather than technology. AI enhances it in several ways:\n- **Quality:** grammatically perfect, on-brand messages in the victim's language.\n- **Personalization at scale:** references to real projects, colleagues and events pulled from OSINT (spear phishing for everyone).\n- **New channels:** voice cloning for **vishing**, deepfake video for meeting impersonation, and AI chatbots that keep a conversation going in SMS (**smishing**) or chat.\n- **Speed:** many message variants, which weakens simple content filters.\n\n**Defenses:**\n- Update awareness training. Teach that good grammar and personal detail prove nothing, and focus on the request: urgency, secrecy, payment changes, credential or MFA requests.\n- **Phishing-resistant MFA**, such as FIDO2 security keys or passkeys, so stolen passwords and relayed codes are less useful.\n- Verification procedures for payment changes and help-desk resets.\n- Email authentication (SPF, DKIM, DMARC) and AI-based email security that analyzes intent and sender behavior, not just keywords.\n- Easy reporting buttons and fast takedown.",
+      "terms": [
+        {
+          "t": "Spear phishing",
+          "d": "Phishing targeted at a specific person or group using personalized details."
+        },
+        {
+          "t": "Vishing",
+          "d": "Voice phishing; AI voice cloning makes it more convincing."
+        },
+        {
+          "t": "Pretexting",
+          "d": "Inventing a believable scenario to get information or action from a victim."
+        },
+        {
+          "t": "Phishing-resistant MFA",
+          "d": "Authentication (for example FIDO2/passkeys) bound to the legitimate site, resisting credential relay."
+        }
+      ],
+      "trap": "Answers that rely on spotting spelling mistakes are outdated. The exam prefers verification processes, phishing-resistant MFA and training focused on behavior.",
+      "example": "An employee gets a flawless email from \"IT\" that mentions their real manager and an actual project and asks them to re-enroll MFA. Training on suspicious requests, not on typos, prompts them to report it.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d3.2.05",
+      "objective": "d3.2",
+      "seq": 5,
+      "title": "AI-driven obfuscation",
+      "short": "Obfuscation disguises malicious content so defenses fail to recognize it. AI can rewrite code or text into endless functionally equivalent variants (polymorphism), so each copy looks different. Defenders counter with behavior-based detection, sandboxing, AMSI-style script inspection and de-obfuscation tooling, including AI that explains suspicious code.",
+      "deep": "**Obfuscation** makes content hard to analyze while keeping what it does. Classic methods include encoding, packing, string splitting and junk code.\n\n**What AI changes:**\n- Generative models can produce **polymorphic** variants: the same behavior with different structure, variable names and wording on every copy. Hash and simple signature matching become much less effective.\n- In text, attackers paraphrase phishing lures or malicious prompts to avoid keyword filters and guardrails.\n\n**Defender response:**\n- Detect **behavior**, not appearance. What does the code do when it runs? (Process creation, persistence, network beacons.) EDR and sandbox **detonation** reveal this.\n- Inspect scripts after de-obfuscation at runtime. On Windows, the **Antimalware Scan Interface (AMSI)** lets security tools see script content after it is decoded.\n- Use fuzzy hashing and ML similarity to group variants into families.\n- Use AI defensively. LLMs can **explain or de-obfuscate** a suspicious script for analysts, which speeds triage. Run the analysis in an isolated environment and never execute unknown samples on production systems.",
+      "terms": [
+        {
+          "t": "Obfuscation",
+          "d": "Disguising code or content to hinder analysis and detection without changing its function."
+        },
+        {
+          "t": "Polymorphic malware",
+          "d": "Malware that changes its appearance between copies while keeping the same behavior."
+        },
+        {
+          "t": "Sandbox detonation",
+          "d": "Running a sample in an isolated environment to observe its behavior."
+        },
+        {
+          "t": "AMSI",
+          "d": "Antimalware Scan Interface: lets security products scan script content at runtime after decoding."
+        }
+      ],
+      "trap": "When variants defeat hashes, the right answer is behavior-based detection or sandboxing. More hash signatures or faster updates are the distractors.",
+      "example": "Thousands of scripts each have a unique hash, but EDR flags them all because each one spawns the same unusual child process and contacts the same domain.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d3.2.06",
+      "objective": "d3.2",
+      "seq": 6,
+      "title": "Automated data correlation",
+      "short": "Automated data correlation means AI linking scattered data points, such as breach dumps, social profiles, metadata and leaked credentials, into one detailed picture of a person or organization. It turns harmless individual facts into sensitive inferences. Defenders minimize exposed data, monitor for leaked credentials and treat aggregated data as more sensitive.",
+      "deep": "Individually, a username on a forum, a photo's location metadata, a gym check-in and an old breached password reveal little. **Automated data correlation** uses AI to join these fragments across sources at machine speed. It resolves identities (\"these five accounts are the same person\") and produces inferences: home address, routine, likely password patterns, privileged roles.\n\n**Attack uses:** building target dossiers for spear phishing or extortion, matching breach dumps to corporate accounts to find password reuse, and mapping an organization's privileged users.\n\nThis is also the **aggregation** problem from privacy: combining non-sensitive data can create sensitive information, so de-identified data sets can be **re-identified**.\n\n**Defenses:**\n- **Data minimization:** publish and retain less.\n- Strip metadata from images and documents before publishing.\n- Monitor for exposed credentials and force resets.\n- Block password reuse with breached-password checks.\n- Treat combined data sets as higher classification.\n- Apply anonymization techniques that resist linkage.\n- Correlate your own telemetry faster than attackers can, through SIEM correlation rules.",
+      "terms": [
+        {
+          "t": "Data correlation",
+          "d": "Linking related data points from multiple sources to reveal relationships."
+        },
+        {
+          "t": "Aggregation",
+          "d": "Combining low-sensitivity data to produce higher-sensitivity information."
+        },
+        {
+          "t": "Re-identification",
+          "d": "Linking supposedly anonymous records back to real individuals."
+        }
+      ],
+      "trap": "When a question says each data item was harmless but the combined profile was damaging, the concept is aggregation or correlation, and the control is data minimization.",
+      "example": "An attacker's AI links an engineer's public code commits, conference talk and a breached personal password, then tries password variants against the corporate VPN. Breached-password screening blocks them.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Breach dumps",
+          "Social profiles",
+          "Metadata",
+          "AI correlation",
+          "Target dossier"
+        ]
+      }
+    },
+    {
+      "id": "secai-plus.d3.2.07",
+      "objective": "d3.2",
+      "seq": 7,
+      "title": "Automated attack generation: discovery, payloads and malware",
+      "short": "AI can speed up attack vector discovery (finding exposed, vulnerable services and weak paths), help adapt payloads and help produce malware variants. Exploitation of newly disclosed vulnerabilities happens faster, and variants appear in greater numbers. Defenders respond with faster patching, attack surface management, behavior-based EDR and testing their own exposure first.",
+      "deep": "**Automated attack generation** means using AI to cut the time and skill needed to create attacks. At awareness level, expect the following:\n- **Attack vector discovery:** AI ranks exposed assets, misconfigurations and known vulnerabilities to find the easiest path in. The gap between a vulnerability's public disclosure and its exploitation shrinks.\n- **Payloads:** the part of an attack that does the damage. AI helps adapt payloads to a target environment and produce many variants, which weakens static filters such as WAF signatures.\n- **Malware:** generative AI lowers the skill barrier for writing or modifying malicious code and enables rapid polymorphic variants. Commercial models have safeguards against this, but jailbroken or unrestricted models exist.\n\n**Defensive priorities:**\n- **Shorten patch time:** risk-based patching that prioritizes known-exploited vulnerabilities.\n- **Attack surface management:** know and reduce what is exposed.\n- **Behavior-based detection** (EDR/XDR) rather than signature-only.\n- **Defense in depth:** segmentation, least privilege and application allowlisting limit what any payload can do.\n- **Run authorized testing first:** red teams and AI-assisted pentests find your exposures before attackers do.",
+      "terms": [
+        {
+          "t": "Attack vector",
+          "d": "The path or method an attacker uses to gain access to a target."
+        },
+        {
+          "t": "Payload",
+          "d": "The part of an attack that performs the malicious action once delivered."
+        },
+        {
+          "t": "Attack surface management",
+          "d": "Continuous discovery and reduction of exposed assets and weaknesses."
+        }
+      ],
+      "trap": "Expect the defensive answer: faster, risk-based patching and behavior-based detection. Static signatures alone are the trap when AI produces many variants.",
+      "example": "After a critical flaw in an edge device is published, a team assumes AI-assisted scanning will find it within hours. It applies the vendor mitigation the same day instead of waiting for the monthly patch cycle.",
+      "diagram": null
+    },
+    {
+      "id": "secai-plus.d3.2.08",
+      "objective": "d3.2",
+      "seq": 8,
+      "title": "Automated attack generation: honeypots and DDoS",
+      "short": "Honeypots are decoys. AI lets defenders build convincing, adaptive honeypots, while attackers use AI to spot decoys or to stand up fake services that lure victims. In DDoS, AI can coordinate botnets and adapt traffic to look human. Defenders use AI-based traffic analysis, cloud scrubbing, rate limiting and autoscaling.",
+      "deep": "**Honeypots** are decoy systems or data, such as fake servers, credentials or files, that exist only to be touched by attackers. Any interaction is suspicious, which makes them high-fidelity alerts.\n- **Defensive AI use:** generative AI creates realistic decoy content and responsive fake services that keep attackers engaged longer while defenders gather intelligence about their tools and techniques.\n- **Attacker AI use:** AI can help attackers recognize decoys by spotting unrealistic artifacts. Attackers can also deploy their own malicious lookalike services, such as fake AI tools, download sites or MCP servers, to trap victims. So decoys must be realistic, and teams should verify the sources of tools they install.\n\n**Distributed denial of service (DDoS)** floods a target from many sources. AI can coordinate botnets, pick the most effective attack timing and vectors, and shape traffic to resemble legitimate users, which defeats simple threshold rules. Application-layer floods that mimic real browsing are hardest to filter. AI-hosted services face **model denial of service** from expensive prompts.\n\n**DDoS defenses:** ML-based traffic baselining, CDN or cloud **scrubbing** services, rate limiting, bot management with behavioral challenges, autoscaling with cost alerts, and a tested DDoS response runbook.",
+      "terms": [
+        {
+          "t": "Honeypot",
+          "d": "Decoy system or data whose only purpose is to attract and detect attackers."
+        },
+        {
+          "t": "Honeytoken",
+          "d": "Decoy credential, record or file that alerts when used."
+        },
+        {
+          "t": "DDoS",
+          "d": "Distributed denial of service: overwhelming a target with traffic from many sources."
+        },
+        {
+          "t": "Scrubbing service",
+          "d": "Provider service that filters malicious traffic before it reaches the target."
+        }
+      ],
+      "trap": "Honeypots are mainly a detection and intelligence control, not a preventive one. For adaptive, human-like DDoS traffic, choose behavioral/ML traffic analysis with scrubbing over static IP blocklists.",
+      "example": "A retailer's bot-management service sees a flood of requests with realistic browser headers and spacing. Behavioral scoring and the CDN's scrubbing absorb the attack, where an IP blocklist would have failed.",
+      "diagram": null
+    }
+  ],
+  "questions": [
+    {
+      "id": "secai-plus.d3.q023",
+      "lesson": "secai-plus.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Employees share a fake news clip about their company believing it is true. Which term BEST describes this?",
+      "options": [
+        "Disinformation",
+        "Misinformation",
+        "Impersonation",
+        "Pretexting"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Misinformation is false content spread without intent to deceive, and these employees believe the clip. Disinformation needs deliberate deception, impersonation means pretending to be someone, and pretexting is a social engineering scenario."
+    },
+    {
+      "id": "secai-plus.d3.q024",
+      "lesson": "secai-plus.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A finance clerk receives a video call from someone who looks and sounds exactly like the CFO, requesting an urgent, confidential wire transfer. Which control is MOST effective?",
+      "options": [
+        "Deploy a deepfake detection plug-in on the clerk's laptop only",
+        "Require stronger passwords for the finance team",
+        "Enforce call-back verification to a known number plus dual approval for transfers",
+        "Block all video-conferencing software"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Process controls such as out-of-band verification and dual approval work however convincing the deepfake is. Detection tools can be fooled, passwords don't address the scam, and banning video conferencing disrupts the business without fixing the process."
+    },
+    {
+      "id": "secai-plus.d3.q025",
+      "lesson": "secai-plus.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A help desk receives a voice call from an \"executive\" asking for an urgent MFA reset. The voice may be cloned. Put the steps in order.",
+      "options": [
+        "Pause the request and do not act on the call alone",
+        "Call the executive back on the number held in the directory",
+        "Verify identity using the approved verification procedure",
+        "Perform the reset only if verification succeeds and log the event"
+      ],
+      "explain": "Stop first, then verify out of band using a trusted number and the approved procedure, and act only after verification, logging what was done. This sequence defeats voice cloning because it doesn't trust the inbound channel."
+    },
+    {
+      "id": "secai-plus.d3.q026",
+      "lesson": "secai-plus.d3.2.01",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "A communications team wants to reduce the impact of deepfake disinformation that targets the company's brand. Which measures help? Select TWO.",
+      "options": [
+        "Use content provenance or watermarking on official media",
+        "Prepare a rapid-response plan to publicly rebut false content",
+        "Stop publishing any executive video",
+        "Rely on employees to notice lip-sync errors"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Provenance and watermarking let audiences verify genuine media, and a rebuttal plan limits the spread of fakes. Going silent isn't practical and doesn't stop fakes, and visual cues get less reliable as models improve."
+    },
+    {
+      "id": "secai-plus.d3.q027",
+      "lesson": "secai-plus.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In a generative adversarial network, which component tries to distinguish real samples from synthetic ones?",
+      "options": [
+        "Generator",
+        "Encoder",
+        "Tokenizer",
+        "Discriminator"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The discriminator classifies samples as real or generated, while the generator creates the samples. Encoders and tokenizers belong to other architectures and are not the GAN's judging role."
+    },
+    {
+      "id": "secai-plus.d3.q028",
+      "lesson": "secai-plus.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A company's ML malware classifier is being bypassed by samples that appear tuned to score as benign. Which defensive measure BEST improves the model's robustness?",
+      "options": [
+        "Adversarial training with perturbed and synthetic examples",
+        "Increasing the model's output verbosity",
+        "Publishing the model's decision thresholds",
+        "Removing logging from the classifier"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Adversarial training exposes the model to evasive examples so it learns to resist them. Verbose output and published thresholds help attackers tune their samples, and removing logs reduces visibility."
+    },
+    {
+      "id": "secai-plus.d3.q029",
+      "lesson": "secai-plus.d3.2.02",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about adversarial networks and security, select Yes if true.",
+      "statements": [
+        {
+          "s": "GANs can be used to generate realistic synthetic faces for fake online identities.",
+          "a": true
+        },
+        {
+          "s": "Allowing unlimited, unmonitored queries to a detection model makes it easier for an adversary to tune evasive inputs.",
+          "a": true
+        },
+        {
+          "s": "Adding a single additional ML detector removes the need for any other security layer.",
+          "a": false
+        }
+      ],
+      "explain": "GANs produce realistic synthetic media, and unlimited queries let a detector serve as an oracle, so rate limits and monitoring help. No single detector replaces defense in depth."
+    },
+    {
+      "id": "secai-plus.d3.q030",
+      "lesson": "secai-plus.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which type of reconnaissance gathers information from public sources without interacting with the target's systems?",
+      "options": [
+        "Active reconnaissance",
+        "Credentialed scanning",
+        "Passive reconnaissance",
+        "Fuzzing"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Passive reconnaissance uses public sources (OSINT) with no direct contact. Active reconnaissance and credentialed scanning interact with systems, and fuzzing sends malformed input to applications."
+    },
+    {
+      "id": "secai-plus.d3.q031",
+      "lesson": "secai-plus.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A CISO worries that attackers are using AI to analyze the company's job postings, staff profiles and public repositories. Which action BEST reduces this risk?",
+      "options": [
+        "Add IDS signatures for OSINT tools",
+        "Perform regular OSINT self-assessments and remove unnecessary public detail",
+        "Block search engines at the firewall",
+        "Increase the password length requirement"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Passive AI reconnaissance never touches your network, so the fix is reducing and reviewing your public footprint. IDS signatures can't see it, blocking outbound search engines doesn't stop outsiders, and password length doesn't affect OSINT."
+    },
+    {
+      "id": "secai-plus.d3.q032",
+      "lesson": "secai-plus.d3.2.03",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which controls help defend against AI-accelerated reconnaissance? Select THREE.",
+      "options": [
+        "External attack surface management to find exposed assets",
+        "Secret scanning on public code repositories",
+        "Rate limiting and WAF rules to slow automated enumeration",
+        "Publishing detailed network diagrams for transparency",
+        "Disabling all audit logs"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "EASM finds what attackers can see, secret scanning removes leaked keys, and rate limits and WAF rules slow active probing. Publishing diagrams helps attackers, and disabling logs blinds defenders."
+    },
+    {
+      "id": "secai-plus.d3.q033",
+      "lesson": "secai-plus.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Phishing simulations show staff now click flawless, personalized AI-written lures. Which update to awareness training is MOST appropriate?",
+      "options": [
+        "Teach staff to look mainly for spelling and grammar errors",
+        "Train staff to trust messages that mention real colleagues",
+        "Remove phishing training because AI messages are undetectable",
+        "Focus on suspicious requests, such as urgency, secrecy and credential or payment changes, and on reporting"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "AI removes language errors and adds real context, so training must focus on the request and the reporting path. The grammar cues are outdated, real names prove nothing, and dropping training increases risk."
+    },
+    {
+      "id": "secai-plus.d3.q034",
+      "lesson": "secai-plus.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which authentication control BEST limits the damage when an AI-crafted phishing page captures a user's password and one-time code?",
+      "options": [
+        "Phishing-resistant MFA such as FIDO2 security keys or passkeys",
+        "SMS one-time passwords",
+        "Security questions",
+        "Longer password expiry periods"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "FIDO2 and passkeys are bound to the legitimate site's origin, so credentials relayed through a fake page fail. SMS codes and security questions can be phished or relayed, and expiry periods don't stop real-time theft."
+    },
+    {
+      "id": "secai-plus.d3.q035",
+      "lesson": "secai-plus.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An attacker uses an AI-cloned voice of a manager in a phone call to persuade staff to share information. Which social engineering type is this?",
+      "options": [
+        "Smishing",
+        "Whaling",
+        "Vishing",
+        "Tailgating"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Voice-based social engineering is vishing, and AI voice cloning makes it more convincing. Smishing uses SMS, whaling targets senior executives (the caller here only poses as a manager), and tailgating is physical entry."
+    },
+    {
+      "id": "secai-plus.d3.q036",
+      "lesson": "secai-plus.d3.2.04",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Accounts payable receives an email thread that appears to continue a real conversation with a supplier. It names the correct invoice numbers and contacts and asks for future payments to go to new bank details. The language is flawless and the sender domain differs from the supplier's by one character.",
+      "stem": "Which control would MOST reliably have prevented a fraudulent payment?",
+      "options": [
+        "A keyword filter for the word \"urgent\"",
+        "A policy requiring verification of bank-detail changes through a known supplier contact",
+        "A spelling and grammar checker on inbound mail",
+        "Archiving all supplier emails"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Out-of-band verification of payment changes defeats the scheme however convincing the email is. Keyword and grammar checks fail against fluent AI text, and archiving doesn't prevent the payment. Lookalike-domain detection would also help."
+    },
+    {
+      "id": "secai-plus.d3.q037",
+      "lesson": "secai-plus.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A SOC sees thousands of malicious scripts, each with a unique hash, that all behave the same way when executed. Which detection approach is MOST effective?",
+      "options": [
+        "Adding every new hash to a blocklist",
+        "Behavior-based detection with EDR and sandbox detonation",
+        "Relying on file-name filtering",
+        "Increasing antivirus definition update frequency"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Polymorphic, AI-generated variants defeat hash and name matching, but their behavior stays the same. EDR and sandbox detonation detect what the code does. Hash lists and definition updates always lag behind new variants."
+    },
+    {
+      "id": "secai-plus.d3.q038",
+      "lesson": "secai-plus.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "What is the PRIMARY goal of obfuscation in an attack?",
+      "options": [
+        "To speed up execution of the code",
+        "To encrypt data for ransom",
+        "To disguise malicious content so analysis and detection fail",
+        "To compress files for faster delivery"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Obfuscation hides intent from defenders while keeping function the same. Speed and compression aren't its purpose, and ransom encryption is a different action."
+    },
+    {
+      "id": "secai-plus.d3.q039",
+      "lesson": "secai-plus.d3.2.05",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about AI and obfuscation, select Yes if true.",
+      "statements": [
+        {
+          "s": "An LLM can help analysts explain or de-obfuscate a suspicious script during triage.",
+          "a": true
+        },
+        {
+          "s": "Analysts should run unknown samples on production endpoints to see what they do.",
+          "a": false
+        },
+        {
+          "s": "Runtime script inspection, such as AMSI, can reveal script content after it is decoded.",
+          "a": true
+        }
+      ],
+      "explain": "AI can speed up de-obfuscation, and AMSI-style inspection sees decoded script content. Unknown samples belong in an isolated sandbox, never on production systems."
+    },
+    {
+      "id": "secai-plus.d3.q040",
+      "lesson": "secai-plus.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An attacker's AI combines an engineer's public commit history, conference bio, photo metadata and a breached personal password into a detailed target profile. Which concept does this BEST illustrate?",
+      "options": [
+        "Automated data correlation and aggregation",
+        "Model inversion",
+        "Data augmentation",
+        "Tokenization"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Linking scattered, individually harmless data into a sensitive profile is automated correlation, or aggregation. Model inversion extracts training data from a model, augmentation expands training data, and tokenization substitutes data values."
+    },
+    {
+      "id": "secai-plus.d3.q041",
+      "lesson": "secai-plus.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which controls reduce the effectiveness of AI-driven data correlation against an organization's staff? Select THREE.",
+      "options": [
+        "Strip metadata from published images and documents",
+        "Screen new passwords against known-breached password lists",
+        "Apply data minimization to what is published and retained",
+        "Publish full staff directories with phone numbers",
+        "Reuse the same username format across all public services"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Removing metadata, blocking breached or reused passwords, and minimizing data all deny attackers raw material. Full directories and consistent public usernames make correlation easier."
+    },
+    {
+      "id": "secai-plus.d3.q042",
+      "lesson": "secai-plus.d3.2.06",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A research team released a de-identified data set of customer purchase histories, with names removed. A journalist used AI to match purchase times and store locations with public social media check-ins, then identified dozens of customers.",
+      "stem": "What is the BEST lesson for future releases?",
+      "options": [
+        "Removing names alone is sufficient anonymization",
+        "Only release data in encrypted form to the public",
+        "Treat combined quasi-identifiers as sensitive and use anonymization that resists linkage, or release less detail",
+        "Ban journalists from accessing published data"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Correlation across sources enables re-identification through quasi-identifiers such as time and location, so they need generalization or minimization. Removing names is insufficient, public encrypted data is useless to readers, and restricting journalists doesn't stop other attackers."
+    },
+    {
+      "id": "secai-plus.d3.q043",
+      "lesson": "secai-plus.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Threat reports warn that AI-assisted tooling is shrinking the time between a vulnerability's public disclosure and its exploitation. Which defensive change is MOST appropriate?",
+      "options": [
+        "Move to quarterly patching to reduce change risk",
+        "Prioritize risk-based patching of known-exploited, internet-facing vulnerabilities",
+        "Rely solely on the vendor to notify you of attacks",
+        "Disable vulnerability scanning to avoid alert fatigue"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Faster exploitation calls for faster, risk-prioritized patching of exposed, known-exploited flaws. Quarterly patching widens the window, depending on vendor notices is passive, and turning off scanning removes visibility."
+    },
+    {
+      "id": "secai-plus.d3.q044",
+      "lesson": "secai-plus.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In attack terminology, what is a payload?",
+      "options": [
+        "The vulnerability scanner's report",
+        "The network path used to reach a target",
+        "The firewall rule set",
+        "The part of an attack that performs the malicious action once delivered"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A payload is the component that carries out the harmful action. The path to the target is the attack vector, and reports and firewall rules are defensive artifacts."
+    },
+    {
+      "id": "secai-plus.d3.q045",
+      "lesson": "secai-plus.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Generative AI is lowering the skill needed to produce malware variants. Which defensive measures MOST directly limit the impact? Select TWO.",
+      "options": [
+        "Application allowlisting and least privilege on endpoints",
+        "Behavior-based EDR/XDR detection",
+        "Relying only on static file hashes",
+        "Granting all users local administrator rights for productivity"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Allowlisting and least privilege limit what any code can run or do, and behavior-based EDR catches new variants. Static hashes miss variants, and local admin rights widen the impact."
+    },
+    {
+      "id": "secai-plus.d3.q046",
+      "lesson": "secai-plus.d3.2.07",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A mid-sized company reads that criminals use AI to rank exposed services and misconfigurations across the internet within hours. It has no inventory of its internet-facing assets, and several cloud storage buckets were created by individual teams without review.",
+      "stem": "What should the security team do FIRST?",
+      "options": [
+        "Implement external attack surface management to discover and assess internet-facing assets",
+        "Buy a deepfake detection tool",
+        "Begin an awareness campaign about voice phishing",
+        "Deploy honeypots on every subnet"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "You can't defend assets you don't know about. Discovering and assessing exposed assets is the direct answer to AI-driven attack vector discovery. Deepfake tools and vishing training address other vectors, and honeypots help detection but don't remove exposures."
+    },
+    {
+      "id": "secai-plus.d3.q047",
+      "lesson": "secai-plus.d3.2.08",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Why are honeypot alerts considered high-fidelity?",
+      "options": [
+        "They block all inbound traffic",
+        "Legitimate users have no reason to interact with them, so any interaction is suspicious",
+        "They encrypt attacker traffic",
+        "They replace the need for a SIEM"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Decoys have no business purpose, so any touch signals likely malicious activity. Honeypots don't block or encrypt traffic, and they feed a SIEM rather than replacing it."
+    },
+    {
+      "id": "secai-plus.d3.q048",
+      "lesson": "secai-plus.d3.2.08",
+      "objective": "d3.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A web service is hit by a distributed flood whose requests use realistic browser headers and human-like timing from thousands of residential IP addresses. Which defense is MOST effective?",
+      "options": [
+        "Static blocklist of a few source IP addresses",
+        "Disabling TLS to reduce server load",
+        "Behavioral bot management with ML traffic baselining and a cloud scrubbing service",
+        "Raising the server's log verbosity"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Adaptive, human-like DDoS traffic needs behavioral analysis and upstream scrubbing. Static IP blocks fail against thousands of rotating sources, disabling TLS harms security, and verbose logging adds load without mitigating."
+    },
+    {
+      "id": "secai-plus.d3.q049",
+      "lesson": "secai-plus.d3.2.08",
+      "objective": "d3.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about honeypots, DDoS and AI, select Yes if true.",
+      "statements": [
+        {
+          "s": "Generative AI can help defenders build more realistic decoy content for honeypots.",
+          "a": true
+        },
+        {
+          "s": "A honeypot is primarily a preventive control that stops attacks from reaching production.",
+          "a": false
+        },
+        {
+          "s": "Unusually expensive prompts sent at volume can cause model denial of service against an AI application.",
+          "a": true
+        }
+      ],
+      "explain": "AI improves decoy realism, and costly prompts can exhaust AI resources (model DoS). Honeypots mainly detect and gather intelligence. They don't prevent attacks on production."
+    },
+    {
+      "id": "secai-plus.d3.q050",
+      "lesson": "secai-plus.d3.2.08",
+      "objective": "d3.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Users find a lookalike download site for a popular AI coding assistant that installs a malicious extension. Which control BEST protects the organization?",
+      "options": [
+        "Allow users to install any extension that has good reviews",
+        "Disable endpoint logging",
+        "Rely on users to compare logos",
+        "Allow only approved extensions from verified sources through managed policy"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A managed allowlist of verified, sanctioned extensions blocks malicious lookalikes. Reviews can be faked, logo checks are unreliable, and turning off logging removes detection."
+    }
+  ]
+}

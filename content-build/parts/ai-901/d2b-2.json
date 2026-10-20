@@ -1,0 +1,1061 @@
+{
+  "exam": "ai-901",
+  "domain": "d2",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "ai-901.d2b.q038",
+      "lesson": "ai-901.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In Azure Content Understanding, which component defines the extraction settings, field schema and model deployments that are applied to all incoming content?",
+      "options": [
+        "Analyzer",
+        "Skillset",
+        "Index",
+        "Indexer"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The analyzer is the core building block that combines content extraction settings, the field schema and model deployments. Indexers, indexes and skillsets are Azure AI Search components that can consume extracted content but don't define extraction."
+    },
+    {
+      "id": "ai-901.d2b.q039",
+      "lesson": "ai-901.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Azure resource must you create before you can use Azure Content Understanding in Foundry Tools?",
+      "options": [
+        "An Azure Speech resource",
+        "A Microsoft Foundry resource",
+        "An Azure Machine Learning workspace",
+        "An Azure AI Search service"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Content Understanding is a Foundry Tool and runs on a Microsoft Foundry resource. AI Search can consume its output but isn't required. Azure Machine Learning workspaces and standalone Speech resources aren't prerequisites."
+    },
+    {
+      "id": "ai-901.d2b.q040",
+      "lesson": "ai-901.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A logistics company receives delivery notes as PDFs, phone photos of signed dockets and recorded driver voicemails. It wants one service that applies a schema it defines and returns consistent JSON fields from all three kinds of content.",
+      "stem": "Which service should it use?",
+      "options": [
+        "Azure Speech in Foundry Tools speech-to-text",
+        "Azure Language in Foundry Tools named entity recognition",
+        "Azure Content Understanding in Foundry Tools",
+        "Azure AI Search with a vector index"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Content Understanding applies a user-defined schema across documents, images, audio and video and returns structured output. Azure Language NER works only on text, Speech transcribes audio without schema fields, and AI Search indexes content rather than extracting it."
+    },
+    {
+      "id": "ai-901.d2b.q041",
+      "lesson": "ai-901.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO output formats does Content Understanding return? Select TWO.",
+      "options": [
+        "Markdown text suitable for search and retrieval",
+        "An SSML document",
+        "A Power BI report",
+        "JSON fields that match your schema",
+        "A trained ONNX model file"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "Results include structured JSON for automation and Markdown for search and RAG scenarios. Content Understanding doesn't export model files or Power BI reports, and SSML is a markup language for speech synthesis."
+    },
+    {
+      "id": "ai-901.d2b.q042",
+      "lesson": "ai-901.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Content Understanding, select Yes if true.",
+      "statements": [
+        {
+          "s": "Analyzers can be prebuilt for common scenarios or custom.",
+          "a": true
+        },
+        {
+          "s": "A schema can map \"Invoice No.\" and \"Invoice #\" to the same InvoiceNumber field because it is applied semantically.",
+          "a": true
+        },
+        {
+          "s": "Content Understanding works only with scanned documents, not audio or video.",
+          "a": false
+        }
+      ],
+      "explain": "There are prebuilt and custom analyzers. Schemas are applied by meaning, so different labels can fill one field. The service also handles images, audio and video."
+    },
+    {
+      "id": "ai-901.d2b.q043",
+      "lesson": "ai-901.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A custom Content Understanding analyzer that uses a field schema needs model deployments. Which two kinds of models do you supply?",
+      "options": [
+        "An image generation model and a video generation model",
+        "A custom vision classifier and an object detection model",
+        "A speech-to-text model and a text-to-speech model",
+        "A generative completion model and a text-embedding model"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Analyzers reference a completion model, such as a GPT deployment, for field extraction and a text-embedding model. Speech, image or video generation models and custom vision models aren't the deployments that analyzers use."
+    },
+    {
+      "id": "ai-901.d2b.q044",
+      "lesson": "ai-901.d2.4.01",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Why does plain OCR alone fall short of what an invoice-processing workflow needs, compared with Content Understanding?",
+      "options": [
+        "OCR reads the text but doesn't understand which value is the invoice total or vendor",
+        "OCR can't read printed text in PDF files",
+        "OCR requires a custom-trained model for every invoice layout",
+        "OCR always returns output as audio"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "OCR turns pixels into text but doesn't know what each value means. Content Understanding adds schema-based, semantic field extraction on top. OCR does read printed PDFs, returns text rather than audio, and doesn't need per-layout training."
+    },
+    {
+      "id": "ai-901.d2b.q045",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You need only basic OCR from scanned pages: words, paragraphs and barcodes, with no table or section layout. Which prebuilt analyzer fits?",
+      "options": [
+        "prebuilt-invoice",
+        "prebuilt-read",
+        "prebuilt-documentSearch",
+        "prebuilt-layout"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "prebuilt-read does basic OCR without layout analysis. prebuilt-layout adds tables, sections and figures, prebuilt-documentSearch adds RAG-oriented summaries and chunks, and prebuilt-invoice extracts invoice fields."
+    },
+    {
+      "id": "ai-901.d2b.q046",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "You are ingesting technical manuals into a retrieval-augmented generation (RAG) solution. You want layout-aware Markdown, descriptions of figures, a summary and chunks ready for vector indexing. Which analyzer should you use?",
+      "options": [
+        "prebuilt-read",
+        "prebuilt-documentFields",
+        "prebuilt-documentSearch",
+        "prebuilt-contract"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "prebuilt-documentSearch is recommended for RAG ingestion: it outputs Markdown with figure descriptions, a summary and chunks for embedding. prebuilt-read is plain OCR, prebuilt-contract targets agreements, and prebuilt-documentFields extracts key-value pairs."
+    },
+    {
+      "id": "ai-901.d2b.q047",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A hotel check-in kiosk scans passports and driver licences. Which prebuilt analyzer is designed for this?",
+      "options": [
+        "prebuilt-layout",
+        "prebuilt-receipt",
+        "prebuilt-imageSearch",
+        "prebuilt-idDocument"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "prebuilt-idDocument extracts fields from passports, driver licences and other identity documents. prebuilt-receipt handles sales receipts, prebuilt-imageSearch describes general images, and prebuilt-layout returns structure without identity fields."
+    },
+    {
+      "id": "ai-901.d2b.q048",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A field must return the due date exactly as it is printed on each invoice. Which generation method should the field use?",
+      "options": [
+        "extract",
+        "generate",
+        "classify",
+        "summarize"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "extract returns a value as it appears in the document. generate produces a value by reasoning, classify picks from a category list, and summarize isn't a field method in Content Understanding."
+    },
+    {
+      "id": "ai-901.d2b.q049",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You add a DocumentType field that must always be one of invoice, receipt, contract or other. Which method and property should you use?",
+      "options": [
+        "The extract method with a description listing the values",
+        "The classify method with an enum list of the allowed values",
+        "The generate method with type set to boolean",
+        "The extract method with type set to array"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "classify assigns content to a predefined set of categories given in enum. extract copies text that appears in the document, a boolean can't hold four categories, and an array holds a list of values rather than one category."
+    },
+    {
+      "id": "ai-901.d2b.q050",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO results does the estimateFieldSourceAndConfidence setting add to fields extracted from documents? Select TWO.",
+      "options": [
+        "A confidence score between 0 and 1",
+        "Grounding that shows where in the source the value came from",
+        "A generated image of the page region",
+        "A translation of each value into English",
+        "Sentiment for each field"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "The setting adds a confidence score and grounding (the source region) for each field. It doesn't translate values, render images or score sentiment."
+    },
+    {
+      "id": "ai-901.d2b.q051",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An accounts payable team processes 20,000 invoices a month. It wants invoices with reliable data posted automatically, while doubtful values go to a clerk. It also wants clerks to see exactly where on the page each value was read.",
+      "stem": "Which design meets these goals?",
+      "options": [
+        "Use the generate method for all fields so the model fills any missing values",
+        "Use prebuilt-read and have clerks retype every value",
+        "Enable confidence and grounding, auto-post fields above a threshold, and route low-confidence fields to review with their source location",
+        "Use prebuilt-imageSearch to describe each invoice in one paragraph"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Confidence scores enable straight-through processing for reliable values, and grounding shows reviewers the source region. prebuilt-read gives text only, generate could invent values rather than read them, and imageSearch produces descriptions instead of fields."
+    },
+    {
+      "id": "ai-901.d2b.q052",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An invoice has a variable number of line items, each with Description, Quantity and Amount. How should you model this in the field schema?",
+      "options": [
+        "A classify field with an enum of possible item names",
+        "A boolean field named HasLineItems",
+        "Three separate string fields named Description, Quantity and Amount",
+        "An array field whose items are objects with Description, Quantity and Amount properties"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "A table (array of objects) handles a variable number of items with fixed subfields. Three plain fields can hold only one item, a boolean only records presence, and classify picks one category instead of returning rows."
+    },
+    {
+      "id": "ai-901.d2b.q053",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about document analyzers, select Yes if true.",
+      "statements": [
+        {
+          "s": "prebuilt-layout returns tables and sections in addition to text.",
+          "a": true
+        },
+        {
+          "s": "The extract method is supported for documents.",
+          "a": true
+        },
+        {
+          "s": "prebuilt-read requires a deployed GPT model to run.",
+          "a": false
+        }
+      ],
+      "explain": "prebuilt-layout adds structure such as tables and sections. Document fields can use extract. The content extraction analyzers prebuilt-read and prebuilt-layout don't need a language or embedding model."
+    },
+    {
+      "id": "ai-901.d2b.q054",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE are field generation methods in an Azure Content Understanding field schema? Select THREE.",
+      "options": [
+        "classify",
+        "detect",
+        "translate",
+        "extract",
+        "generate"
+      ],
+      "answer": [
+        0,
+        3,
+        4
+      ],
+      "explain": "The three methods are extract (copy as shown), generate (infer or summarise) and classify (choose from categories). translate and detect aren't schema methods."
+    },
+    {
+      "id": "ai-901.d2b.q055",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A bank receives a mix of credit memos, invoices, receipts and purchase orders in a single upload queue. It wants each file identified by type and processed by the right procurement analyzer, without writing its own routing code.",
+      "stem": "Which analyzer should it call?",
+      "options": [
+        "prebuilt-procurement",
+        "prebuilt-invoice",
+        "prebuilt-documentFieldSchema",
+        "prebuilt-layout"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "prebuilt-procurement is a composed analyzer that classifies procurement documents and routes each to the matching analyzer. prebuilt-invoice handles invoices only, prebuilt-documentFieldSchema proposes a schema for a new document type, and prebuilt-layout extracts structure without fields."
+    },
+    {
+      "id": "ai-901.d2b.q056",
+      "lesson": "ai-901.d2.4.02",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the stages of a Content Understanding document analysis in order.",
+      "options": [
+        "Content extraction (OCR and layout)",
+        "Field extraction using the schema and generative model",
+        "Contextualization (normalize values, compute confidence and grounding)",
+        "Structured output returned as JSON and Markdown"
+      ],
+      "explain": "The service first extracts text and layout, then fills the schema fields, then normalises results and computes confidence and grounding, and finally returns structured output."
+    },
+    {
+      "id": "ai-901.d2b.q057",
+      "lesson": "ai-901.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A factory wants to flag photos of parts that show scratches, cracks or misalignment, and return a DefectType for each image. Which approach fits Content Understanding?",
+      "options": [
+        "prebuilt-audioSearch with the photos converted to audio",
+        "An image analyzer with a DefectType field that uses classify and an enum of defect types",
+        "prebuilt-read to OCR each photo",
+        "A document analyzer with a DefectType field that uses extract"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Image analyzers support generate and classify, and quality control for defects is a listed image scenario. extract is a document-only method, OCR finds text rather than defects, and audio analyzers don't process images."
+    },
+    {
+      "id": "ai-901.d2b.q058",
+      "lesson": "ai-901.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Staff photograph paper receipts with their phones and upload JPG files. The finance team wants MerchantName, Date and Total read accurately from the printed text.",
+      "stem": "Which Content Understanding approach is most appropriate?",
+      "options": [
+        "Use prebuilt-videoSearch with each photo as one frame",
+        "Use prebuilt-imageSearch and parse its one-paragraph description",
+        "Send the JPGs to a document analyzer such as prebuilt-receipt",
+        "Build a custom analyzer based on prebuilt-image with generate fields"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Image analyzers aren't optimised for text-based analysis, so a photographed receipt belongs with a document analyzer, which accepts JPG files. prebuilt-image and prebuilt-imageSearch target visual content, and a video analyzer is the wrong modality."
+    },
+    {
+      "id": "ai-901.d2b.q059",
+      "lesson": "ai-901.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which prebuilt analyzer writes a one-paragraph description of an image and extracts visual content so it can be searched?",
+      "options": [
+        "prebuilt-layout",
+        "prebuilt-image",
+        "prebuilt-documentSearch",
+        "prebuilt-imageSearch"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "prebuilt-imageSearch is the RAG analyzer for images. prebuilt-image is the base analyzer for building your own image analyzers, prebuilt-layout analyses document structure, and prebuilt-documentSearch is the RAG analyzer for documents."
+    },
+    {
+      "id": "ai-901.d2b.q060",
+      "lesson": "ai-901.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about image analysis in Content Understanding, select Yes if true.",
+      "statements": [
+        {
+          "s": "Image analyzer fields can use the generate and classify methods.",
+          "a": true
+        },
+        {
+          "s": "Image analyzer fields can use the extract method.",
+          "a": false
+        },
+        {
+          "s": "Counting products on a retail shelf is a suitable image analyzer scenario.",
+          "a": true
+        }
+      ],
+      "explain": "Images support generate and classify; extract is supported only for documents. Shelf analysis and inventory counting is one of the listed image scenarios."
+    },
+    {
+      "id": "ai-901.d2b.q061",
+      "lesson": "ai-901.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A retailer already uses a vision-enabled chat app where staff ask ad-hoc questions about shelf photos. It now wants every one of 5,000 nightly shelf images to produce the same fields (ProductCount, EmptySlots, ShelfCategory) for a dashboard.",
+      "stem": "Which change best meets the new requirement?",
+      "options": [
+        "Create a Content Understanding image analyzer with those fields and run every image through it",
+        "Use Azure Speech to read the chat answers aloud",
+        "Ask staff to type the same question into the chat app for each image",
+        "Deploy GPT-image-1.5 to redraw each shelf"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "An analyzer applies one schema consistently and returns structured JSON, which suits batch dashboard data. Manual chat prompts are slow and give free-form answers, image generation doesn't extract data, and speech output doesn't help."
+    },
+    {
+      "id": "ai-901.d2b.q062",
+      "lesson": "ai-901.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which analyzer should you specify as the baseAnalyzerId when building a custom analyzer for photos?",
+      "options": [
+        "prebuilt-document",
+        "prebuilt-image",
+        "prebuilt-read",
+        "prebuilt-imageSearch"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "prebuilt-image is the base analyzer for image processing. Only the four base analyzers (prebuilt-document, -image, -audio, -video) can be parents, and prebuilt-document is for documents. prebuilt-imageSearch and prebuilt-read can't be used as a base."
+    },
+    {
+      "id": "ai-901.d2b.q063",
+      "lesson": "ai-901.d2.4.03",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO scenarios are good fits for a Content Understanding image analyzer? Select TWO.",
+      "options": [
+        "Reading trends from photos of business performance charts",
+        "Detecting defects such as cracks in product photos",
+        "Generating new marketing images from text",
+        "Extracting every line of text from a scanned 40-page contract",
+        "Transcribing a recorded sales call"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Chart analysis and defect detection are listed image scenarios. A text-heavy contract belongs with a document analyzer, transcription is an audio job, and generating images is a GPT-image task."
+    },
+    {
+      "id": "ai-901.d2b.q064",
+      "lesson": "ai-901.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which audio analysis feature attributes parts of a transcript to individual speakers?",
+      "options": [
+        "Segmentation",
+        "Grounding",
+        "Diarization",
+        "Tokenization"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Diarization separates speakers and labels who said what. Segmentation splits content into sections, grounding links values to source locations, and tokenization splits text into tokens for a model."
+    },
+    {
+      "id": "ai-901.d2b.q065",
+      "lesson": "ai-901.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A contact centre needs transcripts that identify the agent and the customer, plus a call summary, sentiment and call categories. Which prebuilt analyzer should it use?",
+      "options": [
+        "prebuilt-audioSearch",
+        "prebuilt-documentSearch",
+        "prebuilt-videoSearch",
+        "prebuilt-callCenter"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "prebuilt-callCenter performs post-call analysis with speaker role detection, summary, sentiment and categories. prebuilt-audioSearch gives a transcript and summary with generic speaker labels, and the video and document analyzers handle other modalities."
+    },
+    {
+      "id": "ai-901.d2b.q066",
+      "lesson": "ai-901.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In which format does Content Understanding return audio transcripts?",
+      "options": [
+        "WEBVTT",
+        "SSML",
+        "CSV",
+        "SRT only"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Audio and video transcripts are returned in WEBVTT format, with optional timestamps. SSML is input markup for speech synthesis, and CSV and SRT aren't the transcript formats the service uses."
+    },
+    {
+      "id": "ai-901.d2b.q067",
+      "lesson": "ai-901.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about audio analysis in Content Understanding, select Yes if true.",
+      "statements": [
+        {
+          "s": "If you don't specify locales, multilingual transcription is used.",
+          "a": true
+        },
+        {
+          "s": "Audio fields can use the extract method to copy exact phrases.",
+          "a": false
+        },
+        {
+          "s": "prebuilt-audioSearch labels speakers generically, for example Speaker 1.",
+          "a": true
+        }
+      ],
+      "explain": "Leaving locales unset (or set to auto) turns on multilingual transcription. Audio fields use generate and classify; extract is document-only. prebuilt-audioSearch uses generic speaker labels, while prebuilt-callCenter detects agent and customer roles."
+    },
+    {
+      "id": "ai-901.d2b.q068",
+      "lesson": "ai-901.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A sales team gets voicemails such as: \"Hi, this is Ava from Contoso. We can meet your price. Call me on 555-0142 or email ava@contoso.com.\" It wants each voicemail turned into Caller, MessageSummary, RequestedActions and CallbackNumber values in its CRM.",
+      "stem": "What should the team build?",
+      "options": [
+        "A custom document analyzer with extract fields, uploading the WAV files as documents",
+        "A custom audio analyzer based on prebuilt-audio with generate fields for each value",
+        "An Azure Language sentiment analysis call on the audio file",
+        "A GPT-image-1 call that renders the voicemail as an image"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "A custom audio analyzer transcribes the call and uses generate fields to fill the schema. Documents and the extract method don't apply to WAV audio, Azure Language analyses text rather than audio files, and image generation is irrelevant."
+    },
+    {
+      "id": "ai-901.d2b.q069",
+      "lesson": "ai-901.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO capabilities are part of Content Understanding audio content extraction? Select TWO.",
+      "options": [
+        "Speech synthesis with neural voices",
+        "Real-time voice translation for live calls",
+        "Speaker role detection for agent and customer",
+        "Speech transcription",
+        "Transcription of background music lyrics and sound effects"
+      ],
+      "answer": [
+        2,
+        3
+      ],
+      "explain": "Audio extraction transcribes speech and, for contact-centre data, detects agent and customer roles. Speech synthesis and real-time translation are Azure Speech features, and only spoken words are transcribed, not music or effects."
+    },
+    {
+      "id": "ai-901.d2b.q070",
+      "lesson": "ai-901.d2.4.04",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "You know every call in a dataset is in French (fr-FR). Why is it better to set locales explicitly than to rely on multilingual transcription?",
+      "options": [
+        "Multilingual transcription can't produce WEBVTT output",
+        "Setting locales turns off diarization, which speeds things up",
+        "Multilingual mode may map unsupported or unclear speech to the closest supported locale, which can be wrong",
+        "Content Understanding transcribes only English unless locales is set"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Microsoft advises configuring locales when you can, because multilingual mode can fall back to the closest supported locale with poor results. Multilingual output is still WEBVTT, other languages are supported, and setting locales doesn't disable diarization."
+    },
+    {
+      "id": "ai-901.d2b.q071",
+      "lesson": "ai-901.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which analyzer setting makes Content Understanding treat the whole video as one segment?",
+      "options": [
+        "estimateFieldSourceAndConfidence set to true",
+        "returnDetails set to false",
+        "enableSegment set to true",
+        "enableSegment set to false"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "enableSegment false keeps the entire video as one segment, which suits brand-safety checks or full summaries. Setting it to true enables custom segmentation. returnDetails controls extra detail such as timestamps, and the confidence setting applies to document fields."
+    },
+    {
+      "id": "ai-901.d2b.q072",
+      "lesson": "ai-901.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": null,
+      "stem": "A news broadcaster wants a separate summary for each story in a 30-minute bulletin and wants adverts ignored. How should the analyzer be configured?",
+      "options": [
+        "Set enableSegment to true and describe per-story segmentation rules in contentCategories",
+        "Raise the frame sampling rate to 30 frames per second",
+        "Set enableSegment to false and add a Summary field",
+        "Use prebuilt-audioSearch on the video's soundtrack only"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Custom segmentation with a natural-language contentCategories description splits the video by story, and fields are filled per segment. A single segment gives one summary, audio-only analysis loses visual cues, and the sampling rate isn't configurable this way."
+    },
+    {
+      "id": "ai-901.d2b.q073",
+      "lesson": "ai-901.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A sports analytics firm runs Content Understanding on match footage. Fields describing team formations are accurate, but a referee's split-second hand signal and small jersey numbers on distant players are often missed.",
+      "stem": "What is the most likely explanation?",
+      "options": [
+        "The analyzer is using the extract method, which ignores visual content",
+        "Video is sampled at about one frame per second and frames are scaled to 512x512 pixels",
+        "The video exceeds the 4 GB maximum, so frames are dropped at random",
+        "Diarization is off, so on-screen events aren't recorded"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Roughly 1 FPS sampling can miss brief events, and 512x512 frames lose small or distant details. extract isn't a video method, diarization concerns speakers rather than visuals, and an oversized file would be rejected rather than partly sampled."
+    },
+    {
+      "id": "ai-901.d2b.q074",
+      "lesson": "ai-901.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE items does the content extraction stage produce for video? Select THREE.",
+      "options": [
+        "Shot boundaries",
+        "A remixed version of the video",
+        "A generated soundtrack",
+        "A speech transcript",
+        "Key frames"
+      ],
+      "answer": [
+        0,
+        3,
+        4
+      ],
+      "explain": "Video content extraction yields a transcript, key frames and camera shot boundaries. Generating soundtracks and remixing video are Sora generation features, not extraction."
+    },
+    {
+      "id": "ai-901.d2b.q075",
+      "lesson": "ai-901.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about video analysis in Content Understanding, select Yes if true.",
+      "statements": [
+        {
+          "s": "Music and sound effects in a video are transcribed alongside speech.",
+          "a": false
+        },
+        {
+          "s": "prebuilt-videoSearch returns per-segment descriptions and transcripts.",
+          "a": true
+        },
+        {
+          "s": "Segmentation consumes generative model tokens even if no fields are defined.",
+          "a": true
+        }
+      ],
+      "explain": "Only spoken words are transcribed. prebuilt-videoSearch segments video and describes people, places and actions per segment with transcripts. Segmentation uses the generative model, so it uses tokens even without fields."
+    },
+    {
+      "id": "ai-901.d2b.q076",
+      "lesson": "ai-901.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A media company wants to make its video archive searchable by scene, with descriptions of people, places and actions. Which prebuilt analyzer fits best?",
+      "options": [
+        "prebuilt-callCenter",
+        "prebuilt-imageSearch",
+        "prebuilt-videoSearch",
+        "prebuilt-layout"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "prebuilt-videoSearch segments video and returns per-segment descriptions and transcripts for search. prebuilt-callCenter analyses calls, prebuilt-imageSearch handles single images, and prebuilt-layout analyses documents."
+    },
+    {
+      "id": "ai-901.d2b.q077",
+      "lesson": "ai-901.d2.4.05",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the stages of Content Understanding video analysis in order.",
+      "options": [
+        "Extract the transcript, key frames and shot boundaries",
+        "Split the video into segments (whole video or custom categories)",
+        "Generate the schema fields for each segment",
+        "Return JSON and Markdown results"
+      ],
+      "explain": "Content extraction comes first and gives the generative model its context. The model then segments the video, fills the fields per segment, and the service returns the structured results."
+    },
+    {
+      "id": "ai-901.d2b.q078",
+      "lesson": "ai-901.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Python package provides the ContentUnderstandingClient class?",
+      "options": [
+        "azure-ai-projects",
+        "azure-cognitiveservices-speech",
+        "azure-ai-textanalytics",
+        "azure-ai-contentunderstanding"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "azure-ai-contentunderstanding contains ContentUnderstandingClient. azure-ai-textanalytics is for Azure Language, azure-cognitiveservices-speech is the Speech SDK, and azure-ai-projects is the Foundry projects client library."
+    },
+    {
+      "id": "ai-901.d2b.q079",
+      "lesson": "ai-901.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code that starts an invoice analysis with the Content Understanding Python SDK.",
+      "code": "client = ContentUnderstandingClient(endpoint=endpoint, credential=AzureKeyCredential(key))\npoller = client.____(analyzer_id=\"prebuilt-invoice\", inputs=[{\"url\": invoice_url}])\nresult = poller.result()",
+      "options": [
+        "begin_analyze",
+        "analyze_text",
+        "recognize_entities",
+        "create_analyzer"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "begin_analyze starts the long-running analysis and returns a poller. analyze_text and recognize_entities aren't methods of this client (recognize_entities belongs to the Azure Language SDK), and creating an analyzer defines one rather than analysing content."
+    },
+    {
+      "id": "ai-901.d2b.q080",
+      "lesson": "ai-901.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the loop that prints the extracted fields for each analysed item.",
+      "code": "result = poller.result()\nfor content in result.____:\n    print(content.markdown)\n    print(content.fields)",
+      "options": [
+        "output",
+        "contents",
+        "documents",
+        "choices"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The analysis result holds a contents list, and each item has markdown and fields. documents isn't the property used here, choices belongs to Chat Completions, and output belongs to the Responses API."
+    },
+    {
+      "id": "ai-901.d2b.q081",
+      "lesson": "ai-901.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A developer's script calls client.begin_analyze(...) and immediately tries to read fields from the object it returns, but gets no field values. What is the fix?",
+      "options": [
+        "Change the analyzer to prebuilt-read",
+        "Switch the credential from AzureKeyCredential to an Entra ID credential",
+        "Call result() on the returned poller to wait for the operation to complete",
+        "Set detail to high in the inputs"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "begin_analyze returns a poller for a long-running operation; poller.result() waits and returns the analysis result. The credential type, using an OCR-only analyzer or a vision detail setting won't make the results available."
+    },
+    {
+      "id": "ai-901.d2b.q082",
+      "lesson": "ai-901.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about a Content Understanding Python client, select Yes if true.",
+      "statements": [
+        {
+          "s": "The same client code can analyse audio by changing analyzer_id to prebuilt-audioSearch.",
+          "a": true
+        },
+        {
+          "s": "The client can authenticate with Microsoft Entra ID instead of an API key.",
+          "a": true
+        },
+        {
+          "s": "Analysis requests always complete synchronously, so no polling is involved.",
+          "a": false
+        }
+      ],
+      "explain": "The analyze call is the same for any modality; only the analyzer and input change. Entra ID credentials from azure-identity are supported. Analysis is a long-running operation; the SDK polls for you."
+    },
+    {
+      "id": "ai-901.d2b.q083",
+      "lesson": "ai-901.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An expenses app uses Content Understanding to read receipts. Finance requires that totals the service is unsure about are never posted automatically, but it doesn't want every receipt checked by hand.",
+      "stem": "What should the app do with each extracted Total field?",
+      "options": [
+        "Use the generate method so the model always produces a value",
+        "Re-run the analysis three times and post the most common value",
+        "Ignore the confidence value and compare only against the Markdown output",
+        "Check its confidence value and send it to human review when it falls below a chosen threshold"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Each field carries a confidence score from 0 to 1, and thresholds let reliable values flow straight through while doubtful ones are reviewed. Repeated runs don't measure reliability, generate could invent a value, and the Markdown gives no reliability measure."
+    },
+    {
+      "id": "ai-901.d2b.q084",
+      "lesson": "ai-901.d2.4.06",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps for building a lightweight Content Understanding Python client in order.",
+      "options": [
+        "Install the azure-ai-contentunderstanding package",
+        "Create a ContentUnderstandingClient with the Foundry endpoint and a credential",
+        "Call begin_analyze with an analyzer id and input URL",
+        "Call result() on the poller",
+        "Read markdown and fields from result.contents"
+      ],
+      "explain": "Install the SDK, create the client, start the long-running analysis, wait for it to finish, then read the structured output."
+    },
+    {
+      "id": "ai-901.d2b.q085",
+      "lesson": "ai-901.d2.4.07",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You POST a document to {endpoint}/contentunderstanding/analyzers/prebuilt-invoice:analyze. The response is 202 Accepted. How do you get the results?",
+      "options": [
+        "Poll the URL in the Operation-Location response header until status is Succeeded",
+        "Read the fields from the body of the 202 response",
+        "Wait for the results to be emailed to the resource owner",
+        "Call the analyze endpoint again with the same body"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Analysis is asynchronous: the 202 response carries an Operation-Location URL under analyzerResults that you GET until status is Succeeded. The 202 body doesn't contain the fields, resubmitting starts a new job, and results aren't emailed."
+    },
+    {
+      "id": "ai-901.d2b.q086",
+      "lesson": "ai-901.d2.4.07",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Which HTTP header carries the resource key in a Content Understanding REST request?",
+      "options": [
+        "Operation-Location",
+        "Ocp-Apim-Subscription-Key",
+        "x-ms-diagnostics",
+        "Content-Type"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Ocp-Apim-Subscription-Key holds the key. Operation-Location is a response header with the polling URL, x-ms-diagnostics asks for diagnostic detail, and Content-Type describes the body format."
+    },
+    {
+      "id": "ai-901.d2b.q087",
+      "lesson": "ai-901.d2.4.07",
+      "objective": "d2.4",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A developer defines a custom analyzer for warranty claim forms and sends a PUT request with baseAnalyzerId set to \"prebuilt-invoice\". The request is rejected.",
+      "stem": "What should the baseAnalyzerId be?",
+      "options": [
+        "prebuilt-procurement",
+        "prebuilt-layout",
+        "prebuilt-document",
+        "prebuilt-documentSearch"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Only the four base analyzers (prebuilt-document, prebuilt-image, prebuilt-audio and prebuilt-video) can be parents of a custom analyzer, and prebuilt-document fits a form. prebuilt-layout, prebuilt-documentSearch and prebuilt-procurement are prebuilt analyzers but not base analyzers."
+    },
+    {
+      "id": "ai-901.d2b.q088",
+      "lesson": "ai-901.d2.4.07",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE properties belong in a custom Content Understanding analyzer definition? Select THREE.",
+      "options": [
+        "baseAnalyzerId",
+        "temperature",
+        "fieldSchema",
+        "models",
+        "voiceName"
+      ],
+      "answer": [
+        0,
+        2,
+        3
+      ],
+      "explain": "An analyzer definition names its base analyzer, its fieldSchema and its model deployments (completion and embedding), along with config settings. temperature is a chat model sampling parameter, and voiceName is a speech synthesis setting."
+    },
+    {
+      "id": "ai-901.d2b.q089",
+      "lesson": "ai-901.d2.4.07",
+      "objective": "d2.4",
+      "difficulty": 1,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the REST request that submits a document URL to a prebuilt analyzer.",
+      "code": "POST {endpoint}/contentunderstanding/analyzers/prebuilt-invoice:____?api-version=2025-11-01\nOcp-Apim-Subscription-Key: {key}\nContent-Type: application/json\n\n{\"inputs\": [{\"url\": \"https://example.com/invoice.pdf\"}]}",
+      "options": [
+        "transcribe",
+        "recognize",
+        "predict",
+        "analyze"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The operation is :analyze on the analyzer resource. predict, recognize and transcribe aren't Content Understanding operations."
+    },
+    {
+      "id": "ai-901.d2b.q090",
+      "lesson": "ai-901.d2.4.07",
+      "objective": "d2.4",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about managing Content Understanding analyzers, select Yes if true.",
+      "statements": [
+        {
+          "s": "You create a custom analyzer with an HTTP PUT to /contentunderstanding/analyzers/{analyzerId}.",
+          "a": true
+        },
+        {
+          "s": "Prebuilt analyzer definitions are guaranteed never to change between API versions.",
+          "a": false
+        },
+        {
+          "s": "Content Understanding Studio supports authoring custom analyzers and labeling data.",
+          "a": true
+        }
+      ],
+      "explain": "Custom analyzers are created with PUT. Prebuilt definitions can change across API versions, so for production you can copy one under your own id. Content Understanding Studio supports custom analyzer authoring and data labeling."
+    }
+  ]
+}

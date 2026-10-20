@@ -1,0 +1,740 @@
+{
+  "exam": "ai-901",
+  "domain": "d1",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "ai-901.d1b.q044",
+      "lesson": "ai-901.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Azure Language feature returns the main talking points of a text, such as 'battery life' and 'delivery time'?",
+      "options": [
+        "Key phrase extraction",
+        "Language detection",
+        "Entity linking",
+        "Opinion mining"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Key phrase extraction identifies the main concepts in text. Language detection identifies the language, entity linking connects entities to Wikipedia, and opinion mining attaches sentiment to aspects."
+    },
+    {
+      "id": "ai-901.d1b.q045",
+      "lesson": "ai-901.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "News articles mention 'Amazon', sometimes meaning the company and sometimes the river. You need to resolve which one is meant and return a reference URL for each. Which feature should you use?",
+      "options": [
+        "Named entity recognition",
+        "Entity linking",
+        "Key phrase extraction",
+        "PII detection"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Entity linking disambiguates entities by linking them to a knowledge base (Wikipedia) and returns a URL. NER only categorizes entities, key phrases list topics, and PII detection finds personal data."
+    },
+    {
+      "id": "ai-901.d1b.q046",
+      "lesson": "ai-901.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Before storing chat transcripts for analytics, a bank must replace customer names, phone numbers and card numbers with asterisks. Which Azure Language capability should it use?",
+      "options": [
+        "Named entity recognition",
+        "Text summarization",
+        "PII detection with redaction",
+        "Custom text classification"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "PII detection identifies personal information and returns redacted text. NER categorizes general entities without redaction, summarization shortens text, and classification assigns labels."
+    },
+    {
+      "id": "ai-901.d1b.q047",
+      "lesson": "ai-901.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are categories that prebuilt named entity recognition can assign to entities in text? Select TWO.",
+      "options": [
+        "Person",
+        "Bounding box",
+        "Location",
+        "Neural voice",
+        "Confidence threshold"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Prebuilt NER categorizes entities into types such as Person, Location, Organization and DateTime. Bounding boxes are vision outputs, neural voices are speech, and a confidence threshold is not an entity category."
+    },
+    {
+      "id": "ai-901.d1b.q048",
+      "lesson": "ai-901.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Python code to return the main concepts discussed in each customer comment by using the Azure Language text analytics client.",
+      "code": "documents = [\"The checkout was slow but the support team was friendly.\"]\nresults = client.____(documents)\nfor doc in results:\n    print(doc.key_phrases)",
+      "options": [
+        "recognize_entities",
+        "extract_key_phrases",
+        "analyze_sentiment",
+        "detect_language"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "extract_key_phrases returns results with a key_phrases list. recognize_entities returns entities, analyze_sentiment returns sentiment labels, and detect_language returns the primary language."
+    },
+    {
+      "id": "ai-901.d1b.q049",
+      "lesson": "ai-901.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A pharmaceutical company receives thousands of free-text adverse-event reports. Analysts need medication names, dosages and diagnoses identified and labelled automatically so they can be filtered. No training data is available.",
+      "stem": "Which Azure Language capability best meets the requirement?",
+      "options": [
+        "Key phrase extraction",
+        "Entity linking",
+        "Language detection",
+        "Text Analytics for health"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Text Analytics for health is a prebuilt feature that extracts and labels medical entities such as medications, dosages and diagnoses. Key phrases are untyped, entity linking targets Wikipedia, and language detection only identifies language."
+    },
+    {
+      "id": "ai-901.d1b.q050",
+      "lesson": "ai-901.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A review says: 'The screen is gorgeous, but the battery dies by lunchtime.' Which overall document sentiment label is Azure Language most likely to return?",
+      "options": [
+        "Mixed",
+        "Neutral",
+        "Positive",
+        "Negative"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The review contains clearly positive and clearly negative sentences, so the document-level label is mixed. Neutral means no strong sentiment, which isn't the case here."
+    },
+    {
+      "id": "ai-901.d1b.q051",
+      "lesson": "ai-901.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A hotel chain wants to know not just whether reviews are positive, but specifically how guests feel about aspects such as 'breakfast', 'Wi-Fi' and 'parking'. Which feature should it use?",
+      "options": [
+        "Key phrase extraction",
+        "Opinion mining",
+        "Entity linking",
+        "Extractive summarization"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Opinion mining (aspect-based sentiment) links sentiment to targets such as breakfast or parking. Key phrases list topics without sentiment, entity linking disambiguates names, and summarization shortens text."
+    },
+    {
+      "id": "ai-901.d1b.q052",
+      "lesson": "ai-901.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Python code so that sentiment results include opinions about individual aspects of each review.",
+      "code": "results = client.analyze_sentiment(\n    documents,\n    ____=True\n)",
+      "options": [
+        "include_summaries",
+        "show_stats",
+        "show_opinion_mining",
+        "detect_aspects"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Passing show_opinion_mining=True to analyze_sentiment adds aspect-level opinions (targets and assessments). show_stats returns statistics only; the other parameter names don't exist on this method."
+    },
+    {
+      "id": "ai-901.d1b.q053",
+      "lesson": "ai-901.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Language features, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Extractive summarization creates new sentences that do not appear in the source text.",
+          "a": false
+        },
+        {
+          "s": "Language detection returns the detected language and a confidence score.",
+          "a": true
+        },
+        {
+          "s": "Sentiment analysis returns confidence scores for positive, neutral and negative.",
+          "a": true
+        }
+      ],
+      "explain": "Extractive summarization selects original sentences; abstractive writes new ones. Language detection returns the language, ISO code and confidence. Sentiment analysis includes confidence scores per label."
+    },
+    {
+      "id": "ai-901.d1b.q054",
+      "lesson": "ai-901.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A legal team needs summaries of long contracts. Because the summaries may be quoted in court filings, every sentence in the summary must appear word for word in the original contract.",
+      "stem": "Which approach should the team use?",
+      "options": [
+        "Abstractive summarization",
+        "Opinion mining",
+        "Key phrase extraction",
+        "Extractive summarization"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Extractive summarization returns the most important sentences unchanged, guaranteeing verbatim text. Abstractive summarization rewrites content in new words; key phrases and opinion mining aren't summaries."
+    },
+    {
+      "id": "ai-901.d1b.q055",
+      "lesson": "ai-901.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "A global help desk receives tickets in many languages. Before routing, it wants to know each ticket's language and how upset the customer is. Which TWO Azure Language features should it use? Select TWO.",
+      "options": [
+        "Language detection",
+        "Entity linking",
+        "Sentiment analysis",
+        "Custom neural voice"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Language detection identifies the language for routing, and sentiment analysis measures negativity. Entity linking disambiguates names, and custom neural voice is a speech synthesis feature."
+    },
+    {
+      "id": "ai-901.d1b.q056",
+      "lesson": "ai-901.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A conference wants live on-screen captions while speakers are presenting. Which Azure Speech capability should it use?",
+      "options": [
+        "Batch transcription",
+        "Text to speech",
+        "Real-time speech to text",
+        "Pronunciation assessment"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Real-time speech to text transcribes streaming audio as it is spoken, suitable for live captions. Batch transcription processes stored files asynchronously, text to speech produces audio, and pronunciation assessment scores learners."
+    },
+    {
+      "id": "ai-901.d1b.q057",
+      "lesson": "ai-901.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A manufacturer's maintenance engineers dictate repair notes on a noisy factory floor. The notes contain part codes such as 'XR-4471-B' and in-house terms that the base speech model often transcribes incorrectly.",
+      "stem": "What should you do to improve transcription accuracy?",
+      "options": [
+        "Train a custom speech model by using recorded audio and related text from the factory",
+        "Switch from speech to text to speech translation",
+        "Use SSML to mark up the part codes",
+        "Increase the temperature of the speech model"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Custom speech adapts recognition to your acoustic conditions and vocabulary using your own audio and text data. Speech translation translates rather than improves accuracy, SSML controls synthesis output, and temperature isn't a speech-recognition setting."
+    },
+    {
+      "id": "ai-901.d1b.q058",
+      "lesson": "ai-901.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "An insurer stores 500,000 recorded calls in Azure Blob Storage and wants them all transcribed over the next few days. Which Azure Speech option is designed for this?",
+      "options": [
+        "Real-time transcription from a microphone",
+        "Batch transcription",
+        "Text to speech avatar",
+        "Voice Live"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Batch transcription asynchronously processes large volumes of stored audio via REST. Real-time transcription is for streaming audio, avatar creates video from text, and Voice Live handles live voice conversations."
+    },
+    {
+      "id": "ai-901.d1b.q059",
+      "lesson": "ai-901.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Python code to recognize a single spoken utterance from the default microphone by using the Speech SDK.",
+      "code": "import azure.cognitiveservices.speech as speechsdk\n\nspeech_config = speechsdk.SpeechConfig(subscription=key, region=region)\nrecognizer = speechsdk.____(speech_config=speech_config)\nresult = recognizer.recognize_once_async().get()\nprint(result.text)",
+      "options": [
+        "SpeechSynthesizer",
+        "TranslationRecognizer",
+        "AudioDataStream",
+        "SpeechRecognizer"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "SpeechRecognizer performs speech to text and exposes recognize_once_async. SpeechSynthesizer does text to speech, TranslationRecognizer needs a SpeechTranslationConfig, and AudioDataStream handles audio output data."
+    },
+    {
+      "id": "ai-901.d1b.q060",
+      "lesson": "ai-901.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about speech recognition, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Speech recognition converts spoken audio into text.",
+          "a": true
+        },
+        {
+          "s": "Batch transcription is the best choice for live captions during a video call.",
+          "a": false
+        },
+        {
+          "s": "Azure Speech can identify which language is being spoken in audio.",
+          "a": true
+        }
+      ],
+      "explain": "Speech recognition is speech to text. Batch transcription is asynchronous and unsuitable for live captions. Language identification can detect the spoken language."
+    },
+    {
+      "id": "ai-901.d1b.q061",
+      "lesson": "ai-901.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which markup language do you use with Azure Speech to control the pitch, speaking rate, pauses and pronunciation of synthesized speech?",
+      "options": [
+        "Speech Synthesis Markup Language (SSML)",
+        "JSON schema",
+        "YAML",
+        "Kusto Query Language (KQL)"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "SSML is the XML-based markup for fine-tuning text to speech output. JSON schema, YAML and KQL aren't used to shape synthesized voice characteristics."
+    },
+    {
+      "id": "ai-901.d1b.q062",
+      "lesson": "ai-901.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Python code so the application speaks the text aloud by using a neural voice.",
+      "code": "speech_config.speech_synthesis_voice_name = \"en-US-AvaMultilingualNeural\"\nsynthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)\nresult = synthesizer.____(\"Your table is ready.\").get()",
+      "options": [
+        "recognize_once_async",
+        "speak_text_async",
+        "start_continuous_recognition",
+        "translate_async"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "speak_text_async synthesizes plain text with the configured voice (speak_ssml_async takes SSML). recognize_once_async and start_continuous_recognition are recognizer methods; translate_async isn't a synthesizer method."
+    },
+    {
+      "id": "ai-901.d1b.q063",
+      "lesson": "ai-901.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "During an international video meeting, a Spanish-speaking presenter's speech must be delivered to attendees as spoken English almost immediately. Which capability should you use?",
+      "options": [
+        "Batch transcription",
+        "Text Analytics for health",
+        "Speech translation",
+        "Language detection in Azure Language"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Speech translation provides real-time speech-to-speech or speech-to-text translation. Batch transcription is asynchronous and doesn't translate; the other two analyze written text."
+    },
+    {
+      "id": "ai-901.d1b.q064",
+      "lesson": "ai-901.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A bank wants a phone-based voice assistant that customers can talk to naturally. It must respond with very low latency and combine speech recognition, a generative model and speech synthesis in one real-time, two-way conversation.",
+      "stem": "Which Azure Speech capability is designed for this?",
+      "options": [
+        "Batch transcription",
+        "Pronunciation assessment",
+        "Text to speech avatar",
+        "Voice Live"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Voice Live provides low-latency, real-time voice conversations between people and agents. Batch transcription is offline, pronunciation assessment scores learners, and an avatar produces talking-head video."
+    },
+    {
+      "id": "ai-901.d1b.q065",
+      "lesson": "ai-901.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are capabilities of text to speech in Azure Speech? Select TWO.",
+      "options": [
+        "Prebuilt neural voices",
+        "Custom voice for a brand",
+        "Opinion mining",
+        "Object detection"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Text to speech offers prebuilt neural voices and custom voices unique to a brand. Opinion mining is text analysis, and object detection is computer vision."
+    },
+    {
+      "id": "ai-901.d1b.q066",
+      "lesson": "ai-901.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A warehouse needs to know how many boxes are on each pallet in a photo and where each box is located. Which computer vision task should it use?",
+      "options": [
+        "Object detection",
+        "Image classification",
+        "Image captioning",
+        "Image generation"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Object detection returns each object's label and bounding box, enabling counting and location. Classification labels the whole image, captioning describes it in a sentence, and generation creates new images."
+    },
+    {
+      "id": "ai-901.d1b.q067",
+      "lesson": "ai-901.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which computer vision capability extracts printed and handwritten text from a photo of a whiteboard?",
+      "options": [
+        "Image classification",
+        "Smart crop",
+        "Optical character recognition (OCR)",
+        "People detection"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "OCR (the Read feature) extracts printed and handwritten text with its location. Classification labels images, smart crop finds an area of interest, and people detection locates people."
+    },
+    {
+      "id": "ai-901.d1b.q068",
+      "lesson": "ai-901.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the code so a vision-enabled chat model receives both a question and an image.",
+      "code": "messages = [{\n    \"role\": \"user\",\n    \"content\": [\n        {\"type\": \"text\", \"text\": \"Which items on this shelf are out of stock?\"},\n        {\"type\": \"____\", \"image_url\": {\"url\": shelf_photo_url}}\n    ]\n}]",
+      "options": [
+        "image_url",
+        "file_search",
+        "input_audio",
+        "embedding"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "In chat completions, an image content part uses type image_url with an image_url object holding the URL or base64 data URL. input_audio is for audio, and file_search and embedding aren't content-part types."
+    },
+    {
+      "id": "ai-901.d1b.q069",
+      "lesson": "ai-901.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A quality-control line photographs every circuit board. The team needs to (1) label each photo as 'pass' or 'fail' and (2) for failed boards, show exactly where each defective component sits on the board.",
+      "stem": "Which TWO computer vision tasks meet the requirements? Select TWO.",
+      "options": [
+        "Image classification",
+        "Object detection",
+        "Image captioning",
+        "Speech translation",
+        "Image generation"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "explain": "Image classification assigns pass or fail to the whole image; object detection locates defective components with bounding boxes. Captioning only describes, while speech translation and image generation don't analyze photos."
+    },
+    {
+      "id": "ai-901.d1b.q070",
+      "lesson": "ai-901.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about computer vision, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "Image captioning returns a human-readable sentence describing an image.",
+          "a": true
+        },
+        {
+          "s": "Image classification returns bounding boxes for every object in an image.",
+          "a": false
+        },
+        {
+          "s": "A multimodal chat model can answer free-form questions about an image supplied in the prompt.",
+          "a": true
+        }
+      ],
+      "explain": "Captioning describes images in a sentence. Classification labels the whole image; bounding boxes come from object detection. Vision-enabled multimodal models can reason about supplied images."
+    },
+    {
+      "id": "ai-901.d1b.q071",
+      "lesson": "ai-901.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Many image generation models create a picture by starting from random noise and refining it step by step, guided by the text prompt. What are these models called?",
+      "options": [
+        "Embedding models",
+        "Recurrent neural networks",
+        "Diffusion models",
+        "Decision trees"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Diffusion models iteratively remove noise, guided by the prompt, to form an image. Embedding models produce vectors, RNNs are older sequence models, and decision trees are classic ML."
+    },
+    {
+      "id": "ai-901.d1b.q072",
+      "lesson": "ai-901.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A designer has a product photo and wants a model to replace only the background with a beach scene while leaving the product untouched. What should they supply with the edit request?",
+      "options": [
+        "A stop sequence",
+        "A higher frequency penalty",
+        "An SSML document",
+        "A mask image whose transparent area marks the background"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Image edit requests accept an optional mask where transparent pixels mark the region the model may change. Stop sequences and penalties are text-generation settings; SSML controls speech."
+    },
+    {
+      "id": "ai-901.d1b.q073",
+      "lesson": "ai-901.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order for what happens when an application requests a new image from a GPT-image deployment in Microsoft Foundry.",
+      "options": [
+        "The application sends a text prompt to the image generation endpoint",
+        "Content filters check the prompt",
+        "The model generates the image",
+        "Content filters check the generated image",
+        "The image is returned to the application as base64 data"
+      ],
+      "explain": "Both the prompt and the output pass through content filtering. The prompt is checked before generation and the image is checked afterwards, before base64 image data is returned."
+    },
+    {
+      "id": "ai-901.d1b.q074",
+      "lesson": "ai-901.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In Azure Content Understanding, which component defines the extraction settings, the field schema and the model deployments that are applied to every incoming file?",
+      "options": [
+        "A deployment type",
+        "An analyzer",
+        "A neural voice",
+        "A system prompt"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "An analyzer is Content Understanding's reusable configuration, holding the field schema and settings. Deployment types relate to model hosting, neural voices to speech, and system prompts to chat models."
+    },
+    {
+      "id": "ai-901.d1b.q075",
+      "lesson": "ai-901.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which THREE content types (modalities) can Azure Content Understanding analyze? Select THREE.",
+      "options": [
+        "Documents",
+        "Audio",
+        "Video",
+        "Live stock-market feeds",
+        "Database schemas"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Content Understanding supports documents, images, audio and video. Market feeds and database schemas aren't supported modalities."
+    },
+    {
+      "id": "ai-901.d1b.q076",
+      "lesson": "ai-901.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A contact centre uses Azure Content Understanding on recorded calls. For each call, it wants a field named CallSummary containing a short paragraph describing what the customer wanted and how the call ended. The words don't need to appear verbatim in the recording.",
+      "stem": "Which field method should CallSummary use?",
+      "options": [
+        "Extract",
+        "Classify",
+        "Generate",
+        "Redact"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Generate creates free-form values such as summaries. Extract copies values as they appear (documents only), classify picks from predefined categories, and redact is not a Content Understanding field method."
+    },
+    {
+      "id": "ai-901.d1b.q077",
+      "lesson": "ai-901.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure Content Understanding, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        {
+          "s": "A classify field chooses a value from a predefined set of categories.",
+          "a": true
+        },
+        {
+          "s": "Confidence scores can be used to decide which results need human review.",
+          "a": true
+        },
+        {
+          "s": "Content Understanding can return output only as plain text, not as structured JSON.",
+          "a": false
+        }
+      ],
+      "explain": "Classify picks from defined categories. Confidence scores (0 to 1) support straight-through processing or review. Output can be Markdown or structured JSON that matches your schema."
+    },
+    {
+      "id": "ai-901.d1b.q078",
+      "lesson": "ai-901.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An HR department receives the same type of tax statement from 300 different employers. Every statement contains the same information (employee name, employer ID, total wages), but each employer uses a different layout. The prebuilt models don't cover this form.",
+      "stem": "Which Document Intelligence model type should you train?",
+      "options": [
+        "Custom template model",
+        "Read model",
+        "Custom neural model",
+        "Layout model"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A custom neural model handles varied layouts containing the same information with one model. Custom template suits a single fixed layout; Read and Layout extract text and structure but not your named fields."
+    },
+    {
+      "id": "ai-901.d1b.q079",
+      "lesson": "ai-901.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "An accounts-payable team wants to capture the vendor name, invoice date and total from supplier invoices with no model training. What should it use?",
+      "options": [
+        "The Document Intelligence prebuilt invoice model",
+        "A custom neural voice",
+        "Entity linking",
+        "Image generation"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The prebuilt invoice model returns invoice fields such as vendor, date and total without training. The other options don't extract invoice fields."
+    },
+    {
+      "id": "ai-901.d1b.q080",
+      "lesson": "ai-901.d1.3.10",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the steps in order to automate processing of supplier invoices with an information extraction service.",
+      "options": [
+        "Collect the incoming invoice files",
+        "Submit each file to the extraction model",
+        "Receive structured fields with confidence scores",
+        "Send low-confidence fields for human review",
+        "Write the approved values to the finance system"
+      ],
+      "explain": "Files are collected and submitted for analysis, the service returns fields with confidence scores, low-confidence values are reviewed by a person, and approved data is written to the downstream system."
+    }
+  ]
+}

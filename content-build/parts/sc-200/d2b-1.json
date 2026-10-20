@@ -1,0 +1,551 @@
+{
+  "exam": "sc-200",
+  "domain": "d2",
+  "lessons": [
+    {
+      "id": "sc-200.d2.2.01",
+      "objective": "d2.2",
+      "seq": 1,
+      "title": "Investigate device timelines",
+      "short": "The device timeline in Microsoft Defender for Endpoint lists every process, file, network, registry and logon event on one device in time order. You search, filter, flag events, view MITRE ATT&CK techniques, and pivot to advanced hunting.",
+      "deep": "Every onboarded device has a device page; its **Timeline** tab is the EDR sensor's raw story of what happened on that machine.\n\n- **Default range:** the past **30 days**. Change it with the date picker or the calendar icon (past day, week, 30 days, custom range), or highlight part of the time bar.\n- **Filters:** choose the **Data type** (events or techniques), event groups and **Flagged events**. Flag the events that matter (flag icon in the Flag column) so you can rebuild the attack sequence later.\n- **Techniques:** events mapped to MITRE ATT&CK appear in **bold with a blue icon**; the technique ID and name show under **Additional information**.\n- **Event details:** selecting an event opens a side panel with a related-entity graph and process tree. **Hunt for related events** opens advanced hunting with that event plus other events on the same device around the same time (from a technique pane, the technique itself is not returned).\n- **Export:** the current date or a range of up to **seven days** per export.\n- **Firewall events** (5025, 5031, 5157) appear only if the *Audit Filtering Platform Connection* audit policy is on.\n\nFor longer or cross-device work, switch to advanced hunting tables such as `DeviceProcessEvents`.",
+      "terms": [
+        { "t": "Device timeline", "d": "Chronological list of sensor events and alerts for a single device in Defender for Endpoint." },
+        { "t": "Flagged events", "d": "Events you mark with the flag icon so you can filter the timeline down to them." },
+        { "t": "Hunt for related events", "d": "Button that opens advanced hunting with the selected event and nearby events on the same device." },
+        { "t": "Technique (timeline)", "d": "A timeline entry mapped to a MITRE ATT&CK technique, shown bold with a blue icon." }
+      ],
+      "trap": "Exams test limits: the timeline shows 30 days by default and exports at most seven days at a time; it is not where you change retention.",
+      "example": "An analyst flags the PowerShell download, the new scheduled task and the outbound connection on a laptop, then filters to Flagged events to brief the incident lead.",
+      "diagram": { "kind": "flow", "items": ["Alert", "Device page", "Timeline", "Flag events", "Hunt related"] }
+    },
+    {
+      "id": "sc-200.d2.2.02",
+      "objective": "d2.2",
+      "seq": 2,
+      "title": "Device response actions and investigation packages",
+      "short": "From the device page you can isolate, contain, restrict app execution, run an antivirus scan, or collect an investigation package. Each action needs a comment and is tracked in the Action center.",
+      "deep": "Device response actions sit on the device page action bar in Microsoft Defender for Endpoint.\n\n- **Isolate device:** cuts the device off the network but keeps it connected to the Defender service. **Full** isolation blocks everything; **selective** isolation (Windows 10 1709+) can keep **Outlook and Microsoft Teams** working so you can still talk to the user. **Release from isolation** undoes it.\n- **Contain device:** for a device that is *not onboarded* (found by device discovery). Every onboarded device blocks traffic to and from it. Undo with **Release from containment**.\n- **Restrict app execution:** applies a code integrity policy so only **Microsoft-signed** files run (Windows 10 1709+, Windows 11, Server 2019+).\n- **Run antivirus scan:** choose **Quick** or **Full**; works even when Defender Antivirus is in passive mode.\n- **Collect investigation package:** a zip of forensic data: Autoruns (ASEP registry keys), installed programs, network connections (ARP, DNS cache, firewall log), Prefetch files, processes, scheduled tasks, the Security event log, services, SMB sessions, temp directories, users and groups, and a CollectionSummaryReport.\n\n**Licensing:** Plan 1 offers only Run antivirus scan, Isolate device, Stop and quarantine a file, and file indicators; the rest need **Plan 2**. Isolation needs the **Active remediation actions** permission. Every action, with who submitted it and whether it worked, is listed in the **Action center**.",
+      "terms": [
+        { "t": "Selective isolation", "d": "Isolation that still lets Outlook and Teams communicate so the analyst can reach the user." },
+        { "t": "Contain device", "d": "Makes all onboarded devices block communication with a discovered but unmanaged device." },
+        { "t": "Restrict app execution", "d": "Code integrity policy allowing only Microsoft-signed files to run." },
+        { "t": "Investigation package", "d": "Forensic zip (autoruns, prefetch, processes, event log, network data) collected from a device." }
+      ],
+      "trap": "Isolate works on onboarded devices; Contain targets unmanaged devices. Restrict app execution allows only Microsoft-signed code, not your own approved list.",
+      "example": "Ransomware is spreading from a laptop: the analyst selectively isolates it, keeps Teams open to call the user, and collects an investigation package for forensics.",
+      "diagram": { "kind": "compare", "cols": ["Action", "Effect"], "rows": [["Isolate", "Device cut off network"], ["Contain", "Others block unmanaged"], ["Restrict apps", "Microsoft-signed only"], ["Inv. package", "Forensic zip"]] }
+    },
+    {
+      "id": "sc-200.d2.2.03",
+      "objective": "d2.2",
+      "seq": 3,
+      "title": "Live response sessions",
+      "short": "Live response gives an analyst a remote shell on a device through Defender for Endpoint to collect files, inspect processes, run library scripts and remediate. Basic and advanced commands are split by RBAC permission.",
+      "deep": "**Live response** opens a cloud-brokered remote shell on an onboarded device: no VPN or RDP needed.\n\n**Turn it on** in Settings > Endpoints > **Advanced features**: *Live response*, *Live response for servers* (separate toggle), and optionally *Live response unsigned script execution* (only signed PowerShell scripts run otherwise).\n\n**Permissions:** RBAC roles grant **basic** or **advanced** live response.\n- Basic commands: `cd`, `dir`, `processes`, `connections`, `registry`, `scheduledtasks`, `services`, `persistence`, `fileinfo`, `findfile`, `getfile`, `jobs`, `fg`.\n- Advanced commands: `run` (script from the **library**), `putfile` (copy a library file to the device), `library`, `analyze`, `remediate`, `undo`, plus `scan`, `isolate`, `collect` on some platforms.\n\n**Syntax worth knowing:** `run script.ps1 -parameters \"-Name x\"`; `putfile tool.exe -keep` keeps the file after restart (default is deleted); `-overwrite` replaces it; add `&` to send a download to the background and `fg <command ID>` to bring it back.\n\n**Limits:** 5 sessions per user, one session per device, 50 concurrent sessions per tenant, 30 minutes idle timeout, `getfile` up to 3 GB. Every command is recorded on the **Command log** tab. Ctrl+C cancels only in the portal; the agent may keep running the command.",
+      "terms": [
+        { "t": "Live response library", "d": "Store of scripts and files that run and putfile can use on devices." },
+        { "t": "Advanced live response", "d": "Permission level that unlocks run, putfile, remediate, analyze and similar commands." },
+        { "t": "getfile", "d": "Basic command that downloads a file from the device (up to 3 GB)." },
+        { "t": "Command log", "d": "Session tab recording every command, its duration and status." }
+      ],
+      "trap": "Running scripts needs advanced permission AND the script in the library; unsigned scripts need the separate unsigned-script setting.",
+      "example": "An analyst connects to a server, lists persistence entries, downloads a suspicious DLL with getfile, then runs a signed cleanup script from the library.",
+      "diagram": { "kind": "flow", "items": ["Enable feature", "Connect", "Investigate", "Collect files", "Remediate"] }
+    },
+    {
+      "id": "sc-200.d2.2.04",
+      "objective": "d2.2",
+      "seq": 4,
+      "title": "Evidence and Response in an incident",
+      "short": "The Evidence and Response tab of a Defender XDR incident lists every entity analyzed from its alerts, such as files, processes, IP addresses and emails, with a verdict and a remediation status you can act on.",
+      "deep": "When alerts from Defender for Endpoint are grouped into an incident, the incident page shows them from several angles:\n\n- **Attack story:** alerts plus an incident graph you can replay.\n- **Alerts:** the related alerts and why they were linked.\n- **Assets:** devices, users, mailboxes, apps and cloud resources involved.\n- **Evidence and Response:** every **evidence** item (files, processes, services, IP addresses, URLs, emails, registry values) analyzed from the alerts.\n\nEach evidence item gets a **verdict**: **Malicious**, **Suspicious** or **Clean**, and a **remediation status**. Items with status **Pending approval** can be **approved or rejected** straight from the tab, and you can open the entity or **Go hunt** for related activity. Approved actions then appear in the **Action center**, where completed actions can also be undone.\n\nWhy it matters: evidence is the list of *things* (not events) you must clean up before you can close the incident. A device is not clean until every malicious file, persistence item and process on it is remediated.\n\nNote: Microsoft is moving from the classic incident page to **incident cases** (preview), but the evidence and verdict concepts stay the same.",
+      "terms": [
+        { "t": "Evidence", "d": "An entity such as a file, process, IP or email analyzed as part of an incident." },
+        { "t": "Verdict", "d": "Malicious, Suspicious or Clean result assigned to an evidence item." },
+        { "t": "Pending approval", "d": "Remediation status of an action waiting for an analyst to approve or reject it." },
+        { "t": "Action center", "d": "Portal page listing pending and completed remediation actions across Defender." }
+      ],
+      "trap": "Verdicts are Malicious/Suspicious/Clean; True positive/False positive are alert classifications, a different field.",
+      "example": "An incident shows a malicious DLL with Pending approval; the analyst approves quarantine from Evidence and Response and confirms success in the Action center.",
+      "diagram": { "kind": "flow", "items": ["Alerts", "Evidence", "Verdict", "Approve action", "Action center"] }
+    },
+    {
+      "id": "sc-200.d2.2.05",
+      "objective": "d2.2",
+      "seq": 5,
+      "title": "File, IP and other entity pages",
+      "short": "Entity pages show an object across the whole organization. The file page shows prevalence and offers Stop and quarantine, indicators, download and deep analysis; the IP view shows which devices talked to an address.",
+      "deep": "Entity investigation means stepping out of one device to ask: *where else is this?*\n\n**File page** (open from an alert, the timeline or search): file details and PE metadata, related incidents and alerts, **prevalence** (devices in the last 30 days, VirusTotal ratio, Defender Antivirus detection), all observed file names, and devices where it was seen. Actions:\n- **Stop and quarantine file:** stops running processes, quarantines the file and removes persistence on devices that saw it in the last **30 days**. Up to **1,000 devices**; offline devices get 3 days to come back.\n- **Add indicator** (Manage indicator): block a PE file by hash across the fleet, persistently. Use it for larger scopes or offline machines.\n- **Download/Collect file:** password-protected zip for analysis.\n- **Deep analysis:** detonates a **PE file** (.exe, .dll) in a Microsoft cloud **sandbox** and reports behaviors such as contacted IPs, dropped files and registry changes.\n\n**IP address view:** geolocation/ASN details, related alerts, devices that connected to it (list capped at **100 devices**), and prevalence (default **30 days**). Domains and URLs have similar views. **User** pages show related alerts, devices logged on and identity risk.",
+      "terms": [
+        { "t": "Prevalence", "d": "How widely a file or IP has been seen inside (and outside) the organization." },
+        { "t": "Stop and quarantine file", "d": "Stops processes, quarantines the file and deletes persistence on devices that had it." },
+        { "t": "Deep analysis", "d": "Cloud sandbox detonation of a PE file producing a behavior report." },
+        { "t": "File indicator", "d": "Hash-based allow or block rule applied across onboarded devices." }
+      ],
+      "trap": "Stop and quarantine is limited to 1,000 devices and recently seen files; for wide or persistent blocking the answer is an indicator.",
+      "example": "A dropper appears on 12 laptops: the analyst runs Stop and quarantine, submits it for deep analysis, and adds a block indicator so it cannot run again.",
+      "diagram": { "kind": "compare", "cols": ["Need", "File action"], "rows": [["Stop it now", "Stop and quarantine"], ["Block fleet-wide", "Add indicator"], ["Analyze behavior", "Deep analysis"], ["Offline sample", "Download file"]] }
+    },
+    {
+      "id": "sc-200.d2.2.06",
+      "objective": "d2.2",
+      "seq": 6,
+      "title": "Incidents from automatic attack disruption",
+      "short": "Automatic attack disruption correlates XDR signals into a high-confidence incident and contains attacker-controlled assets automatically, for example contain device, contain user or disable user. Analysts review the tagged incident, finish the investigation, then release assets.",
+      "deep": "**Automatic attack disruption** is Defender XDR's built-in, incident-level response to attacks such as ransomware and business email compromise. When signals from endpoints, identities, email and SaaS form a high-confidence incident, Defender acts in real time without waiting for an analyst.\n\n**Endpoint-related actions (Defender for Endpoint):**\n- **Contain device:** all onboarded devices block communication with the compromised device.\n- **Contain IP:** blocks an IP tied to non-onboarded devices.\n- **Contain user:** onboarded devices block the user's network logons, RPC, SMB and RDP. It does **not** disable the account in the identity provider.\nOther products add **Disable user** (Defender for Identity on domain controllers, by default via the **LocalSystem** action account), **Revoke session**, and OAuth app actions.\n\n**Prerequisites for endpoints:** device discovery set to **Standard discovery** (for contain device) and a device-group automation level of **Full** (recommended). It works whether Defender Antivirus is Active, Passive or EDR block mode.\n\n**Responding:** the incident carries the **Attack Disruption** tag and a banner; assets show labels such as *contained*. Review actions in the incident and the **Action center**, or hunt `DisruptionAndResponseEvents`. After you finish investigating, undo with **Release from containment** or **Enable user**. Critical assets can be excluded beforehand.",
+      "terms": [
+        { "t": "Attack Disruption tag", "d": "Incident tag showing that automatic attack disruption acted on it." },
+        { "t": "Contain user", "d": "Onboarded devices block a compromised account's network logons; the account stays enabled." },
+        { "t": "Standard discovery", "d": "Device discovery mode required for automatic contain device." },
+        { "t": "DisruptionAndResponseEvents", "d": "Advanced hunting table of disruption and response actions across the org." }
+      ],
+      "trap": "Contain user is not the same as disabling the account; releasing assets is done from the incident or Action center, not by deleting the incident.",
+      "example": "Ransomware moves from a file server; disruption contains the server and the stolen admin account. The analyst confirms cleanup, then releases both from the incident page.",
+      "diagram": { "kind": "flow", "items": ["Signals", "High-conf incident", "Auto contain", "Analyst review", "Release"] }
+    },
+    {
+      "id": "sc-200.d2.3.01",
+      "objective": "d2.3",
+      "seq": 1,
+      "title": "Microsoft Purview Audit (Standard) and audit search",
+      "short": "Microsoft Purview Audit records user and admin activity across Microsoft 365 in the unified audit log. You search it in the Purview portal as search jobs, or with Search-UnifiedAuditLog in Exchange Online PowerShell.",
+      "deep": "The **unified audit log** captures activity from Exchange Online, SharePoint, OneDrive, Teams, Microsoft Entra ID and many other services. **Audit (Standard)** is on by default for most Microsoft 365 subscriptions and keeps records for **180 days**.\n\n**Searching in the Purview portal (Audit):** each search is a **search job** that keeps running if you close the browser.\n- Criteria: date range (UTC, up to **180 days**), keyword, admin units, activities (friendly names or exact **operation names**), **record types**, users, file/folder/site, workloads.\n- Up to **10** search jobs in parallel per user; completed jobs are kept for **30 days**.\n- Export up to **50,000** rows (Standard) or 1,000,000 (Premium).\n- Events from core services usually appear **60 to 90 minutes** after they happen.\n\n**Permissions:** the **Audit Logs** or **View-Only Audit Logs** role.\n\n**PowerShell:** `Search-UnifiedAuditLog` (Exchange Online PowerShell) needs `-StartDate` and `-EndDate`; filter with `-UserIds`, `-Operations`, `-RecordType`, `-IPAddresses`, `-ObjectIds`, `-FreeText`. `-ResultSize` defaults to 100 and maxes at **5,000** per call; use `-SessionId` with `-SessionCommand ReturnLargeSet` to page up to 50,000. The details are in the JSON `AuditData` property.\n\nThreat hunting uses: new inbox rules (`New-InboxRule`), mailbox permission grants, file downloads, admin role changes.",
+      "terms": [
+        { "t": "Unified audit log", "d": "Central Microsoft 365 log of user and admin activities across workloads." },
+        { "t": "Search job", "d": "Asynchronous audit search in the Purview portal; results kept 30 days." },
+        { "t": "Search-UnifiedAuditLog", "d": "Exchange Online PowerShell cmdlet that queries the unified audit log." },
+        { "t": "AuditData", "d": "JSON property holding the detailed fields of an audit record." }
+      ],
+      "trap": "Audit (Standard) keeps 180 days, not 90; and freshly generated events can take 60-90 minutes to become searchable.",
+      "example": "An analyst searches the last 30 days for New-InboxRule operations by a suspected compromised user and exports the results to CSV.",
+      "diagram": { "kind": "flow", "items": ["M365 activity", "Unified audit log", "Search job", "Results", "Export CSV"] }
+    },
+    {
+      "id": "sc-200.d2.3.02",
+      "objective": "d2.3",
+      "seq": 2,
+      "title": "Audit (Premium) and mailbox forensics",
+      "short": "Audit (Premium) adds longer retention and intelligent insight events such as Send, SearchQueryInitiatedExchange and SearchQueryInitiatedSharePoint. MailItemsAccessed shows which mail an attacker read, through Bind and Sync records.",
+      "deep": "**Audit (Premium)** builds on Standard for users with the right **E5 (or add-on) license** and the **Microsoft 365 Advanced Auditing** app enabled.\n\n**Retention:** Exchange, SharePoint, OneDrive and Entra ID records are kept **1 year** by default; custom audit retention policies up to 1 year, or **10 years** with the *10-Year Audit Log Retention* add-on. Retention policies are **not retroactive**.\n\n**Intelligent insights (crucial events):**\n- **Send**: the user sent, replied to or forwarded a message.\n- **SearchQueryInitiatedExchange / SearchQueryInitiatedSharePoint**: what a user searched for. These must be switched on per mailbox: `Set-Mailbox <user> -AuditOwner @{Add=\"SearchQueryInitiated\"}`.\n- Teams events such as MessageSent and MessageRead with extra properties.\n\n**MailItemsAccessed** (now part of Audit Standard for E3/E5 users) is the key compromise event:\n- **Bind**: one specific message accessed, identified by `InternetMessageId` (binds in a 2-minute window are grouped).\n- **Sync**: a whole folder was synced (Outlook desktop); assume **every item in that folder** was accessed.\nMatch `ClientIPAddress`, `ClientInfoString` and `SessionId` to the attacker to scope what was read.",
+      "terms": [
+        { "t": "Audit (Premium)", "d": "Licensed audit tier with 1-year default retention, 10-year option and intelligent insights." },
+        { "t": "MailItemsAccessed", "d": "Audit event recording mailbox reads, as Bind (message) or Sync (folder)." },
+        { "t": "SearchQueryInitiatedExchange", "d": "Premium event logging a user's Outlook search terms; enabled with Set-Mailbox -AuditOwner." },
+        { "t": "Send", "d": "Premium event logged when a user sends, replies to or forwards mail." }
+      ],
+      "trap": "Search query events are not on by default; and a Sync record means the whole folder is treated as compromised.",
+      "example": "After an AiTM phish, MailItemsAccessed Bind records from the attacker's IP list the InternetMessageIds of the invoices the attacker opened.",
+      "diagram": { "kind": "compare", "cols": ["", "Standard", "Premium"], "rows": [["Retention", "180 days", "1 yr (10 yr add-on)"], ["Send / SearchQuery", "No", "Yes"], ["Export rows", "50,000", "1,000,000"]] }
+    },
+    {
+      "id": "sc-200.d2.3.03",
+      "objective": "d2.3",
+      "seq": 3,
+      "title": "Content search in Microsoft Purview eDiscovery",
+      "short": "Content search now runs inside Microsoft Purview eDiscovery: you create a search in a case (or the system Content Search case), add data sources, build a KeyQL query, then review statistics and samples before export.",
+      "deep": "The classic Content search tool was retired on **31 August 2025**; searches now live in the **new eDiscovery** experience in the Microsoft Purview portal. A system-generated **Content Search** case holds content searches, and you can also create searches in any eDiscovery case.\n\n**Workflow:** eDiscovery > **Cases** > open case > **Searches** > **Create a search** > add **data sources** (Exchange mailboxes, SharePoint sites, OneDrive, Teams, Microsoft 365 Groups, Viva Engage) > build the query with the **condition builder** or the **KeyQL** editor (Copilot can draft KeyQL) > **Run query** > view **Statistics** or a **Sample**.\n\n**KeyQL rules a security analyst needs:** `from:` / `to:` / `subject:\"exact phrase\"` / `kind:email`; no space after the colon; AND, OR, NOT, NEAR must be **uppercase**; only prefix wildcards (`invoic*`); searches use UTC; an empty query returns everything.\n\n**After the search:** **Export** results (standard), or **Add to review set** for analytics (premium).\n\n**Roles:** the **eDiscovery Manager** role group (managers see their own cases; **eDiscovery Administrators** see all). **Compliance Search** lets you search and see estimates; **Preview** and **Export** are separate roles.\n\nSecurity use: find every copy of a phishing email or leaked file across mailboxes and sites.",
+      "terms": [
+        { "t": "KeyQL", "d": "Keyword Query Language used for eDiscovery search queries." },
+        { "t": "Condition builder", "d": "UI for adding keyword and property conditions to an eDiscovery search." },
+        { "t": "Statistics", "d": "Estimated item counts, sizes and top locations for a search." },
+        { "t": "Review set", "d": "Premium eDiscovery copy of results for tagging, analytics and review." }
+      ],
+      "trap": "Content search is in Purview eDiscovery, not Threat Explorer or Audit; and Boolean operators must be uppercase in KeyQL.",
+      "example": "An analyst searches all mailboxes for subject:\"Payroll update\" from an external sender, checks statistics to see 214 hits, then exports a report.",
+      "diagram": { "kind": "flow", "items": ["Case", "Data sources", "KeyQL query", "Statistics", "Export"] }
+    },
+    {
+      "id": "sc-200.d2.3.04",
+      "objective": "d2.3",
+      "seq": 4,
+      "title": "Search and purge malicious email",
+      "short": "After a content search finds a malicious or spilled email, an authorized user can purge it with New-ComplianceSearchAction -Purge, using SoftDelete or HardDelete. It needs the Search And Purge role and has strict per-mailbox limits.",
+      "deep": "**Search and purge** turns an eDiscovery search into a deletion. It is an incident-response tool, not a mailbox clean-up tool.\n\n**Roles:** searching needs **eDiscovery Manager** or the **Compliance Search** role. Purging needs the **Search And Purge** role, which is in the Purview **Organization Management** role group (Exchange Online Organization Management is not enough).\n\n**Steps (Security & Compliance PowerShell):**\n1. `Connect-IPPSSession -EnableSearchOnlySession`\n2. `New-ComplianceSearch -Name \"Remove Phish\" -ExchangeLocation All -ContentMatchQuery '(Subject:\"Action required\")'` then `Start-ComplianceSearch`\n3. Check the item count (`Get-ComplianceSearch`) to confirm scope.\n4. `New-ComplianceSearchAction -SearchName \"Remove Phish\" -Purge -PurgeType SoftDelete` (or `HardDelete`)\n5. `Get-ComplianceSearchAction -Identity \"Remove Phish_Purge\"` to check status.\n\n**SoftDelete** moves items to Recoverable Items (Deletions), where users can recover them; **HardDelete** marks them for permanent removal.\n\n**Limits:** **10 items per mailbox** per run (100 with premium/Graph), up to 50,000 mailboxes per search, Exchange Online mailboxes and public folders only, unindexed items are skipped, held items are preserved. With **Defender for Office 365 Plan 2**, Microsoft recommends Threat Explorer remediation instead.",
+      "terms": [
+        { "t": "Search And Purge", "d": "Role that allows deleting items found by a compliance search." },
+        { "t": "New-ComplianceSearchAction", "d": "Cmdlet that runs an action such as -Purge on a completed search." },
+        { "t": "SoftDelete", "d": "Purge type moving items to Recoverable Items, still recoverable by the user." },
+        { "t": "HardDelete", "d": "Purge type marking items for permanent removal." }
+      ],
+      "trap": "eDiscovery Manager can search but cannot purge; the -Purge parameter is missing without the Search And Purge role.",
+      "example": "A phishing message reached 300 mailboxes in an E3 tenant; the analyst runs a scoped search, confirms the count, and soft-deletes the messages.",
+      "diagram": { "kind": "flow", "items": ["Connect", "Create search", "Verify count", "Purge", "Check status"] }
+    },
+    {
+      "id": "sc-200.d2.3.05",
+      "objective": "d2.3",
+      "seq": 5,
+      "title": "Microsoft Graph activity logs",
+      "short": "Microsoft Graph activity logs record every HTTP request to Microsoft Graph in your tenant: which app or user, which URI, method and response. Stream them with Entra diagnostic settings to Log Analytics and hunt with KQL.",
+      "deep": "Attackers who steal tokens or consent to rogue apps often use **Microsoft Graph** to read mail, enumerate users or change groups. **Microsoft Graph activity logs** give you an audit trail of **every API request** Graph receives for your tenant, including requests from line-of-business apps, SDKs, AI clients and Microsoft apps.\n\n**Prerequisites:** a **Microsoft Entra ID P1 or P2** license, an Azure subscription, and an admin role; **Security Administrator** is the least-privileged role that can configure the diagnostic setting.\n\n**Enable:** create a **diagnostic setting** that sends the logs to a **Log Analytics workspace** (KQL hunting, Microsoft Sentinel), an **Azure Storage account** (long-term retention) or **Event Hubs** (third-party SIEM). You pay for the Azure resources used.\n\n**Table:** `MicrosoftGraphActivityLogs`. Key columns: `RequestUri`, `RequestMethod`, `ResponseStatusCode`, `AppId`, `ServicePrincipalId`, `UserId`, `IPAddress`, `UserAgent`, `Scopes`, `Roles`, `SignInActivityId`.\n\n**Hunting ideas:** spikes of 401/403 responses, risky users calling Graph (join `AADRiskyUsers`), unusual apps reading `/messages`. Correlate with sign-in logs by joining `SignInActivityId` to `UniqueTokenIdentifier`.\n\n**Latency:** usually within 30 minutes, sometimes up to 2 hours. Defender XDR advanced hunting offers a similar `GraphAPIAuditEvents` table.",
+      "terms": [
+        { "t": "MicrosoftGraphActivityLogs", "d": "Log Analytics table containing Microsoft Graph API request records." },
+        { "t": "Diagnostic setting", "d": "Azure Monitor configuration that streams logs to a workspace, storage or Event Hubs." },
+        { "t": "SignInActivityId", "d": "Graph log column that joins to UniqueTokenIdentifier in sign-in logs." },
+        { "t": "ServicePrincipalId", "d": "Identifier of the app identity that made the request." }
+      ],
+      "trap": "Graph activity logs need Entra ID P1/P2 and must be streamed via diagnostic settings; they are not in the Purview audit log or on by default.",
+      "example": "After a consent-phishing alert, an analyst queries MicrosoftGraphActivityLogs for the app's AppId and finds thousands of GET requests to users' /messages.",
+      "diagram": { "kind": "flow", "items": ["Graph request", "Diagnostic setting", "Log Analytics", "KQL hunt", "Sentinel rule"] }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-200.d2b.q001",
+      "lesson": "sc-200.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You open the Timeline tab for a device in Microsoft Defender for Endpoint without changing any settings. Which time range of events is shown by default?",
+      "options": ["The past 30 days", "The past 7 days", "The past 90 days", "The past 180 days"],
+      "answer": [0],
+      "explain": "The device timeline shows the past 30 days by default; you change it with the date range picker or the calendar icon. Seven days is the maximum range for one export, not the default view. 90 or 180 days relate to data retention settings, not the default timeline view."
+    },
+    {
+      "id": "sc-200.d2b.q002",
+      "lesson": "sc-200.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": "An external forensics firm asks for every timeline event from a compromised workstation covering 1 to 10 October. You plan to use the Export option on the device timeline.",
+      "stem": "What should you expect?",
+      "options": ["One export covers the whole range because exports allow up to 30 days", "You need at least two exports because one export covers a maximum of seven days", "Only flagged events can be exported, so flag every event first", "Export is unavailable; you must use the investigation package instead"],
+      "answer": [1],
+      "explain": "The device timeline exports the current date or a specified range of up to seven days, so a 10-day window needs two exports (or use advanced hunting). Export is not limited to flagged events, and the investigation package is a different forensic collection, not a timeline export."
+    },
+    {
+      "id": "sc-200.d2b.q003",
+      "lesson": "sc-200.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which actions can you perform directly from the device timeline in Microsoft Defender for Endpoint? Select THREE.",
+      "options": ["Flag events and then filter the timeline to show only flagged events", "Delete a timeline event that you have confirmed is a false positive", "Select Hunt for related events to open advanced hunting around a selected event", "Change the Data type filter to show MITRE ATT&CK techniques", "Extend the device's data retention to two years"],
+      "answer": [0, 2, 3],
+      "explain": "The timeline supports flagging and a Flagged events filter, Hunt for related events from the event details panel, and a Data type filter for events or techniques. Timeline events are sensor data and cannot be deleted, and data retention is a tenant setting, not a timeline action."
+    },
+    {
+      "id": "sc-200.d2b.q004",
+      "lesson": "sc-200.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the device timeline, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "Timeline entries mapped to MITRE ATT&CK techniques appear in bold with a blue icon, with the technique ID under Additional information.", "a": true },
+        { "s": "Running Hunt for related events from a technique side pane returns the technique itself in the results.", "a": false },
+        { "s": "Windows Firewall events such as 5157 (blocked connection) appear only when the Audit Filtering Platform Connection policy is enabled.", "a": true }
+      ],
+      "explain": "Techniques are shown bold with a blue icon and their ATT&CK ID and name as tags. Hunting from a technique returns related events but not the technique itself. Firewall events 5025, 5031 and 5157 require the Audit Filtering Platform Connection audit policy."
+    },
+    {
+      "id": "sc-200.d2b.q005",
+      "lesson": "sc-200.d2.2.01",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "The timeline shows suspicious activity on device fin-ws-07 between 09:00 and 10:00 UTC. You want a table of only the time, parent process, process name and command line for that hour. Complete the advanced hunting query.",
+      "code": "DeviceProcessEvents\n| where DeviceName == \"fin-ws-07\"\n| where Timestamp between (datetime(2026-10-14T09:00:00Z) .. datetime(2026-10-14T10:00:00Z))\n| ____ Timestamp, InitiatingProcessFileName, FileName, ProcessCommandLine\n| order by Timestamp asc",
+      "options": ["summarize", "project", "extend", "render"],
+      "answer": [1],
+      "explain": "project keeps only the listed columns, which is what you need before ordering by Timestamp. summarize needs an aggregation function, extend adds calculated columns while keeping all existing ones, and render draws a chart rather than selecting columns."
+    },
+    {
+      "id": "sc-200.d2b.q006",
+      "lesson": "sc-200.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Microsoft Defender for Endpoint device action applies a code integrity policy so that only files signed by Microsoft can run?",
+      "options": ["Restrict app execution", "Isolate device", "Contain device", "Run antivirus scan"],
+      "answer": [0],
+      "explain": "Restrict app execution applies a code integrity policy that allows only Microsoft-signed files to run. Isolate device cuts network access, Contain device makes other onboarded devices block an unmanaged device, and Run antivirus scan performs a Quick or Full scan."
+    },
+    {
+      "id": "sc-200.d2b.q007",
+      "lesson": "sc-200.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A Windows 11 laptop is compromised. You must cut it off from the network immediately but still be able to message and call the user during the investigation. What should you do?",
+      "options": ["Contain the device", "Restrict app execution on the device", "Isolate the device using full isolation", "Isolate the device using selective isolation"],
+      "answer": [3],
+      "explain": "Selective isolation (Windows 10 1709 or later and Windows 11) isolates the device but keeps Outlook and Microsoft Teams connected. Full isolation blocks those apps too. Contain device is for unmanaged devices, and Restrict app execution does not block network traffic."
+    },
+    {
+      "id": "sc-200.d2b.q008",
+      "lesson": "sc-200.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Device discovery found a Windows Server 2019 machine in a branch office that was never onboarded to Defender for Endpoint. Alerts show an attacker using it to move laterally to onboarded workstations over SMB. Onboarding the server will take days.",
+      "stem": "Which action should you take to stop onboarded devices from communicating with the server?",
+      "options": ["Isolate the server", "Contain the server", "Collect an investigation package from the server", "Restrict app execution on the server"],
+      "answer": [1],
+      "explain": "Contain device is designed for discovered, non-onboarded devices: every onboarded device blocks inbound and outbound communication with it. Isolate, investigation package and Restrict app execution all run through the Defender sensor on the target, which this unmanaged server does not have."
+    },
+    {
+      "id": "sc-200.d2b.q009",
+      "lesson": "sc-200.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "You collect an investigation package from a Windows device. Which items does the package contain? Select THREE.",
+      "options": ["A full memory (RAM) image of the device", "Autoruns: registry contents of auto-start entry points", "Prefetch files", "Copies of every user's Documents folder", "The Security event log"],
+      "answer": [1, 2, 4],
+      "explain": "The Windows investigation package includes Autoruns, installed programs, network connection data, Prefetch files, processes, scheduled tasks, the Security event log, services, SMB sessions, temp directory listings and users and groups. It does not capture a memory image or copy users' documents."
+    },
+    {
+      "id": "sc-200.d2b.q010",
+      "lesson": "sc-200.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about device response actions, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "Defender for Endpoint Plan 1 includes the manual Isolate device and Run antivirus scan actions.", "a": true },
+        { "s": "Restrict app execution is supported on Windows Server 2012 R2.", "a": false },
+        { "s": "When you run an antivirus scan from the device page, you choose between a Quick scan and a Full scan.", "a": true }
+      ],
+      "explain": "Plan 1 includes Run antivirus scan, Isolate device, Stop and quarantine a file and file indicators. Restrict app execution needs Windows 10 1709 or later, Windows 11 or Windows Server 2019 or later. The antivirus scan action offers Quick or Full."
+    },
+    {
+      "id": "sc-200.d2b.q011",
+      "lesson": "sc-200.d2.2.02",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "order",
+      "case": null,
+      "stem": "You need to isolate a compromised device in the Microsoft Defender portal and confirm the action worked. Put the steps in order.",
+      "options": ["Open the device page from the alert or device inventory", "Select Isolate device on the action bar", "Choose full or selective isolation and enter a comment", "Select Confirm to submit the action", "Check the action status in the Action center"],
+      "explain": "You start on the device page, choose Isolate device, pick the isolation type and add the required comment, confirm, and then verify success in the Action center, which records who submitted the action and whether it succeeded."
+    },
+    {
+      "id": "sc-200.d2b.q012",
+      "lesson": "sc-200.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "During a live response session, which command copies a tool from the live response library onto the device?",
+      "options": ["getfile", "run", "putfile", "fileinfo"],
+      "answer": [2],
+      "explain": "putfile places a library file on the device (deleted on restart unless you use -keep). getfile downloads a file from the device to you, run executes a library script, and fileinfo only shows information about a file."
+    },
+    {
+      "id": "sc-200.d2b.q013",
+      "lesson": "sc-200.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": "An analyst can start live response sessions and successfully runs processes, registry and getfile. When she tries run cleanup.ps1, the command is unavailable. The script is signed and already uploaded to the live response library.",
+      "stem": "What is the most likely cause?",
+      "options": ["Live response unsigned script execution is turned off", "The device must be isolated before scripts can run", "Live response for servers is turned off", "Her RBAC role grants basic live response but not advanced live response"],
+      "answer": [3],
+      "explain": "run is an advanced command, available only to roles with advanced live response permission. The script is signed, so the unsigned-script setting does not matter. Isolation is not required, and live response for servers would block the session entirely, not just one command."
+    },
+    {
+      "id": "sc-200.d2b.q014",
+      "lesson": "sc-200.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "In a live response session you need to run the library script collect-logs.ps1 and pass it the argument -Days 3. Complete the command.",
+      "code": "run collect-logs.ps1 ____ \"-Days 3\"",
+      "options": ["-parameters", "-keep", "-overwrite", "-auto"],
+      "answer": [0],
+      "explain": "run uses -parameters to pass arguments to a library script. -keep and -overwrite are putfile options (keep after restart, replace an existing file), and -auto runs prerequisite commands for commands such as getfile."
+    },
+    {
+      "id": "sc-200.d2b.q015",
+      "lesson": "sc-200.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about live response, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "A live response session is closed after 30 minutes of inactivity.", "a": true },
+        { "s": "Two analysts can each hold their own live response session on the same device at the same time.", "a": false },
+        { "s": "Pressing Ctrl+C in the portal guarantees that a running remediate command stops on the device.", "a": false }
+      ],
+      "explain": "Inactive sessions time out after 30 minutes. Only one session per device is allowed at a time (a user can have up to five sessions across devices). Ctrl+C cancels the command only in the portal; the agent may continue running operations such as remediate."
+    },
+    {
+      "id": "sc-200.d2b.q016",
+      "lesson": "sc-200.d2.2.03",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": null,
+      "stem": "You must run an in-house unsigned PowerShell script through live response on a Windows Server 2022 file server. Which settings must be enabled on the Advanced features page? Select THREE.",
+      "options": ["Turn off tamper protection", "Live response", "Live response for servers", "Automatically resolve alerts", "Live response unsigned script execution"],
+      "answer": [1, 2, 4],
+      "explain": "Live response must be on, servers need the separate Live response for servers toggle, and unsigned PowerShell scripts need Live response unsigned script execution. Tamper protection and automatic alert resolution do not control live response. The analyst still needs advanced live response permission and the script in the library."
+    },
+    {
+      "id": "sc-200.d2b.q017",
+      "lesson": "sc-200.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "On the Evidence and Response tab of a Microsoft Defender XDR incident, which verdicts can be assigned to an analyzed entity?",
+      "options": ["True positive, False positive, Informational", "High, Medium, Low", "Malicious, Suspicious, Clean", "Active, In progress, Resolved"],
+      "answer": [2],
+      "explain": "Each evidence item is marked Malicious, Suspicious or Clean, alongside a remediation status. True positive and False positive are alert classifications, High/Medium/Low are severities, and Active/In progress/Resolved are incident or alert statuses."
+    },
+    {
+      "id": "sc-200.d2b.q018",
+      "lesson": "sc-200.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "On an incident's Evidence and Response tab, a malicious file has the remediation status Pending approval. What can you do from that tab?",
+      "options": ["Change the file's verdict to Clean so the incident closes automatically", "Approve or reject the pending remediation action", "Submit the file to the live response library", "Assign the file to a different incident"],
+      "answer": [1],
+      "explain": "For entities with Pending approval, you can approve or reject the remediation action, open the entity, or go hunt from Evidence and Response. Verdicts are not edited to close incidents, and the live response library and incident assignment are unrelated to this tab."
+    },
+    {
+      "id": "sc-200.d2b.q019",
+      "lesson": "sc-200.d2.2.04",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the incident page, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "The Assets tab groups the devices, users, mailboxes, apps and cloud resources involved in the incident.", "a": true },
+        { "s": "Evidence and Response lists entities such as files, processes, IP addresses and emails analyzed from the incident's alerts.", "a": true },
+        { "s": "Rejecting a pending action on Evidence and Response deletes the related alert.", "a": false }
+      ],
+      "explain": "Assets shows Devices, Users, Mailboxes, Apps and Cloud resources. Evidence and Response lists analyzed entities with verdicts and remediation status. Rejecting an action only declines that remediation; it does not delete alerts."
+    },
+    {
+      "id": "sc-200.d2b.q020",
+      "lesson": "sc-200.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A malicious executable is running on 40 Windows 11 devices and was first seen yesterday. You need to stop its processes, quarantine it and remove its persistence on those devices now. What should you use?",
+      "options": ["Deep analysis", "Download file", "Stop and quarantine file", "Collect investigation package"],
+      "answer": [2],
+      "explain": "Stop and quarantine file stops running processes, quarantines the file and deletes persistent data such as registry keys on devices that saw it in the last 30 days (up to 1,000 devices). Deep analysis and Download file are for analysis, and an investigation package only collects forensics."
+    },
+    {
+      "id": "sc-200.d2b.q021",
+      "lesson": "sc-200.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A malicious DLL has been observed on 3,500 devices. Many laptops are offline for the next two weeks. Management wants the file blocked everywhere, including when those laptops reconnect.",
+      "stem": "What is the best response?",
+      "options": ["Run Stop and quarantine file from the file page", "Create a file indicator to block the file by its hash", "Submit the file for deep analysis", "Run a Full antivirus scan on every device"],
+      "answer": [1],
+      "explain": "Stop and quarantine is limited to 1,000 devices and times out for devices offline longer than 3 days. A file (hash) indicator blocks the PE file across onboarded devices persistently. Deep analysis only analyzes behavior, and a scan depends on existing detections."
+    },
+    {
+      "id": "sc-200.d2b.q022",
+      "lesson": "sc-200.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which statements about deep analysis of a file in Microsoft Defender for Endpoint are true? Select TWO.",
+      "options": ["It runs the file on the original device and records its behavior", "It reports behaviors such as contacted IP addresses, dropped files and registry changes", "It supports Office documents such as .docx and .xlsx", "It runs the file in a secure cloud sandbox and supports PE files such as .exe and .dll"],
+      "answer": [1, 3],
+      "explain": "Deep analysis detonates PE files (.exe, .dll) in a Microsoft cloud sandbox and returns observed behaviors like contacted IPs, dropped files and registry changes. It does not execute on the original device, and non-PE files such as Office documents are not supported."
+    },
+    {
+      "id": "sc-200.d2b.q023",
+      "lesson": "sc-200.d2.2.05",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about the IP address view in Microsoft Defender for Endpoint, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "The list of devices that communicated with the IP address is limited to 100 devices.", "a": true },
+        { "s": "Searching an IP returns results even if no device in your organization ever communicated with it.", "a": false },
+        { "s": "IP prevalence in the organization is filtered to the past 30 days by default.", "a": true }
+      ],
+      "explain": "The IP activity list shows up to 100 devices with their last event. Searches return results only for IPs that devices in your organization communicated with. Prevalence uses a selectable period that defaults to 30 days."
+    },
+    {
+      "id": "sc-200.d2b.q024",
+      "lesson": "sc-200.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "How can an analyst recognize, in the incident queue, incidents where automatic attack disruption took action?",
+      "options": ["The incident severity is automatically raised to Critical", "The incident status is set to Redirected", "The incident is assigned to the Microsoft Threat Experts group", "The incident shows an Attack Disruption tag"],
+      "answer": [3],
+      "explain": "Disrupted incidents show an Attack Disruption tag in the queue and on the incident page, plus a banner describing the automatic action. Disruption does not change severity to Critical, set a Redirected status, or reassign the incident."
+    },
+    {
+      "id": "sc-200.d2b.q025",
+      "lesson": "sc-200.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Automatic attack disruption never applies the Contain device action in your tenant, although other disruption actions work. Which Defender for Endpoint setting should you check first?",
+      "options": ["Device discovery is set to Standard discovery", "Network protection is in block mode", "Tamper protection is turned on", "Live response for servers is enabled"],
+      "answer": [0],
+      "explain": "The automatic Contain device action requires device discovery set to Standard discovery. Network protection, tamper protection and live response for servers are useful settings but are not the prerequisite for disruption's contain device action."
+    },
+    {
+      "id": "sc-200.d2b.q026",
+      "lesson": "sc-200.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Automatic attack disruption contained a file server and a user account during a ransomware incident. Your investigation is complete: the server is reimaged and the user's password was reset.",
+      "stem": "Which methods can you use to release the contained assets? Select TWO.",
+      "options": ["On the incident page, select the contained device and choose Release from containment, and select the user and choose Enable user", "Open the action in the Action center and undo it from the action details pane", "Delete the incident so that all automatic actions are rolled back", "Restart the file server to clear the containment policy"],
+      "answer": [0, 1],
+      "explain": "Disruption actions are undone from the incident page (Release from containment, Enable user) or from the action details pane in the Action center. Deleting an incident does not roll back actions, and a restart does not remove a containment policy that other onboarded devices enforce."
+    },
+    {
+      "id": "sc-200.d2b.q027",
+      "lesson": "sc-200.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about automatic attack disruption, select Yes if the statement is true. Otherwise, select No.",
+      "statements": [
+        { "s": "The Contain user action disables the account in Microsoft Entra ID.", "a": false },
+        { "s": "Defender for Identity disables on-premises AD accounts through its sensor on a domain controller, using the LocalSystem account by default.", "a": true },
+        { "s": "Automatic attack disruption works whether Microsoft Defender Antivirus is in active mode, passive mode or EDR block mode.", "a": true }
+      ],
+      "explain": "Contain user blocks the account's network logons on onboarded devices but does not disable it in the identity provider. Disable user in AD runs through the Defender for Identity sensor on the DC, impersonating LocalSystem by default. Disruption works regardless of Defender Antivirus state."
+    },
+    {
+      "id": "sc-200.d2b.q028",
+      "lesson": "sc-200.d2.2.06",
+      "objective": "d2.2",
+      "difficulty": 3,
+      "type": "complete",
+      "case": null,
+      "stem": "You want to list every automatic attack disruption action taken for incident 4821 during the last 30 days. Complete the advanced hunting query.",
+      "code": "____\n| where Timestamp > ago(30d)\n| where IncidentId == 4821\n| project Timestamp, ActionType, AttackDisruptionCategory, DeviceName, AccountUpn\n| order by Timestamp desc",
+      "options": ["DeviceEvents", "AlertEvidence", "IdentityDirectoryEvents", "DisruptionAndResponseEvents"],
+      "answer": [3],
+      "explain": "DisruptionAndResponseEvents records disruption and response actions across the organization, including IncidentId and AttackDisruptionCategory. DeviceEvents holds block events caused by containment, not the actions themselves; AlertEvidence lists alert entities; IdentityDirectoryEvents shows directory changes such as account disables."
+    }
+  ]
+}

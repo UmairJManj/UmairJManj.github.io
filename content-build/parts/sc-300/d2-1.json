@@ -1,0 +1,1614 @@
+{
+ "exam": "sc-300",
+ "domain": "d2",
+ "lessons": [
+  {
+   "id": "sc-300.d2.1.01",
+   "objective": "d2.1",
+   "seq": 1,
+   "title": "Planning authentication",
+   "short": "Plan authentication by choosing which methods users may register and use in the **Authentication methods policy**, moving users toward passwordless and phishing-resistant methods, and deciding between security defaults and Conditional Access.",
+   "deep": "Authentication planning starts with *what proves who you are*. Methods range from weak (password, SMS) to phishing-resistant (passkeys/FIDO2, Windows Hello for Business, multifactor certificate-based authentication).\n\n**Authentication methods policy** (Entra ID > Authentication methods > Policies) is now the single place to enable each method and scope it to groups. The legacy per-user MFA and SSPR method settings stopped being manageable after **30 September 2025**; tenants migrate through the states **Migration in progress** (both policies honoured) and **Migration complete** (only the Authentication methods policy is used; legacy settings are greyed out except SSPR security questions).\n\n**System-preferred MFA** prompts users with the strongest method they have registered. *Enabled* affects only the second factor; *Microsoft managed* (the default) also affects the first factor.\n\nBaseline choice:\n- **Security defaults**: free, on/off only, requires Microsoft Authenticator registration, MFA for admins, blocks legacy authentication.\n- **Conditional Access**: needs Entra ID P1, fully customisable; you must turn security defaults off to use it.\n\nThe **Authentication Policy Administrator** role manages the Authentication methods policy.",
+   "terms": [
+    {
+     "t": "Authentication methods policy",
+     "d": "Tenant policy that enables each sign-in method and targets it to users or groups."
+    },
+    {
+     "t": "Migration complete",
+     "d": "State where only the Authentication methods policy governs MFA and SSPR methods."
+    },
+    {
+     "t": "System-preferred MFA",
+     "d": "Prompts the user for their most secure registered method."
+    },
+    {
+     "t": "Security defaults",
+     "d": "Free, non-configurable baseline: MFA registration, admin MFA, legacy auth blocked."
+    }
+   ],
+   "trap": "Exams expect the Authentication methods policy as the place to enable methods; answers pointing to the legacy MFA service settings page are outdated.",
+   "example": "Contoso has P1 licences and wants different MFA rules per department, so it disables security defaults, migrates methods to the Authentication methods policy and builds Conditional Access policies.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "",
+     "Security defaults",
+     "Conditional Access"
+    ],
+    "rows": [
+     [
+      "Licence",
+      "Free",
+      "Entra ID P1+"
+     ],
+     [
+      "Configurable",
+      "No (on/off)",
+      "Yes"
+     ],
+     [
+      "Legacy auth",
+      "Blocked",
+      "Block by policy"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.1.02",
+   "objective": "d2.1",
+   "seq": 2,
+   "title": "Certificate-based auth and Temporary Access Pass",
+   "short": "**Certificate-based authentication (CBA)** lets users sign in with an X.509 certificate validated against CAs you upload to Entra ID. A **Temporary Access Pass (TAP)** is a time-limited passcode used to onboard or recover passwordless methods.",
+   "deep": "**CBA** removes the need for AD FS when using smart cards. Setup order: upload trusted CAs to the **PKI-based trust store** (with a CRL URL), enable CBA for a group in the Authentication methods policy, set the **authentication binding**, set the **username binding**, then test.\n- *Authentication binding* sets protection level: the default is **single-factor**; rules by **issuer** or **policy OID** can mark certificates **multifactor**. A policy OID rule beats an issuer rule.\n- *Username binding* maps a certificate field to a user attribute. Default: SAN **PrincipalName** to `userPrincipalName`. **High-affinity** bindings (SKI, SHA1PublicKey, IssuerAndSerialNumber) map to `certificateUserIds`.\n- If no CRL is configured, revocation is **not** checked.\n- Privileged Authentication Administrator manages the trust store; Authentication Policy Administrator enables CBA.\n\n**TAP** defaults: lifetime 1 hour (min/max 1-8 hours by default, range 10 minutes-30 days), length 8 (8-48), multi-use unless *one-time* is set. A one-time TAP used to register a passwordless method must finish within 10 minutes. TAP doesn't replace the password, and doesn't work with the NPS extension or AD FS adapter. Authentication Administrators create TAPs for non-admins; **Privileged Authentication Administrators** for admins.",
+   "terms": [
+    {
+     "t": "PKI-based trust store",
+     "d": "Where trusted root/intermediate CAs and their CRL URLs are uploaded for CBA."
+    },
+    {
+     "t": "Authentication binding",
+     "d": "Rule deciding whether a certificate counts as single-factor or multifactor."
+    },
+    {
+     "t": "Username binding",
+     "d": "Mapping from a certificate field to a user attribute to find the account."
+    },
+    {
+     "t": "Temporary Access Pass",
+     "d": "Time-limited passcode that satisfies strong auth for onboarding methods."
+    }
+   ],
+   "trap": "A common trap is assuming CBA is multifactor by default; it is single-factor until an authentication binding rule says otherwise.",
+   "example": "New hires receive a one-time TAP valid for 8 hours on day one, sign in to Security info and register a passkey within 10 minutes.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Upload CAs + CRL",
+     "Enable CBA",
+     "Auth binding",
+     "Username binding",
+     "Test"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.1.03",
+   "objective": "d2.1",
+   "seq": 3,
+   "title": "Microsoft Authenticator and passkeys (FIDO2)",
+   "short": "**Microsoft Authenticator** provides push notifications with **number matching**, passwordless phone sign-in and passkeys. **Passkeys (FIDO2)** are phishing-resistant credentials; Entra ID supports device-bound and synced passkeys controlled through passkey profiles.",
+   "deep": "**Microsoft Authenticator** settings live under Authentication methods > Microsoft Authenticator. **Authentication mode** is *Any* (push and passwordless phone sign-in) or *Push* (no passwordless). **Number matching** is always on for push notifications and can't be disabled. Admins can add **additional context**: show the **application name** and **geographic location** in notifications, which helps users spot MFA-fatigue attacks.\n\n**Passkeys (FIDO2)** use public-key cryptography bound to the sign-in origin, so they resist phishing. Available in all Entra ID editions.\n- **Device-bound** passkeys keep the private key on one device (FIDO2 security keys, passkeys in Authenticator).\n- **Synced** passkeys are stored in a provider such as iCloud Keychain or Google Password Manager; they don't support attestation.\n- **Passkey profiles** (up to three, opt-in can't be undone) set *Enforce attestation*, allowed passkey types and **key restrictions** (allow or block by **AAGUID**, applied at registration and sign-in).\n- *Allow self-service set up* = No stops users registering in Security info.\n- Users must have completed MFA in the last **five minutes** to register a passkey. Guest/B2B users aren't supported.",
+   "terms": [
+    {
+     "t": "Number matching",
+     "d": "User types the number shown on the sign-in screen into Authenticator to approve."
+    },
+    {
+     "t": "AAGUID",
+     "d": "Identifier of an authenticator make/model, used in key restriction lists."
+    },
+    {
+     "t": "Attestation",
+     "d": "Proof of an authenticator's make and model checked at registration."
+    },
+    {
+     "t": "Synced passkey",
+     "d": "Passkey stored and synced by a cloud provider; not attestable."
+    }
+   ],
+   "trap": "Distractors often claim number matching can be turned off per group; it can't for Authenticator push.",
+   "example": "Fabrikam allows only two approved security-key models by adding their AAGUIDs to an allow list in the passkey profile with attestation enforced.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d2.1.04",
+   "objective": "d2.1",
+   "seq": 4,
+   "title": "Tenant-wide MFA settings",
+   "short": "Tenant-wide MFA settings include **Report suspicious activity**, OATH token management, phone call settings, the legacy **trusted IPs** and **remember MFA** options, plus system-preferred authentication. Most now live in the Authentication methods policy settings.",
+   "deep": "Several MFA settings apply to the whole tenant:\n- **Report suspicious activity** (Authentication methods > Settings) replaced the legacy *fraud alert*, *block/unblock users* and *notifications* features (removed March 2025). When a user reports an unrecognised MFA prompt, the user is set to **high user risk**, so risk-based Conditional Access (P2) can act. The default reporting code for voice calls is 0.\n- **OATH tokens**: TOTP (30 or 60 second) hardware tokens and software apps; up to **5** per user.\n- **Phone call settings**: custom caller ID must be a US number.\n- **Legacy MFA service settings**: *trusted IPs* (P1, up to 50 public ranges, IPv4) and *remember MFA on trusted devices*. Microsoft recommends Conditional Access named locations and **sign-in frequency** instead; remember MFA conflicts with sign-in frequency and should be disabled first.\n- **System-preferred authentication** and Authenticator *additional context* are also tenant-level choices.\n\nRevoking a user's sessions also clears any remember-MFA trust.",
+   "terms": [
+    {
+     "t": "Report suspicious activity",
+     "d": "Lets users flag unexpected MFA prompts; raises user risk to high."
+    },
+    {
+     "t": "OATH token",
+     "d": "TOTP code generator (hardware or software) used as an MFA method."
+    },
+    {
+     "t": "Trusted IPs",
+     "d": "Legacy MFA bypass for listed public IP ranges; superseded by named locations."
+    },
+    {
+     "t": "Remember MFA",
+     "d": "Legacy cookie that skips MFA for a set number of days."
+    }
+   ],
+   "trap": "Fraud alert and block/unblock answers are outdated; the current feature is Report suspicious activity.",
+   "example": "A user taps 'report' on an unexpected Authenticator prompt; ID Protection marks them high risk and the user risk policy forces a secure password change.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d2.1.05",
+   "objective": "d2.1",
+   "seq": 5,
+   "title": "Self-service password reset (SSPR)",
+   "short": "**SSPR** lets users reset or unlock their own password after proving identity with registered methods. You scope it (None, Selected, All), choose the number of methods (1 or 2), set registration rules and enable **password writeback** for hybrid users.",
+   "deep": "Configure SSPR in **Entra ID > Password reset** (at least Authentication Policy Administrator).\n- **Properties**: *None*, *Selected* (one group in the admin center) or *All*.\n- **Authentication methods**: number required (1 or 2) and allowed methods such as Authenticator notification/code, email, mobile phone, office phone, security questions. Authenticator and OATH codes count as one method, so a two-method policy needs another method too. Raising from 1 to 2 can strand users with one registered method.\n- **Registration**: *Require users to register when signing in* and *reconfirm* period (0-730 days; 0 = never). Users register at aka.ms/ssprsetup (combined registration) and reset at aka.ms/sspr.\n- **Notifications**: notify users on reset; notify all admins when another admin resets.\n- **On-premises integration**: **password writeback** (Microsoft Entra Connect Sync or Cloud Sync) writes cloud resets back to AD DS for PHS, PTA and federated users; optionally allow unlock without reset.\n\n**Administrators** use a stronger **two-gate policy** (once a custom domain or directory sync is configured, or after a 30-day trial): two methods, no security questions. Disable admin SSPR with `Update-MgPolicyAuthorizationPolicy -AllowedToUseSspr:$false`.",
+   "terms": [
+    {
+     "t": "Password writeback",
+     "d": "Sends cloud password changes/resets back to on-premises AD DS."
+    },
+    {
+     "t": "Two-gate policy",
+     "d": "Admin SSPR rule requiring two methods; security questions not allowed."
+    },
+    {
+     "t": "Combined registration",
+     "d": "Single Security info page to register MFA and SSPR methods."
+    },
+    {
+     "t": "Reconfirm period",
+     "d": "Days before users must re-confirm their SSPR info (0-730)."
+    }
+   ],
+   "trap": "Expect a hybrid scenario where resets don't reach AD DS: the answer is password writeback, not PTA or Seamless SSO.",
+   "example": "Contoso pilots SSPR for the group SSPR-Pilot with two required methods, enables writeback in Cloud Sync, then switches scope to All.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Register methods",
+     "aka.ms/sspr",
+     "Verify methods",
+     "New password",
+     "Writeback to AD"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.1.06",
+   "objective": "d2.1",
+   "seq": 6,
+   "title": "Windows Hello for Business",
+   "short": "**Windows Hello for Business (WHfB)** replaces passwords on Windows with a device-bound key pair unlocked by PIN or biometrics. For hybrid environments Microsoft recommends **cloud Kerberos trust**, which needs no PKI.",
+   "deep": "WHfB creates an asymmetric key pair during provisioning, ideally protected by the device's **TPM**, and registers the public key with Entra ID. The user unlocks it with a PIN or biometric gesture, which never leaves the device, so WHfB is **phishing-resistant** and satisfies Conditional Access *Require MFA*.\n\n**Deployment models**: cloud-only, hybrid, on-premises. **Trust types** decide how users get to on-premises AD resources:\n- **Cloud Kerberos trust** (recommended for hybrid): Entra ID issues a partial TGT through **Microsoft Entra Kerberos**; no PKI, no wait for key sync.\n- **Key trust**: device-bound key, but DCs need certificates (PKI).\n- **Certificate trust**: user certificate via AD FS registration authority.\n\nConfigure with **Intune** (settings catalog / PassportForWork CSP: *Use Windows Hello For Business*, *Use Cloud Trust For On Prem Auth*, optionally *Require Security Device*) or with **Group Policy** for unmanaged domain-joined PCs; GPO wins if both apply. Provisioning requires the user to complete **MFA** before creating the PIN. Hybrid joined devices need line of sight to a DC on first PIN use.",
+   "terms": [
+    {
+     "t": "Cloud Kerberos trust",
+     "d": "WHfB trust type using Entra Kerberos partial TGTs; no PKI needed."
+    },
+    {
+     "t": "Key trust",
+     "d": "WHfB trust type that needs DC certificates from a PKI."
+    },
+    {
+     "t": "TPM",
+     "d": "Hardware chip that protects the WHfB private key."
+    },
+    {
+     "t": "PassportForWork CSP",
+     "d": "MDM configuration service provider used by Intune for WHfB."
+    }
+   ],
+   "trap": "If a scenario says 'no PKI' and hybrid, pick cloud Kerberos trust, not key trust.",
+   "example": "A hybrid company deploys Entra Kerberos, then an Intune policy enabling WHfB with cloud trust; users set a PIN after MFA and reach file shares with SSO.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Trust",
+     "PKI needed",
+     "Best for"
+    ],
+    "rows": [
+     [
+      "Cloud Kerberos",
+      "No",
+      "Hybrid (recommended)"
+     ],
+     [
+      "Key",
+      "Yes (DC certs)",
+      "Hybrid/on-prem"
+     ],
+     [
+      "Certificate",
+      "Yes + AD FS",
+      "Cert scenarios"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.1.07",
+   "objective": "d2.1",
+   "seq": 7,
+   "title": "Disable accounts and revoke sessions",
+   "short": "To cut off a user, **disable the account** (Account enabled = No, or in AD DS for synced users) and **revoke sessions**, which invalidates refresh tokens. Existing access tokens stay valid until expiry unless the app supports **CAE**.",
+   "deep": "Blocking access has layers:\n- **Disable the account**: in the admin center clear *Account enabled*, or `Update-MgUser -UserId <id> -AccountEnabled:$false`. For synced users, disable in **AD DS** (`Disable-ADAccount`) because the source of authority is on-premises; Microsoft also recommends resetting the AD password **twice** to defeat pass-the-hash.\n- **Revoke sessions**: user Overview > *Revoke sessions*, or `Revoke-MgUserSignInSession -UserId <id>`. This invalidates **refresh tokens** and browser session cookies issued by Entra ID, and resets remember-MFA trust.\n- **Access tokens** (default lifetime about 1 hour) remain valid until they expire, except in **CAE**-capable apps (Exchange, SharePoint, Teams, Graph) that react to the revocation event in near real time.\n- App-issued session cookies must be revoked by the app.\n- **Devices**: disable the user's registered devices (`Update-MgDevice -AccountEnabled:$false`) and wipe Intune-managed devices.\n\nRoles: User Administrator for normal users; Privileged Authentication Administrator for admins; Cloud Device Administrator for devices.",
+   "terms": [
+    {
+     "t": "Revoke-MgUserSignInSession",
+     "d": "Graph PowerShell cmdlet that invalidates a user's refresh tokens."
+    },
+    {
+     "t": "Refresh token",
+     "d": "Long-lived token used to obtain new access tokens."
+    },
+    {
+     "t": "Access token",
+     "d": "Short-lived (~1 hour) token presented to a resource API."
+    },
+    {
+     "t": "CAE",
+     "d": "Continuous access evaluation; lets resources reject tokens after critical events."
+    }
+   ],
+   "trap": "Candidates assume revocation kills access instantly everywhere; non-CAE apps keep working until the access token expires.",
+   "example": "When an engineer is dismissed, HR triggers a runbook that disables the AD account, resets the password twice, revokes Entra sessions and disables their devices.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Disable account",
+     "Reset password",
+     "Revoke sessions",
+     "Disable devices",
+     "Wipe data"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.1.08",
+   "objective": "d2.1",
+   "seq": 8,
+   "title": "Microsoft Entra Password Protection",
+   "short": "**Microsoft Entra Password Protection** blocks weak passwords using a **global banned password list** plus a **custom banned list** (up to 1,000 terms), and can extend to on-premises AD DS with a DC agent and proxy. **Smart lockout** throttles password guessing.",
+   "deep": "Password Protection evaluates every password change or reset:\n1. **Normalise**: lowercase, then substitutions such as 0>o, 1>l, $>s, @>a.\n2. **Fuzzy match** banned terms (edit distance 1) and check the user's first/last name and tenant name.\n3. **Score**: each banned term found = 1 point, each remaining character = 1 point; a password needs **at least 5 points**.\n\nThe **global list** is always on and can't be edited. The **custom list** (max **1,000** terms) needs Entra ID P1/P2. Protecting synced users on-premises needs P1/P2.\n\n**On-premises**: install the **proxy service** (forwards policy downloads to Entra ID) and the **DC agent** on every domain controller; no internet access needed on DCs. Set *Enable password protection on Windows Server Active Directory* and choose **Audit** (log only, weak passwords accepted) before **Enforced** (rejected).\n\n**Smart lockout** locks after **10** failed attempts for **60 seconds** (commercial cloud), longer on repeats; it tracks the last three bad hashes and separates familiar and unfamiliar locations. Customising needs P1. With PTA, keep the Entra threshold lower and the duration longer than AD DS.",
+   "terms": [
+    {
+     "t": "Global banned password list",
+     "d": "Microsoft-maintained list of weak terms applied to all tenants."
+    },
+    {
+     "t": "Custom banned password list",
+     "d": "Up to 1,000 organisation-specific terms (P1/P2)."
+    },
+    {
+     "t": "DC agent",
+     "d": "On-premises service on each DC that enforces Password Protection."
+    },
+    {
+     "t": "Smart lockout",
+     "d": "Locks attackers out after repeated failures while sparing the real user."
+    }
+   ],
+   "trap": "Audit mode does not block anything; questions about 'test impact first' want Audit, 'reject weak passwords' wants Enforced.",
+   "example": "Woodgrove adds 'woodgrove' and its product names to the custom list, deploys the DC agent in Audit mode for two weeks, then switches to Enforced.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Normalise",
+     "Fuzzy match",
+     "Score >= 5?",
+     "Accept / reject"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.1.09",
+   "objective": "d2.1",
+   "seq": 9,
+   "title": "Microsoft Entra Kerberos for hybrid identities",
+   "short": "**Microsoft Entra Kerberos** lets Entra ID act as a cloud Key Distribution Center. It issues a **partial TGT** that on-premises DCs exchange for a full TGT, enabling WHfB cloud Kerberos trust, FIDO2 sign-in to AD resources and Azure Files authentication.",
+   "deep": "Hybrid users signing in with passwordless methods have no password-based Kerberos ticket. **Microsoft Entra Kerberos** fixes this.\n\n**How it works**: after a supported sign-in, Entra ID issues a **partial TGT** containing the user's SID but no group claims. The client sends it to an on-premises DC, which exchanges it for a **full TGT** with the complete PAC. A *cloud TGT* for the realm `KERBEROS.MICROSOFTONLINE.COM` is used directly for Azure Files and Azure SQL.\n\n**Setup**: install the `AzureADHybridAuthenticationManagement` PowerShell module and run `Set-AzureADKerberosServer` for each domain. This creates a **Microsoft Entra Kerberos server object**: a computer object that looks like an RODC (not a real server) plus the disabled user `krbtgt_AzureAD` holding the key. Credentials needed: on-premises **Domain Admins + Enterprise Admins**; in Entra ID **Hybrid Identity Administrator**. Check with `Get-AzureADKerberosServer`; rotate with `-RotateServerKey`.\n\n**Requirements**: Windows 10 2004+ clients (Entra joined or hybrid joined), patched Windows Server 2016+ DCs, users synced with onPremises SAM account name, domain name and SID attributes.",
+   "terms": [
+    {
+     "t": "Partial TGT",
+     "d": "Ticket from Entra ID with SID only, exchanged at a DC for a full TGT."
+    },
+    {
+     "t": "Kerberos server object",
+     "d": "RODC-like computer object + krbtgt_AzureAD account created in AD."
+    },
+    {
+     "t": "Set-AzureADKerberosServer",
+     "d": "Cmdlet that creates or rotates the Entra Kerberos server object."
+    },
+    {
+     "t": "Cloud TGT",
+     "d": "Ticket for KERBEROS.MICROSOFTONLINE.COM used for Azure Files/SQL."
+    }
+   ],
+   "trap": "Don't confuse the partial TGT (exchanged at a DC) with a full TGT; Entra ID never issues the full PAC itself.",
+   "example": "After running Set-AzureADKerberosServer, users signing in with FIDO2 keys open on-premises file shares without typing a password.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Passwordless sign-in",
+     "Entra partial TGT",
+     "On-prem DC",
+     "Full TGT",
+     "File share"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.2.01",
+   "objective": "d2.2",
+   "seq": 1,
+   "title": "Planning Conditional Access",
+   "short": "**Conditional Access** is Entra ID's policy engine: *if* assignments (who, what, conditions) match, *then* apply access controls (block, grant with requirements, session limits). Plan with Entra ID P1, break-glass exclusions, report-only rollout and no security defaults.",
+   "deep": "Conditional Access evaluates signals **after first-factor authentication** and decides access. Each policy has:\n- **Assignments**: users/groups/roles/guests or workload identities; target resources; conditions.\n- **Access controls**: grant (block or grant with requirements) and session controls.\n\n**All matching policies apply together**. If one blocks, access is blocked; otherwise the user must satisfy **every** grant requirement from every matching policy.\n\nPlanning checklist:\n- Licence: **Entra ID P1** (risk conditions need **P2**; workload identity policies need Workload Identities Premium).\n- **Disable security defaults** first; consider Microsoft-managed policies.\n- **Exclude emergency access (break-glass) accounts** from every policy to avoid lockout.\n- Use a naming convention and start every policy in **Report-only**.\n- Avoid conflicting policies; prefer broad baselines (MFA for all users, block legacy auth, MFA for admins).\n\nThe least-privileged role to manage policies is **Conditional Access Administrator**; Security Reader can view.",
+   "terms": [
+    {
+     "t": "Assignments",
+     "d": "The who/what/conditions part of a Conditional Access policy."
+    },
+    {
+     "t": "Access controls",
+     "d": "Grant or session requirements applied when assignments match."
+    },
+    {
+     "t": "Break-glass account",
+     "d": "Cloud-only emergency account excluded from policies."
+    },
+    {
+     "t": "Report-only",
+     "d": "Policy state that evaluates and logs without enforcing."
+    }
+   ],
+   "trap": "Policies don't have priorities; all matching policies combine and block always wins.",
+   "example": "Contoso drafts five baseline policies, excludes two break-glass accounts, runs them in report-only for two weeks, then enables them.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Signals",
+     "Assignments match?",
+     "Controls",
+     "Allow / block"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.2.02",
+   "objective": "d2.2",
+   "seq": 2,
+   "title": "Policy assignments: users, resources and conditions",
+   "short": "Assignments define scope: **users or workload identities**, **target resources** (apps, user actions, authentication context, Global Secure Access traffic) and **conditions** such as risk, device platforms, network locations, client apps and filter for devices.",
+   "deep": "**Users**: include/exclude users, groups, directory roles, guests/external users, or **workload identities** (single-tenant service principals).\n\n**Target resources**:\n- **All resources** (formerly All cloud apps), or specific apps such as the **Office 365** app group, **Microsoft Admin Portals**, and **Windows Azure Service Management API** (Azure portal, ARM, Azure PowerShell and Azure CLI).\n- **User actions**: *Register security information* and *Register or join devices*.\n- **Authentication context** (c1-c99) and Global Secure Access traffic profiles.\n- Filter for applications using custom security attributes (string only).\n\n**Conditions**:\n- **User risk / sign-in risk** (ID Protection, P2) and insider risk.\n- **Device platforms** (Android, iOS, Windows, macOS, Linux).\n- **Network/Locations**: **named locations** by IP range (can be *trusted*) or country/region; up to 195 named locations and 2,000 ranges each; *All Compliant Network locations* with Global Secure Access.\n- **Client apps**: Browser, Mobile apps and desktop clients, **Exchange ActiveSync** and **Other clients** (the last two are legacy authentication).\n- **Filter for devices** (rule syntax on device properties) and **authentication flows** (device code flow, authentication transfer).",
+   "terms": [
+    {
+     "t": "Named location",
+     "d": "IP ranges or countries used as a location condition."
+    },
+    {
+     "t": "Filter for devices",
+     "d": "Rule on device attributes to include/exclude devices."
+    },
+    {
+     "t": "User actions",
+     "d": "Targets such as Register security information instead of an app."
+    },
+    {
+     "t": "Windows Azure Service Management API",
+     "d": "Target covering Azure portal, ARM, Azure CLI and PowerShell."
+    }
+   ],
+   "trap": "To block legacy authentication select the client app types Exchange ActiveSync clients and Other clients, not Browser.",
+   "example": "A policy targets the Register security information action and requires users to be inside the HQ trusted location to register MFA.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Users / workload IDs",
+     "Target resources",
+     "Conditions",
+     "Grant controls",
+     "Session controls"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.2.03",
+   "objective": "d2.2",
+   "seq": 3,
+   "title": "Grant controls",
+   "short": "Grant controls either **Block access** or **Grant access** with requirements: MFA, **authentication strength**, compliant or hybrid joined device, app protection policy, password change, risk remediation or terms of use, combined with *Require all* or *Require one*.",
+   "deep": "Grant options:\n- **Block access**.\n- **Require multifactor authentication**.\n- **Require authentication strength**: built-in *Multifactor authentication*, *Passwordless MFA*, *Phishing-resistant MFA* (FIDO2, WHfB/platform credential, multifactor CBA) or custom strengths. You can't use Require MFA and Require authentication strength in the same policy.\n- **Require device to be marked as compliant** (Intune or supported partner MDM) and **Require Microsoft Entra hybrid joined device**.\n- **Require app protection policy** (Intune MAM). *Require approved client app* is retiring; new policies should use app protection policy.\n- **Require password change** (user risk; must target All resources; can't combine with other controls) and **Require risk remediation**.\n- **Terms of use** (appears once created) and custom controls (preview).\n\nMultiple controls: **Require all the selected controls** (AND, default) or **Require one of the selected controls** (OR).\n\nIn Graph JSON this is `grantControls` with `operator` (AND/OR), `builtInControls` (e.g. `mfa`, `compliantDevice`, `domainJoinedDevice`, `block`) and optional `authenticationStrength`.",
+   "terms": [
+    {
+     "t": "Authentication strength",
+     "d": "Named set of allowed method combinations required by a policy."
+    },
+    {
+     "t": "Phishing-resistant MFA",
+     "d": "Built-in strength: FIDO2, WHfB, multifactor CBA."
+    },
+    {
+     "t": "Require one of the selected controls",
+     "d": "OR logic between grant controls."
+    },
+    {
+     "t": "App protection policy",
+     "d": "Intune MAM policy protecting data in apps without enrolment."
+    }
+   ],
+   "trap": "If the requirement is 'phishing-resistant', Require MFA is wrong because SMS and push also satisfy it.",
+   "example": "Admins must use phishing-resistant MFA, so a policy targeting admin roles requires the Phishing-resistant MFA authentication strength.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d2.2.04",
+   "objective": "d2.2",
+   "seq": 4,
+   "title": "Testing and troubleshooting policies",
+   "short": "Test policies with **report-only mode**, the **What If** tool and sign-in logs. Troubleshoot with the sign-in log's Conditional Access and Report-only tabs and the **Conditional Access insights and reporting** workbook.",
+   "deep": "**Report-only mode** evaluates a policy on real sign-ins without enforcing it. Each sign-in log entry shows results:\n- *Report-only: Success* - conditions met, controls already satisfied.\n- *Report-only: Failure* - conditions met, a non-interactive control (block, compliant device) would fail.\n- *Report-only: User action required* - user would have been prompted (e.g. MFA) but wasn't.\n- *Report-only: Not applied* - conditions not met.\nCaveat: report-only policies requiring compliant devices can still prompt macOS/iOS/Android users for a certificate, so exclude those platforms.\n\n**What If** simulates a sign-in (user or service principal, app, platform, client app, location, risk...) and lists policies that **would apply** and those that **wouldn't**, with the reason. It evaluates only **enabled and report-only** policies, and omitted inputs count as none.\n\n**Sign-in logs** > Conditional Access tab show Success, Failure or Not applied per policy; the `SigninLogs` table exposes `ConditionalAccessStatus` and `ConditionalAccessPolicies` in Log Analytics.\n\nThe **insights and reporting workbook** needs Entra ID P1 and a **Log Analytics workspace** receiving sign-in logs.",
+   "terms": [
+    {
+     "t": "What If tool",
+     "d": "Simulates a sign-in to show which policies apply and why."
+    },
+    {
+     "t": "Report-only: User action required",
+     "d": "User would have been prompted; not enforced."
+    },
+    {
+     "t": "ConditionalAccessStatus",
+     "d": "SigninLogs column: success, failure or notApplied."
+    },
+    {
+     "t": "Insights and reporting workbook",
+     "d": "Azure Monitor workbook showing policy impact."
+    }
+   ],
+   "trap": "What If ignores policies that are Off; turn them to report-only to include them.",
+   "example": "Before enabling a block policy, the admin runs What If for a sales user on iOS from a hotel IP and sees the policy would block them.",
+   "diagram": {
+    "kind": "cycle",
+    "items": [
+     "Report-only",
+     "What If",
+     "Review logs",
+     "Adjust",
+     "Enable"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.2.05",
+   "objective": "d2.2",
+   "seq": 5,
+   "title": "Session management",
+   "short": "Session controls limit what happens after access is granted: **sign-in frequency**, **persistent browser session**, app enforced restrictions, Conditional Access App Control, customise **CAE**, token protection and resilience defaults.",
+   "deep": "Entra ID's default is a **rolling 90-day** session window: users aren't re-prompted while nothing changes. Session controls tighten this:\n- **Sign-in frequency**: reauthenticate after a set number of **hours or days**, or **Every time** (full reauth each evaluation, allowing 5 minutes of clock skew; use sparingly, with MFA). Disable legacy *remember MFA* first to avoid odd prompts.\n- **Persistent browser session**: *Always persistent* or *Never persistent*, overriding the 'Stay signed in?' prompt; requires the policy to target All resources.\n- **Use app enforced restrictions**: Exchange Online and SharePoint give a limited, browser-only experience on unmanaged devices.\n- **Use Conditional Access App Control**: routes the session through Microsoft Defender for Cloud Apps for real-time monitoring.\n- **Customize continuous access evaluation** and **Disable resilience defaults** (deny access when sessions expire during an outage rather than extending them).\n- **Require token protection for sign-in sessions**: binds tokens to the device (native Exchange, SharePoint, Teams on Windows, macOS, iOS).\n- **Use Global Secure Access security profile**.\n\nIn Graph JSON, `sessionControls.signInFrequency` has `value`, `type` (`hours`/`days`), `frequencyInterval` and `isEnabled`.",
+   "terms": [
+    {
+     "t": "Sign-in frequency",
+     "d": "How long before a user must reauthenticate."
+    },
+    {
+     "t": "Persistent browser session",
+     "d": "Whether the browser keeps the session after closing."
+    },
+    {
+     "t": "Token protection",
+     "d": "Binds sign-in session tokens to the device to stop replay."
+    },
+    {
+     "t": "Resilience defaults",
+     "d": "Extends existing sessions during an Entra outage."
+    }
+   ],
+   "trap": "Sign-in frequency is not the same as MFA: it forces reauthentication but MFA is only required if a grant control asks for it.",
+   "example": "For unmanaged devices accessing Microsoft 365, admins set sign-in frequency to 8 hours and persistent browser session to Never persistent.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d2.2.06",
+   "objective": "d2.2",
+   "seq": 6,
+   "title": "Device-enforced restrictions",
+   "short": "Device-based controls tie access to device state: **Require device to be marked as compliant** (Intune), **Require Microsoft Entra hybrid joined device**, **filter for devices**, app protection policies, and **app enforced restrictions** for limited access on unmanaged devices.",
+   "deep": "Ways to enforce device trust in Conditional Access:\n- **Compliant device**: Microsoft Intune (or a supported partner MDM) evaluates compliance policies and writes *isCompliant* to the Entra device object. Supports Windows, macOS, iOS, Android and Linux Ubuntu. Browsers must send device identity; Edge InPrivate counts as non-compliant.\n- **Hybrid joined device**: domain-joined Windows devices synced to Entra ID.\n- Combine with *Require one of the selected controls* to accept compliant **or** hybrid joined devices.\n- **Filter for devices**: include/exclude by properties like `trustType`, `isCompliant`, `model` or `extensionAttribute1-15` (e.g. block everything except privileged access workstations). Replaces the deprecated *device state* condition.\n- **App protection policy** (Intune MAM) for BYOD phones without enrolment.\n- **App enforced restrictions** session control: Exchange Online and SharePoint Online receive device info and give **limited, browser-only** access (no download, print or sync) to unmanaged devices. SharePoint can create these policies via `Set-SPOTenant -ConditionalAccessPolicy AllowLimitedAccess`.\n- **Device platforms** condition can block unsupported OSes (include any, exclude supported, Block).",
+   "terms": [
+    {
+     "t": "Compliant device",
+     "d": "Device that meets Intune compliance policy, flagged isCompliant."
+    },
+    {
+     "t": "Hybrid joined",
+     "d": "AD domain-joined Windows device also registered in Entra ID."
+    },
+    {
+     "t": "App enforced restrictions",
+     "d": "Session control giving limited web-only access to unmanaged devices."
+    },
+    {
+     "t": "Intune MAM",
+     "d": "Mobile application management protecting data inside apps."
+    }
+   ],
+   "trap": "For BYOD without enrolment, compliant device is wrong; choose app protection policy.",
+   "example": "Contractors on personal laptops can open SharePoint only in the browser with no downloads because of app enforced restrictions.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Need",
+     "Control"
+    ],
+    "rows": [
+     [
+      "Corporate managed",
+      "Compliant device"
+     ],
+     [
+      "Domain-joined PCs",
+      "Hybrid joined"
+     ],
+     [
+      "BYOD phone",
+      "App protection policy"
+     ],
+     [
+      "Unmanaged browser",
+      "App enforced restr."
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.2.07",
+   "objective": "d2.2",
+   "seq": 7,
+   "title": "Continuous access evaluation (CAE)",
+   "short": "**Continuous access evaluation** lets CAE-capable services such as Exchange Online, SharePoint, Teams and Microsoft Graph reject tokens in near real time after **critical events** or IP location changes, instead of waiting up to an hour.",
+   "deep": "Normally an access token lives about **1 hour**, so revoking a user takes effect only when it expires. With **CAE** (based on the OpenID CAEP standard), Entra ID and the resource stay in conversation.\n\n**Critical events** (no policy needed): user deleted or disabled, password changed or reset, MFA enabled for the user, admin **revokes all refresh tokens**, **high user risk** detected. Latency is near real time (up to ~15 minutes).\n\n**IP location policy evaluation**: resource providers enforce Conditional Access **IP-based named locations** instantly. Country/region locations and MFA trusted IPs aren't enforced by CAE. More than 5,000 IP ranges disables instant location enforcement.\n\nBecause tokens can be revoked, CAE-capable clients get **long-lived tokens up to 28 hours**. Clients must handle a *claims challenge* (401 with insufficient_claims).\n\nCAE is on by default; the session control **Customize continuous access evaluation** can disable it only when the policy targets All resources with no conditions, or set **strict location enforcement**. Split-tunnel or shared egress IPs can cause blocks; add all egress IPs (IPv4 and IPv6) to named locations. Guest users and policy/group changes aren't instantly enforced.",
+   "terms": [
+    {
+     "t": "Critical event",
+     "d": "Change (disable, password reset, revocation, high risk) pushed to resources."
+    },
+    {
+     "t": "Claims challenge",
+     "d": "401 response telling a client to get a fresh token."
+    },
+    {
+     "t": "Strict location enforcement",
+     "d": "CAE mode removing the IP mismatch exception."
+    },
+    {
+     "t": "Long-lived token",
+     "d": "Up to 28-hour token issued to CAE-capable clients."
+    }
+   ],
+   "trap": "CAE doesn't apply to country/region named locations; only IP-based ranges are evaluated instantly.",
+   "example": "A user's account is disabled at 10:00; their open Outlook session loses access to Exchange Online within minutes thanks to CAE.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Critical event",
+     "Entra ID",
+     "Resource notified",
+     "Claims challenge",
+     "Reauth / deny"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.2.08",
+   "objective": "d2.2",
+   "seq": 8,
+   "title": "Authentication context",
+   "short": "**Authentication context** labels (c1 to c99) let apps request step-up controls for sensitive data or actions. You create a context, target it in a Conditional Access policy, and apps such as SharePoint, Defender for Cloud Apps or PIM trigger it.",
+   "deep": "Ordinary policies apply when a user opens an app. **Authentication context** applies when the user touches something sensitive *inside* an app.\n\nCreate it in **Conditional Access > Authentication contexts**: display name, description, **Publish to apps** (so apps can use it) and a read-only ID **c1-c99** (up to 99 contexts).\n\nThen build a Conditional Access policy whose **Target resources** = *Authentication context* and choose grant controls such as phishing-resistant MFA, compliant device or terms of use. In Graph JSON this appears as `applications.includeAuthenticationContextClassReferences`, e.g. `[\"c1\"]`.\n\nConsumers:\n- **SharePoint/Teams/M365 groups** via **sensitivity labels** or site settings.\n- **Microsoft Defender for Cloud Apps** session policies (step-up before download).\n- **PIM** role setting *On activation, require Microsoft Entra Conditional Access authentication context*.\n- **Protected actions** in Entra ID.\n- Custom apps request the `acrs` claim and handle claims challenges.\n\nTo delete a context, first remove it from policies and unpublish it.",
+   "terms": [
+    {
+     "t": "Authentication context",
+     "d": "Tag c1-c99 that apps use to require step-up controls."
+    },
+    {
+     "t": "Publish to apps",
+     "d": "Makes a context available for apps to assign."
+    },
+    {
+     "t": "acrs claim",
+     "d": "Token claim listing satisfied authentication contexts."
+    },
+    {
+     "t": "Step-up authentication",
+     "d": "Extra verification when accessing sensitive resources."
+    }
+   ],
+   "trap": "Authentication context can't be combined with other target resources in the same policy; it's its own target type.",
+   "example": "The HR site carries a sensitivity label linked to context c2, so opening it requires a compliant device even though the rest of SharePoint doesn't.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Create context c1",
+     "CA policy on c1",
+     "Tag resource",
+     "User opens it",
+     "Step-up"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.2.09",
+   "objective": "d2.2",
+   "seq": 9,
+   "title": "Protected actions",
+   "short": "**Protected actions** require a Conditional Access policy (through an authentication context) to be satisfied right when an admin performs specific high-impact permissions, such as changing Conditional Access policies or hard-deleting directory objects.",
+   "deep": "Role assignment decides *whether* an admin may do something; **protected actions** add *how strongly* they must have authenticated at that moment.\n\nProtectable permissions include:\n- Conditional Access policy create, update and delete.\n- Cross-tenant access settings (B2B collaboration, direct connect, tenant restrictions).\n- **Hard delete** of directory objects (`microsoft.directory/deletedItems/delete`).\n- Named location create, update and delete.\n- Updating authentication context definitions.\n\nSetup order (Conditional Access Administrator or Security Administrator, Entra ID P1):\n1. Create an **authentication context** and a Conditional Access policy targeting it (e.g. phishing-resistant MFA, compliant device), excluding a break-glass account.\n2. In **Roles & admins > Protected actions**, assign the context to the chosen permissions.\n3. Test: performing the action prompts for step-up.\n\nEnforcement happens at the time of the action, not at sign-in or PIM activation, and regardless of which role grants the permission. Supported in the admin center, Graph PowerShell and Graph Explorer; Azure PowerShell can fail. Don't use it to block identities - use role assignments for authorisation.",
+   "terms": [
+    {
+     "t": "Protected action",
+     "d": "Permission that requires a CA policy at the moment it's used."
+    },
+    {
+     "t": "Hard delete",
+     "d": "Permanent deletion from the deleted items container."
+    },
+    {
+     "t": "Step-up",
+     "d": "Extra authentication requested mid-session."
+    },
+    {
+     "t": "deletedItems/delete",
+     "d": "Permission for permanently deleting directory objects."
+    }
+   ],
+   "trap": "Protected actions use authentication context; they aren't PIM settings and aren't evaluated at role activation.",
+   "example": "An admin already signed in with a password and push MFA tries to edit a Conditional Access policy and is prompted for a FIDO2 key first.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Auth context",
+     "CA policy",
+     "Map permission",
+     "Admin acts",
+     "Step-up"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.2.10",
+   "objective": "d2.2",
+   "seq": 10,
+   "title": "Creating a policy from a template",
+   "short": "**Conditional Access templates** create Microsoft-recommended policies in a few clicks. Templates are grouped (Secure foundation, Zero Trust, Remote work, Protect administrators, Emerging threats, AI agents) and new policies start in **report-only** mode.",
+   "deep": "Go to **Entra ID > Conditional Access > Create new policy from templates**. Pick a category and template; review the summary or the JSON; create.\n\nExamples of *Secure foundation* templates:\n- Require MFA for admins / for admins accessing Microsoft admin portals.\n- Securing security info registration.\n- Block legacy authentication.\n- Require MFA for all users and for Azure management.\n- Require compliant or hybrid joined device or MFA for all users.\n\nKey behaviours:\n- Policies are created in **Report-only** state; you switch them to On after review.\n- Templates targeting users exclude **only the admin who creates the policy**; edit the policy afterwards to exclude break-glass accounts.\n- The resulting policy is an ordinary policy and can be edited.\n- You can **export** a policy as JSON and re-import it with **Upload policy file** to copy policies between tenants.\n\nTemplates are a fast way to implement Microsoft baselines; **Microsoft-managed policies** are a separate set Microsoft creates automatically in some tenants.",
+   "terms": [
+    {
+     "t": "Policy template",
+     "d": "Prebuilt Conditional Access policy following Microsoft guidance."
+    },
+    {
+     "t": "Secure foundation",
+     "d": "Template category recommended as every tenant's baseline."
+    },
+    {
+     "t": "Upload policy file",
+     "d": "Import a policy from exported JSON."
+    },
+    {
+     "t": "Microsoft-managed policy",
+     "d": "Policy Microsoft creates and maintains in a tenant."
+    }
+   ],
+   "trap": "Templates don't automatically exclude your emergency access accounts; only the creator is excluded.",
+   "example": "An admin creates 'Block legacy authentication' from a template, reviews report-only results for a week, adds break-glass exclusions and turns it on.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d2.3.01",
+   "objective": "d2.3",
+   "seq": 1,
+   "title": "Managing user risk",
+   "short": "**User risk** is the probability that an account is compromised (e.g. leaked credentials). Manage it with a Conditional Access **user risk** policy - Microsoft recommends **High** risk with **Require risk remediation** or secure password change and sign-in frequency **Every time**.",
+   "deep": "**Microsoft Entra ID Protection** (full features need **Entra ID P2** or Entra Suite) calculates user risk from detections such as leaked credentials, anomalous user activity, attacker in the middle or user-reported suspicious activity.\n\nThe **legacy ID Protection user risk policy** retires on **1 October 2026**; configure risk policies in **Conditional Access** instead:\n- Users: All users, exclude break-glass accounts.\n- Target resources: **All resources**.\n- Condition: **User risk = High** (recommended).\n- Grant: **Require risk remediation** (adds authentication strength and Every time automatically) or *Require MFA* + **Require password change**.\n- Session: **Sign-in frequency = Every time**.\n- Start in report-only.\n\nRemediation: password users do MFA then a **secure password change**; passwordless users have sessions revoked and reauthenticate. Users must be **MFA-registered beforehand**, otherwise they're blocked. Hybrid users need **password writeback**. Optionally *Allow on-premises password change to reset user risk* (needs PHS).\n\nKeep user risk and sign-in risk in **separate** policies. Least-privileged role: Conditional Access Administrator.",
+   "terms": [
+    {
+     "t": "User risk",
+     "d": "Likelihood the identity itself is compromised."
+    },
+    {
+     "t": "Require risk remediation",
+     "d": "Grant letting users self-remediate user risk."
+    },
+    {
+     "t": "Secure password change",
+     "d": "Password change after MFA that clears user risk."
+    },
+    {
+     "t": "Microsoft Entra ID Protection",
+     "d": "Service that detects and scores identity risk (P2)."
+    }
+   ],
+   "trap": "Users not registered for MFA can't self-remediate; they're blocked until an admin intervenes.",
+   "example": "Leaked credentials put Ana at high user risk; at next sign-in she completes MFA, changes her password, and her risk becomes Remediated.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Detection",
+     "User risk High",
+     "CA policy",
+     "MFA",
+     "Secure pwd change"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.3.02",
+   "objective": "d2.3",
+   "seq": 2,
+   "title": "Managing sign-in risk",
+   "short": "**Sign-in risk** is the probability that a specific authentication wasn't made by the account owner. Microsoft recommends a Conditional Access **sign-in risk** policy for **Medium and High** risk requiring MFA (authentication strength) with sign-in frequency Every time.",
+   "deep": "Sign-in risk is calculated per sign-in in **real time** (and sometimes offline). Examples:\n- **Anonymous IP address** (Tor, anonymous VPN) - real-time, available without P2.\n- **Atypical travel**, **Unfamiliar sign-in properties** - real-time, premium.\n- **Impossible travel**, **Malicious IP address**, **Token issuer anomaly**, **Activity from anonymous IP** - offline, premium.\n- **Password spray** - fires when a sprayed password succeeds.\nWithout P2, premium detections show as **Additional risk detected**.\n\nRecommended Conditional Access policy:\n- All users (exclude break-glass), All resources.\n- **Sign-in risk = Medium and High**.\n- Grant: **Require authentication strength** (Multifactor, or Passwordless/Phishing-resistant for passwordless users).\n- Session: **Sign-in frequency = Every time**.\n\nA user who passes MFA self-remediates the sign-in risk (state becomes *Remediated*). Sign-ins from **trusted named locations** improve risk accuracy. The legacy ID Protection sign-in risk policy also retires on 1 October 2026. In Graph JSON, the condition is `signInRiskLevels`.",
+   "terms": [
+    {
+     "t": "Sign-in risk",
+     "d": "Probability a given sign-in isn't the legitimate user."
+    },
+    {
+     "t": "Real-time detection",
+     "d": "Calculated during the sign-in so policies can act immediately."
+    },
+    {
+     "t": "Offline detection",
+     "d": "Calculated after the sign-in from later analysis."
+    },
+    {
+     "t": "Additional risk detected",
+     "d": "Placeholder shown for premium detections without P2."
+    }
+   ],
+   "trap": "Leaked credentials is a user risk detection, not a sign-in risk one.",
+   "example": "A sign-in from a Tor exit node is rated medium risk; the policy demands MFA, the real user completes it and the risk is remediated.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d2.3.03",
+   "objective": "d2.3",
+   "seq": 3,
+   "title": "Managing MFA registration",
+   "short": "Get users registered for MFA through the **Authentication methods policy** (combined registration), **registration campaigns** that nudge users toward Microsoft Authenticator or passkeys, the ID Protection **MFA registration policy**, and a Conditional Access policy protecting *Register security information*.",
+   "deep": "Users can't answer MFA or remediate risk until they've registered a method.\n\n**Registration campaign** (Authentication methods > Registration campaign) nudges users during sign-in:\n- States: **Microsoft managed**, **Enabled**, **Disabled**.\n- Targets **one** method at a time: **Microsoft Authenticator** or **passkey (FIDO2)**.\n- **Days allowed to snooze**: 0-14 (default 1). **Limited number of snoozes** on = after three snoozes registration is required.\n- Authenticator nudges appear only to users enabled for Authenticator push who performed MFA with **SMS or voice**.\n\n**ID Protection MFA registration policy** (P2) requires users in scope to register; they get **14 days** to do it after first being prompted.\n\n**Conditional Access**: target the user action **Register security information** - e.g. require a trusted location or compliant device, or allow a TAP - to stop attackers registering their own methods. Template: *Securing security info registration*.\n\n**Temporary Access Pass** helps users with no method bootstrap passwordless registration. Track progress with the **authentication methods activity** / registration details reports.",
+   "terms": [
+    {
+     "t": "Registration campaign",
+     "d": "Nudge prompting users to set up Authenticator or a passkey."
+    },
+    {
+     "t": "Snooze",
+     "d": "User choice to postpone a registration nudge."
+    },
+    {
+     "t": "MFA registration policy",
+     "d": "ID Protection policy requiring MFA registration within 14 days."
+    },
+    {
+     "t": "Register security information",
+     "d": "CA user action covering MFA/SSPR registration."
+    }
+   ],
+   "trap": "Campaign and registration policy are different features: the campaign only nudges toward one method, the ID Protection policy requires registration.",
+   "example": "Contoso runs a passkey registration campaign with a 3-day snooze and protects Register security information so it's only allowed from the office network.",
+   "diagram": null
+  },
+  {
+   "id": "sc-300.d2.3.04",
+   "objective": "d2.3",
+   "seq": 4,
+   "title": "Investigating and remediating risky users and sign-ins",
+   "short": "ID Protection reports - **Risky users**, **Risky sign-ins** and **Risk detections** - let admins investigate and act: **confirm compromised**, **dismiss risk**, **reset password**, **block sign-in** or confirm sign-ins safe. Microsoft Graph PowerShell automates these actions.",
+   "deep": "**Reports** (Entra admin center > ID Protection):\n- **Risky users**: risk level, state (At risk, Remediated, Dismissed, Confirmed compromised) and risk history.\n- **Risky sign-ins**: per-sign-in details, detection types, location, device.\n- **Risk detections**: every detection with type, real-time/offline, timing.\nViewing needs Security Reader, Security Operator or Security Administrator.\n\n**Admin actions**:\n- **Confirm user compromised** - feeds the model and raises risk.\n- **Dismiss user risk** - clears risk without a password change (for false positives).\n- **Reset password** (temporary password) - remediates risk.\n- **Block user** from signing in.\n- On sign-ins: **Confirm sign-in safe** or **compromised**.\n\nFor confirmed compromise: require a password change, block the user if the attacker may control MFA, **revoke refresh tokens**, disable devices.\n\n**Graph PowerShell** (`Microsoft.Graph.Identity.SignIns`): `Get-MgRiskyUser -Filter \"RiskLevel eq 'high'\"`, `Get-MgRiskDetection`, `Get-MgRiskyUserHistory`, `Confirm-MgRiskyUserCompromised -UserIds ...`, `Invoke-MgDismissRiskyUser -UserIds ...`. Data can be streamed to Log Analytics via diagnostic settings.",
+   "terms": [
+    {
+     "t": "Risky users report",
+     "d": "List of users with current risk level and state."
+    },
+    {
+     "t": "Dismiss user risk",
+     "d": "Admin action clearing risk without changing the password."
+    },
+    {
+     "t": "Confirm user compromised",
+     "d": "Admin action marking a user as truly compromised."
+    },
+    {
+     "t": "Invoke-MgDismissRiskyUser",
+     "d": "Cmdlet to dismiss risk for one or many users."
+    }
+   ],
+   "trap": "Dismissing risk does not change the password; if the account was actually compromised you must still reset it.",
+   "example": "An analyst sees a risky sign-in from a new country, calls the user, finds they're on holiday and confirms the sign-in safe.",
+   "diagram": {
+    "kind": "cycle",
+    "items": [
+     "Detect",
+     "Investigate",
+     "Confirm / dismiss",
+     "Remediate",
+     "Monitor"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.3.05",
+   "objective": "d2.3",
+   "seq": 5,
+   "title": "Risky workload identities",
+   "short": "ID Protection also scores **workload identities** (service principals and apps). Detections such as leaked credentials or suspicious sign-ins appear in **Risky workload identities**; with **Workload Identities Premium** you can block risky service principals with Conditional Access.",
+   "deep": "Apps and automation sign in as **service principals**, so they can be compromised too.\n\n**Scope**: single-tenant apps, non-Microsoft SaaS apps and multitenant apps. **Managed identities aren't in scope** today.\n\n**Detections** (offline): Microsoft Entra threat intelligence, **suspicious sign-ins**, admin confirmed service principal compromised, **leaked credentials** (secrets found in public code or paste sites), malicious application, suspicious application, anomalous service principal activity, suspicious API traffic.\n\n**Licensing**: detections fire for everyone, but full details and **risk-based Conditional Access** need **Workload Identities Premium**.\n\n**Conditional Access for workload identities**: assign *Workload identities* instead of users, target **single-tenant service principals registered in your tenant**, condition *Service principal risk*, grant **Block access**.\n\n**Investigate** in ID Protection > **Risky workload identities** (Security Administrator/Operator/Reader) or Graph `riskyServicePrincipals` and `servicePrincipalRiskDetections`. Actions: dismiss, confirm compromised, **Disable service principal**.\n\n**Remediate**: inventory credentials, add a new credential (preferably a certificate), remove compromised credentials, and rotate any Key Vault secrets the identity can reach.",
+   "terms": [
+    {
+     "t": "Workload identity",
+     "d": "Non-human identity such as an app's service principal."
+    },
+    {
+     "t": "Workload Identities Premium",
+     "d": "Licence for workload risk details and CA."
+    },
+    {
+     "t": "Service principal risk",
+     "d": "CA condition based on workload identity risk."
+    },
+    {
+     "t": "Leaked credentials (workload)",
+     "d": "App secret or certificate found exposed publicly."
+    }
+   ],
+   "trap": "Managed identities and multitenant apps can't be targeted by workload identity Conditional Access policies.",
+   "example": "GitHub scanning finds an app's client secret; ID Protection flags leaked credentials, and the admin adds a certificate, deletes the secret and rotates Key Vault keys.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Leaked secret",
+     "Risk detected",
+     "Investigate",
+     "Rotate creds",
+     "Dismiss risk"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.4.01",
+   "objective": "d2.4",
+   "seq": 1,
+   "title": "Deploying Global Secure Access clients",
+   "short": "**Global Secure Access** is Microsoft's Security Service Edge (SSE). Devices send traffic to it through the **Global Secure Access client** (Windows, macOS, Android, iOS) or, for branch offices, through **remote networks** over IPsec without a client.",
+   "deep": "Traffic forwarding profiles decide *what* goes to Global Secure Access; the client decides *how* traffic leaves the device.\n\n**Windows client**:\n- 64-bit Windows 10/11 (or Arm64 Windows 11 with its own installer), device **Microsoft Entra joined, hybrid joined or registered** (registered devices support **Private Access traffic only**).\n- Install manually, silently (`/quiet`) or as an **Intune Win32 app**; needs local admin to install.\n- Uses a lightweight filter driver, not a VPN, so it can coexist with VPNs.\n- Recommended: prefer IPv4, disable **QUIC** (block UDP 443) and **DNS over HTTPS** in browsers, because Internet Access doesn't support them.\n- Registry `RestrictNonPrivilegedUsers` stops non-admins disabling the client; `HideDisableButton` hides the button.\n- Tray icon, advanced diagnostics and log collection help troubleshooting.\n\n**macOS** and **iOS** have their own clients; on **Android** the client is built into the **Microsoft Defender** app (deployed via Intune app configuration).\n\n**Remote networks**: the branch router (CPE) builds an IPsec/IKEv2 tunnel with BGP to Global Secure Access; associate the Microsoft and/or Internet Access profiles. Private Access requires the client.",
+   "terms": [
+    {
+     "t": "Security Service Edge (SSE)",
+     "d": "Cloud-delivered network security: ZTNA, SWG, CASB."
+    },
+    {
+     "t": "Global Secure Access client",
+     "d": "Agent that acquires traffic for the forwarding profiles."
+    },
+    {
+     "t": "Remote network",
+     "d": "Branch connectivity via IPsec tunnel from a CPE device."
+    },
+    {
+     "t": "QUIC",
+     "d": "UDP-based HTTP/3 transport not supported by Internet Access."
+    }
+   ],
+   "trap": "On a Microsoft Entra registered Windows device, the client only acquires Private Access traffic.",
+   "example": "IT packages GlobalSecureAccessClient.exe as an Intune Win32 app with a script that prefers IPv4, and blocks QUIC with a firewall rule.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Device + client",
+     "Forwarding profile",
+     "SSE edge",
+     "Policy",
+     "Destination"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.4.02",
+   "objective": "d2.4",
+   "seq": 2,
+   "title": "Microsoft Entra Private Access",
+   "short": "**Microsoft Entra Private Access** is a zero-trust replacement for VPN. Users reach private apps through the Global Secure Access client and **private network connectors** on-premises, using **Quick Access** for broad access or **per-app** enterprise applications for granular control.",
+   "deep": "**Components**:\n- **Private network connector**: lightweight Windows Server agent inside the private network making outbound-only connections to Global Secure Access (same connector as Application Proxy; version 1.5.3417.0+ for Private Access). Grouped into **connector groups** for redundancy.\n- **Application segments**: destination (IPv4 address, FQDN incl. wildcards like `*.contoso.com`, CIDR range or IP-to-IP range) + ports + protocol; up to 500 per app. NetBIOS names aren't supported.\n- **Private DNS**: DNS suffixes so users can use internal short names; also used for Kerberos SSO to DCs.\n\n**Quick Access**: one app holding many segments - quick VPN replacement, described as a transition state.\n**Per-app access**: separate **Global Secure Access enterprise applications** with their own segments, user assignments and **Conditional Access** policies. A per-app segment overrides an overlapping Quick Access segment.\n\n**Steps**: connector group > configure Quick Access/app with segments > assign users/groups (**direct or group, no nested groups**) > Conditional Access policies > enable the **Private Access traffic forwarding profile**.\n\nRoles: Global Secure Access Administrator and Application Administrator. Licence: Microsoft Entra Private Access or Microsoft Entra Suite.",
+   "terms": [
+    {
+     "t": "Private network connector",
+     "d": "Outbound-only agent that brokers traffic to private apps."
+    },
+    {
+     "t": "Quick Access",
+     "d": "Single Private Access app grouping many segments, VPN-style."
+    },
+    {
+     "t": "Per-app access",
+     "d": "Individual Global Secure Access enterprise apps with their own policies."
+    },
+    {
+     "t": "Application segment",
+     "d": "Destination + port + protocol definition for Private Access."
+    }
+   ],
+   "trap": "Nested group membership doesn't grant Private Access; assign users directly or via a directly assigned group.",
+   "example": "Fabrikam replaces VPN with Quick Access for 10.0.0.0/16, then moves the finance server to its own app requiring a compliant device.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Client",
+     "Private Access",
+     "Connector group",
+     "Private app"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.4.03",
+   "objective": "d2.4",
+   "seq": 3,
+   "title": "Microsoft Entra Internet Access",
+   "short": "**Microsoft Entra Internet Access** is an identity-centric secure web gateway. You build **web content filtering policies**, group them into **security profiles**, and apply them through the **baseline profile** or Conditional Access session control *Use Global Secure Access security profile*.",
+   "deep": "**Web content filtering policies** contain rules that **allow or block** by **web category**, **FQDN** (e.g. `*.contoso.com,contoso.com`) or URL. When rules conflict, **block wins**.\n\n**Security profiles** group policies (web filtering, TLS inspection, threat intelligence...) with priorities. A profile reaches users in two ways:\n- The **baseline profile** (priority 65000, evaluated last) applies to **all** Internet Access traffic, including remote networks, with no Conditional Access policy.\n- A **Conditional Access** policy targeting **All internet resources with Global Secure Access**, with session control **Use Global Secure Access security profile**, applies a profile to specific users or groups.\n\n**TLS inspection** decrypts HTTPS to enforce rules such as HTTP method or full URL; it needs a certificate authority (Microsoft-managed or your own) whose root certificate devices must trust. FQDN filtering works without it using SNI.\n\nPrerequisites: enable the **Internet Access traffic forwarding profile**, deploy clients, disable QUIC and DNS over HTTPS. Licence: Microsoft Entra Internet Access or Entra Suite. Changes can take 60-90 minutes to apply via new tokens; check **Traffic logs**.",
+   "terms": [
+    {
+     "t": "Web content filtering",
+     "d": "Allow/block rules by web category, FQDN or URL."
+    },
+    {
+     "t": "Security profile",
+     "d": "Container of Internet Access policies applied to traffic."
+    },
+    {
+     "t": "Baseline profile",
+     "d": "Tenant-wide profile applied to all Internet Access traffic."
+    },
+    {
+     "t": "TLS inspection",
+     "d": "Decrypting HTTPS at the edge to inspect content."
+    }
+   ],
+   "trap": "Linking a security profile to users is done through a Conditional Access session control, not by assigning the profile directly.",
+   "example": "Contoso blocks the Gambling category for everyone in the baseline profile and blocks social media only for the Call Centre group via Conditional Access.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Conditional Access",
+     "Security profile",
+     "Filtering policy",
+     "Rules: category/FQDN"
+    ]
+   }
+  },
+  {
+   "id": "sc-300.d2.4.04",
+   "objective": "d2.4",
+   "seq": 4,
+   "title": "The Microsoft traffic profile",
+   "short": "The **Microsoft traffic profile** sends Microsoft 365 traffic (Exchange Online, SharePoint/OneDrive, Teams, Microsoft 365 Common and Office Online) through Global Secure Access, enabling **compliant network** checks, **universal tenant restrictions** and source IP restoration.",
+   "deep": "Enable it in **Global Secure Access > Connect > Traffic forwarding** (Global Secure Access Administrator). It contains **policy groups**: Exchange Online; SharePoint Online and OneDrive; Microsoft Teams; Microsoft 365 Common and Office Online. Each rule has destination (FQDN or IP subnet), ports, protocol and action **Forward** or **Bypass**; you can bypass single FQDNs (e.g. `*.sharepoint.com`), a group, or the whole profile. Traffic belonging to this profile can only be acquired by it. Assign the profile to users/groups or to **remote networks**.\n\nIf the client can't connect, Microsoft traffic **fails open** (goes direct). To prevent access outside Global Secure Access, use the **compliant network check**:\n1. Enable **Conditional Access signaling** (Settings > Session management > Adaptive access).\n2. Create a Conditional Access policy: Network include *Any*, exclude **All Compliant Network locations**, grant **Block**.\nThe compliant network is tenant-specific and needs no IP lists.\n\n**Universal tenant restrictions**: with the Microsoft profile on and **tenant restrictions v2** configured in cross-tenant access settings, enable *Tenant Restrictions* under Session management so users can only sign in to allowed tenants.\n\nYou can also link Conditional Access policies directly to the profile.",
+   "terms": [
+    {
+     "t": "Microsoft traffic profile",
+     "d": "Forwarding profile for Microsoft 365 workloads."
+    },
+    {
+     "t": "Compliant network check",
+     "d": "CA condition proving traffic came through your GSA tenant."
+    },
+    {
+     "t": "Universal tenant restrictions",
+     "d": "TRv2 enforced through GSA to stop sign-ins to other tenants."
+    },
+    {
+     "t": "Bypass",
+     "d": "Rule action sending matching traffic direct, not via GSA."
+    }
+   ],
+   "trap": "IP-based named locations aren't needed for 'only via Global Secure Access' - the compliant network check is the answer.",
+   "example": "Woodgrove blocks Exchange Online unless traffic arrives through its compliant network, so a stolen token replayed from home is denied.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "M365 traffic",
+     "GSA client",
+     "Microsoft profile",
+     "Compliant network",
+     "Exchange"
+    ]
+   }
+  }
+ ],
+ "questions": [
+  {
+   "id": "sc-300.d2.q001",
+   "lesson": "sc-300.d2.1.01",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which Microsoft Entra feature is now the single place to enable and scope authentication methods such as passkeys, Microsoft Authenticator and SMS for MFA and SSPR?",
+   "explain": "The Authentication methods policy (Entra ID > Authentication methods > Policies) manages methods for both sign-in and SSPR. Management in the legacy MFA and SSPR policies ended on 30 September 2025, and Entra Connect only synchronises identities.",
+   "options": [
+    "The Authentication methods policy",
+    "The legacy MFA service settings page",
+    "The SSPR Authentication methods blade",
+    "Microsoft Entra Connect Sync options"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q002",
+   "lesson": "sc-300.d2.1.01",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "Your tenant has completed migration to the Authentication methods policy. For each statement, select Yes if true.",
+   "explain": "After Migration complete, legacy method settings are greyed out and ignored; the exception is SSPR security questions, which aren't yet in the Authentication methods policy.",
+   "statements": [
+    {
+     "s": "The migration state is Migration complete, and only the Authentication methods policy is used for MFA and SSPR methods.",
+     "a": true
+    },
+    {
+     "s": "Legacy MFA settings remain editable and override the Authentication methods policy.",
+     "a": false
+    },
+    {
+     "s": "Security questions for SSPR are still configured in the legacy SSPR settings.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q003",
+   "lesson": "sc-300.d2.1.01",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A company with Microsoft Entra ID P1 wants to require MFA only for users outside the corporate network. Security defaults are currently enabled. What should the administrator do first?",
+   "explain": "Security defaults are on/off only and can't be customised or combined with custom Conditional Access policies; the admin must disable them and build a location-based policy. Per-user MFA is legacy and not location-aware.",
+   "options": [
+    "Add the corporate network as an MFA trusted IP in security defaults",
+    "Disable security defaults so Conditional Access policies can be used",
+    "Customise security defaults to exclude the corporate network",
+    "Enable per-user MFA for remote users"
+   ],
+   "answer": [
+    1
+   ]
+  },
+  {
+   "id": "sc-300.d2.q004",
+   "lesson": "sc-300.d2.1.02",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "After enabling Microsoft Entra certificate-based authentication with default settings, what protection level do user certificates have?",
+   "explain": "The default authentication binding protection level is single-factor. To count as multifactor, add a rule by issuer or policy OID that maps certificates to multifactor.",
+   "options": [
+    "Multifactor",
+    "Passwordless MFA",
+    "Single-factor",
+    "Phishing-resistant MFA"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q005",
+   "lesson": "sc-300.d2.1.02",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "You're implementing Microsoft Entra CBA for smart card users. Put the steps in order.",
+   "explain": "Microsoft's order: trust store first so certificates can be validated, then enable CBA for a group, set authentication and username bindings, then test.",
+   "options": [
+    "Upload the trusted CAs with CRL URLs to the PKI-based trust store",
+    "Enable certificate-based authentication for a target group in the Authentication methods policy",
+    "Configure the authentication binding (single-factor or multifactor rules)",
+    "Configure the username binding that maps a certificate field to a user attribute",
+    "Test sign-in and check the sign-in log for the binding used"
+   ]
+  },
+  {
+   "id": "sc-300.d2.q006",
+   "lesson": "sc-300.d2.1.02",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A help desk operator with the Authentication Administrator role must issue a Temporary Access Pass to a Global Administrator who lost their security key. The operation fails. Which role is required?",
+   "explain": "Authentication Administrators can create TAPs only for non-admin users. Privileged Authentication Administrators can do it for admins. Authentication Policy Administrator configures the TAP policy but doesn't issue passes.",
+   "options": [
+    "Authentication Policy Administrator",
+    "Helpdesk Administrator",
+    "Privileged Role Administrator",
+    "Privileged Authentication Administrator"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q007",
+   "lesson": "sc-300.d2.1.02",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which statements about the Temporary Access Pass policy defaults are true? Select TWO.",
+   "explain": "Defaults: default lifetime 1 hour, maximum 8 hours (configurable up to 30 days), length 8, one-time use = false. A TAP doesn't replace the password; the password still works.",
+   "options": [
+    "The maximum lifetime is 24 hours",
+    "Passes are one-time use by default",
+    "The default lifetime is 1 hour",
+    "The default passcode length is 8 characters",
+    "A TAP replaces the user's password while valid"
+   ],
+   "answer": [
+    2,
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q008",
+   "lesson": "sc-300.d2.1.03",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Users are approving fraudulent MFA prompts. You want Authenticator notifications to show which app is being accessed and where the sign-in came from. What should you configure?",
+   "explain": "Additional context adds the app name and location to push and passwordless notifications. Number matching is already always on and can't be configured. Report suspicious activity lets users flag prompts but doesn't add context.",
+   "options": [
+    "Additional context: show application name and geographic location",
+    "Number matching for push notifications",
+    "System-preferred multifactor authentication",
+    "Report suspicious activity"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q009",
+   "lesson": "sc-300.d2.1.03",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about passkeys (FIDO2) in Microsoft Entra ID, select Yes if true.",
+   "explain": "Synced passkeys can't be attested. Key restriction policies use AAGUIDs and apply at registration and sign-in. Registration requires MFA within the past five minutes.",
+   "statements": [
+    {
+     "s": "Synced passkeys stored in a cloud provider such as iCloud Keychain support attestation.",
+     "a": false
+    },
+    {
+     "s": "Key restrictions can allow or block specific authenticator models by AAGUID.",
+     "a": true
+    },
+    {
+     "s": "Users must have completed MFA within the last five minutes to register a passkey.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q010",
+   "lesson": "sc-300.d2.1.03",
+   "objective": "d2.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Contoso issues every employee a hardware security key from one of two approved vendors. Auditors require proof that only these models can be registered.",
+   "stem": "Contoso must allow only two FIDO2 security key models it has purchased and must guarantee that the make and model are verified at registration. Which passkey profile configuration meets the goal?",
+   "explain": "An allow list of the two AAGUIDs restricts models; attestation must be enforced for Entra ID to verify make and model, otherwise AAGUID lists are only guidance. Blocking the AAGUIDs does the opposite.",
+   "options": [
+    "Enforce attestation = No and key restrictions set to Allow with the two AAGUIDs",
+    "Enforce attestation = Yes and key restrictions set to Allow with the two AAGUIDs",
+    "Enforce attestation = No and key restrictions set to Block with the two AAGUIDs",
+    "Allow self-service set up = No and passkey type = Synced"
+   ],
+   "answer": [
+    1
+   ]
+  },
+  {
+   "id": "sc-300.d2.q011",
+   "lesson": "sc-300.d2.1.04",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A user receives an MFA prompt they didn't trigger and reports it using Report suspicious activity. What happens to the user in Microsoft Entra ID Protection?",
+   "explain": "Report suspicious activity sets the user to high user risk, so a risk-based Conditional Access policy can force remediation. It doesn't disable the account, and the legacy block/unblock list was retired.",
+   "options": [
+    "The user's sign-in risk is set to medium",
+    "The user's account is automatically disabled",
+    "The user's risk is set to high",
+    "The user is added to the MFA blocked users list"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q012",
+   "lesson": "sc-300.d2.1.04",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "multi",
+   "case": null,
+   "stem": "Which legacy MFA features were replaced by Report suspicious activity? Select THREE.",
+   "explain": "Report suspicious activity replaced fraud alert, block/unblock users and the related email notifications, which were removed in March 2025. OATH tokens and trusted IPs are separate settings.",
+   "options": [
+    "Block/unblock users",
+    "OATH tokens",
+    "Notifications",
+    "Trusted IPs",
+    "Fraud alert"
+   ],
+   "answer": [
+    0,
+    2,
+    4
+   ]
+  },
+  {
+   "id": "sc-300.d2.q013",
+   "lesson": "sc-300.d2.1.04",
+   "objective": "d2.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Northwind set Remember MFA on trusted devices to 30 days a long time ago. A new Conditional Access policy now requires a 12-hour sign-in frequency for the finance app, and the help desk is receiving complaints about prompts at odd times.",
+   "stem": "You are configuring a Conditional Access sign-in frequency of 12 hours for an app. Users report unpredictable MFA prompts. Which legacy setting should you disable first?",
+   "explain": "Microsoft advises disabling Remember MFA on trusted devices before configuring sign-in frequency because the two together cause unexpected prompts. The other features don't control reauthentication timing.",
+   "options": [
+    "Report suspicious activity",
+    "Number matching",
+    "System-preferred multifactor authentication",
+    "Remember multifactor authentication on trusted devices"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q014",
+   "lesson": "sc-300.d2.1.05",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Hybrid users with password hash synchronization can reset passwords with SSPR, but the new passwords don't work on their domain-joined PCs. What should you enable?",
+   "explain": "Password writeback sends SSPR resets from Entra ID to on-premises AD DS. PTA validates passwords on-premises but doesn't write resets back, and Seamless SSO only provides silent sign-in.",
+   "options": [
+    "Password writeback",
+    "Seamless single sign-on",
+    "Pass-through authentication",
+    "Microsoft Entra Password Protection DC agent"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q015",
+   "lesson": "sc-300.d2.1.05",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about SSPR for administrators, select Yes if true.",
+   "explain": "Admins use the two-gate policy, which prohibits security questions. Update-MgPolicyAuthorizationPolicy -AllowedToUseSspr:$false disables admin SSPR.",
+   "statements": [
+    {
+     "s": "In a tenant with a custom domain configured, administrator accounts are subject to a two-gate policy requiring two authentication methods.",
+     "a": true
+    },
+    {
+     "s": "Administrators can use security questions to reset their passwords.",
+     "a": false
+    },
+    {
+     "s": "Administrator SSPR can be turned off by setting AllowedToUseSspr to false on the authorization policy.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q016",
+   "lesson": "sc-300.d2.1.05",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "You want to pilot SSPR with one department before rolling it out to everyone. Which Self service password reset enabled option should you choose?",
+   "explain": "Selected lets you choose a single group for a controlled rollout. All has no exclusion option, and SSPR scope is set by group, not by administrative unit.",
+   "options": [
+    "All, with the department as an exclusion",
+    "Selected, with the department's group",
+    "None, then assign the department a licence",
+    "Selected, with the department's administrative unit"
+   ],
+   "answer": [
+    1
+   ]
+  },
+  {
+   "id": "sc-300.d2.q017",
+   "lesson": "sc-300.d2.1.05",
+   "objective": "d2.1",
+   "difficulty": 3,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the Microsoft Graph PowerShell command to prevent administrators from using SSPR.",
+   "explain": "AllowedToUseSspr is a property of the tenant authorization policy, updated with Update-MgPolicyAuthorizationPolicy. The authentication methods policy controls methods, not admin SSPR eligibility.",
+   "options": [
+    "Update-MgPolicyAuthenticationMethodPolicy",
+    "Update-MgDomain",
+    "Update-MgPolicyAuthorizationPolicy",
+    "Update-MgDirectorySetting"
+   ],
+   "answer": [
+    2
+   ],
+   "code": "Connect-MgGraph -Scopes Policy.ReadWrite.Authorization\n____ -AllowedToUseSspr:$false"
+  },
+  {
+   "id": "sc-300.d2.q018",
+   "lesson": "sc-300.d2.1.06",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A hybrid organisation wants to deploy Windows Hello for Business with SSO to on-premises file shares and has no PKI. Which trust type should it use?",
+   "explain": "Cloud Kerberos trust uses Microsoft Entra Kerberos and needs no PKI; Microsoft recommends it for hybrid. Key trust requires DC certificates, and certificate trust requires PKI and AD FS.",
+   "options": [
+    "Certificate trust",
+    "Hybrid AD FS trust",
+    "Key trust",
+    "Cloud Kerberos trust"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q019",
+   "lesson": "sc-300.d2.1.06",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "You configure Windows Hello for Business cloud Kerberos trust with Intune. The Intune tenant-wide WHfB enrolment policy is not configured. Which settings must you enable in the settings catalog policy? Select TWO.",
+   "explain": "Both Use Windows Hello For Business and Use Cloud Trust For On Prem Auth are required. Require Security Device is optional but recommended. Use Certificate For On Prem Auth would switch to certificate trust.",
+   "options": [
+    "Allow Passwordless Phone Sign-in",
+    "Use Certificate For On Prem Auth",
+    "Require Security Device",
+    "Use Cloud Trust For On Prem Auth",
+    "Use Windows Hello For Business"
+   ],
+   "answer": [
+    3,
+    4
+   ]
+  },
+  {
+   "id": "sc-300.d2.q020",
+   "lesson": "sc-300.d2.1.06",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Windows Hello for Business, select Yes if true.",
+   "explain": "The PIN only unlocks the private key on the device. WHfB counts as MFA. When both GPO and Intune apply, GPO wins and Intune settings are ignored.",
+   "statements": [
+    {
+     "s": "The user's PIN is sent to Microsoft Entra ID for verification at each sign-in.",
+     "a": false
+    },
+    {
+     "s": "Windows Hello for Business satisfies a Conditional Access Require multifactor authentication grant.",
+     "a": true
+    },
+    {
+     "s": "If both Group Policy and Intune configure WHfB on a device, Group Policy settings take precedence.",
+     "a": true
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q021",
+   "lesson": "sc-300.d2.1.07",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An employee was dismissed. You disabled their cloud-only account and selected Revoke sessions. They can still read files in a line-of-business web API for a short time. Why?",
+   "explain": "Revoking sessions invalidates refresh tokens; access tokens (about one hour) stay valid unless the resource supports continuous access evaluation. Revocation doesn't target only mobile devices.",
+   "options": [
+    "Existing access tokens remain valid until they expire because the API isn't CAE-capable",
+    "Disabling an account takes 24 hours to replicate",
+    "Revoke sessions invalidates only access tokens, not refresh tokens",
+    "Revoke sessions only affects mobile devices"
+   ],
+   "answer": [
+    0
+   ]
+  },
+  {
+   "id": "sc-300.d2.q022",
+   "lesson": "sc-300.d2.1.07",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the Microsoft Graph PowerShell script that disables a user and invalidates their refresh tokens.",
+   "explain": "Revoke-MgUserSignInSession revokes the user's Entra ID sign-in sessions and refresh tokens. Removing authentication methods doesn't end sessions, removing an OAuth2 permission grant only revokes delegated consent, and Remove-MgUser deletes the account.",
+   "options": [
+    "Remove-MgUser",
+    "Revoke-MgUserSignInSession",
+    "Remove-MgOauth2PermissionGrant",
+    "Remove-MgUserAuthenticationMethod"
+   ],
+   "answer": [
+    1
+   ],
+   "code": "$User = Get-MgUser -UserId 'jo@contoso.com'\nUpdate-MgUser -UserId $User.Id -AccountEnabled:$false\n____ -UserId $User.Id"
+  },
+  {
+   "id": "sc-300.d2.q023",
+   "lesson": "sc-300.d2.1.07",
+   "objective": "d2.1",
+   "difficulty": 3,
+   "type": "order",
+   "case": "A Contoso engineer's synced account shows impossible travel and new inbox rules. Contoso uses Microsoft Entra Connect Sync with password hash synchronization. The security team needs to contain the account immediately.",
+   "stem": "A synced (hybrid) user's account is compromised. Put the containment steps in the order Microsoft recommends.",
+   "explain": "For hybrid users the source of authority is AD DS, so disable there first and reset the password twice to mitigate pass-the-hash, then revoke cloud sessions and disable devices.",
+   "options": [
+    "Disable the account in on-premises Active Directory",
+    "Reset the user's AD password twice",
+    "Revoke the user's Microsoft Entra sessions",
+    "Disable the user's registered devices"
+   ]
+  },
+  {
+   "id": "sc-300.d2.q024",
+   "lesson": "sc-300.d2.1.08",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "You deployed the Microsoft Entra Password Protection proxy and DC agents. You want to log which passwords would be rejected without affecting users. Which mode should you select?",
+   "explain": "Audit mode logs weak passwords in the event log but still accepts them. Enforced rejects them. Report-only is a Conditional Access state, not a Password Protection mode.",
+   "options": [
+    "Disabled",
+    "Enforced",
+    "Audit",
+    "Report-only"
+   ],
+   "answer": [
+    2
+   ]
+  },
+  {
+   "id": "sc-300.d2.q025",
+   "lesson": "sc-300.d2.1.08",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about Microsoft Entra Password Protection and smart lockout, select Yes if true.",
+   "explain": "The custom list holds up to 1,000 terms, and passwords need at least 5 points. Customising smart lockout requires Entra ID P1 or higher; the defaults (10 attempts, 60 seconds) are always on.",
+   "statements": [
+    {
+     "s": "The custom banned password list can contain up to 1,000 terms.",
+     "a": true
+    },
+    {
+     "s": "A password must score at least 5 points after banned terms are counted to be accepted.",
+     "a": true
+    },
+    {
+     "s": "Smart lockout's lockout threshold and duration can be customised with Microsoft Entra ID Free.",
+     "a": false
+    }
+   ]
+  },
+  {
+   "id": "sc-300.d2.q026",
+   "lesson": "sc-300.d2.1.08",
+   "objective": "d2.1",
+   "difficulty": 3,
+   "type": "single",
+   "case": "Fabrikam uses Microsoft Entra Connect with pass-through authentication. Its domain account lockout policy is 10 invalid attempts with a 1-minute lockout duration. Password spray attempts through Entra ID are locking employees out of on-premises resources.",
+   "stem": "You use pass-through authentication. On-premises AD DS locks accounts after 10 bad attempts for 1 minute. Attackers are locking users out of AD. How should you configure smart lockout?",
+   "explain": "With PTA, the Entra smart lockout threshold must be lower than AD DS (AD should be 2-3x higher) and the Entra duration longer, so Entra blocks attackers before AD locks the account. Smart lockout can't be disabled.",
+   "options": [
+    "Set the Entra threshold higher than 10 and the duration shorter than 60 seconds",
+    "Set the Entra threshold equal to 10 and the duration equal to 60 seconds",
+    "Disable smart lockout and rely on AD DS lockout",
+    "Set the Entra threshold lower than 10 and the lockout duration longer than 60 seconds"
+   ],
+   "answer": [
+    3
+   ]
+  },
+  {
+   "id": "sc-300.d2.q027",
+   "lesson": "sc-300.d2.1.09",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the command that creates the Microsoft Entra Kerberos server object for a domain.",
+   "explain": "Set-AzureADKerberosServer creates (and with -RotateServerKey rotates) the Kerberos server object and publishes it to Entra ID. Get- only views it, Remove- deletes it, and Set-ADComputer edits ordinary AD computer objects.",
+   "options": [
+    "Set-AzureADKerberosServer",
+    "Remove-AzureADKerberosServer",
+    "Get-AzureADKerberosServer",
+    "Set-ADComputer"
+   ],
+   "answer": [
+    0
+   ],
+   "code": "Install-Module -Name AzureADHybridAuthenticationManagement -AllowClobber\n$domain = $env:USERDNSDOMAIN\n____ -Domain $domain -CloudCredential $cloudCred -DomainCredential $domainCred"
+  },
+  {
+   "id": "sc-300.d2.q028",
+   "lesson": "sc-300.d2.1.09",
+   "objective": "d2.1",
+   "difficulty": 3,
+   "type": "multi",
+   "case": null,
+   "stem": "Which statements about Microsoft Entra Kerberos are true? Select TWO.",
+   "explain": "Entra ID issues a partial TGT (SID, no groups) that DCs exchange for a full TGT. The server object is an RODC-like computer object plus krbtgt_AzureAD, not a real DC. Setup needs Domain/Enterprise Admins and Hybrid Identity Administrator.",
+   "options": [
+    "Entra ID issues a partial TGT that an on-premises DC exchanges for a full TGT",
+    "Running Set-AzureADKerberosServer requires only the Global Reader role",
+    "Entra ID issues a full TGT with all group memberships directly to the client",
+    "The Kerberos server object includes a disabled krbtgt_AzureAD user account",
+    "The Kerberos server object is a full writable domain controller in Azure"
+   ],
+   "answer": [
+    0,
+    3
+   ]
+  }
+ ]
+}

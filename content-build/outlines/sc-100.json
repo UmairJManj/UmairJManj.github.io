@@ -1,0 +1,329 @@
+{
+  "id": "sc-100",
+  "name": "Microsoft Cybersecurity Architect",
+  "code": "SC-100",
+  "issuer": "Microsoft",
+  "outlineVersion": "Skills measured as of October 21, 2026",
+  "sourceUrl": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/sc-100",
+  "exam": {
+    "minutes": 120,
+    "passMark": "700/1000",
+    "questionCount": "40-60 (not published; includes case studies)",
+    "notes": "Required exam for Microsoft Certified: Cybersecurity Architect Expert. To earn the Expert certification you must also hold at least one of: Identity and Access Administrator Associate (SC-300), Security Operations Analyst Associate (SC-200), or Cloud and AI Security Engineer Associate (AZ-500). You may sit SC-100 first, but the cert is awarded only once a prerequisite is held. Exam length is not stated on the pages fetched; 120 minutes is the usual expert-exam seat time (unverified). +30 minutes can be requested if not in preferred language. Annual renewal via free online assessment. Free practice assessment available."
+  },
+  "domains": [
+    {
+      "id": "d1",
+      "name": "Design solutions that align with security best practices and priorities",
+      "weight": "20-25%",
+      "objectives": [
+        {
+          "id": "d1.1",
+          "name": "Design a resiliency strategy for ransomware and other attacks based on Microsoft Security Best Practices",
+          "bullets": [
+            "Design a security strategy supporting business resiliency, prioritizing threats to critical assets",
+            "Design BCDR, including secure backup and restore for hybrid and multicloud",
+            "Design ransomware protection that prioritizes BCDR and privileged access",
+            "Evaluate solutions for security updates"
+          ]
+        },
+        {
+          "id": "d1.2",
+          "name": "Design solutions that align with the Microsoft Cybersecurity Reference Architectures (MCRA) and Microsoft Cloud Security Benchmark (MCSB)",
+          "bullets": [
+            "Design solutions aligned with best practices for cybersecurity capabilities and controls",
+            "Design protection against insider, external and supply chain attacks",
+            "Design AI solutions aligned with the MCSB",
+            "Design solutions aligned with the Zero Trust adoption framework"
+          ]
+        },
+        {
+          "id": "d1.3",
+          "name": "Design solutions that align with the Microsoft Cloud Adoption Framework for Azure (CAF) and the Azure Well-Architected Framework (WAF)",
+          "bullets": [
+            "Design a strategy for secure AI adoption",
+            "Design or evaluate a security and governance strategy based on CAF and WAF",
+            "Recommend security and governance solutions based on CAF and WAF",
+            "Design security and governance implementation using Azure landing zones",
+            "Design a DevSecOps process aligned with CAF"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "name": "Design security operations, identity, and compliance capabilities",
+      "weight": "25-30%",
+      "objectives": [
+        {
+          "id": "d2.1",
+          "name": "Design solutions for security operations",
+          "bullets": [
+            "Design detection and response using XDR and SIEM",
+            "Design centralized logging and auditing, including Microsoft Purview Audit",
+            "Design monitoring for hybrid and multicloud environments",
+            "Design SOAR using Microsoft Sentinel and Defender XDR",
+            "Design and evaluate incident response, threat hunting and incident management workflows",
+            "Evaluate threat detection coverage with MITRE ATT&CK (Enterprise, Mobile, ICS)"
+          ]
+        },
+        {
+          "id": "d2.2",
+          "name": "Design solutions for identity and access management",
+          "bullets": [
+            "Design agent identities using Microsoft Entra Agent ID and Conditional Access",
+            "Design access to SaaS, PaaS, IaaS, on-premises and multicloud resources",
+            "Design Microsoft Entra ID solutions, including hybrid and multicloud",
+            "Design external identity solutions, including B2B and decentralized identity",
+            "Design modern authN/authZ: Conditional Access, continuous access evaluation, risk scoring, protected actions",
+            "Validate Conditional Access policies against Zero Trust",
+            "Specify requirements to harden AD DS",
+            "Design a solution to manage secrets, keys and certificates"
+          ]
+        },
+        {
+          "id": "d2.3",
+          "name": "Design solutions for securing privileged access",
+          "bullets": [
+            "Design privileged role assignment and delegation using the enterprise access model",
+            "Evaluate Entra ID security and governance, including PIM, entitlement management and access reviews",
+            "Evaluate AD DS security and governance, including resilience to common attacks",
+            "Design secure administration of cloud tenants, including SaaS and multicloud",
+            "Design cloud infrastructure entitlement management (CIEM)",
+            "Evaluate access review management solutions",
+            "Design secure privileged workstations (PAW), including remote access"
+          ]
+        },
+        {
+          "id": "d2.4",
+          "name": "Design solutions for regulatory compliance",
+          "bullets": [
+            "Translate compliance requirements into security controls",
+            "Design compliance solutions using Microsoft Purview",
+            "Design Azure Policy solutions for security and compliance",
+            "Evaluate and validate regulatory alignment using Defender for Cloud"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "name": "Design security solutions for infrastructure",
+      "weight": "25-30%",
+      "objectives": [
+        {
+          "id": "d3.1",
+          "name": "Design solutions for security posture management in hybrid and multicloud environments",
+          "bullets": [
+            "Evaluate security posture with Defender for Cloud, including the MCSB",
+            "Evaluate security posture with Microsoft Secure Score",
+            "Design integrated posture management with Defender for Cloud across hybrid and multicloud",
+            "Select cloud workload protection solutions in Defender for Cloud",
+            "Design hybrid and multicloud integration with Azure Arc",
+            "Design a solution for Defender External Attack Surface Management (EASM)",
+            "Specify posture process requirements using attack paths, attack surface reduction, security insights and initiatives"
+          ]
+        },
+        {
+          "id": "d3.2",
+          "name": "Specify requirements for securing server and client endpoints",
+          "bullets": [
+            "Specify server security requirements across platforms and OSes",
+            "Specify security requirements for mobile devices and clients",
+            "Specify security requirements for IoT devices and embedded systems",
+            "Evaluate securing OT and ICS with Defender for IoT",
+            "Specify security baselines for server and client endpoints",
+            "Evaluate Windows LAPS"
+          ]
+        },
+        {
+          "id": "d3.3",
+          "name": "Specify requirements for securing SaaS, PaaS, and IaaS services",
+          "bullets": [
+            "Specify security baselines for SaaS, PaaS and IaaS",
+            "Specify security requirements for IoT workloads",
+            "Specify security requirements for web workloads",
+            "Specify security requirements for containers",
+            "Specify security requirements for container orchestration",
+            "Evaluate security solutions for Azure AI services"
+          ]
+        },
+        {
+          "id": "d3.4",
+          "name": "Evaluate solutions for network security and Security Service Edge (SSE)",
+          "bullets": [
+            "Evaluate network designs against security requirements and best practices",
+            "Evaluate Microsoft Entra Internet Access as a secure web gateway",
+            "Evaluate Entra Internet Access for Microsoft services, including cross-tenant configurations",
+            "Evaluate Microsoft Entra Private Access"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d4",
+      "name": "Design security solutions for applications and data",
+      "weight": "20-25%",
+      "objectives": [
+        {
+          "id": "d4.1",
+          "name": "Evaluate solutions for securing Microsoft 365",
+          "bullets": [
+            "Evaluate productivity and collaboration security posture using metrics such as Secure Score",
+            "Evaluate Defender for Office 365 and Defender for Cloud Apps",
+            "Evaluate device management with Microsoft Intune",
+            "Evaluate securing Microsoft 365 data with Microsoft Purview",
+            "Evaluate data security and compliance controls in Microsoft 365 Copilot"
+          ]
+        },
+        {
+          "id": "d4.2",
+          "name": "Design solutions for securing applications",
+          "bullets": [
+            "Evaluate security posture of existing application portfolios",
+            "Evaluate threats to business-critical applications using threat modeling",
+            "Design and implement a full-lifecycle application security strategy",
+            "Design and implement standards and practices for secure development",
+            "Map technologies to application security requirements",
+            "Design workload identities for authenticating to and accessing Azure resources",
+            "Design API management and security",
+            "Design applications secured with Azure Web Application Firewall (WAF)"
+          ]
+        },
+        {
+          "id": "d4.3",
+          "name": "Design solutions for securing an organization's data",
+          "bullets": [
+            "Evaluate data discovery and classification solutions",
+            "Specify priorities for mitigating threats to data",
+            "Evaluate encryption at rest and in transit, including Azure Key Vault and infrastructure encryption",
+            "Design security for data used in AI workloads",
+            "Design data security for Azure SQL, Azure Synapse Analytics and Azure Cosmos DB",
+            "Design data security for Azure Storage",
+            "Design a solution including Defender for Storage and Defender for Databases"
+          ]
+        }
+      ]
+    }
+  ],
+  "keyTerms": [
+    "Zero Trust",
+    "Zero Trust adoption framework",
+    "Rapid Modernization Plan (RaMP)",
+    "Microsoft Cybersecurity Reference Architectures (MCRA)",
+    "Microsoft Cloud Security Benchmark (MCSB)",
+    "Cloud Adoption Framework (CAF)",
+    "Azure Well-Architected Framework (WAF)",
+    "Azure landing zones",
+    "Management groups",
+    "DevSecOps",
+    "Business continuity and disaster recovery (BCDR)",
+    "Azure Backup",
+    "Immutable vaults",
+    "Soft delete",
+    "Ransomware",
+    "Supply chain attack",
+    "Insider risk",
+    "Secure AI adoption",
+    "Microsoft Defender XDR",
+    "Microsoft Sentinel",
+    "SIEM",
+    "SOAR",
+    "XDR",
+    "Microsoft Purview Audit",
+    "MITRE ATT&CK (Enterprise, Mobile, ICS)",
+    "Threat hunting",
+    "Incident response",
+    "Microsoft Security Copilot",
+    "Microsoft Entra ID",
+    "Microsoft Entra Agent ID",
+    "Microsoft Entra Connect / Cloud Sync",
+    "Entra External ID",
+    "B2B collaboration",
+    "Decentralized identity / Verified ID",
+    "Conditional Access",
+    "Continuous access evaluation (CAE)",
+    "Protected actions",
+    "Authentication strengths",
+    "Phishing-resistant MFA",
+    "Entra ID Protection (risk scoring)",
+    "Active Directory Domain Services (AD DS)",
+    "Tiering / enterprise access model",
+    "Privileged Identity Management (PIM)",
+    "Entitlement management",
+    "Access reviews",
+    "Microsoft Entra ID Governance",
+    "Cloud infrastructure entitlement management (CIEM)",
+    "Microsoft Entra Permissions Management",
+    "Privileged access workstations (PAW)",
+    "Azure Bastion",
+    "Just-in-time (JIT) VM access",
+    "Azure Key Vault",
+    "Managed HSM",
+    "Managed identities",
+    "Workload identities",
+    "Microsoft Purview",
+    "Compliance Manager",
+    "Azure Policy",
+    "Regulatory compliance dashboard",
+    "Microsoft Defender for Cloud",
+    "Cloud security posture management (CSPM)",
+    "Defender CSPM",
+    "Cloud workload protection (CWPP)",
+    "Attack path analysis",
+    "Cloud security explorer",
+    "Microsoft Secure Score",
+    "Microsoft Security Exposure Management",
+    "Azure Arc",
+    "Defender External Attack Surface Management (EASM)",
+    "Defender for Servers",
+    "Defender for Containers",
+    "Defender for Storage",
+    "Defender for Databases",
+    "Defender for APIs",
+    "Defender for IoT",
+    "Operational technology (OT) / ICS",
+    "Security baselines",
+    "Windows LAPS",
+    "Microsoft Intune",
+    "Microsoft Defender for Endpoint",
+    "Azure Kubernetes Service (AKS)",
+    "Container orchestration",
+    "Azure AI services",
+    "Azure AI Foundry",
+    "Security Service Edge (SSE)",
+    "Microsoft Entra Internet Access",
+    "Microsoft Entra Private Access",
+    "Global Secure Access",
+    "Secure web gateway (SWG)",
+    "Cross-tenant access settings",
+    "Network segmentation",
+    "Azure Firewall",
+    "Network security groups (NSG)",
+    "Private Link / private endpoints",
+    "Azure DDoS Protection",
+    "Azure Web Application Firewall (WAF)",
+    "Azure Front Door",
+    "Azure API Management",
+    "Threat modeling (STRIDE)",
+    "Security Development Lifecycle (SDL)",
+    "GitHub Advanced Security",
+    "Microsoft Defender for Office 365",
+    "Microsoft Defender for Cloud Apps",
+    "Microsoft 365 Copilot",
+    "Data Security Posture Management (DSPM) for AI",
+    "Sensitivity labels",
+    "Data loss prevention (DLP)",
+    "Data classification",
+    "Encryption at rest / in transit",
+    "Customer-managed keys (CMK)",
+    "Infrastructure (double) encryption",
+    "Azure SQL",
+    "Azure Synapse Analytics",
+    "Azure Cosmos DB",
+    "Azure Storage",
+    "Shared responsibility model"
+  ],
+  "status": "verified",
+  "caveats": "Outline fetched from learn.microsoft.com on 21 Oct 2026; the 'Skills measured as of October 21, 2026' version went live that day. Change log: 'Design solutions for security operations' and 'Evaluate solutions for securing Microsoft 365' marked Minor; all other areas no change. Localized exams lag ~8 weeks. Exam minutes and question count are not stated on the pages fetched (120 min / 40-60 questions incl. case studies are typical values, unverified). The certification page lists the third prerequisite as 'Cloud and AI Security Engineer Associate' (the renamed AZ-500 cert); the page summary says '3 certifications' but the detailed text says at least one is required. Bullets are paraphrased, not verbatim."
+}

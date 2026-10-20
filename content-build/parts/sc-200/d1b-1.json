@@ -1,0 +1,1303 @@
+{
+  "exam": "sc-200",
+  "domain": "d1",
+  "lessons": [
+    {
+      "id": "sc-200.d1.3.01",
+      "objective": "d1.3",
+      "seq": 1,
+      "title": "Choosing data connectors",
+      "short": "Data connectors bring logs into the Log Analytics workspace behind Microsoft Sentinel. Most arrive as Content hub solutions. Pick a connector by source type: service-to-service (Microsoft services), diagnostic settings (Azure resources), agent-based via the Azure Monitor Agent (servers and appliances), or API-based (third-party SaaS).",
+      "deep": "Microsoft Sentinel is only as good as the data it sees. A **data connector** is the packaged method for getting one source's logs into the workspace, and it usually installs as part of a **Content hub** solution that also brings analytics rules, workbooks and playbooks.\n\nThe main families:\n- **Service-to-service**: Microsoft Defender XDR, Microsoft Entra ID, Microsoft 365. Mostly a few clicks, but they need tenant roles (for example Security Administrator) plus write access on the workspace.\n- **Diagnostic settings-based**: Azure resources send logs through a diagnostic setting, sometimes deployed at scale by **Azure Policy**.\n- **Agent-based (AMA)**: the **Azure Monitor Agent** with a **data collection rule (DCR)** collects Windows events, Syslog, CEF and text files.\n- **API-based**: the **Codeless Connector Framework (CCF)** polls or receives pushed data. Push connectors use the **Logs Ingestion API** (a DCR plus an Entra app).\n\nLicensing matters too. The Entra ID connector needs Entra ID P1 or P2 for sign-in logs, though audit logs work with any licence.\n\nFor exam scenarios, read the source first (Azure resource, on-premises server, firewall, SaaS app). Then match the transport (policy, AMA, API) and check the destination table.",
+      "terms": [
+        {
+          "t": "Data connector",
+          "d": "Packaged configuration that ingests one data source's logs into the Sentinel workspace."
+        },
+        {
+          "t": "Content hub",
+          "d": "Sentinel catalogue where solutions (connectors, rules, workbooks, playbooks) are installed."
+        },
+        {
+          "t": "Codeless Connector Framework (CCF)",
+          "d": "Microsoft framework for building API polling or push connectors without hosting code."
+        },
+        {
+          "t": "Logs Ingestion API",
+          "d": "Azure Monitor REST API that sends data through a DCR to a workspace table."
+        }
+      ],
+      "trap": "Candidates pick an agent connector for an Azure PaaS service. Azure resources use diagnostic settings or Azure Policy, not AMA.",
+      "example": "A SOC must ingest Entra ID sign-ins, Azure Key Vault logs and a Palo Alto firewall. That calls for three paths: the Entra ID connector, diagnostic settings via Azure Policy, and CEF via AMA.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Source",
+          "Connector method"
+        ],
+        "rows": [
+          [
+            "Microsoft 365 / XDR",
+            "Service-to-service"
+          ],
+          [
+            "Azure resources",
+            "Diagnostic settings"
+          ],
+          [
+            "Servers, appliances",
+            "AMA + DCR"
+          ],
+          [
+            "SaaS / custom apps",
+            "CCF / Logs Ingestion"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.3.02",
+      "objective": "d1.3",
+      "seq": 2,
+      "title": "Windows log connector choices",
+      "short": "For Windows, Windows Security Events via AMA writes to SecurityEvent, the table most built-in rules query. Windows Forwarded Events reads the WEF collector's ForwardedEvents channel and writes to WindowsEvent. Defender XDR's connector can stream endpoint advanced hunting tables such as DeviceProcessEvents.",
+      "deep": "There are three common ways to get Windows activity into Microsoft Sentinel. The destination table decides which built-in content will work.\n\n- **Windows Security Events via AMA**: the AMA runs on each server, Azure VM or **Azure Arc-enabled** machine. It collects the Security log (and AppLocker) into the **SecurityEvent** table. Many built-in analytics rules, including some NRT rules, query this table.\n- **Windows Forwarded Events**: you build a **Windows Event Forwarding (WEF)** setup in which sources push events to a **Windows Event Collector (WEC)** server. The AMA on the WEC reads the forwarded events into the **WindowsEvent** table, even when they came from the Security log. Rules written for SecurityEvent won't match WindowsEvent data unless you adapt them or use ASIM parsers.\n- **Microsoft Defender XDR connector**: incidents and alerts, plus optional advanced hunting tables (DeviceProcessEvents, DeviceLogonEvents, DeviceRegistryEvents…) from Defender for Endpoint sensors.\n\nPick based on the requirement. If you need the out-of-the-box SecurityEvent rules with no edits, use Security Events via AMA. If you must avoid agents on every server, use WEF plus one collector. For EDR telemetry, use Defender XDR.",
+      "terms": [
+        {
+          "t": "SecurityEvent",
+          "d": "Table filled by the Windows Security Events connectors; queried by many built-in rules."
+        },
+        {
+          "t": "WindowsEvent",
+          "d": "Table filled by the Windows Forwarded Events connector, whatever the original channel."
+        },
+        {
+          "t": "ASIM",
+          "d": "Advanced Security Information Model: normalising parsers that let rules work across source tables."
+        }
+      ],
+      "trap": "Forwarded Security log events do NOT land in SecurityEvent. They land in WindowsEvent, so built-in SecurityEvent rules miss them.",
+      "example": "Built-in 'SecurityEvent' rules stay silent after a WEF rollout. The analyst finds the data in WindowsEvent and either adapts the queries or deploys Security Events via AMA instead.",
+      "diagram": null
+    },
+    {
+      "id": "sc-200.d1.3.03",
+      "objective": "d1.3",
+      "seq": 3,
+      "title": "Windows Security Events via AMA and DCRs",
+      "short": "Windows Security Events via AMA uses a data collection rule (DCR) that names the target machines and the events to collect. You choose an event set (All, Common, Minimal) or Custom XPath queries. Machines outside Azure need Azure Arc first, and the AMA is installed automatically on the selected resources.",
+      "deep": "**Setup flow:** install the Windows Server Security Events solution from the Content hub. Open the **Windows Security Events via AMA** connector, choose **+Add data collection rule**, then:\n- **Basics**: DCR name, subscription, resource group. These don't have to match the machines, but they must be in the same tenant.\n- **Resources**: select Azure VMs or **Azure Arc-enabled servers**. The AMA is pushed to any that lack it. On-premises or other-cloud servers need the Arc Connected Machine agent *before* this step.\n- **Collect**: pick an event set:\n  - **All**: the full Security and AppLocker logs (highest volume).\n  - **Common**: a full user audit trail at reduced volume (logons, logoffs such as 4634, group changes, Kerberos on DCs).\n  - **Minimal**: a small set that may indicate a breach (4624, 4625, 4688, 1102, 4720…). Not a full audit trail.\n  - **Custom**: your own **XPath 1.0** queries, e.g. `Security!*[System[(EventID=4624)]]`.\n\nTest an XPath locally with `Get-WinEvent -LogName Security -FilterXPath '…'`. Creating DCRs needs **Monitoring Contributor**, and deploying the agent needs Virtual Machine Contributor or Azure Connected Machine Resource Administrator. For MSSPs, DCRs can also be created by REST API with the `Microsoft-SecurityEvent` stream.",
+      "terms": [
+        {
+          "t": "Data collection rule (DCR)",
+          "d": "Azure Monitor object defining what to collect, from which machines, any transformation, and the destination."
+        },
+        {
+          "t": "Azure Arc",
+          "d": "Projects non-Azure servers into Azure Resource Manager so the AMA and DCRs can manage them."
+        },
+        {
+          "t": "XPath",
+          "d": "Query syntax (version 1.0 for AMA) that filters Windows events by channel and attributes."
+        },
+        {
+          "t": "Minimal event set",
+          "d": "Small, high-value Security event list for breach indicators; no full audit trail."
+        }
+      ],
+      "trap": "'Install the Log Analytics agent (MMA)' is the outdated answer. AMA plus a DCR is current, and non-Azure servers need Azure Arc.",
+      "example": "To cut cost, an admin collects only 4624, 4625 and 4672 from tier-0 servers. They use a Custom DCR with an XPath filter tested first with Get-WinEvent.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Windows server",
+          "Azure Arc",
+          "AMA",
+          "DCR filter",
+          "SecurityEvent"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.3.04",
+      "objective": "d1.3",
+      "seq": 4,
+      "title": "Windows Event Forwarding (WEF)",
+      "short": "Windows Event Forwarding is built into Windows. Source computers push or are pulled for events over WinRM to a Windows Event Collector (WEC) server, where they land in the ForwardedEvents log. Sentinel then collects that log with the AMA on the WEC via the Windows Forwarded Events connector.",
+      "deep": "**Why use WEF?** It centralises events without an agent on every endpoint. Only the collector runs the AMA.\n\n**Subscription types:**\n- **Source-initiated (push)**: Group Policy points clients at the collector using **Configure target Subscription Manager** (Administrative Templates > Windows Components > Event Forwarding). It scales best and suits large fleets. The subscription ACL lists which computers or groups may join.\n- **Collector-initiated (pull)**: the WEC is preconfigured with a named list of sources. It suits a small, specific set of machines.\n\n**Client prerequisites (via GPO):** set the subscription manager URI, start the **WinRM** service, and add **Network Service** to the built-in **Event Log Readers** group so the forwarder can read the secured Security channel.\n\n**Collector:** run `wecutil qc` to configure the Windows Event Collector service, then create subscriptions. By default events go to the **ForwardedEvents** log. Delivery options are Normal, Minimize bandwidth, Minimize latency, or Custom (via wecutil). In a domain, traffic is protected by Kerberos.\n\n**Sentinel side:** install AMA on the WEC (Arc if on-premises) and use the **Windows Forwarded Events** connector. Data goes to **WindowsEvent**. Plan capacity at roughly 3,000 events per second per WEC.",
+      "terms": [
+        {
+          "t": "WEC",
+          "d": "Windows Event Collector: the server that receives forwarded events into ForwardedEvents."
+        },
+        {
+          "t": "Source-initiated subscription",
+          "d": "Clients push events to the collector after GPO configures the subscription manager."
+        },
+        {
+          "t": "Event Log Readers",
+          "d": "Built-in group; Network Service must be a member so WEF can read the Security log."
+        },
+        {
+          "t": "WinRM",
+          "d": "Windows Remote Management, the transport WEF uses between source and collector."
+        }
+      ],
+      "trap": "If forwarded events are missing only from the Security channel, the fix is adding Network Service to Event Log Readers, not reinstalling the AMA.",
+      "example": "2,000 workstations use a GPO to forward to one WEC. Only the WEC has AMA and Arc, and its Forwarded Events DCR sends data to the WindowsEvent table.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Clients (GPO)",
+          "WinRM",
+          "WEC",
+          "ForwardedEvents",
+          "AMA",
+          "WindowsEvent"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.3.05",
+      "objective": "d1.3",
+      "seq": 5,
+      "title": "Syslog via AMA and the log forwarder",
+      "short": "Syslog via AMA collects Linux and appliance syslog into the Syslog table. Devices send to a Linux log forwarder running rsyslog or syslog-ng. The AMA on the forwarder applies a DCR that selects facilities and a minimum severity. Non-Azure forwarders need Azure Arc.",
+      "deep": "Many network and security devices can only speak syslog. The pattern is: device → **log forwarder** (a Linux VM) → AMA → workspace.\n\n**Steps:**\n1. Install the **Syslog** solution from the Content hub and open **Syslog via AMA**.\n2. **+Create data collection rule**: choose the forwarder (an Azure VM or **Arc-enabled** server). The AMA is installed automatically.\n3. On **Collect**, choose a **minimum log level per facility**. Choosing a level includes it and every more severe level. For example, LOG_ERR also gives LOG_CRIT, LOG_ALERT and LOG_EMERG.\n4. Run `Forwarder_AMA_installer.py` on the forwarder. It configures **rsyslog** or **syslog-ng** to listen for remote messages and opens **port 514 TCP and UDP**.\n\n**Inside the forwarder:** the daemon receives on 514 and hands messages to the AMA (TCP **28330** on AMA 1.28.11+). The AMA sends them to the **Syslog** table. Prerequisites are Python 2.7 or 3, a supported Linux distro, and enough disk. Configure the daemon not to store unneeded logs locally, or a full disk can stop the AMA.\n\nFor scale, put several forwarders (or a VM scale set) behind a load balancer. For finer level filtering than 'minimum level', create the DCR through the API.",
+      "terms": [
+        {
+          "t": "Log forwarder",
+          "d": "Linux VM that receives syslog from devices and passes it to the AMA."
+        },
+        {
+          "t": "Facility",
+          "d": "Syslog category (auth, authpriv, daemon, local0–7…) used to pick what to collect."
+        },
+        {
+          "t": "Severity / log level",
+          "d": "Syslog priority from LOG_DEBUG to LOG_EMERG; DCR picks a minimum."
+        },
+        {
+          "t": "Syslog table",
+          "d": "Workspace table for plain syslog messages (Facility, SeverityLevel, SyslogMessage…)."
+        }
+      ],
+      "trap": "Exam answers sometimes say devices should send to their own local daemon. They must send to the forwarder's daemon, and the forwarder needs Arc if it isn't in Azure.",
+      "example": "A Linux web farm sends auth and authpriv at LOG_WARNING and above to two Arc-enabled forwarders. Their DCR lands the messages in Syslog.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Device",
+          "UDP/TCP 514",
+          "rsyslog",
+          "AMA (28330)",
+          "Syslog table"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.3.06",
+      "objective": "d1.3",
+      "seq": 6,
+      "title": "CEF via AMA and duplicate avoidance",
+      "short": "CEF via AMA collects Common Event Format messages from firewalls and security appliances into CommonSecurityLog, using the same forwarder design as Syslog via AMA. If CEF and Syslog DCRs share a facility, events duplicate across both tables. Separate the facilities, or drop CEF from the Syslog stream with a DCR transformation.",
+      "deep": "**Common Event Format (CEF)** is a syslog-based format built for SIEMs. Its header carries vendor, product, version, event class ID, name and severity, followed by key=value extensions (src, dst, suser, act…). Sentinel parses it into **CommonSecurityLog** columns such as DeviceVendor, DeviceProduct, SourceIP, DestinationIP and Activity.\n\n**Configuration** mirrors Syslog via AMA. Install the **Common Event Format** solution, open **CEF via AMA**, create a DCR targeting the forwarder, pick facilities and a minimum severity, then run the same **Forwarder_AMA_installer.py** (port 514). Finally, configure the appliance to send CEF to the forwarder's IP. A test can be sent with `logger` or netcat. Data may take about 20 minutes to appear.\n\n**Duplicate ingestion:** if the same facility is collected by both a CEF DCR and a Syslog DCR on one forwarder, every CEF event lands in both CommonSecurityLog and Syslog (paying twice). Fixes:\n1. Send CEF devices on facilities the Syslog DCR does not collect (e.g. local4 for CEF only).\n2. If you can't change the device, add an ingestion-time **transformation** to the Syslog DCR that drops CEF, e.g. `source | where ProcessName !contains \"CEF\" and SyslogMessage !contains \"CEF:0\"`.",
+      "terms": [
+        {
+          "t": "CEF",
+          "d": "Common Event Format: syslog-carried, vendor-neutral format with header plus key=value extensions."
+        },
+        {
+          "t": "CommonSecurityLog",
+          "d": "Workspace table that stores parsed CEF (and Cisco ASA) events."
+        },
+        {
+          "t": "Ingestion-time transformation",
+          "d": "KQL in a DCR (transformKql) that filters or reshapes records before storage."
+        }
+      ],
+      "trap": "CEF events do not go to the Syslog table by design. Seeing them in both tables means a facility overlap, not a connector bug.",
+      "example": "A Fortinet firewall sends CEF on local7, and the Linux hosts' Syslog DCR also collects local7. Moving the firewall to local4 stops the double-billing.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Syslog via AMA",
+          "CEF via AMA"
+        ],
+        "rows": [
+          [
+            "Format",
+            "RFC 3164/5424",
+            "CEF:0|vendor|…"
+          ],
+          [
+            "Table",
+            "Syslog",
+            "CommonSecurityLog"
+          ],
+          [
+            "Forwarder",
+            "rsyslog/syslog-ng",
+            "rsyslog/syslog-ng"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.3.07",
+      "objective": "d1.3",
+      "seq": 7,
+      "title": "Azure Activity logs via Azure Policy",
+      "short": "The Azure Activity connector streams subscription-level control-plane events (ARM operations, service health) into the AzureActivity table. You connect it with the Launch Azure Policy Assignment wizard: pick the subscription scope and the workspace, and create a remediation task so existing subscriptions get the diagnostic setting.",
+      "deep": "The **Azure Activity log** records *who did what* on Azure resources: create, update and delete through **Azure Resource Manager**, plus role assignments, policy events and service health. It's the first place to look for attacker persistence in Azure, such as new role assignments or disabled diagnostics.\n\n**Current method (policy-based diagnostic settings):**\n1. Install the **Azure Activity** solution from the Content hub.\n2. On the connector page choose **Launch Azure Policy Assignment wizard**.\n3. **Basics**: set the **scope** (a subscription, or a management group to cover many).\n4. **Parameters**: choose the primary **Log Analytics workspace** (the Sentinel workspace).\n5. **Remediation**: tick **Create a remediation task**. Policy only acts automatically on new or updated resources, so the task fixes existing ones. The assignment uses a managed identity to deploy the setting.\n6. Review + create.\n\nYou need the **Owner** role on the assignment scope. Data lands in **AzureActivity**. If an older legacy connection exists, use **Disconnect All** on the connector page before switching.",
+      "terms": [
+        {
+          "t": "Azure Activity log",
+          "d": "Subscription-level log of ARM control-plane operations and service events."
+        },
+        {
+          "t": "Remediation task",
+          "d": "Azure Policy job that applies a deployIfNotExists policy to already-existing non-compliant resources."
+        },
+        {
+          "t": "AzureActivity",
+          "d": "Workspace table holding the activity log events."
+        }
+      ],
+      "trap": "Without a remediation task, existing subscriptions are not connected. Policy only applies automatically to new or changed resources.",
+      "example": "A tenant with 40 subscriptions assigns the activity-log policy at the root management group and creates a remediation task. All 40 start streaming to AzureActivity.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Policy wizard",
+          "Scope",
+          "Workspace",
+          "Remediation task",
+          "AzureActivity"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.3.08",
+      "objective": "d1.3",
+      "seq": 8,
+      "title": "Resource diagnostic settings",
+      "short": "Azure resource logs (Key Vault, Storage, NSG flow, SQL…) reach Sentinel through diagnostic settings. Standalone connectors have you add a diagnostic setting on each resource with 'Send to Log Analytics workspace'. Policy-managed connectors apply one setting to every resource of that type in a scope, and need Owner on that scope.",
+      "deep": "Every Azure resource can export **resource logs** and metrics through a **diagnostic setting**. A setting names the log categories and the destination: a Log Analytics workspace, storage account, event hub or partner solution.\n\n**Standalone (per resource):** connector page → open the resource → **Diagnostic settings** → **+ Add diagnostic setting**. Name it, tick the log categories (and metrics if needed), choose **Send to Log Analytics workspace**, then select the Sentinel workspace and **Save**. This works well for a handful of resources.\n\n**Managed by Azure Policy (at scale):** the connector's **Launch Azure Policy Assignment wizard** assigns a built-in deployIfNotExists policy for that resource type. You set the scope (subscription or resource group), the workspace, and which log types are True. A **remediation task** covers existing resources. New resources are configured automatically. You need **Owner** on the policy assignment scope.\n\n**Gotchas:**\n- A policy-managed connector shows *connected* only if data arrived in the last **14 days**.\n- Storage accounts need settings on the child services (blob, file, queue, table) to get their logs.\n- A diagnostic setting writes to resource-specific or AzureDiagnostics tables depending on the service and the mode you choose.",
+      "terms": [
+        {
+          "t": "Diagnostic setting",
+          "d": "Per-resource export of chosen log categories and metrics to a destination."
+        },
+        {
+          "t": "deployIfNotExists",
+          "d": "Azure Policy effect that deploys a configuration (here, a diagnostic setting) when it's missing."
+        },
+        {
+          "t": "Resource logs",
+          "d": "Data-plane logs emitted by an Azure resource, e.g. Key Vault AuditEvent."
+        }
+      ],
+      "trap": "Adding a diagnostic setting to one Key Vault doesn't cover Key Vaults created next month. Azure Policy does.",
+      "example": "Security requires logs from every Key Vault, including future ones. The analyst uses the Key Vault connector's policy wizard at subscription scope and creates a remediation task.",
+      "diagram": null
+    },
+    {
+      "id": "sc-200.d1.3.09",
+      "objective": "d1.3",
+      "seq": 9,
+      "title": "Ingesting threat indicators",
+      "short": "Threat intelligence reaches Sentinel as STIX objects. The sources are the Threat Intelligence – TAXII connector (TAXII 2.0/2.1 servers), the Threat Intelligence Upload API (for TIPs and custom apps), Microsoft's own Defender Threat Intelligence connector, bulk file import (CSV or STIX JSON), and manual creation. Indicators are stored in ThreatIntelIndicators and ThreatIntelObjects.",
+      "deep": "**STIX** describes threat intelligence (indicators, threat actors, attack patterns, identities, relationships). **TAXII** is the protocol that serves STIX collections.\n\n**Ingestion options:**\n- **Threat Intelligence – TAXII**: built-in TAXII client for **TAXII 2.0 or 2.1** servers. You supply a friendly name, the **API root URL**, the **collection ID**, credentials if needed, and a polling frequency. Repeat for each collection.\n- **Threat Intelligence Upload API**: REST endpoint for threat intelligence platforms (TIPs) and custom apps. It takes STIX format at workspace scope, needs no data connector, and its Entra app needs **Microsoft Sentinel Contributor**. It replaces the deprecated **TIP connector**, which used the Graph `tiIndicators` API.\n- **Microsoft Defender Threat Intelligence connector**: Microsoft-curated indicators.\n- **Import from file**: CSV (indicators only, up to 50 MB) or STIX 2.1 JSON (up to 250 MB), through Threat intelligence > Import > Import using a file.\n- **Manual**: add objects in the threat intelligence management page.\n\n**Storage:** STIX indicators go to **ThreatIntelIndicators**, other STIX objects to **ThreatIntelObjects**. The legacy **ThreatIntelligenceIndicator** table stopped receiving data after July 2025. Sentinel re-ingests intel every 7–10 days.",
+      "terms": [
+        {
+          "t": "STIX",
+          "d": "Structured Threat Information Expression: standard JSON model for threat intelligence objects."
+        },
+        {
+          "t": "TAXII",
+          "d": "Trusted Automated Exchange of Intelligence Information: HTTPS protocol that serves STIX collections."
+        },
+        {
+          "t": "Upload API",
+          "d": "Sentinel REST API that accepts STIX objects from TIPs or scripts without a connector."
+        },
+        {
+          "t": "ThreatIntelIndicators",
+          "d": "Current workspace table storing STIX indicator objects."
+        }
+      ],
+      "trap": "Writing new hunting queries against ThreatIntelligenceIndicator is outdated. The current tables are ThreatIntelIndicators and ThreatIntelObjects.",
+      "example": "An ISAC publishes a TAXII 2.1 feed. The SOC adds a TAXII connector with the ISAC's API root and collection ID, and indicators appear on the Threat intelligence page within minutes.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "TAXII / API / file",
+          "STIX objects",
+          "ThreatIntelIndicators",
+          "TI analytics rules"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.3.10",
+      "objective": "d1.3",
+      "seq": 10,
+      "title": "Custom log tables",
+      "short": "Data with no built-in table goes into a custom table ending in _CL. DCR-based custom tables are created from the workspace Tables page (or API, CLI, ARM) with a sample JSON file, a DCR, an optional transformation, and a plan (Analytics, Basic or Auxiliary). Data arrives via the Logs Ingestion API or Custom Logs via AMA.",
+      "deep": "**Creating the table:** Log Analytics workspace → **Tables** → **Create** → new custom log (DCR-based). Then:\n- **Name**: the portal adds the `_CL` suffix automatically. In API, CLI, PowerShell, ARM or Bicep you must add it yourself.\n- **Plan**: **Analytics** (default, full KQL and alerting), **Basic**, or **Auxiliary/data lake** (cheap, limited querying). Choose by how the data will be used.\n- **DCR** (new or existing) and, if needed, a **data collection endpoint (DCE)**.\n- **Sample JSON** with at least one record. The portal infers the schema from it.\n- **Transformation editor**: KQL run on every incoming record, e.g. `source | extend TimeGenerated = todatetime(Time)`.\n\nEvery table needs **TimeGenerated**. If the sample lacks it, the transformation adds it. Custom columns added to built-in Azure tables end in `_CF`. Managing tables needs `Microsoft.OperationalInsights/workspaces/*`, which **Log Analytics Contributor** includes.\n\n**Feeding it:**\n- **Logs Ingestion API**: app registration + secret, the **Monitoring Metrics Publisher** role on the DCR, POST to the DCR's stream (`Custom-<table>`). It replaces the legacy HTTP Data Collector API.\n- **Custom Logs via AMA**: text files on servers. Create the `_CL` table first with **TimeGenerated** and **RawData**, then a DCR with a file pattern (wildcards allowed).",
+      "terms": [
+        {
+          "t": "_CL",
+          "d": "Mandatory suffix for custom log tables in a Log Analytics workspace."
+        },
+        {
+          "t": "Table plan",
+          "d": "Analytics, Basic or Auxiliary: sets cost, query capability and retention behaviour."
+        },
+        {
+          "t": "Monitoring Metrics Publisher",
+          "d": "Role an app needs on the DCR to send data via the Logs Ingestion API."
+        },
+        {
+          "t": "DCE",
+          "d": "Data collection endpoint; needed for Private Link or DCRs without a built-in ingestion endpoint."
+        }
+      ],
+      "trap": "Granting the app Log Analytics Contributor on the workspace won't let it send data. It needs Monitoring Metrics Publisher on the DCR.",
+      "example": "A badge-access system exports JSON. The engineer creates BadgeAccess_CL with a sample file, a transformation that maps the event time to TimeGenerated, and a DCR, then sends data through the Logs Ingestion API.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "App / script",
+          "Entra token",
+          "DCR stream",
+          "Transform",
+          "Table_CL"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.4.01",
+      "objective": "d1.4",
+      "seq": 1,
+      "title": "Custom detections from Advanced Hunting",
+      "short": "A custom detection rule is a saved Advanced Hunting KQL query that runs on a schedule and raises alerts. Results must include Timestamp (or TimeGenerated) plus the event's ReportId, with DeviceId for Defender for Endpoint tables. Frequencies are Continuous (NRT), every 1, 3, 12 or 24 hours, or Custom for Sentinel data.",
+      "deep": "In the Defender portal, write a query in **Advanced hunting** and choose **Create detection rule** (or go to Hunting > Custom detection rules > + Create). Microsoft now recommends custom detections for new rules across Defender XDR and Sentinel data.\n\n**Required output columns:**\n- **Timestamp** or **TimeGenerated**: sets the alert time.\n- **ReportId**: identifies the source event. With **DeviceId** it's needed for Defender for Endpoint (Device*) tables. Other Defender tables need Timestamp and ReportId from the same event.\n- Entity columns for mapping, e.g. DeviceId/DeviceName, AccountObjectId/AccountSid/AccountUpn, RecipientEmailAddress.\nWhen summarising, keep them with `arg_max(Timestamp, ReportId)`.\n\n**Frequency → Defender data lookback:** every 24 h → 30 days; 12 h → 48 h; 3 h → 12 h; 1 h → 4 h. **Continuous (NRT)** runs in near real time but the query must use one table, no joins, unions or externaldata, and no comment lines. **Custom** frequency (5 minutes–14 days) applies to Sentinel data only.\n\nOn save, the rule immediately checks the past 30 days. Each run creates **at most 150 alerts**. Don't filter on Timestamp yourself, because the service applies the lookback.\n\nTo create rules on Defender XDR data you need **Security settings (manage)**, or an Entra role such as Security Administrator. Rules over Sentinel data need **Microsoft Sentinel Contributor**.",
+      "terms": [
+        {
+          "t": "Custom detection rule",
+          "d": "Scheduled Advanced Hunting query in Defender XDR that generates alerts and optional actions."
+        },
+        {
+          "t": "ReportId",
+          "d": "Event identifier column that a custom detection needs to link alerts to source records."
+        },
+        {
+          "t": "Continuous (NRT) frequency",
+          "d": "Near-real-time custom detection option with single-table, no-join query limits."
+        },
+        {
+          "t": "arg_max()",
+          "d": "KQL aggregation that returns the row with the max value, used to keep Timestamp and ReportId."
+        }
+      ],
+      "trap": "A query that summarises by DeviceId without Timestamp and ReportId can't be saved as a detection. Keep them with arg_max.",
+      "example": "A hunter finds certutil downloading files. They project Timestamp, DeviceId, ReportId and AccountUpn, then save the query as an hourly custom detection scoped to server device groups.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Hunting query",
+          "Required columns",
+          "Frequency",
+          "Alert",
+          "Actions"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.4.02",
+      "objective": "d1.4",
+      "seq": 2,
+      "title": "Custom detection alert details and actions",
+      "short": "The rule wizard sets the alert's details: unique name and title, severity, category, MITRE techniques, description and recommended actions. It also sets impacted entities and optional automatic response actions on devices, files, users or email. Dynamic {{Column}} placeholders and up to 20 custom details enrich each alert.",
+      "deep": "**Alert details:** detection name and alert title (both unique), **severity**, **category**, MITRE ATT&CK **techniques**, description and recommended actions. A threat analytics report can be linked. Titles and descriptions can include up to three `{{ColumnName}}` dynamic values, e.g. `{{AccountName}} signed in from {{Country}}`. **Custom details** (up to 20 key-value pairs, 4 KB per alert) surface query fields on the alert.\n\n**Impacted entities:** pick one column per entity type (device, user, mailbox). Defender entities map automatically, while Sentinel data must be mapped manually.\n\n**Actions (Defender data only):**\n- **Devices** (needs DeviceId): isolate device, collect investigation package, run antivirus scan, initiate investigation, restrict app execution.\n- **Files**: allow/block (adds an indicator, can be scoped to device groups), quarantine file (needs a SHA1 or SHA256 column).\n- **Users**: mark as compromised (sets the Entra ID user risk to high), disable user, reset user authentication. Disable and reset need a SID column such as AccountSid.\n- **Email**: move to a mailbox folder (Junk, Inbox, Deleted items) or soft/hard delete. Needs NetworkMessageId and RecipientEmailAddress.\n\n**Scope:** all devices or chosen device groups. This only affects device-based rules. You must have access to every device in scope.",
+      "terms": [
+        {
+          "t": "Dynamic details",
+          "d": "{{Column}} placeholders that insert query values into alert titles and descriptions."
+        },
+        {
+          "t": "Custom details",
+          "d": "Up to 20 key-value fields from query results attached to each alert."
+        },
+        {
+          "t": "Mark user as compromised",
+          "d": "Action that raises the user's Entra ID Protection risk level to high."
+        }
+      ],
+      "trap": "Email actions fail silently if NetworkMessageId or RecipientEmailAddress is missing. Each action needs its own identifier columns.",
+      "example": "A rule spotting malicious macro attachments outputs NetworkMessageId and RecipientEmailAddress, so it can soft-delete the message from every recipient's mailbox automatically.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "Target",
+          "Example action",
+          "Needs column"
+        ],
+        "rows": [
+          [
+            "Device",
+            "Isolate device",
+            "DeviceId"
+          ],
+          [
+            "File",
+            "Quarantine file",
+            "SHA1 / SHA256"
+          ],
+          [
+            "User",
+            "Disable user",
+            "AccountSid"
+          ],
+          [
+            "Email",
+            "Soft delete",
+            "NetworkMessageId"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.4.03",
+      "objective": "d1.4",
+      "seq": 3,
+      "title": "Managing custom detection rules",
+      "short": "Custom detections are managed at Hunting > Custom detection rules in the Defender portal. The list shows Last run, Last run status, Next run and Status. From a rule you can Run it now, Edit it, Modify query in Advanced Hunting, Turn off/on, or Delete it, and you can review its Triggered alerts and Triggered actions.",
+      "deep": "**Where:** Defender portal → **Hunting** → **Custom detection rules**. When a Sentinel workspace is onboarded to the Defender portal, Sentinel analytics rules are listed here too. You can search by name or ID and filter on any column, including workspace.\n\n**Columns:**\n- **Last run**: when the rule last checked for matches.\n- **Last run status**: did it succeed (custom detections only).\n- **Next run**: when it runs next.\n- **Status**: on or off.\n\n**Actions on a rule:**\n- **Run**: runs immediately and resets the interval for the next run.\n- **Edit**: reopens the wizard (details, entities, actions, scope).\n- **Modify query**: opens the query in Advanced Hunting.\n- **Turn off / Turn on**: pause without losing the rule.\n- **Delete**: turns it off and removes it permanently.\n- **Include/exclude from correlation**: Sentinel analytics rules only.\n\n**Rule details page:** general info and run status, **Triggered alerts** (set status and classification, link to an incident, rerun the query) and **Triggered actions** (what automatic responses ran).\n\n**Housekeeping:** check Last run status after table or schema changes, turn off noisy rules while tuning, and use the least-privileged role (Security settings manage) rather than Global Administrator.",
+      "terms": [
+        {
+          "t": "Last run status",
+          "d": "Indicates whether a custom detection's latest execution succeeded."
+        },
+        {
+          "t": "Triggered actions",
+          "d": "Tab listing automatic response actions a rule performed."
+        },
+        {
+          "t": "Run (now)",
+          "d": "Immediate execution that also resets the rule's next scheduled run."
+        }
+      ],
+      "trap": "To stop a noisy rule while keeping it for later, choose Turn off, not Delete. Delete is permanent.",
+      "example": "A rule's Last run status shows failures after a column was renamed. The analyst uses Modify query, fixes the column, saves, then selects Run to confirm.",
+      "diagram": null
+    },
+    {
+      "id": "sc-200.d1.4.04",
+      "objective": "d1.4",
+      "seq": 4,
+      "title": "Scheduled analytics rules",
+      "short": "A scheduled analytics rule runs KQL on a fixed interval over a lookback window (both 5 minutes–14 days) and raises an alert when results cross a threshold. The wizard covers the query, entity mapping, custom details, alert details, scheduling, event grouping, suppression, incident settings and alert grouping, plus automated response.",
+      "deep": "**General:** name, description, **severity** (Informational/Low/Medium/High), and MITRE tactics and techniques. Many rules start from a **rule template** that comes with a Content hub solution.\n\n**Set rule logic:**\n- **Query**: 1–10,000 characters, no `search *` or `union *`. Prefer ASIM parsers.\n- **Entity mapping**: up to **10** mappings, each with up to 3 identifiers, and up to 500 entities per alert in total.\n- **Custom details** and **alert details** (dynamic name and description) go into ExtendedProperties.\n- **Run query every** ≤ **Lookup data from the last**. Each can be 5 min–14 days. Rules run with a built-in 5-minute delay to allow for ingestion.\n- **Alert threshold**: more than, less than or equal to N results.\n- **Event grouping**: one alert summarising all results (default), or one alert per result (up to 150 per run).\n- **Suppression**: stop running for up to 24 hours after an alert.\n\n**Incident settings:** create incidents (on by default). **Alert grouping** puts related alerts into one incident within a window (default 5 hours, up to 7 days). It can group when all entities match, group all alerts from the rule, or match selected entities and details. In the Defender portal, the Defender XDR correlation engine makes the final grouping decisions, and closed incidents aren't reopened.\n\n**Automated response:** attach automation rules.",
+      "terms": [
+        {
+          "t": "Lookback period",
+          "d": "'Lookup data from the last' window each run queries."
+        },
+        {
+          "t": "Event grouping",
+          "d": "Choice between one alert per run or one alert per query result."
+        },
+        {
+          "t": "Alert grouping",
+          "d": "Incident setting that groups related alerts into one incident within a time window."
+        },
+        {
+          "t": "Suppression",
+          "d": "Stops the rule from running for a set time after it fires (max 24 h)."
+        }
+      ],
+      "trap": "Run interval longer than lookback creates coverage gaps and fails validation. The interval must be less than or equal to the lookback.",
+      "example": "A brute-force rule runs every 10 minutes over 10 minutes of SigninLogs, triggers when more than 0 results return, and groups alerts by matching account into one incident per 5 hours.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "General",
+          "Rule logic",
+          "Incident settings",
+          "Automation",
+          "Review"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.4.05",
+      "objective": "d1.4",
+      "seq": 5,
+      "title": "Near-real-time (NRT) rules",
+      "short": "NRT rules are a fast subset of scheduled rules that run every minute over data ingested in the previous minute. They query on ingestion time, so ingestion latency doesn't cause misses. There are limits: 50 NRT rules per customer, up to 30 single-event alerts per run, and only sources with ingestion delay under 12 hours.",
+      "deep": "Create an NRT rule from Analytics → **Create → NRT query rule**, or from an NRT template. The wizard looks like the scheduled wizard, but without interval and lookback, because those are fixed.\n\n**Behaviour:**\n- Runs **once a minute** with a 2-minute built-in delay (scheduled rules use 5).\n- Queries on **ingestion time**, not TimeGenerated, so late-arriving events are still evaluated once.\n- Supports entity mapping, custom details, dynamic alert details, incident and alert grouping, suppression, and automation rules.\n- Can query several tables and workspaces.\n\n**Limits:**\n- **50 NRT rules per customer**.\n- Each run produces up to **30 single-event alerts**. With more matches, 29 alerts are created plus a 30th summary alert.\n- Event grouping is limited.\n- Works properly only on sources with an ingestion delay **under 12 hours**, and gives no real benefit on high-latency sources.\n\n**When to choose NRT:** high-value, low-volume signals where every minute counts, such as a break-glass account sign-in, a security log cleared (1102), or a disabled diagnostic setting. For aggregation over long windows (hours or days of history), use a scheduled rule.",
+      "terms": [
+        {
+          "t": "NRT rule",
+          "d": "Sentinel analytics rule fixed to a one-minute cadence over freshly ingested data."
+        },
+        {
+          "t": "Ingestion time",
+          "d": "When a record reached the workspace; NRT rules evaluate on this rather than TimeGenerated."
+        },
+        {
+          "t": "Single-event alert",
+          "d": "One alert per matching event, the NRT output model (max 30 per run)."
+        }
+      ],
+      "trap": "Choosing NRT to count failed logons over 24 hours is wrong. NRT only sees the last minute of ingested data.",
+      "example": "The SOC wants an alert within about two minutes of any sign-in by a break-glass account. An NRT rule on SigninLogs filtered to that UPN fits.",
+      "diagram": {
+        "kind": "compare",
+        "cols": [
+          "",
+          "Scheduled",
+          "NRT"
+        ],
+        "rows": [
+          [
+            "Cadence",
+            "5 min–14 days",
+            "Every minute"
+          ],
+          [
+            "Built-in delay",
+            "5 minutes",
+            "2 minutes"
+          ],
+          [
+            "Alerts per run",
+            "Up to 150",
+            "Up to 30"
+          ],
+          [
+            "Rule limit",
+            "No NRT-style cap",
+            "50 per customer"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.4.06",
+      "objective": "d1.4",
+      "seq": 6,
+      "title": "Threat intelligence and ML analytics rules",
+      "short": "Besides scheduled and NRT rules, Sentinel offers built-in rule types you enable but can't customise. Microsoft Defender Threat Intelligence Analytics matches Microsoft indicators against CEF, DNS and Syslog data. ML behavior analytics flags anomalous SSH and RDP logins. Fusion correlates multistage attacks but is disabled when Sentinel is onboarded to the Defender portal.",
+      "deep": "**Threat intelligence rules:**\n- **Microsoft Defender Threat Intelligence Analytics** (TI matching): enable it from **Rule templates**. It matches Microsoft's domain, IP and URL indicators against CommonSecurityLog, DnsEvents, Syslog and others, producing high-fidelity alerts. Its logic is read-only. Severity depends on the match, e.g. allowed traffic to a bad IP is High, blocked is lower.\n- **TI map templates** (scheduled rules such as 'TI map IP entity to SigninLogs') join your ingested indicators (ThreatIntelIndicators) against log tables. You *can* edit these because they're ordinary scheduled rules.\n\n**Machine learning rules:**\n- **ML behavior analytics**: built-in, non-customisable detections of anomalous **SSH** (Linux) and **RDP** (Windows) logins.\n- **Anomaly** rules: ML baselines that write to the Anomalies table (covered in the anomalies lesson).\n- **Fusion**: an ML correlation engine that turns many low-fidelity signals into multistage-attack incidents. It is on by default and there is only one Fusion rule.\n\n**Defender portal effect:** when Sentinel is onboarded to the Defender portal (or Defender XDR incident integration is on), **Fusion** and **Microsoft Security incident creation rules** are disabled. Defender XDR's correlation engine takes over incident creation. Microsoft recommends custom detections for new rules.",
+      "terms": [
+        {
+          "t": "Defender Threat Intelligence Analytics",
+          "d": "Built-in, non-editable rule matching Microsoft TI against your CEF, DNS and Syslog logs."
+        },
+        {
+          "t": "TI map rules",
+          "d": "Scheduled-rule templates joining ingested indicators to log tables; editable."
+        },
+        {
+          "t": "ML behavior analytics",
+          "d": "Built-in ML rules detecting anomalous SSH and RDP logins."
+        },
+        {
+          "t": "Fusion",
+          "d": "ML correlation engine for multistage attacks; replaced by XDR correlation in the Defender portal."
+        }
+      ],
+      "trap": "'Edit the Microsoft Threat Intelligence Analytics query' is not possible. To customise TI matching, use or clone a TI map scheduled rule.",
+      "example": "A SOC ingests a partner TAXII feed and wants alerts when Entra sign-ins come from those IPs. They enable the TI map IP entity to SigninLogs template.",
+      "diagram": null
+    },
+    {
+      "id": "sc-200.d1.4.07",
+      "objective": "d1.4",
+      "seq": 7,
+      "title": "MITRE ATT&CK coverage",
+      "short": "The MITRE ATT&CK page in Sentinel (Threat management > MITRE ATT&CK) maps your active scheduled and NRT analytics rules onto ATT&CK tactics and techniques. Simulated coverage shows what available templates would add. Rules, hunting queries and bookmarks carry technique tags, and incidents inherit them from their alerts.",
+      "deep": "**MITRE ATT&CK** is a public knowledge base of adversary **tactics** (the 'why', e.g. Initial Access, Persistence, Lateral Movement) and **techniques/sub-techniques** (the 'how', e.g. T1059 Command and Scripting Interpreter).\n\n**In Sentinel** (Defender portal: Microsoft Sentinel > Threat management > **MITRE ATT&CK**, currently preview):\n- The matrix shows **active coverage**: by default, enabled **scheduled** and **NRT** rules counted per technique, with a legend showing density.\n- **Simulated** coverage: pick items from the Simulated rules menu (such as available rule templates) to see how coverage would change if you enabled them. This is a gap-analysis tool.\n- Select a technique to open the details pane, which links to the MITRE page and to related active detections and hunting queries.\n- Search by technique name or ID, or filter by threat scenario.\n\n**Tagging:** set tactics and techniques in the analytics rule wizard (General tab). Custom detections and hunting queries carry them too, bookmarks can inherit or override them, and incidents gain the techniques of their alerts.\n\n**Workflow for exam scenarios:** open the matrix, find empty techniques that matter to your threat model, simulate templates, enable or author rules, and tag them correctly so the matrix stays accurate.",
+      "terms": [
+        {
+          "t": "Tactic",
+          "d": "ATT&CK column describing the adversary's goal, e.g. Credential Access."
+        },
+        {
+          "t": "Technique",
+          "d": "ATT&CK entry describing how a goal is achieved, with an ID such as T1003."
+        },
+        {
+          "t": "Simulated coverage",
+          "d": "MITRE page view showing coverage you'd gain by enabling available detections."
+        }
+      ],
+      "trap": "A disabled rule or an untagged rule doesn't count as coverage. The matrix only reflects active rules with techniques set.",
+      "example": "Before an audit, the SOC lead sees zero coverage under Exfiltration, simulates rule templates for that tactic, then enables three of them.",
+      "diagram": {
+        "kind": "cycle",
+        "items": [
+          "View matrix",
+          "Find gaps",
+          "Simulate templates",
+          "Enable/tag rules"
+        ]
+      }
+    },
+    {
+      "id": "sc-200.d1.4.08",
+      "objective": "d1.4",
+      "seq": 8,
+      "title": "Anomalies in Microsoft Sentinel",
+      "short": "Anomaly rules are machine-learning templates that baseline behaviour and write unusual activity to the Anomalies table. They don't create alerts or incidents. Built-in anomaly rules can't be edited. You duplicate one to make a single '- Customized' copy, tune its threshold and parameters in Flighting mode, then promote it to Production.",
+      "deep": "**Purpose:** anomalies are lower-fidelity signals. On their own they don't prove an attack, but they add context to hunting and investigations and can strengthen other detections. Some come from the **UEBA** engine, which baselines each entity against its own history, its peers and the organisation.\n\n**Where they show:** the **Anomalies** table (query it in Logs), not in alerts or incidents. Example:\n`Anomalies | where RuleId contains \"<RuleId>\"`, then expand **AnomalyReasons** to see why one fired. Too many anomalies means the threshold is too low.\n\n**Tuning workflow:**\n1. Open the anomaly rule (Analytics → Anomalies tab). You can't edit or delete the built-in rule, only switch it between **Production** and **Flighting**.\n2. **Duplicate** it. The copy is named '<original> - Customized', starts disabled and in **Flighting** (FLGT badge). Only one customised copy per rule is allowed.\n3. Edit the copy's **threshold** and the parameters its algorithm exposes. The results preview shows the effect.\n4. Compare the outputs: `Anomalies | where AnomalyTemplateId contains \"<RuleId>\"`.\n5. Switch the copy to **Production**. The original flips to Flighting automatically, because only one version can be in Production.\n\nTo change the template version of an active anomaly rule you must recreate it.",
+      "terms": [
+        {
+          "t": "Anomalies table",
+          "d": "Workspace table where anomaly rules record unusual behaviour; no alerts are created."
+        },
+        {
+          "t": "Flighting",
+          "d": "Test mode in which an anomaly rule runs and logs results without being the production version."
+        },
+        {
+          "t": "Customized anomaly",
+          "d": "The single duplicate of a built-in anomaly rule that you can tune."
+        }
+      ],
+      "trap": "Expecting anomaly rules to raise incidents is the classic mistake. They only write to the Anomalies table.",
+      "example": "An 'anomalous sign-in volume' rule is too chatty. The analyst duplicates it, raises the threshold in Flighting, compares a week of output, then promotes the copy to Production.",
+      "diagram": {
+        "kind": "flow",
+        "items": [
+          "Built-in rule",
+          "Duplicate",
+          "Tune in Flighting",
+          "Compare",
+          "Production"
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "sc-200.d1b.q001",
+      "lesson": "sc-200.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Where do you normally install a Microsoft Sentinel data connector together with its related analytics rules and workbooks?",
+      "options": [
+        "Content hub",
+        "Microsoft Defender for Cloud recommendations",
+        "Azure Monitor Workbooks gallery",
+        "Azure Marketplace private offers only"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Connectors ship inside Content hub solutions, which also bring rules, workbooks and playbooks. The Workbooks gallery holds dashboards only. Defender for Cloud recommendations are posture findings, not a connector catalogue."
+    },
+    {
+      "id": "sc-200.d1b.q002",
+      "lesson": "sc-200.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You must ingest Microsoft Entra ID sign-in logs into Microsoft Sentinel using the Microsoft Entra ID connector. Which TWO requirements apply? Select TWO.",
+      "options": [
+        "A Windows Event Collector server",
+        "A TAXII 2.1 collection ID",
+        "A Microsoft Entra ID P1 or P2 licence",
+        "An Azure Arc-enabled server running the Azure Monitor Agent",
+        "Security Administrator role (or equivalent) on the tenant"
+      ],
+      "answer": [
+        2,
+        4
+      ],
+      "explain": "Sign-in logs need Entra ID P1 or P2 (audit logs work with any licence), and connecting needs Security Administrator or equivalent plus workspace write access. Arc/AMA and WEC are for server logs. TAXII is for threat intelligence."
+    },
+    {
+      "id": "sc-200.d1b.q003",
+      "lesson": "sc-200.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": "Contoso forwards Security log events from 600 servers to a Windows Event Collector with WEF. The AMA on the collector uses the Windows Forwarded Events connector. Several built-in Sentinel rules for Windows security events never fire, even though analysts can see the events in the workspace.",
+      "stem": "What is the most likely cause?",
+      "options": [
+        "NRT rules cannot query on-premises data",
+        "The collector lacks the Monitoring Metrics Publisher role",
+        "The events are stored in WindowsEvent, but the built-in rules query SecurityEvent",
+        "The DCR uses the Minimal event set"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Windows Forwarded Events writes to WindowsEvent even for Security-channel events. Many built-in rules query SecurityEvent, so they must be adapted or the Security Events via AMA connector used. Event sets belong to the Security Events connector. Monitoring Metrics Publisher is for the Logs Ingestion API."
+    },
+    {
+      "id": "sc-200.d1b.q004",
+      "lesson": "sc-200.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Windows data in Microsoft Sentinel, select Yes if true.",
+      "statements": [
+        {
+          "s": "The Windows Security Events via AMA connector writes to the SecurityEvent table.",
+          "a": true
+        },
+        {
+          "s": "Events forwarded from the Security log through WEF are written to SecurityEvent by the Windows Forwarded Events connector.",
+          "a": false
+        },
+        {
+          "s": "The Microsoft Defender XDR connector can stream DeviceProcessEvents into the workspace.",
+          "a": true
+        }
+      ],
+      "explain": "Security Events via AMA writes to SecurityEvent. Forwarded Events writes to WindowsEvent whatever the original channel. The Defender XDR connector can stream advanced hunting tables such as DeviceProcessEvents."
+    },
+    {
+      "id": "sc-200.d1b.q005",
+      "lesson": "sc-200.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Windows security event set captures a full user audit trail, including sign-out events such as 4634, while reducing volume compared with collecting everything?",
+      "options": [
+        "All",
+        "Common",
+        "Minimal",
+        "Custom"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Common keeps a full user audit trail (logons, logoffs, group changes, Kerberos) at reduced volume. Minimal targets breach indicators and drops 4634, so it isn't a full trail. All is the unfiltered Security and AppLocker logs. Custom means your own XPath."
+    },
+    {
+      "id": "sc-200.d1b.q006",
+      "lesson": "sc-200.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You plan to use Windows Security Events via AMA for 50 physical Windows servers in an on-premises datacenter. What must be in place before you add them to the data collection rule?",
+      "options": [
+        "Log Analytics agent (MMA) on each server",
+        "A Windows Event Collector subscription",
+        "Microsoft Defender for Endpoint onboarding",
+        "Azure Arc Connected Machine agent on each server"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Non-Azure machines must be Azure Arc-enabled before the AMA-based connector can target them. The DCR then installs the AMA. MMA is the retired legacy agent. WEC is only for the Forwarded Events connector. MDE onboarding is unrelated to AMA collection."
+    },
+    {
+      "id": "sc-200.d1b.q007",
+      "lesson": "sc-200.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You create a Custom event set in a DCR to collect only successful and failed logons. Complete the XPath query.",
+      "code": "Security!*[System[(____)]]",
+      "options": [
+        "EventID=4624 or EventID=4625",
+        "EventID == 4624 || EventID == 4625",
+        "EventID in (4624, 4625)",
+        "EventID=4624 and EventID=4625"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "AMA supports XPath 1.0, which uses = and the keyword 'or'. 'in ()' and '==/||' are KQL or C-style syntax and are invalid in XPath. 'and' would need an event to have both IDs at once, which never happens."
+    },
+    {
+      "id": "sc-200.d1b.q008",
+      "lesson": "sc-200.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are connecting Azure VMs with Windows Security Events via AMA. Put the steps in order.",
+      "options": [
+        "Install the Windows Server Security Events solution from Content hub",
+        "Open the Windows Security Events via AMA connector page",
+        "Select + Add data collection rule and enter name, subscription and resource group",
+        "Add the target VMs on the Resources tab",
+        "Choose the event set on the Collect tab and create the rule"
+      ],
+      "explain": "You install the solution, open its connector, start a DCR (Basics), pick resources (the AMA is deployed to them), choose All/Common/Minimal/Custom on Collect, then review and create."
+    },
+    {
+      "id": "sc-200.d1b.q009",
+      "lesson": "sc-200.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Before adding a custom XPath query to a DCR, how can you check locally on a Windows server that the query is valid?",
+      "options": [
+        "Run wecutil qc",
+        "Run Test-NetConnection to the workspace endpoint",
+        "Run Get-WinEvent with the -FilterXPath parameter",
+        "Run auditpol /get /category:*"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Get-WinEvent -LogName Security -FilterXPath tests the expression. An 'invalid query' error means bad syntax. wecutil qc configures an event collector, auditpol shows audit policy, and Test-NetConnection checks network reachability."
+    },
+    {
+      "id": "sc-200.d1b.q010",
+      "lesson": "sc-200.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You configure source-initiated Windows Event Forwarding by Group Policy so clients forward their Security log. Which THREE client-side settings are required? Select THREE.",
+      "options": [
+        "Add Network Service to the Event Log Readers group",
+        "Start the Windows Remote Management (WinRM) service",
+        "Configure target Subscription Manager with the collector URI",
+        "Enable the Windows Firewall rule for SMB on the collector",
+        "Install the Azure Monitor Agent on every client"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Clients need the subscription manager URI, a running WinRM service, and Network Service in Event Log Readers to read the secured Security channel. A key WEF benefit is that only the collector needs the AMA. WEF uses WinRM, not SMB."
+    },
+    {
+      "id": "sc-200.d1b.q011",
+      "lesson": "sc-200.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "By default, which event log on a Windows Event Collector receives events from WEF subscriptions?",
+      "options": [
+        "Security",
+        "ForwardedEvents",
+        "System",
+        "Microsoft-Windows-EventCollector/Operational"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Subscriptions write into the ForwardedEvents log on the collector by default, and the Forwarded Events connector reads it. The collector's own Security and System logs hold its local events. The EventCollector operational channel logs the service's own status."
+    },
+    {
+      "id": "sc-200.d1b.q012",
+      "lesson": "sc-200.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fabrikam has 8,000 domain-joined workstations. The CISO wants their Security events in Microsoft Sentinel without deploying or managing an agent on each workstation. A single on-premises server can be dedicated to collection.",
+      "stem": "Which design should you recommend?",
+      "options": [
+        "Windows Security Events via AMA with a DCR targeting all workstations through Azure Arc",
+        "Syslog via AMA on a Linux forwarder receiving Windows events on port 514",
+        "Collector-initiated WEF with all 8,000 workstations listed individually on the collector",
+        "Source-initiated WEF via GPO to a WEC with the AMA and Azure Arc, using Windows Forwarded Events"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Source-initiated WEF scales through GPO, and only the collector needs Arc plus the AMA. Collector-initiated suits small named sets and doesn't scale to thousands. A per-workstation DCR means 8,000 agents. Windows doesn't natively send its events as syslog."
+    },
+    {
+      "id": "sc-200.d1b.q013",
+      "lesson": "sc-200.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Windows Event Forwarding, select Yes if true.",
+      "statements": [
+        {
+          "s": "Collector-initiated subscriptions require the collector to be preconfigured with the list of source computers.",
+          "a": true
+        },
+        {
+          "s": "In an Active Directory domain, WEF traffic is authenticated and encrypted with Kerberos by default.",
+          "a": true
+        },
+        {
+          "s": "WEF can change audit policy on source computers to start generating missing events.",
+          "a": false
+        }
+      ],
+      "explain": "Collector-initiated (pull) uses a named source list. In a domain, Kerberos protects WEF by default. WEF is passive: it can't change audit policy or channel settings, so that must be done through GPO or other tools."
+    },
+    {
+      "id": "sc-200.d1b.q014",
+      "lesson": "sc-200.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "You run the Forwarder_AMA_installer.py script on a Linux log forwarder. Which port does it configure the syslog daemon to listen on for remote messages?",
+      "options": [
+        "514 TCP and UDP",
+        "443 TCP only",
+        "6514 TCP only",
+        "5986 TCP only"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The script configures rsyslog or syslog-ng and opens port 514 for both TCP and UDP. 6514 is syslog over TLS by convention but isn't what the script opens. 443 is the AMA's outbound port to Azure. 5986 is WinRM over HTTPS."
+    },
+    {
+      "id": "sc-200.d1b.q015",
+      "lesson": "sc-200.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "In a Syslog via AMA data collection rule you set the auth facility to LOG_ERR. Which messages from that facility are collected?",
+      "options": [
+        "LOG_ERR and all less severe levels down to LOG_DEBUG",
+        "Only LOG_ERR",
+        "LOG_ERR, LOG_CRIT, LOG_ALERT and LOG_EMERG",
+        "LOG_ERR and LOG_WARNING"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "The portal picks a minimum level. That level and every more severe level are collected. Collecting a single exact level, or levels below it, needs a DCR built through the API."
+    },
+    {
+      "id": "sc-200.d1b.q016",
+      "lesson": "sc-200.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "You are preparing an on-premises Ubuntu VM as a log forwarder for Syslog via AMA. Which TWO prerequisites must be met? Select TWO.",
+      "options": [
+        "The Azure Arc Connected Machine agent is installed",
+        "The VM is joined to Microsoft Entra Domain Services",
+        "The Windows Event Collector service is configured",
+        "rsyslog or syslog-ng is running",
+        "The VM hosts a TAXII server"
+      ],
+      "answer": [
+        0,
+        3
+      ],
+      "explain": "A non-Azure forwarder needs the Arc Connected Machine agent so the AMA and DCR can target it, and it must run rsyslog or syslog-ng (plus Python 2.7 or 3). WEC is a Windows component. Domain join and TAXII are unrelated."
+    },
+    {
+      "id": "sc-200.d1b.q017",
+      "lesson": "sc-200.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A Syslog via AMA forwarder stops sending data to Sentinel after two weeks. Investigation shows the root file system is 100% full because rsyslog writes every received message to /var/log.",
+      "stem": "What should you do to prevent a recurrence?",
+      "options": [
+        "Switch the DCR to the Minimal event set",
+        "Configure the syslog daemon not to store unneeded messages locally",
+        "Add a suppression period to the analytics rules",
+        "Move the connector to Windows Forwarded Events"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "Microsoft advises configuring the daemon not to keep unneeded logs, because a full disk stops the AMA. Event sets apply to Windows Security events. Forwarded Events is Windows-only. Rule suppression doesn't affect ingestion."
+    },
+    {
+      "id": "sc-200.d1b.q018",
+      "lesson": "sc-200.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A firewall sends Common Event Format messages through CEF via AMA. In which table should analysts query the parsed events?",
+      "options": [
+        "AzureDiagnostics",
+        "Syslog",
+        "SecurityEvent",
+        "CommonSecurityLog"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "CEF via AMA parses CEF into CommonSecurityLog (DeviceVendor, SourceIP, Activity…). Syslog holds plain syslog, SecurityEvent holds Windows Security events, and AzureDiagnostics holds some Azure resource logs."
+    },
+    {
+      "id": "sc-200.d1b.q019",
+      "lesson": "sc-200.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "One Linux forwarder has both a Syslog via AMA DCR and a CEF via AMA DCR collecting facility local4. A proxy appliance sends CEF on local4, and its vendor doesn't allow the facility to be changed. Finance notices the proxy's events are billed twice.",
+      "stem": "What should you do?",
+      "options": [
+        "Add a transformation to the Syslog DCR that drops messages containing CEF",
+        "Set the Syslog DCR minimum level for local4 to LOG_EMERG",
+        "Move CommonSecurityLog to the Auxiliary plan",
+        "Delete the CEF via AMA DCR and parse CEF from the Syslog table"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "When the device facility can't change, Microsoft's fix is an ingestion-time transformation on the Syslog stream that drops CEF records. Dropping the CEF DCR loses parsed CommonSecurityLog data. LOG_EMERG still duplicates emergency messages. Changing the plan doesn't remove duplicates."
+    },
+    {
+      "id": "sc-200.d1b.q020",
+      "lesson": "sc-200.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "You add an ingestion-time transformation to a Syslog DCR so that CEF messages are not duplicated in the Syslog table. Complete the KQL.",
+      "code": "source\n| where ProcessName !contains \"CEF\" ____ SyslogMessage !contains \"CEF:0\"",
+      "options": [
+        "with",
+        "or",
+        "and",
+        "|"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "A record is kept only if neither field shows CEF, so both conditions must hold: 'and'. With 'or', a CEF message flagged in only one field would still be kept. '|' would start an invalid pipe and 'with' isn't a KQL logical operator."
+    },
+    {
+      "id": "sc-200.d1b.q021",
+      "lesson": "sc-200.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You onboard a Check Point firewall with CEF via AMA using a new Azure VM as the forwarder. Put the steps in order.",
+      "options": [
+        "Install the Common Event Format solution from Content hub",
+        "Create a data collection rule on the CEF via AMA connector targeting the forwarder VM",
+        "Run Forwarder_AMA_installer.py on the forwarder",
+        "Configure the firewall to send CEF to the forwarder's IP on port 514",
+        "Query CommonSecurityLog to verify the events arrive"
+      ],
+      "explain": "You install the solution, create the DCR (which also installs the AMA), run the script to set up rsyslog or syslog-ng on 514, point the appliance at the forwarder, then verify in CommonSecurityLog (allow up to about 20 minutes)."
+    },
+    {
+      "id": "sc-200.d1b.q023",
+      "lesson": "sc-200.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You connect the Azure Activity connector with the Azure Policy Assignment wizard at subscription scope. Existing subscriptions never send data, but subscriptions created later do. What did you most likely skip?",
+      "options": [
+        "Installing the AMA on a VM in each subscription",
+        "Creating a remediation task",
+        "Enabling Microsoft Defender for Cloud",
+        "Assigning the Monitoring Metrics Publisher role"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "deployIfNotExists policies act automatically only on new or updated resources. A remediation task applies the diagnostic setting to existing ones. Monitoring Metrics Publisher is for the Logs Ingestion API. The activity log needs no agent or Defender for Cloud."
+    },
+    {
+      "id": "sc-200.d1b.q024",
+      "lesson": "sc-200.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which table stores Azure Activity log events ingested by the Azure Activity connector?",
+      "options": [
+        "AzureDiagnostics",
+        "AuditLogs",
+        "CloudAppEvents",
+        "AzureActivity"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Subscription control-plane events land in AzureActivity. AuditLogs holds Entra ID directory audit events, AzureDiagnostics holds some resource logs, and CloudAppEvents is the Defender for Cloud Apps advanced hunting table."
+    },
+    {
+      "id": "sc-200.d1b.q025",
+      "lesson": "sc-200.d1.3.07",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "You are connecting the Azure Activity log for a subscription to Microsoft Sentinel. Put the steps in order.",
+      "options": [
+        "Install the Azure Activity solution from Content hub",
+        "Open the connector page and select Launch Azure Policy Assignment wizard",
+        "On Basics, select the subscription as the scope",
+        "On Parameters, select the Sentinel Log Analytics workspace",
+        "On Remediation, select Create a remediation task, then create the assignment"
+      ],
+      "explain": "Install the solution, open the connector's policy wizard, set the scope, choose the primary workspace, tick the remediation task so existing resources comply, then review and create."
+    },
+    {
+      "id": "sc-200.d1b.q026",
+      "lesson": "sc-200.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Litware's policy requires Key Vault audit logs from every vault in subscription Prod-01, including vaults teams will create in future. The SOC engineer has Microsoft Sentinel Contributor on the workspace and Reader on Prod-01.",
+      "stem": "What should the engineer do first?",
+      "options": [
+        "Obtain the Owner role on Prod-01, then run the Key Vault connector's Azure Policy wizard",
+        "Deploy the Azure Monitor Agent to each vault",
+        "Add a diagnostic setting on each existing vault",
+        "Enable the Defender XDR connector and stream CloudAppEvents"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Policy-managed connectors need Owner on the assignment scope, and Azure Policy covers both existing (with remediation) and future vaults. Per-vault settings miss new vaults. PaaS resources don't run the AMA. CloudAppEvents doesn't carry Key Vault audit logs."
+    },
+    {
+      "id": "sc-200.d1b.q027",
+      "lesson": "sc-200.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "When using a standalone diagnostic settings-based connector, which destination option do you select in the resource's diagnostic setting?",
+      "options": [
+        "Archive to a storage account",
+        "Stream to an event hub",
+        "Send to Log Analytics workspace",
+        "Send to partner solution"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Sentinel reads from its Log Analytics workspace, so you tick Send to Log Analytics workspace and pick the Sentinel workspace. Storage archive, event hub streaming and partner solutions are valid destinations, but Sentinel doesn't read data from them."
+    },
+    {
+      "id": "sc-200.d1b.q028",
+      "lesson": "sc-200.d1.3.08",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about diagnostic settings-based connectors, select Yes if true.",
+      "statements": [
+        {
+          "s": "An Azure Policy-managed connector applies one diagnostic settings configuration to all resources of a type within the chosen scope.",
+          "a": true
+        },
+        {
+          "s": "A policy-managed connector shows as connected only if data was ingested within the past 14 days.",
+          "a": true
+        },
+        {
+          "s": "Diagnostic settings require the Azure Monitor Agent to be installed on the Azure PaaS resource.",
+          "a": false
+        }
+      ],
+      "explain": "Policy-managed connectors deploy one configuration per resource type across the scope. Their status turns disconnected after 14 days without data. Diagnostic settings are a platform feature, and PaaS resources don't run agents."
+    },
+    {
+      "id": "sc-200.d1b.q029",
+      "lesson": "sc-200.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "You configure the Threat Intelligence – TAXII data connector. Which TWO values must you provide for each collection (besides a friendly name)? Select TWO.",
+      "options": [
+        "Entra application client secret",
+        "Collection ID",
+        "Workspace shared key",
+        "API root URL",
+        "Data collection endpoint URI"
+      ],
+      "answer": [
+        1,
+        3
+      ],
+      "explain": "The TAXII connector needs a friendly name, the server's API root URL and the collection ID, plus a username and password only if the server requires them. DCE URIs and Entra app secrets belong to API-based ingestion. Workspace keys belong to the legacy Data Collector API."
+    },
+    {
+      "id": "sc-200.d1b.q030",
+      "lesson": "sc-200.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your threat intelligence platform (TIP) must push STIX indicators and threat actor objects to Microsoft Sentinel. Microsoft recommends a method that doesn't need a data connector. What should you use?",
+      "options": [
+        "Logs Ingestion API into ThreatIntelligenceIndicator",
+        "Threat Intelligence Upload API",
+        "Threat Intelligence Platforms connector (Graph tiIndicators)",
+        "Threat Intelligence – TAXII connector"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "The Upload API accepts STIX objects from TIPs at workspace scope with no connector, and its Entra app needs Microsoft Sentinel Contributor. The TIP connector is deprecated and limited to indicators. TAXII is a pull client, so the TIP would need to host a TAXII server. The legacy table no longer receives data."
+    },
+    {
+      "id": "sc-200.d1b.q031",
+      "lesson": "sc-200.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about threat intelligence ingestion in Microsoft Sentinel, select Yes if true.",
+      "statements": [
+        {
+          "s": "The TAXII connector can import from TAXII 2.0 and TAXII 2.1 servers.",
+          "a": true
+        },
+        {
+          "s": "A CSV import file can contain threat actor and relationship objects as well as indicators.",
+          "a": false
+        },
+        {
+          "s": "New STIX indicators are stored in the ThreatIntelIndicators table.",
+          "a": true
+        }
+      ],
+      "explain": "TAXII import supports 2.0 and 2.1. CSV import handles indicators only, while STIX 2.1 JSON files can carry threat actors, attack patterns, identities and relationships. Indicators are stored in ThreatIntelIndicators, with other objects in ThreatIntelObjects."
+    },
+    {
+      "id": "sc-200.d1b.q032",
+      "lesson": "sc-200.d1.3.09",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "An analyst writes a new hunting query that joins SigninLogs with the ThreatIntelligenceIndicator table. It returns no matches for indicators added this month, although the indicators appear on the Threat intelligence page.",
+      "stem": "What should the analyst change?",
+      "options": [
+        "Increase the workspace retention to 2 years",
+        "Re-import the indicators as CSV",
+        "Enable the Fusion rule",
+        "Query ThreatIntelIndicators instead of the legacy table"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "The legacy ThreatIntelligenceIndicator table stopped receiving data after July 2025. Current indicators live in ThreatIntelIndicators (and other objects in ThreatIntelObjects). Re-importing doesn't change the destination table, and Fusion and retention don't affect it either."
+    }
+  ]
+}

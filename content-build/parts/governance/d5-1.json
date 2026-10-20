@@ -1,0 +1,722 @@
+{
+  "exam": "governance",
+  "domain": "d5",
+  "lessons": [
+    {
+      "id": "governance.d5.1.01",
+      "objective": "d5.1",
+      "seq": 1,
+      "title": "Prohibited practices: manipulation, exploitation, scoring, predictive policing",
+      "short": "Article 5 of the EU AI Act bans AI practices with unacceptable risk. These include subliminal or manipulative techniques that cause significant harm, exploiting vulnerabilities, social scoring, and predicting crime from profiling alone. Banned systems cannot be placed on the EU market or used there.",
+      "deep": "The EU AI Act (Regulation (EU) 2024/1689) is **risk-based**: the higher the risk, the heavier the rules. At the top sit **prohibited AI practices** (Art. 5). They are banned outright and cannot be fixed with compliance paperwork. This lesson covers the first group:\n- **Manipulative or deceptive techniques**, including subliminal ones, that materially distort a person's behaviour and cause, or are likely to cause, significant harm.\n- **Exploiting vulnerabilities** linked to age, disability or a specific social or economic situation, in a way that distorts behaviour and causes significant harm.\n- **Social scoring**: rating people on their social behaviour or personal traits where the score leads to unjustified or disproportionate treatment, or treatment in an unrelated context. The final text covers both public and private actors.\n- **Predictive policing of individuals**: judging the risk that a person will commit a crime *based solely on profiling or personality traits*. A tool that supports a human assessment already grounded in objective, verifiable facts about criminal activity is not banned.\n\nThe bans have applied since **2 February 2025**.",
+      "terms": [
+        { "t": "Prohibited AI practice", "d": "An Art. 5 use of AI judged to carry unacceptable risk; banned in the EU." },
+        { "t": "Social scoring", "d": "Scoring people on social behaviour or traits that leads to unjustified or unrelated detrimental treatment." },
+        { "t": "Significant harm", "d": "The harm threshold the manipulation and exploitation bans require (or make reasonably likely)." }
+      ],
+      "trap": "Learners often think social scoring is banned only for governments; the final text bans it for private actors too. Predictive policing is banned only when it rests solely on profiling or personality traits.",
+      "example": "A loan app that uses hidden audio cues to push elderly users with dementia into high-interest credit would combine manipulation and exploitation of vulnerability, so it is prohibited.",
+      "diagram": { "kind": "stack", "items": ["Unacceptable: banned", "High risk: strict duties", "Limited: transparency", "Minimal: no new duties"] }
+    },
+    {
+      "id": "governance.d5.1.02",
+      "objective": "d5.1",
+      "seq": 2,
+      "title": "Prohibited practices: biometrics, scraping and emotion recognition",
+      "short": "Article 5 also bans untargeted scraping of facial images to build recognition databases, emotion recognition in workplaces and schools (except medical or safety reasons), biometric categorisation that infers sensitive traits, and real-time remote biometric identification in public spaces for law enforcement, apart from narrow exceptions.",
+      "deep": "The second group of Art. 5 bans targets biometrics:\n- **Untargeted scraping** of facial images from the internet or CCTV footage to create or expand **facial recognition databases**.\n- **Emotion recognition in the workplace and in education**, unless it is for **medical or safety** reasons, such as detecting a pilot's fatigue.\n- **Biometric categorisation** that sorts people by biometric data to infer **race, political opinions, trade-union membership, religious or philosophical beliefs, sex life or sexual orientation**. Labelling or filtering lawfully acquired biometric datasets in law enforcement is carved out.\n- **Real-time remote biometric identification (RBI)** in publicly accessible spaces **for law enforcement**. Three narrow exceptions exist: a targeted search for victims of abduction, trafficking or sexual exploitation, or for missing persons; preventing a specific, substantial and imminent threat to life or a genuine terrorist threat; and locating or identifying suspects of listed serious crimes (punishable by at least four years). Each use needs national law allowing it, **prior authorisation** by a judicial or independent administrative authority (within 24 hours in urgent cases), and a fundamental rights impact assessment.\n\nEmotion recognition *outside* work and school is not banned. It is high-risk (Annex III) and carries an Art. 50 transparency duty.",
+      "terms": [
+        { "t": "Remote biometric identification (RBI)", "d": "Identifying people at a distance by comparing biometric data with a reference database, without their active involvement." },
+        { "t": "Real-time", "d": "Capture, comparison and identification happen without significant delay." },
+        { "t": "Biometric categorisation", "d": "Assigning people to categories from their biometric data." }
+      ],
+      "trap": "The RBI ban covers only real-time use in public spaces for law enforcement. Retrospective (post) RBI is high-risk, not prohibited, and emotion recognition is banned only at work and in education.",
+      "example": "A call-centre operator wants a tool that scores agents' frustration from their voices. Because this is emotion recognition in the workplace without a medical or safety reason, it is prohibited.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d5.1.03",
+      "objective": "d5.1",
+      "seq": 3,
+      "title": "High risk route 1: Annex I product safety components",
+      "short": "Under Article 6(1), an AI system is high-risk when it is a product, or a safety component of a product, covered by the EU harmonisation laws listed in Annex I, and that product must undergo third-party conformity assessment. Examples include machinery, toys, medical devices, lifts and radio equipment.",
+      "deep": "The Act has two ways into the **high-risk** category.\n\n**Route 1, Art. 6(1), product-embedded AI.** Both conditions must be met:\n1. The AI system is a **safety component** of a product, or is itself a product, covered by the **Union harmonisation legislation listed in Annex I**. Examples are the Machinery Regulation, Toy Safety, Medical Devices (MDR) and In Vitro Diagnostics (IVDR), lifts, radio equipment, and (in Section B) vehicles and civil aviation.\n2. That product must undergo a **third-party conformity assessment** under that sectoral law.\n\nA **safety component** is one that performs a safety function, or whose failure endangers health, safety or property.\n\nFor these systems the AI Act requirements fit into the existing **sectoral conformity assessment**, often carried out by the same **notified body**. As amended by the 2026 Digital Omnibus, Annex I high-risk obligations apply from **2 August 2028**.",
+      "terms": [
+        { "t": "Annex I", "d": "List of EU product harmonisation laws (machinery, toys, medical devices and others) that triggers Art. 6(1)." },
+        { "t": "Safety component", "d": "A part that performs a safety function, or whose failure endangers health, safety or property." },
+        { "t": "Notified body", "d": "An independent conformity assessment body designated by a Member State." }
+      ],
+      "trap": "Both conditions are needed. AI in an Annex I product is not high-risk under Art. 6(1) unless it is a safety component (or the product itself) and the product requires third-party assessment.",
+      "example": "An AI vision module that stops an industrial robot arm when a worker enters its zone is a safety component of machinery that needs third-party assessment, so it is high-risk under Art. 6(1).",
+      "diagram": { "kind": "flow", "items": ["Annex I product?", "Safety component?", "3rd-party CA?", "High-risk 6(1)"] }
+    },
+    {
+      "id": "governance.d5.1.04",
+      "objective": "d5.1",
+      "seq": 4,
+      "title": "High risk route 2: Annex III use cases",
+      "short": "Under Article 6(2), AI systems used in the Annex III areas are high-risk. The areas are biometrics, critical infrastructure, education, employment, essential services and credit, law enforcement, migration and border control, and justice and democratic processes. Article 6(3) exempts systems that pose no significant risk, but profiling is always high-risk.",
+      "deep": "**Route 2, Art. 6(2), stand-alone use cases in Annex III.** The eight areas are:\n1. **Biometrics**: remote biometric identification (not 1:1 verification), categorisation by sensitive attributes, and emotion recognition.\n2. **Critical infrastructure**: safety components for digital infrastructure, road traffic, and water, gas, heating and electricity supply.\n3. **Education and vocational training**: admission, assessing learning outcomes, monitoring cheating in tests.\n4. **Employment and workers management**: recruitment, CV filtering, promotion and termination decisions, allocating tasks, monitoring performance.\n5. **Essential private and public services**: eligibility for public benefits, **creditworthiness and credit scoring** (fraud detection excluded), risk and pricing in life and health insurance, and emergency-call triage.\n6. **Law enforcement**.\n7. **Migration, asylum and border control**.\n8. **Administration of justice and democratic processes**, including AI meant to influence elections.\n\n**Art. 6(3) filter**: an Annex III system is *not* high-risk if it poses no significant risk of harm, for example because it only performs a narrow procedural task or improves the result of a completed human activity. The provider must **document** that assessment and still **register** the system. A system that **profiles** natural persons is always high-risk.",
+      "terms": [
+        { "t": "Annex III", "d": "The list of eight high-risk use-case areas under Art. 6(2)." },
+        { "t": "Biometric verification", "d": "1:1 check that a person is who they claim to be; excluded from Annex III biometrics." },
+        { "t": "Art. 6(3) derogation", "d": "Lets a documented Annex III system escape high-risk status if it poses no significant risk; never for profiling." }
+      ],
+      "trap": "Exams pair a fraud-detection or face-unlock (verification) system with Annex III. Both are excluded, while credit scoring and CV screening are in.",
+      "example": "An HR tool that ranks job applicants' CVs falls under Annex III point 4 (employment), so the vendor must meet all high-risk provider duties.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d5.1.05",
+      "objective": "d5.1",
+      "seq": 5,
+      "title": "High-risk requirements: Articles 9 to 15",
+      "short": "High-risk systems must meet the Chapter III, Section 2 requirements: a lifecycle risk management system (Art. 9), data governance (Art. 10), technical documentation (Art. 11), automatic logging (Art. 12), transparency and instructions for deployers (Art. 13), human oversight (Art. 14), and accuracy, robustness and cybersecurity (Art. 15).",
+      "deep": "The provider must make sure the system meets these design requirements:\n- **Art. 9 Risk management system**: a continuous, iterative process across the whole lifecycle. Identify and estimate known and foreseeable risks to health, safety and fundamental rights, adopt mitigation measures, and test.\n- **Art. 10 Data and data governance**: training, validation and testing data must be relevant, sufficiently representative and, as far as possible, free of errors and complete. Examine them for possible **biases**.\n- **Art. 11 Technical documentation**: drawn up *before* placing on the market, with the content set out in **Annex IV**.\n- **Art. 12 Record-keeping**: the system must technically allow **automatic recording of events (logs)** over its lifetime, for traceability.\n- **Art. 13 Transparency and provision of information to deployers**: clear **instructions for use** covering capabilities, limitations, accuracy levels and oversight measures.\n- **Art. 14 Human oversight**: designed so natural persons can understand, monitor, override or stop the system (a \"stop\" button) and stay aware of **automation bias**.\n- **Art. 15 Accuracy, robustness and cybersecurity**: declared accuracy metrics, resilience to errors, and protection against attacks such as **data poisoning, model poisoning, adversarial examples** and confidentiality attacks.",
+      "terms": [
+        { "t": "Annex IV", "d": "Sets the required content of high-risk technical documentation." },
+        { "t": "Automation bias", "d": "The tendency to over-rely on AI output; human oversight must counter it." },
+        { "t": "Instructions for use", "d": "Information the provider gives deployers under Art. 13." }
+      ],
+      "trap": "Logging (Art. 12) is a design capability the provider builds in. Keeping the generated logs for at least six months is a deployer duty (Art. 26), and exams swap the two.",
+      "example": "A medical triage AI vendor checks its training data for under-representation of older patients (Art. 10) and adds an override control for clinicians (Art. 14).",
+      "diagram": { "kind": "stack", "items": ["Art 9 Risk mgmt", "Art 10 Data", "Art 11 Tech docs", "Art 12 Logs", "Art 13 Transparency", "Art 14 Oversight", "Art 15 Accuracy/sec"] }
+    },
+    {
+      "id": "governance.d5.1.06",
+      "objective": "d5.1",
+      "seq": 6,
+      "title": "High-risk provider obligations: QMS, conformity, CE, registration, monitoring",
+      "short": "Providers of high-risk AI must run a quality management system (Art. 17), pass a conformity assessment (Art. 43), draw up an EU declaration of conformity, affix the CE marking, register in the EU database, and operate post-market monitoring with serious incident reporting.",
+      "deep": "Beyond the design requirements, the **provider** (the organisation that develops the system, or has it developed, and places it on the market under its own name) must:\n- Run a **quality management system (QMS)** (Art. 17): documented policies for design, testing, data management, risk management, post-market monitoring and incident reporting.\n- Keep documentation for **10 years** and keep automatically generated logs under its control.\n- Complete a **conformity assessment** (Art. 43). For most Annex III systems this is **internal control** (Annex VI). Biometric systems may need a **notified body** (Annex VII), and Annex I products follow their sectoral procedure.\n- Draw up the **EU declaration of conformity** (Art. 47) and affix the **CE marking** (Art. 48).\n- **Register** the system in the **EU database** (Arts. 49 and 71) before placing it on the market.\n- Run **post-market monitoring** (Art. 72) and report **serious incidents** to market surveillance authorities (Art. 73).\n- Take corrective action when the system is non-compliant, and cooperate with authorities.\n\nA **substantial modification** requires a new conformity assessment. A distributor, importer or deployer that rebrands the system, substantially modifies it or changes its intended purpose so that it becomes high-risk **becomes the provider** (Art. 25).",
+      "terms": [
+        { "t": "Conformity assessment", "d": "The process of showing a high-risk system meets the requirements, by internal control or a notified body." },
+        { "t": "CE marking", "d": "Marking showing the system conforms to the AI Act and other applicable EU law." },
+        { "t": "Post-market monitoring", "d": "Provider's system for actively collecting and analysing performance data after release." }
+      ],
+      "trap": "Most Annex III systems use internal-control self-assessment, not a notified body. Choosing 'notified body always required' is a common mistake.",
+      "example": "After passing internal-control assessment, a credit-scoring vendor signs its EU declaration of conformity, affixes CE marking, registers in the EU database, then monitors real-world drift.",
+      "diagram": { "kind": "flow", "items": ["QMS + docs", "Conformity assess.", "EU DoC + CE", "EU database", "Post-market mon."] }
+    },
+    {
+      "id": "governance.d5.1.07",
+      "objective": "d5.1",
+      "seq": 7,
+      "title": "Deployer obligations and the FRIA",
+      "short": "Deployers of high-risk AI must use it according to the instructions for use, assign competent human oversight, monitor operation, keep logs for at least six months, and inform affected people and workers. Public bodies, private providers of public services, and deployers doing credit scoring or life and health insurance pricing must carry out a fundamental rights impact assessment (FRIA).",
+      "deep": "A **deployer** is anyone using an AI system under its authority in a professional capacity. Under **Art. 26**, deployers of high-risk systems must:\n- Take technical and organisational measures to use the system **in line with the instructions for use**.\n- Assign **human oversight** to people with the necessary competence, training, authority and support.\n- Make sure **input data** they control is relevant and sufficiently representative.\n- **Monitor** operation, and inform the provider and authorities of risks or **serious incidents**, suspending use where needed.\n- Keep automatically generated **logs for at least six months**.\n- As an **employer**, inform workers' representatives and affected workers before using a high-risk system in the workplace.\n- Inform people when an Annex III system makes or assists decisions about them.\n\n**Fundamental rights impact assessment (Art. 27)**: before first use, deployers that are **bodies governed by public law or private entities providing public services**, and deployers of systems for **creditworthiness** or **life and health insurance risk and pricing**, must assess which people are affected, the specific risks of harm, the oversight measures, and what happens if risks materialise. They then **notify the market surveillance authority** of the results. The FRIA complements a GDPR DPIA rather than replacing it. Critical-infrastructure systems (Annex III point 2) are excluded.",
+      "terms": [
+        { "t": "Deployer", "d": "A person or body using an AI system under its authority, other than for personal non-professional use." },
+        { "t": "FRIA", "d": "Fundamental rights impact assessment required by Art. 27 for certain deployers of high-risk AI." },
+        { "t": "Instructions for use", "d": "The provider's information that deployers must follow." }
+      ],
+      "trap": "Not every deployer needs a FRIA. It applies to public bodies, private entities providing public services, and credit or life and health insurance deployers. A private manufacturer screening CVs does not need one.",
+      "example": "A city council using an Annex III benefits-eligibility tool completes a FRIA, sends the results to the market surveillance authority, and names trained caseworkers as overseers.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d5.1.08",
+      "objective": "d5.1",
+      "seq": 8,
+      "title": "Limited (transparency) risk: Article 50",
+      "short": "Article 50 sets transparency duties. Providers must tell people they are interacting with AI and must mark synthetic audio, image, video and text in a machine-readable, detectable way. Deployers must disclose deepfakes, disclose AI-generated text published on matters of public interest, and inform people exposed to emotion recognition or biometric categorisation.",
+      "deep": "**Limited-risk** (transparency) obligations sit in **Art. 50** and split between providers and deployers:\n- **Art. 50(1), provider**: design AI systems that interact directly with people, such as chatbots, so people are told they are dealing with AI, unless that is obvious from the context.\n- **Art. 50(2), provider**: generative systems producing synthetic **audio, image, video or text** must **mark outputs in a machine-readable format** so they are detectable as artificially generated (for example watermarks, metadata or cryptographic provenance). There is an exception for assistive editing functions that do not substantially alter the input.\n- **Art. 50(3), deployer**: inform people exposed to an **emotion recognition** or **biometric categorisation** system.\n- **Art. 50(4), deployer**: disclose **deepfakes** (image, audio or video content that falsely appears authentic). For evidently artistic, creative or satirical work, the disclosure can be limited so it does not spoil the work. Disclose AI-generated or manipulated **text published to inform the public on matters of public interest**, unless it has undergone human review or editorial control.\n\nInformation must be clear and given at the latest at the first interaction or exposure. These duties apply from **2 August 2026**. Under the Digital Omnibus, generative systems already on the market before that date have until **2 December 2026** to meet Art. 50(2).",
+      "terms": [
+        { "t": "Deepfake", "d": "AI-generated or manipulated image, audio or video resembling real people, places or events that would falsely appear authentic." },
+        { "t": "Machine-readable marking", "d": "Technical labelling (watermark, metadata) that lets software detect AI-generated content." },
+        { "t": "Deployer disclosure", "d": "Art. 50(3)-(4) duties on the user of the system, not the developer." }
+      ],
+      "trap": "Machine-readable marking is a provider duty (50(2)). Visible deepfake disclosure is a deployer duty (50(4)). Exams swap who must do what.",
+      "example": "A marketing agency uses an image generator to create a fake video of a real celebrity. The tool's provider must watermark the output; the agency, as deployer, must disclose that the video is a deepfake.",
+      "diagram": { "kind": "compare", "cols": ["Duty", "Who"], "rows": [["Tell users it's AI", "Provider 50(1)"], ["Machine-readable mark", "Provider 50(2)"], ["Emotion/biometric notice", "Deployer 50(3)"], ["Disclose deepfakes", "Deployer 50(4)"]] }
+    },
+    {
+      "id": "governance.d5.1.09",
+      "objective": "d5.1",
+      "seq": 9,
+      "title": "Minimal risk and voluntary codes of conduct",
+      "short": "Most AI systems, such as spam filters, inventory forecasting and AI in video games, are minimal risk. The AI Act adds no new obligations for them, although the AI literacy duty and other laws (GDPR, consumer law) still apply. Article 95 encourages voluntary codes of conduct that apply high-risk-style requirements.",
+      "deep": "**Minimal-risk** AI is everything not prohibited, not high-risk and not caught by Art. 50 transparency duties. The Commission expects most AI in use to fall here, for example **spam filters, recommendation of spare parts, AI in video games, and predictive maintenance** that is not a safety component.\n\nThe Act places **no new mandatory obligations** on these systems as a risk class. Points to remember:\n- **Art. 4 AI literacy** covers providers and deployers of *any* AI system, whatever its risk tier. The 2026 Digital Omnibus reframed it as an obligation to take measures to promote literacy (an obligation of means, not of result).\n- Other laws still apply in full: **GDPR**, consumer protection, product liability, anti-discrimination.\n- **Art. 95 voluntary codes of conduct**: the AI Office and Member States encourage codes through which providers and deployers of non-high-risk systems voluntarily apply some or all of the high-risk requirements, or commit to goals such as environmental sustainability, accessibility and diverse development teams.\n\nRisk classification depends on the **intended purpose** and use, not on the underlying technique. The same model can be minimal risk in one product and high-risk in another.",
+      "terms": [
+        { "t": "Minimal risk", "d": "The tier with no new AI Act obligations beyond general duties such as AI literacy." },
+        { "t": "Code of conduct (Art. 95)", "d": "A voluntary commitment to apply high-risk-style or other ethical requirements." },
+        { "t": "Intended purpose", "d": "The use the provider designs the system for; it drives classification." }
+      ],
+      "trap": "Do not confuse Art. 95 codes of conduct (voluntary, for non-high-risk systems) with the Art. 56 GPAI Code of Practice (for general-purpose AI model providers).",
+      "example": "A retailer's demand-forecasting model is minimal risk. The retailer chooses to sign an industry code of conduct committing to bias testing and energy reporting.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d5.2.01",
+      "objective": "d5.2",
+      "seq": 1,
+      "title": "Obligations for all GPAI model providers",
+      "short": "Every provider of a general-purpose AI (GPAI) model must, under Article 53, keep technical documentation, give information and documentation to downstream providers, adopt a policy to comply with EU copyright law (including text and data mining opt-outs), and publish a sufficiently detailed summary of training content using the AI Office template.",
+      "deep": "A **general-purpose AI model** is a model, often trained on large data with self-supervision, that shows significant generality and can competently perform a wide range of distinct tasks, and can be integrated into many downstream systems. A **GPAI system** is an AI system built on such a model, such as a chatbot. The model rules sit in **Chapter V**.\n\n**Art. 53 duties for all GPAI model providers:**\n1. Draw up and keep up to date **technical documentation** (Annex XI) for the AI Office and national authorities on request.\n2. Provide **information and documentation to downstream providers** (Annex XII) so they understand capabilities and limits and can meet their own obligations.\n3. Put in place a **copyright policy**, including identifying and respecting **text and data mining reservations (opt-outs)** under Art. 4(3) of the Copyright (DSM) Directive.\n4. Publish a **sufficiently detailed summary of the content used for training**, using the template provided by the AI Office.\n\n**Open-source exemption**: models released under a free and open-source licence with public weights are exempt from duties 1 and 2, but *not* from the copyright policy or the training summary, and not if they have systemic risk. Non-EU providers must appoint an **authorised representative** in the EU (Art. 54).",
+      "terms": [
+        { "t": "GPAI model", "d": "A model with significant generality that can perform a wide range of tasks and be integrated downstream." },
+        { "t": "Downstream provider", "d": "A provider that builds an AI system on top of someone else's GPAI model." },
+        { "t": "Training content summary", "d": "Public summary of training data, using the AI Office template." }
+      ],
+      "trap": "Open-source GPAI providers still need a copyright policy and a training-content summary; only the documentation duties toward authorities and downstream providers are waived.",
+      "example": "A start-up releasing an open-weight language model under Apache 2.0 publishes its training-content summary and a copyright policy honouring robots.txt opt-outs, but skips the Annex XI documentation.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d5.2.02",
+      "objective": "d5.2",
+      "seq": 2,
+      "title": "GPAI models with systemic risk",
+      "short": "A GPAI model has systemic risk if it has high-impact capabilities. This is presumed when cumulative training compute exceeds 10^25 floating-point operations (FLOPs), or the Commission can designate a model. Under Article 55, providers must evaluate the model including adversarial testing, assess and mitigate systemic risks, report serious incidents, and ensure cybersecurity.",
+      "deep": "**Classification (Art. 51)**: a GPAI model has **systemic risk** if it has **high-impact capabilities**, meaning capabilities that match or exceed those of the most advanced models. This is **presumed** when the cumulative compute used to train it exceeds **10^25 FLOPs**. The **Commission** can also designate a model on other criteria (Annex XIII), such as number of users or parameters. The Commission can update the threshold by delegated act.\n\n**Notification (Art. 52)**: the provider must notify the Commission **within two weeks** of meeting the threshold, or of knowing it will meet it. It may argue that the model nonetheless lacks systemic risk.\n\n**Art. 55 extra duties**, on top of Art. 53:\n- **Model evaluation** using state-of-the-art protocols, including **adversarial testing** (red-teaming).\n- **Assess and mitigate** possible systemic risks at Union level.\n- Track, document and **report serious incidents** and corrective measures to the **AI Office** (and national authorities where relevant) without undue delay.\n- Ensure adequate **cybersecurity** protection for the model and its physical infrastructure.\n\nOpen-source status gives no exemption once a model has systemic risk.",
+      "terms": [
+        { "t": "Systemic risk", "d": "Risk specific to high-impact GPAI models with significant Union-wide effects." },
+        { "t": "10^25 FLOPs", "d": "Training-compute threshold that triggers the systemic-risk presumption." },
+        { "t": "Adversarial testing", "d": "Red-teaming a model to find vulnerabilities and dangerous capabilities." }
+      ],
+      "trap": "The 10^25 FLOPs figure is a rebuttable presumption, not the only route. The Commission can designate models below it, and incident reports go to the AI Office, not a notified body.",
+      "example": "A lab whose new frontier model used about 3 x 10^25 FLOPs notifies the Commission within two weeks, then commissions external red-teaming before release.",
+      "diagram": { "kind": "flow", "items": ["Train > 10^25 FLOPs", "Notify in 2 weeks", "Systemic-risk GPAI", "Art 55 duties"] }
+    },
+    {
+      "id": "governance.d5.2.03",
+      "objective": "d5.2",
+      "seq": 3,
+      "title": "GPAI Code of Practice and the AI Office",
+      "short": "The General-Purpose AI Code of Practice, published 10 July 2025, is a voluntary tool GPAI providers can sign to show compliance with Articles 53 and 55. It has three chapters: Transparency, Copyright, and Safety and Security. The EU AI Office, part of the European Commission, supervises and enforces GPAI rules.",
+      "deep": "**Art. 56** lets the **AI Office** facilitate **codes of practice** for GPAI providers. The **GPAI Code of Practice** was written by independent experts with input from industry, civil society and academia, and published on **10 July 2025**. The Commission and the **AI Board** confirmed it is an **adequate voluntary tool**.\n\nIts three chapters:\n- **Transparency**: a model documentation form covering Art. 53 documentation duties.\n- **Copyright**: implementing the copyright policy, including respecting machine-readable opt-outs.\n- **Safety and Security**: only for providers of **GPAI models with systemic risk** (Art. 55), covering risk assessment, mitigation, incident reporting and cybersecurity.\n\n**Why sign?** Adhering to an assessed code lets a provider **demonstrate compliance**. It is a presumption route, not a legal safe harbour. Non-signatories must show compliance through other adequate means and may face more scrutiny. A provider can sign only some chapters.\n\n**The AI Office** sits inside the European Commission. It has exclusive powers to supervise and enforce the GPAI model rules: requesting information, carrying out evaluations and, from **2 August 2026**, imposing fines of up to **3% of global turnover or EUR 15 million** (Art. 101). National market surveillance authorities supervise most AI *systems*.",
+      "terms": [
+        { "t": "AI Office", "d": "European Commission body that supervises GPAI models and supports AI Act implementation." },
+        { "t": "GPAI Code of Practice", "d": "Voluntary 2025 code with Transparency, Copyright, and Safety and Security chapters." },
+        { "t": "AI Board", "d": "Body of Member State representatives advising on consistent application of the Act." }
+      ],
+      "trap": "Signing the code is voluntary and shows compliance; it does not exempt a provider from the law. Only the Safety and Security chapter is limited to systemic-risk models.",
+      "example": "A model provider signs the Safety and Security chapter only, and documents its transparency and copyright compliance by other means, which the AI Office reviews.",
+      "diagram": { "kind": "compare", "cols": ["Chapter", "Who"], "rows": [["Transparency", "All GPAI providers"], ["Copyright", "All GPAI providers"], ["Safety & Security", "Systemic-risk only"]] }
+    },
+    {
+      "id": "governance.d5.3.01",
+      "objective": "d5.3",
+      "seq": 1,
+      "title": "Entry into force: 1 August 2024",
+      "short": "The AI Act, Regulation (EU) 2024/1689, was published in the Official Journal on 12 July 2024 and entered into force 20 days later, on 1 August 2024. Entry into force starts the clock; obligations then apply in stages under Article 113.",
+      "deep": "EU law separates two moments:\n- **Entry into force**: the regulation becomes part of EU law. For the AI Act this was **1 August 2024**, 20 days after publication in the **Official Journal** on 12 July 2024.\n- **Date of application**: when obligations actually bite. The AI Act's general date of application is **2 August 2026** (24 months later), with earlier and later dates for particular chapters set in **Art. 113**.\n\nBecause it is a **regulation**, it applies directly in every Member State without national transposition, unlike a directive. Member States still had to designate **national competent authorities** (notifying authorities and market surveillance authorities) and set **penalty rules**.\n\nThe staggered timeline, before the 2026 omnibus changes, was:\n- 2 Feb 2025: prohibitions and AI literacy\n- 2 Aug 2025: GPAI, governance, penalties, notified bodies\n- 2 Aug 2026: general application (including Annex III high-risk under the original text)\n- 2 Aug 2027: Annex I product-embedded high-risk\n\nThe 2026 **Digital Omnibus on AI** later changed the high-risk dates (see later lessons).",
+      "terms": [
+        { "t": "Entry into force", "d": "Date the law exists legally: 1 August 2024 for the AI Act." },
+        { "t": "Date of application", "d": "Date obligations become binding; staggered under Art. 113." },
+        { "t": "Regulation (EU) 2024/1689", "d": "The official citation of the AI Act." }
+      ],
+      "trap": "Entry into force (1 Aug 2024) is not the same as application. No substantive obligation applied on 1 Aug 2024 itself.",
+      "example": "A compliance lead explains that the Act 'started' in August 2024 but the first real obligations, the bans, only applied six months later.",
+      "diagram": { "kind": "flow", "items": ["OJ 12 Jul 2024", "In force 1 Aug 2024", "Staged application"] }
+    },
+    {
+      "id": "governance.d5.3.02",
+      "objective": "d5.3",
+      "seq": 2,
+      "title": "2 February 2025: prohibitions and AI literacy",
+      "short": "Six months after entry into force, on 2 February 2025, the Chapter I general provisions, including Article 4 AI literacy, and the Chapter II prohibited practices (Article 5) began to apply. The Commission published guidelines on prohibited practices and on the AI system definition around that date.",
+      "deep": "On **2 February 2025** two sets of rules started to apply:\n- **Chapter I** (subject matter, scope, definitions) including **Art. 4 AI literacy**: providers and deployers must take measures so that staff and others operating AI on their behalf have sufficient **AI literacy**, taking into account their knowledge, training and the context of use. This covers *all* AI systems, not only high-risk ones.\n- **Chapter II, Art. 5 prohibited practices**: manipulative techniques, exploitation of vulnerabilities, social scoring, solely profiling-based crime prediction, untargeted facial scraping, emotion recognition at work and school, sensitive biometric categorisation, and real-time RBI for law enforcement (with exceptions).\n\nThe Commission issued **guidelines on prohibited AI practices** and **guidelines on the definition of an AI system** in February 2025 to help organisations interpret the bans.\n\nThe bans applied from 2 February 2025, but the **penalty provisions** only applied from 2 August 2025. Fines for breaching the bans therefore became possible from that later date.\n\nThe 2026 Digital Omnibus softened the Art. 4 wording to an obligation to *take measures to promote* AI literacy (an obligation of means).",
+      "terms": [
+        { "t": "AI literacy", "d": "Skills, knowledge and understanding needed to deploy AI in an informed way and be aware of its risks." },
+        { "t": "Article 4", "d": "The AI literacy provision, applying to providers and deployers of all AI systems." },
+        { "t": "Chapter II", "d": "The prohibited AI practices chapter (Art. 5)." }
+      ],
+      "trap": "AI literacy applies from the same date as the bans (2 Feb 2025), not from the August 2026 general application date, and it covers minimal-risk AI too.",
+      "example": "In January 2025 a bank switched off a pilot that inferred employees' emotions from webcam video, and launched AI literacy training for staff using generative AI assistants.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d5.3.03",
+      "objective": "d5.3",
+      "seq": 3,
+      "title": "2 August 2025: GPAI, governance and penalties",
+      "short": "From 2 August 2025 the general-purpose AI model obligations (Chapter V), the governance structure (AI Office, AI Board, national authorities), notified body rules, confidentiality, and the penalty provisions began to apply. GPAI models already on the market before that date have until 2 August 2027 to comply.",
+      "deep": "Twelve months after entry into force, on **2 August 2025**, these began to apply:\n- **Chapter V, GPAI models**: Art. 53 duties for all GPAI providers, and Art. 55 for systemic-risk models.\n- **Chapter VII, governance**: the **AI Office**, the **European Artificial Intelligence Board**, the scientific panel and advisory forum, and Member States' **national competent authorities**.\n- **Chapter III Section 4**: notifying authorities and **notified bodies**.\n- **Art. 78 confidentiality**.\n- **Chapter XII penalties** (except Art. 101, the Commission's GPAI fines). Member States had to lay down and notify their penalty rules.\n\nTransitional points:\n- GPAI models **placed on the market before 2 August 2025** have until **2 August 2027** to comply.\n- The Commission's power to **fine GPAI providers** (Art. 101) applies from **2 August 2026**, so the AI Office's enforcement tools became available a year after the obligations started.\n\nThe **GPAI Code of Practice** (10 July 2025) and the training-summary template were published just before this date.",
+      "terms": [
+        { "t": "Chapter V", "d": "The AI Act chapter on general-purpose AI models." },
+        { "t": "Legacy GPAI model", "d": "A GPAI model placed on the market before 2 Aug 2025; deadline 2 Aug 2027." },
+        { "t": "National competent authority", "d": "A Member State's notifying authority or market surveillance authority." }
+      ],
+      "trap": "Although GPAI obligations applied from 2 Aug 2025, the Commission could only start fining GPAI providers from 2 Aug 2026, and legacy models get until 2027.",
+      "example": "A provider releasing a new model in September 2025 must already publish its training summary, while a model released in 2024 has until August 2027.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d5.3.04",
+      "objective": "d5.3",
+      "seq": 4,
+      "title": "2 August 2026: general application",
+      "short": "2 August 2026 is the AI Act's general date of application. The remaining provisions apply from then, including most Article 50 transparency duties, the Commission's GPAI fining powers, and the regulatory sandbox rules, except where specific provisions have later dates such as the omnibus-deferred high-risk rules.",
+      "deep": "Under Art. 113 the AI Act **applies from 2 August 2026** except where another date is set. From that date:\n- **Art. 50 transparency** duties apply: chatbot disclosure, machine-readable marking of synthetic content, deepfake and public-interest text disclosure, and emotion recognition and biometric categorisation notices.\n- The Commission can **fine GPAI providers** (Art. 101).\n- Enforcement by **market surveillance authorities** applies to the provisions that are in application.\n\nOriginally, **Annex III high-risk** obligations also applied on 2 August 2026. The **Digital Omnibus on AI** (Regulation (EU) 2026/1744, in force 27 July 2026) deferred them to **2 December 2027**. It also gave generative systems **already on the market before 2 August 2026** until **2 December 2026** to meet the Art. 50(2) marking duty. New systems placed on the market from 2 August 2026 get no grace period.\n\nThe deadline for each Member State to have at least one **AI regulatory sandbox** operational moved to **2 August 2027**.",
+      "terms": [
+        { "t": "General application", "d": "The default date (2 Aug 2026) from which AI Act provisions apply unless stated otherwise." },
+        { "t": "Article 113", "d": "The final article setting entry into force and application dates." },
+        { "t": "AI regulatory sandbox", "d": "A controlled environment for developing and testing AI under regulator supervision." }
+      ],
+      "trap": "After the omnibus, 2 Aug 2026 no longer triggers Annex III high-risk duties. It does trigger Art. 50 transparency, with a grace period to 2 Dec 2026 only for legacy generative systems' marking duty.",
+      "example": "A chatbot launched in September 2026 must tell users they are talking to an AI and, if it generates images, mark them machine-readably from day one.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d5.3.05",
+      "objective": "d5.3",
+      "seq": 5,
+      "title": "Digital Omnibus on AI: new high-risk dates",
+      "short": "The Digital Omnibus on AI, Regulation (EU) 2026/1744, was published on 24 July 2026 and entered into force on 27 July 2026. It moved Annex III stand-alone high-risk obligations from 2 August 2026 to 2 December 2027, and Annex I product-embedded high-risk obligations from 2 August 2027 to 2 August 2028.",
+      "deep": "In November 2025 the Commission proposed a **Digital Omnibus** package to simplify EU digital rules. The AI part, the **Digital Omnibus on AI**, was adopted as **Regulation (EU) 2026/1744**, published in the Official Journal on **24 July 2026**, and entered into **force on 27 July 2026**, three days after publication.\n\n**Key date changes:**\n- **Annex III** stand-alone high-risk systems (Art. 6(2)), such as employment, education, credit and biometrics: **2 December 2027** (was 2 August 2026, a 16-month delay).\n- **Annex I** product-embedded high-risk systems (Art. 6(1)): **2 August 2028** (was 2 August 2027, a 12-month delay).\n- **Art. 50(2)** machine-readable marking for generative systems placed on the market before 2 August 2026: **2 December 2026**.\n- National AI **regulatory sandboxes** operational: **2 August 2027**.\n\nThe final text uses **fixed dates**, rather than linking application to the availability of harmonised standards as first proposed. Prohibitions, AI literacy and GPAI obligations kept their original dates, and the fine levels were not changed.",
+      "terms": [
+        { "t": "Digital Omnibus on AI", "d": "Regulation (EU) 2026/1744 amending the AI Act; in force 27 July 2026." },
+        { "t": "Stand-alone high-risk", "d": "Annex III use-case systems, not embedded in Annex I products." },
+        { "t": "Deferral", "d": "Postponing an application date; obligations are unchanged in substance." }
+      ],
+      "trap": "The omnibus delayed high-risk duties; it did not delay the prohibitions or GPAI duties. Annex III (Dec 2027) comes before Annex I (Aug 2028), and learners often reverse them.",
+      "example": "An HR-tech vendor re-plans its conformity assessment for its CV-screening tool to finish before 2 December 2027, instead of the original August 2026 target.",
+      "diagram": { "kind": "flow", "items": ["In force 27 Jul 26", "Art 50(2) 2 Dec 26", "Annex III 2 Dec 27", "Annex I 2 Aug 28"] }
+    },
+    {
+      "id": "governance.d5.3.06",
+      "objective": "d5.3",
+      "seq": 6,
+      "title": "Digital Omnibus on AI: new prohibitions and other changes",
+      "short": "The Digital Omnibus on AI added Article 5 prohibitions on AI systems that generate non-consensual intimate imagery (\"nudifier\" apps) or child sexual abuse material, applying from 2 December 2026. It also reframed AI literacy as a duty to promote it, extended SME relief to small mid-caps, and strengthened the AI Office's enforcement powers.",
+      "deep": "Besides moving dates, the omnibus changed substance:\n- **New prohibitions (Art. 5)**: AI systems that **generate non-consensual intimate or sexual imagery** of identifiable people (\"nudification\" apps) and **child sexual abuse material (CSAM)**. Providers are caught where this is the intended purpose, or a reasonably foreseeable result that the system lacks adequate safeguards to prevent. Deployers are caught where they use a system to produce such material. These bans apply from **2 December 2026**, with no carve-out for systems already on the market.\n- **AI literacy (Art. 4)**: reframed as an obligation to **take measures to promote** staff AI literacy, an obligation of means rather than a guaranteed result, with the Commission and Member States supporting it.\n- **SMEs and small mid-caps (SMCs)**: simplified documentation and other reliefs extended to small mid-cap enterprises.\n- **AI Office**: stronger investigation and enforcement powers, especially for AI systems built on a provider's own GPAI model.\n- **Art. 6(3) registration**: the proposal to drop registration for self-assessed non-high-risk Annex III systems was **not** adopted; a simplified procedure applies instead.\n\nCaveat: the omnibus may have altered other details; check the consolidated text before relying on fine points.",
+      "terms": [
+        { "t": "Nudifier app", "d": "AI that generates non-consensual sexualised images of real people; banned by the omnibus." },
+        { "t": "Small mid-cap (SMC)", "d": "Company category above SME size that gets some SME-style relief under the omnibus." },
+        { "t": "Obligation of means", "d": "A duty to take reasonable measures rather than to guarantee an outcome." }
+      ],
+      "trap": "The omnibus added prohibitions as well as delays. Learners who think it only relaxed the Act miss the new NCII and CSAM bans.",
+      "example": "An app store removes an image-editing app whose main feature is 'undressing' photos of real people, ahead of the 2 December 2026 ban.",
+      "diagram": null
+    },
+    {
+      "id": "governance.d5.3.07",
+      "objective": "d5.3",
+      "seq": 7,
+      "title": "Maximum fines",
+      "short": "Article 99 sets three fine tiers: up to EUR 35 million or 7% of worldwide annual turnover for prohibited practices; up to EUR 15 million or 3% for most other obligations; and up to EUR 7.5 million or 1% for supplying incorrect, incomplete or misleading information to authorities. The higher amount applies, but for SMEs the lower one does.",
+      "deep": "**Art. 99** (administrative fines set by Member States):\n- **Prohibited practices (Art. 5)**: up to **EUR 35 million or 7%** of total worldwide annual turnover for the preceding financial year, **whichever is higher**.\n- **Other operator obligations** (providers, authorised representatives, importers, distributors, deployers, notified bodies) and the **Art. 50 transparency** duties: up to **EUR 15 million or 3%**.\n- **Supplying incorrect, incomplete or misleading information** to notified bodies or national competent authorities: up to **EUR 7.5 million or 1%**.\n\n**SMEs and start-ups**: for each tier the cap is the **lower** of the two amounts, not the higher.\n\n**GPAI providers (Art. 101)**: the **Commission** can fine up to **EUR 15 million or 3%**, whichever is higher, for example for failing to provide information or to give access for evaluation.\n\n**EU institutions** are fined by the European Data Protection Supervisor (Art. 100) at lower levels.\n\nWhen setting a fine, authorities weigh the nature, gravity and duration of the breach, the number of people affected, any intent or negligence, cooperation, and previous fines.",
+      "terms": [
+        { "t": "Worldwide annual turnover", "d": "Global revenue for the preceding financial year, used for percentage caps." },
+        { "t": "Whichever is higher", "d": "Rule for most undertakings; for SMEs the lower amount applies." },
+        { "t": "Article 101", "d": "Commission fines on GPAI model providers." }
+      ],
+      "trap": "Exams offer '4% or EUR 20m' (GDPR figures) or apply 'whichever is higher' to SMEs. The AI Act top tier is 7% or EUR 35m, and SMEs get the lower amount.",
+      "example": "A large firm with EUR 2 billion turnover running a banned social-scoring system faces a cap of EUR 140 million, because 7% exceeds EUR 35 million.",
+      "diagram": { "kind": "compare", "cols": ["Breach", "Max fine"], "rows": [["Prohibited practice", "EUR 35m / 7%"], ["Other obligations", "EUR 15m / 3%"], ["Misleading info", "EUR 7.5m / 1%"], ["GPAI (Commission)", "EUR 15m / 3%"]] }
+    },
+    {
+      "id": "governance.d5.3.08",
+      "objective": "d5.3",
+      "seq": 8,
+      "title": "Extraterritorial scope",
+      "short": "Under Article 2, the AI Act applies to providers placing AI systems or GPAI models on the EU market or putting them into service in the EU, wherever they are established. It also covers deployers in the EU, and non-EU providers and deployers whose AI output is used in the EU. Non-EU providers must appoint an EU authorised representative.",
+      "deep": "Like the GDPR, the AI Act reaches beyond EU borders. **Art. 2** applies it to:\n- **Providers** placing AI systems on the market, putting them into service, or placing **GPAI models** on the market **in the Union**, **regardless of where they are established**.\n- **Deployers** established or located in the Union.\n- **Providers and deployers in third countries** where the **output** produced by the AI system **is used in the Union**.\n- **Importers and distributors**, product manufacturers integrating AI under their own name, authorised representatives, and affected persons in the Union.\n\nNon-EU providers of high-risk systems (Art. 22) and GPAI models (Art. 54) must appoint an **authorised representative** established in the EU.\n\n**Exclusions** include AI used exclusively for **military, defence or national security**; AI developed and used solely for **scientific research and development**; research and testing before placing on the market (real-world testing excepted); **purely personal, non-professional** use; and free and open-source systems, unless they are high-risk, prohibited or caught by Art. 50.",
+      "terms": [
+        { "t": "Placing on the market", "d": "First making an AI system or GPAI model available on the Union market." },
+        { "t": "Authorised representative", "d": "An EU-established person mandated to act for a non-EU provider." },
+        { "t": "Output used in the Union", "d": "The trigger that brings non-EU providers and deployers into scope." }
+      ],
+      "trap": "Having no EU office does not take a provider out of scope. Military, defence and national-security uses are excluded however they are deployed.",
+      "example": "A US company hosts a CV-screening AI in the US for a French client and sends rankings back to France. Because the output is used in the EU, the Act applies to it.",
+      "diagram": null
+    }
+  ],
+  "questions": [
+    {
+      "id": "governance.d5.q001",
+      "lesson": "governance.d5.1.01",
+      "objective": "d5.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Under the EU AI Act, which risk tier covers AI practices that are banned outright and cannot be made lawful through compliance measures?",
+      "options": ["High risk", "Limited (transparency) risk", "Unacceptable risk", "Systemic risk"],
+      "answer": [2],
+      "explain": "Unacceptable-risk practices are listed in Art. 5 and prohibited. High-risk systems are allowed if they meet strict requirements. Limited risk carries only transparency duties. Systemic risk is a category of GPAI model, not a tier of banned practices."
+    },
+    {
+      "id": "governance.d5.q002",
+      "lesson": "governance.d5.1.01",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A police force wants an AI tool that flags individuals as likely future offenders based only on personality traits and demographic profiling. How does the AI Act treat this?",
+      "options": ["Prohibited under Article 5", "High-risk under Annex III law enforcement", "Permitted with a fundamental rights impact assessment", "Limited risk requiring a disclosure notice"],
+      "answer": [0],
+      "explain": "Assessing a person's risk of offending based solely on profiling or personality traits is a prohibited practice. Law-enforcement AI that supports a human assessment based on objective, verifiable facts is high-risk instead. A FRIA or disclosure cannot make a banned practice lawful."
+    },
+    {
+      "id": "governance.d5.q003",
+      "lesson": "governance.d5.1.01",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Article 5 prohibited practices, select Yes if true.",
+      "statements": [
+        { "s": "The social scoring ban applies to private companies as well as public authorities.", "a": true },
+        { "s": "A manipulative technique is prohibited only if it is subliminal.", "a": false },
+        { "s": "Exploiting vulnerabilities due to a person's specific social or economic situation can be a prohibited practice.", "a": true }
+      ],
+      "explain": "The final text bans social scoring by public and private actors. The manipulation ban covers subliminal, purposefully manipulative or deceptive techniques that cause significant harm, not only subliminal ones. Exploiting vulnerabilities linked to age, disability or social or economic situation is banned."
+    },
+    {
+      "id": "governance.d5.q004",
+      "lesson": "governance.d5.1.02",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A university plans to use webcam AI during lectures to detect students' boredom and frustration so lecturers can adjust teaching. Which classification applies?",
+      "options": ["High-risk under Annex III education", "Limited risk; students must be informed under Article 50(3)", "Minimal risk, as no decision is made about students", "Prohibited, because it is emotion recognition in education"],
+      "answer": [3],
+      "explain": "Inferring emotions in education institutions is banned unless it is for medical or safety reasons. Outside work and education, emotion recognition is high-risk with an Art. 50(3) notice duty, but neither applies here. Whether a decision is made does not matter."
+    },
+    {
+      "id": "governance.d5.q005",
+      "lesson": "governance.d5.1.02",
+      "objective": "d5.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which activity is a prohibited AI practice under Article 5?",
+      "options": ["Using facial verification to unlock a smartphone", "Untargeted scraping of CCTV footage to expand a facial recognition database", "Retrospective biometric identification under judicial authorisation", "Detecting pilot fatigue from eye movements for safety reasons"],
+      "answer": [1],
+      "explain": "Untargeted scraping of facial images from the internet or CCTV to build or expand facial recognition databases is banned. 1:1 verification is excluded from the biometric rules. Post (retrospective) RBI is high-risk, not banned. Emotion or fatigue detection for safety reasons is carved out of the workplace ban."
+    },
+    {
+      "id": "governance.d5.q006",
+      "lesson": "governance.d5.1.02",
+      "objective": "d5.1",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "A Member State's law allows police to use real-time remote biometric identification in public spaces. Officers propose several uses at a large public event.",
+      "stem": "Which uses could fall within the Article 5 exceptions, assuming prior authorisation and other safeguards are met? Select TWO.",
+      "options": ["A targeted search for a specific abducted child", "Scanning all attendees to find people with unpaid parking fines", "Locating a named suspect of a listed serious crime punishable by at least four years", "Building a watch-list of protest organisers for later reference", "Measuring crowd sentiment toward the government"],
+      "answer": [0, 2],
+      "explain": "The exceptions cover targeted searches for victims of abduction, trafficking or sexual exploitation and for missing persons, preventing imminent threats to life or terrorism, and locating suspects of listed serious crimes. Minor offences, profiling protesters and sentiment analysis fall outside them."
+    },
+    {
+      "id": "governance.d5.q007",
+      "lesson": "governance.d5.1.02",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A retailer uses AI on customers' faces to infer their likely religious beliefs for targeted advertising. What is the status of this system?",
+      "options": ["High-risk biometric categorisation under Annex III", "Prohibited biometric categorisation inferring a sensitive characteristic", "Limited risk; a notice under Article 50(3) is enough", "Minimal risk because it is only used for marketing"],
+      "answer": [1],
+      "explain": "Biometric categorisation that infers religious or philosophical beliefs, race, political opinions, trade-union membership, or sex life or orientation is prohibited. Annex III covers categorisation by other sensitive attributes, and an Art. 50(3) notice cannot cure a banned practice."
+    },
+    {
+      "id": "governance.d5.q008",
+      "lesson": "governance.d5.1.03",
+      "objective": "d5.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which article classifies AI systems as high-risk because they are safety components of products covered by Annex I harmonisation legislation?",
+      "options": ["Article 5", "Article 6(1)", "Article 6(3)", "Article 50"],
+      "answer": [1],
+      "explain": "Art. 6(1) covers Annex I product-embedded AI that needs third-party conformity assessment. Art. 5 lists prohibitions. Art. 6(3) is the derogation for Annex III systems that pose no significant risk. Art. 50 sets transparency duties."
+    },
+    {
+      "id": "governance.d5.q009",
+      "lesson": "governance.d5.1.03",
+      "objective": "d5.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "MedScan sells an AI module that analyses X-ray images and is regulated as a medical device under the MDR. Under the MDR, the device needs assessment by a notified body.",
+      "stem": "How is the AI module classified under the AI Act, and how is conformity shown?",
+      "options": ["Minimal risk; MDR certification alone suffices", "High-risk under Annex III; internal control self-assessment", "High-risk under Art. 6(1); AI Act requirements are assessed within the MDR conformity procedure", "Prohibited unless the Commission grants an exemption"],
+      "answer": [2],
+      "explain": "A medical device needing third-party assessment under an Annex I law is high-risk under Art. 6(1), and the AI requirements are checked within the sectoral (MDR) procedure, typically by the same notified body. Medical devices are not an Annex III area, and nothing here is prohibited."
+    },
+    {
+      "id": "governance.d5.q010",
+      "lesson": "governance.d5.1.04",
+      "objective": "d5.1",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which uses are listed as high-risk areas in Annex III? Select THREE.",
+      "options": ["Evaluating creditworthiness of natural persons", "Filtering spam email", "Screening job applications", "Determining access to education institutions", "Recommending products in an online shop"],
+      "answer": [0, 2, 3],
+      "explain": "Credit scoring (essential services), CV screening (employment) and admission decisions (education) are Annex III areas. Spam filtering and product recommendations are typical minimal-risk uses."
+    },
+    {
+      "id": "governance.d5.q011",
+      "lesson": "governance.d5.1.04",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A bank's AI is used only to detect fraudulent card transactions. How is it classified under Annex III point 5?",
+      "options": ["It is excluded: fraud detection is carved out of the credit-scoring entry", "High-risk, because it relates to financial services", "Prohibited, as it profiles customers", "High-risk, requiring a FRIA by the bank"],
+      "answer": [0],
+      "explain": "Annex III point 5 covers creditworthiness evaluation and credit scoring but expressly excludes systems used to detect financial fraud. Being financial alone does not make a system high-risk, and fraud detection is not a prohibited practice."
+    },
+    {
+      "id": "governance.d5.q012",
+      "lesson": "governance.d5.1.04",
+      "objective": "d5.1",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": "An HR vendor's Annex III tool only reformats CVs into a standard template before human recruiters read them. The vendor wants to rely on Article 6(3).",
+      "stem": "For each statement, select Yes if true.",
+      "statements": [
+        { "s": "The vendor may conclude the tool is not high-risk if it performs only a narrow procedural task and poses no significant risk.", "a": true },
+        { "s": "If the vendor relies on Article 6(3), it no longer needs to document its assessment or register the system.", "a": false },
+        { "s": "If the tool also profiled candidates, it would always be high-risk.", "a": true }
+      ],
+      "explain": "Art. 6(3) lets narrow procedural or preparatory systems escape high-risk status, but the provider must document the assessment and register the system. Annex III systems that profile natural persons are always high-risk."
+    },
+    {
+      "id": "governance.d5.q013",
+      "lesson": "governance.d5.1.05",
+      "objective": "d5.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which high-risk requirement says training, validation and testing data must be relevant, sufficiently representative and examined for possible biases?",
+      "options": ["Article 9 Risk management system", "Article 12 Record-keeping", "Article 15 Accuracy, robustness and cybersecurity", "Article 10 Data and data governance"],
+      "answer": [3],
+      "explain": "Art. 10 sets data quality and bias-examination duties. Art. 9 is the lifecycle risk process. Art. 12 requires automatic logging. Art. 15 covers accuracy metrics, resilience and protection against attacks such as data poisoning."
+    },
+    {
+      "id": "governance.d5.q014",
+      "lesson": "governance.d5.1.05",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A provider designs its high-risk system so an operator can interrupt it with a stop control and is warned against over-relying on its outputs. Which requirement does this mainly address?",
+      "options": ["Article 13 Transparency to deployers", "Article 14 Human oversight", "Article 11 Technical documentation", "Article 17 Quality management system"],
+      "answer": [1],
+      "explain": "Human oversight design includes the ability to override or stop the system and awareness of automation bias. Art. 13 is about instructions for use, Art. 11 about Annex IV documentation, and Art. 17 about the provider's QMS."
+    },
+    {
+      "id": "governance.d5.q015",
+      "lesson": "governance.d5.1.05",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Article 15 requires resilience against AI-specific attacks. Which threats are named examples? Select THREE.",
+      "options": ["Data poisoning", "Adversarial examples (model evasion)", "Model poisoning", "Phishing of the provider's sales staff", "Physical theft of deployer laptops"],
+      "answer": [0, 1, 2],
+      "explain": "Art. 15 names data poisoning, model poisoning, adversarial examples or model evasion, confidentiality attacks and model flaws. Phishing and laptop theft are general security risks, not the AI-specific attacks the article lists."
+    },
+    {
+      "id": "governance.d5.q016",
+      "lesson": "governance.d5.1.06",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A provider is bringing a new Annex III high-risk system to the EU market. Put the steps in order.",
+      "options": ["Complete the conformity assessment", "Draw up the EU declaration of conformity and affix the CE marking", "Place the system on the market", "Run post-market monitoring and report serious incidents"],
+      "explain": "Conformity is assessed first, then declared through the EU declaration of conformity and CE marking. Registration in the EU database also happens before placing on the market. Post-market monitoring follows release."
+    },
+    {
+      "id": "governance.d5.q017",
+      "lesson": "governance.d5.1.06",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "For most Annex III high-risk systems (points 2 to 8), which conformity assessment procedure applies?",
+      "options": ["Mandatory notified body assessment under Annex VII", "Assessment by the AI Office", "Internal control under Annex VI", "No conformity assessment; registration only"],
+      "answer": [2],
+      "explain": "Annex III points 2 to 8 use internal control (provider self-assessment, Annex VI). Notified bodies can be needed for biometric systems and Annex I products. The AI Office supervises GPAI models and does not certify high-risk systems. Registration does not replace assessment."
+    },
+    {
+      "id": "governance.d5.q018",
+      "lesson": "governance.d5.1.06",
+      "objective": "d5.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Distributor Alpha buys a general HR analytics tool, rebrands it as 'AlphaHire', and markets it in the EU for ranking job candidates.",
+      "stem": "What is Alpha's status under the AI Act?",
+      "options": ["Deployer only", "Distributor only, as it did not write the code", "Importer, as long as it keeps the original documentation", "Provider of a high-risk system, with full provider obligations"],
+      "answer": [3],
+      "explain": "Under Art. 25, a distributor, importer or deployer that puts its name or trademark on a high-risk system, substantially modifies it, or changes its intended purpose so it becomes high-risk is treated as the provider. Writing the code is not required."
+    },
+    {
+      "id": "governance.d5.q019",
+      "lesson": "governance.d5.1.07",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Which deployers must carry out a fundamental rights impact assessment before using an Annex III high-risk system? Select THREE.",
+      "options": ["A public body using AI to decide eligibility for social benefits", "A private hospital operator providing public services", "A car maker using AI to screen job applicants", "An insurer using AI to price life insurance", "A water utility using an AI safety component for its network"],
+      "answer": [0, 1, 3],
+      "explain": "Art. 27 covers public-law bodies, private entities providing public services, and deployers of credit-scoring or life and health insurance pricing systems. A private car maker screening CVs is not in those groups, and critical-infrastructure systems (Annex III point 2) are excluded."
+    },
+    {
+      "id": "governance.d5.q020",
+      "lesson": "governance.d5.1.07",
+      "objective": "d5.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Under Article 26, for at least how long must deployers keep the logs automatically generated by a high-risk system under their control, unless other law says otherwise?",
+      "options": ["Six months", "30 days", "Ten years", "Two years"],
+      "answer": [0],
+      "explain": "Deployers keep automatically generated logs for at least six months. Ten years is the provider's document retention period. 30 days and two years are not AI Act figures for deployer logs."
+    },
+    {
+      "id": "governance.d5.q021",
+      "lesson": "governance.d5.1.07",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about deployers of high-risk AI, select Yes if true.",
+      "statements": [
+        { "s": "An employer must inform workers' representatives before using a high-risk system in the workplace.", "a": true },
+        { "s": "A completed FRIA replaces the need for a GDPR data protection impact assessment.", "a": false },
+        { "s": "After completing a FRIA, the deployer notifies the market surveillance authority of the results.", "a": true }
+      ],
+      "explain": "Employers must inform workers' representatives and affected workers. The FRIA complements a DPIA rather than replacing it. Art. 27 requires notifying the market surveillance authority of the FRIA results."
+    },
+    {
+      "id": "governance.d5.q022",
+      "lesson": "governance.d5.1.08",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Who must make sure that synthetic images from a generative AI system are marked in a machine-readable format as artificially generated?",
+      "options": ["The deployer who publishes the image", "The provider of the generative AI system", "The national market surveillance authority", "The notified body that assessed the system"],
+      "answer": [1],
+      "explain": "Art. 50(2) puts machine-readable marking on the provider of the generative system. Deployers have the visible deepfake disclosure duty under Art. 50(4). Authorities and notified bodies do not mark content."
+    },
+    {
+      "id": "governance.d5.q023",
+      "lesson": "governance.d5.1.08",
+      "objective": "d5.1",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A news site publishes an AI-written article on a public-interest election topic. A human editor reviews the article and the publisher takes editorial responsibility for it.",
+      "stem": "Does Article 50(4) require the site to disclose that the text was AI-generated?",
+      "options": ["Yes, AI-generated text must always be disclosed", "Yes, but only through a machine-readable watermark", "No, because only images and video are covered", "No, because the text underwent human review and editorial responsibility"],
+      "answer": [3],
+      "explain": "The public-interest text disclosure does not apply where the content has undergone human review or editorial control and someone holds editorial responsibility. Text is covered in general, and watermarking is a provider duty, not the deployer route here."
+    },
+    {
+      "id": "governance.d5.q024",
+      "lesson": "governance.d5.1.08",
+      "objective": "d5.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "A company launches a customer-service chatbot on its website. Which Article 50 obligation applies to the chatbot's provider?",
+      "options": ["Register the chatbot in the EU database", "Carry out a fundamental rights impact assessment", "Design it so users are informed they are interacting with an AI system", "Obtain CE marking before launch"],
+      "answer": [2],
+      "explain": "Art. 50(1) requires providers to make sure people are told they are interacting with AI unless it is obvious. Registration, FRIA and CE marking are high-risk duties, and a general chatbot is not high-risk."
+    },
+    {
+      "id": "governance.d5.q025",
+      "lesson": "governance.d5.1.09",
+      "objective": "d5.1",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which statement best describes the AI Act's treatment of minimal-risk AI systems such as spam filters?",
+      "options": ["No new mandatory obligations as a risk class; voluntary codes of conduct are encouraged", "They must be registered in the EU database", "They need a simplified conformity assessment", "They must carry a visible AI label"],
+      "answer": [0],
+      "explain": "Minimal-risk systems get no new risk-specific obligations; Art. 95 encourages voluntary codes of conduct. General duties such as AI literacy and other laws like the GDPR still apply. Registration and conformity assessment are high-risk duties, and labels are Art. 50 duties."
+    },
+    {
+      "id": "governance.d5.q026",
+      "lesson": "governance.d5.1.09",
+      "objective": "d5.1",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A games studio voluntarily commits to applying bias testing and energy reporting to its non-high-risk AI features. Which AI Act mechanism is it using?",
+      "options": ["The GPAI Code of Practice under Article 56", "A code of conduct under Article 95", "An AI regulatory sandbox under Article 57", "A harmonised standard under Article 40"],
+      "answer": [1],
+      "explain": "Art. 95 codes of conduct let non-high-risk providers and deployers voluntarily apply requirements or wider goals. The Art. 56 Code of Practice is for GPAI model providers. Sandboxes are supervised testing environments. Harmonised standards give a presumption of conformity for high-risk requirements."
+    },
+    {
+      "id": "governance.d5.q027",
+      "lesson": "governance.d5.2.01",
+      "objective": "d5.2",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which obligations apply to every general-purpose AI model provider under Article 53? Select THREE.",
+      "options": ["Publish a sufficiently detailed summary of training content", "Adopt a policy to comply with EU copyright law", "Provide information and documentation to downstream providers", "Carry out a fundamental rights impact assessment", "Obtain CE marking for the model"],
+      "answer": [0, 1, 2],
+      "explain": "Art. 53 requires technical documentation, information for downstream providers, a copyright policy and a training-content summary. FRIA is a deployer duty for high-risk systems, and CE marking applies to high-risk systems, not GPAI models."
+    },
+    {
+      "id": "governance.d5.q028",
+      "lesson": "governance.d5.2.01",
+      "objective": "d5.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A provider releases a GPAI model with public weights under a free and open-source licence. The model does not have systemic risk. Which duty still applies?",
+      "options": ["None, open-source models are fully exempt", "Only the Annex XI technical documentation", "Only appointing an EU authorised representative", "Publishing a training-content summary and putting a copyright policy in place"],
+      "answer": [3],
+      "explain": "The open-source exemption removes the technical documentation duties to authorities and downstream providers. It does not remove the copyright policy or the training-content summary. The authorised-representative duty is also waived for qualifying open-source models without systemic risk."
+    },
+    {
+      "id": "governance.d5.q029",
+      "lesson": "governance.d5.2.02",
+      "objective": "d5.2",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Above what cumulative training compute is a GPAI model presumed to have high-impact capabilities, and so systemic risk?",
+      "options": ["10^23 FLOPs", "10^25 FLOPs", "10^26 FLOPs", "10^24 FLOPs"],
+      "answer": [1],
+      "explain": "Art. 51 presumes high-impact capabilities above 10^25 floating-point operations of training compute. The Commission can update this threshold. 10^26 was the US reporting threshold under a now-revoked executive order and is a common distractor."
+    },
+    {
+      "id": "governance.d5.q030",
+      "lesson": "governance.d5.2.02",
+      "objective": "d5.2",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "A lab's model is about to exceed the systemic-risk compute threshold. Put the steps in order.",
+      "options": ["The lab knows the training run will exceed 10^25 FLOPs", "The lab notifies the Commission within two weeks", "The model is treated as a GPAI model with systemic risk unless the lab's arguments are accepted", "The lab performs model evaluations, adversarial testing and risk mitigation under Article 55"],
+      "explain": "Art. 52 requires notification within two weeks of meeting the threshold or knowing it will be met. The provider may argue against classification. Once classified, the Art. 55 duties apply: evaluation, adversarial testing, mitigation, incident reporting and cybersecurity."
+    },
+    {
+      "id": "governance.d5.q031",
+      "lesson": "governance.d5.2.02",
+      "objective": "d5.2",
+      "difficulty": 3,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about GPAI models with systemic risk, select Yes if true.",
+      "statements": [
+        { "s": "The Commission can designate a model as having systemic risk even if it was trained below 10^25 FLOPs.", "a": true },
+        { "s": "Serious incidents involving the model are reported to a notified body.", "a": false },
+        { "s": "Releasing the model under an open-source licence exempts it from Article 55 duties.", "a": false }
+      ],
+      "explain": "The Commission can designate models using Annex XIII criteria, whatever their compute. Serious incidents are reported to the AI Office (and national authorities where relevant), not notified bodies. The open-source exemption never applies to systemic-risk models."
+    },
+    {
+      "id": "governance.d5.q032",
+      "lesson": "governance.d5.2.03",
+      "objective": "d5.2",
+      "difficulty": 2,
+      "type": "single",
+      "case": "A provider of a mid-sized GPAI model without systemic risk wants to sign the GPAI Code of Practice to demonstrate compliance.",
+      "stem": "Which chapters of the Code are relevant to this provider?",
+      "options": ["Safety and Security only", "All three, including Safety and Security", "Transparency and Copyright", "None; the Code applies only to systemic-risk models"],
+      "answer": [2],
+      "explain": "The Transparency and Copyright chapters cover the Art. 53 duties of all GPAI providers. The Safety and Security chapter applies only to providers of models with systemic risk under Art. 55."
+    }
+  ]
+}

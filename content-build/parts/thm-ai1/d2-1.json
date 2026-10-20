@@ -1,0 +1,1266 @@
+{
+ "exam": "thm-ai1",
+ "domain": "d2",
+ "lessons": [
+  {
+   "id": "thm-ai1.d2.1.01",
+   "objective": "d2.1",
+   "seq": 1,
+   "title": "Why prompt injection exists",
+   "short": "An LLM reads its instructions and its data as one stream of text, so text that **looks like an instruction** can steer it. **Direct prompt injection** is when the person typing is the source (OWASP **LLM01**, ATLAS **AML.T0051.000**).",
+   "deep": "Traditional software keeps code and data apart: a SQL engine knows which part is the query and which part is a value. An LLM has no such separation. The system prompt, the user's message, retrieved documents and tool results are all concatenated into one **context window**, and the model predicts the next token from all of it.\n\nThat is the root cause of **prompt injection**: content that was meant to be data gets treated as instructions. OWASP lists it first in the Top 10 for LLM Applications 2025 as **LLM01 Prompt Injection**. MITRE ATLAS names it **AML.T0051 LLM Prompt Injection**, under the **Execution** tactic, with three sub-techniques:\n- **.000 Direct**: the user supplies the text themselves.\n- **.001 Indirect**: the text arrives inside content the model ingests.\n- **.002 Triggered**: the text is set off by a user action or an event in the victim's environment.\n\nBecause the weakness is architectural, no filter fully removes it. Defence is about **limiting what a successful injection can do**.",
+   "terms": [
+    {
+     "t": "Context window",
+     "d": "Everything the model sees at once: system prompt, conversation, retrieved text and tool results."
+    },
+    {
+     "t": "LLM01 Prompt Injection",
+     "d": "OWASP 2025 risk: inputs alter the model's behaviour in unintended ways."
+    },
+    {
+     "t": "AML.T0051",
+     "d": "MITRE ATLAS technique LLM Prompt Injection (Execution tactic)."
+    }
+   ],
+   "trap": "The exam may offer 'input validation fixes prompt injection'. It reduces it; it cannot eliminate it, because instructions and data share one channel.",
+   "example": "A support bot is told 'only discuss our products'. A user's message persuades it to write unrelated content. Nothing was hacked in the classic sense; the user's text simply outweighed the developer's.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "System prompt",
+     "User text",
+     "One context",
+     "Model output"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d2.1.02",
+   "objective": "d2.1",
+   "seq": 2,
+   "title": "System prompt leakage",
+   "short": "Assume the **system prompt can be extracted**. OWASP **LLM07 System Prompt Leakage** and ATLAS **AML.T0056 Extract LLM System Prompt** describe this. The fix is to **keep secrets and authorisation out of the prompt**, not to hide the prompt harder.",
+   "deep": "Developers often put rules, personas, internal URLs, and sometimes API keys or connection strings into the **system prompt**. Testers routinely get models to repeat or paraphrase that text, so it should be treated as **public**.\n\nOWASP's LLM07 guidance is clear on what actually matters:\n- **Never store secrets** (keys, passwords, tokens) in the system prompt. Keep them in a secrets manager on the server side.\n- **Do not rely on the prompt for security decisions** such as who may see which data. Enforce authorisation in code, outside the model.\n- Use **output filtering** to catch obvious leakage as a backstop, but not as the primary control.\n\nIn an assessment, a leaked system prompt is valuable because it reveals the rules you are testing, the tools available, and sometimes secrets. Report it as **LLM07 / AML.T0056**, and rate impact by **what the prompt contained**, not by the fact that it leaked.",
+   "terms": [
+    {
+     "t": "LLM07 System Prompt Leakage",
+     "d": "OWASP 2025 risk: sensitive information or controls placed in the system prompt are exposed."
+    },
+    {
+     "t": "AML.T0056",
+     "d": "ATLAS technique Extract LLM System Prompt (Exfiltration)."
+    }
+   ],
+   "trap": "A tempting answer is 'add a line telling the model never to reveal its instructions'. That is a speed bump. The real fix is removing secrets and security logic from the prompt.",
+   "example": "A tester gets a bot to summarise its own instructions and finds a database connection string inside. The finding is high impact because of the credential, and the fix is moving it to a secrets store.",
+   "diagram": null
+  },
+  {
+   "id": "thm-ai1.d2.1.03",
+   "objective": "d2.1",
+   "seq": 3,
+   "title": "Jailbreak technique families",
+   "short": "A **jailbreak** is an attempt to make the model ignore its safety training (ATLAS **AML.T0054 LLM Jailbreak**). Assessors classify attempts into families such as **persona/role-play framing**, **instruction override**, and **obfuscation** (**AML.T0068**).",
+   "deep": "You will be asked to **recognise and classify** jailbreak attempts and map them, not to memorise attack strings. The common families are:\n- **Persona or role-play framing**: the request is wrapped in a fictional character or scenario so the model treats it as play.\n- **Instruction override**: text claims new rules replace the developer's rules.\n- **Obfuscation**: the request is encoded, split, translated or disguised so filters miss it. ATLAS names this **AML.T0068 LLM Prompt Obfuscation**, under **Defense Evasion**.\n- **Many-shot**: a long run of fabricated example dialogues nudges the model toward a pattern.\n- **Adversarial suffixes**: optimised token sequences (research such as GCG) that shift the model's behaviour.\n\nATLAS places **AML.T0054** under **Defense Evasion** and **Privilege Escalation**. Defensively, the families tell you which layer to test: obfuscation targets **input filters**, persona framing targets the **model's alignment**, and none of them matter much if **tools and data access are least-privilege**.",
+   "terms": [
+    {
+     "t": "AML.T0054",
+     "d": "ATLAS technique LLM Jailbreak."
+    },
+    {
+     "t": "AML.T0068",
+     "d": "ATLAS technique LLM Prompt Obfuscation (Defense Evasion)."
+    },
+    {
+     "t": "Many-shot",
+     "d": "Using many fabricated example exchanges in the context to shift model behaviour."
+    }
+   ],
+   "trap": "Jailbreak (bypass safety training) and prompt injection (override the developer's instructions) overlap but are not the same. Read the scenario: whose rules are being bypassed?",
+   "example": "A log shows a request disguised in an unusual encoding that passed the input classifier. You classify it as obfuscation (AML.T0068) and recommend output-side checks too.",
+   "diagram": {
+    "kind": "compare",
+    "cols": [
+     "Family",
+     "Targets"
+    ],
+    "rows": [
+     [
+      "Persona framing",
+      "Model alignment"
+     ],
+     [
+      "Instruction override",
+      "Developer rules"
+     ],
+     [
+      "Obfuscation",
+      "Input filters"
+     ],
+     [
+      "Many-shot",
+      "In-context learning"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d2.2.01",
+   "objective": "d2.2",
+   "seq": 4,
+   "title": "Indirect prompt injection",
+   "short": "**Indirect injection** hides instructions in content the model reads on someone's behalf: a web page, PDF, email or tool result (ATLAS **AML.T0051.001**). The victim never types anything malicious, which is why it **scales**.",
+   "deep": "With direct injection, the attacker and the user are the same person, so the damage is mostly limited to that session. **Indirect prompt injection** is different: the attacker plants text in something the system will later **retrieve or ingest**, and an innocent user's request pulls it into the context.\n\nCommon carriers:\n- Web pages fetched by a browsing tool.\n- Documents uploaded to or indexed by a RAG system.\n- Emails, calendar invites and chat messages read by an assistant.\n- Results returned by other tools or agents.\n\nThe text can be invisible to humans, for example white-on-white text or hidden metadata, while still being read by the model. For threat modelling, every **arrow carrying external content into the context** is an injection point that crosses a **trust boundary**. That is why OWASP LLM01 explicitly covers both direct and indirect forms.",
+   "terms": [
+    {
+     "t": "Indirect prompt injection",
+     "d": "Instructions embedded in external content the model processes (AML.T0051.001)."
+    },
+    {
+     "t": "Trust boundary",
+     "d": "Where data moves from a less-trusted source into a more-trusted component."
+    }
+   ],
+   "trap": "Scanning only the user's prompt misses indirect injection entirely. The exam often hides the injection in a document or tool result.",
+   "example": "A résumé contains hidden text addressed to the screening assistant. A recruiter asks for a summary and the assistant's rating is skewed. The recruiter typed nothing malicious.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Attacker plants text",
+     "Content indexed",
+     "User asks",
+     "Model reads it",
+     "Behaviour changes"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d2.2.02",
+   "objective": "d2.2",
+   "seq": 5,
+   "title": "From injection to tool hijacking",
+   "short": "Injection becomes serious when the model can **act**. Injected text can drive **tool calls** (ATLAS **AML.T0053 AI Agent Tool Invocation**) and **exfiltrate data through tools** (**AML.T0086**). OWASP calls the root cause **LLM06 Excessive Agency**.",
+   "deep": "A chat-only model that is injected can at worst say something wrong. An **agent** with tools such as send_email, http_request, file_write or run_sql can be steered into **doing** something wrong.\n\nTypical chain an assessor documents:\n- **AML.T0051.001** indirect injection arrives in retrieved content.\n- **AML.T0053 AI Agent Tool Invocation**: the model calls a tool the attacker wanted.\n- **AML.T0086 Exfiltration via AI Agent Tool Invocation**: the tool carries data out, for example in an email or URL.\n\nOWASP **LLM06 Excessive Agency** names three root causes: **excessive functionality** (tools it doesn't need), **excessive permissions** (tools with broad scopes), and **excessive autonomy** (no human confirmation). The OWASP Agentic Top 10 frames the same outcomes as **ASI01 Agent Goal Hijack** and **ASI02 Tool Misuse and Exploitation**.",
+   "terms": [
+    {
+     "t": "AML.T0053",
+     "d": "ATLAS technique AI Agent Tool Invocation."
+    },
+    {
+     "t": "AML.T0086",
+     "d": "ATLAS technique Exfiltration via AI Agent Tool Invocation."
+    },
+    {
+     "t": "LLM06 Excessive Agency",
+     "d": "OWASP 2025: too much functionality, permission or autonomy given to an LLM system."
+    }
+   ],
+   "trap": "When asked for the root cause of an agent sending data out after reading a malicious page, 'LLM01' is only half the answer; the damage comes from LLM06.",
+   "example": "An email assistant with full mailbox send rights reads a message containing hidden instructions and forwards internal files externally. Scoping it to drafts-only would have contained the damage.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Injected content",
+     "T0053 tool call",
+     "T0086 data out"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d2.2.03",
+   "objective": "d2.2",
+   "seq": 6,
+   "title": "Exfiltration through rendered output",
+   "short": "Data can leak without any tool: if the UI **auto-renders markdown images or links**, an injected response can encode data in a URL the browser fetches. ATLAS calls this **AML.T0077 LLM Response Rendering**.",
+   "deep": "Many chat UIs render model output as markdown. If the output contains an image tag whose URL points to an attacker's server, the browser fetches it automatically, and anything placed in that URL, such as conversation snippets, reaches the attacker's logs. No click is needed.\n\nThis maps to ATLAS **AML.T0077 LLM Response Rendering** (Exfiltration) and to OWASP **LLM05 Improper Output Handling**, because model output is passed to a renderer without being treated as untrusted.\n\nDefences:\n- Do not auto-load **remote images** in model output, or proxy them through an allow-list.\n- Apply a **Content Security Policy** that limits which domains the page can contact.\n- **Encode or sanitise** model output before rendering it as HTML.\n- Strip or neutralise links to unknown domains.",
+   "terms": [
+    {
+     "t": "AML.T0077",
+     "d": "ATLAS technique LLM Response Rendering: exfiltration via automatically rendered output."
+    },
+    {
+     "t": "LLM05 Improper Output Handling",
+     "d": "OWASP 2025: model output passed downstream without validation or encoding."
+    },
+    {
+     "t": "Content Security Policy",
+     "d": "Browser policy restricting which origins a page may load content from."
+    }
+   ],
+   "trap": "If a scenario says 'the agent has no tools, so exfiltration is impossible', check the renderer. Auto-rendered images are an exfiltration channel.",
+   "example": "A tester sees the chat UI fetch an image from an unknown domain right after an injected document was summarised. Blocking remote images closed the channel.",
+   "diagram": null
+  },
+  {
+   "id": "thm-ai1.d2.3.01",
+   "objective": "d2.3",
+   "seq": 7,
+   "title": "Guardrails are a speed bump",
+   "short": "**Guardrails** are classifiers and rules around the model: **input filters**, **output filters**, topic and safety checks (ATLAS mitigation **AML.M0020 Generative AI Guardrails**). They are **probabilistic**, so treat them as one layer, never the only control.",
+   "deep": "A guardrail inspects text going into or out of the model and blocks or rewrites what looks unsafe. Examples include safety classifiers, prompt-attack detectors such as Microsoft's Prompt Shields, PII redactors, and policy engines like NVIDIA NeMo Guardrails.\n\nWhy guardrails alone fail:\n- They recognise **known patterns**; novel phrasing, other languages or obfuscation (**AML.T0068**) can slip through.\n- They are themselves models, with **false negatives and false positives**.\n- Filtering the input does not change what the **model and its tools** are capable of.\n\nSo the assessor's conclusion is usually: guardrails **reduce the rate** of successful attacks; **architecture** (least privilege, human approval, isolation of untrusted data) **limits the impact** when one gets through. ATLAS lists guardrails as **AML.M0020** and the companion **AML.M0021 Generative AI Guidelines** for system-prompt-level rules.",
+   "terms": [
+    {
+     "t": "Guardrail",
+     "d": "A control that inspects or constrains model inputs and outputs."
+    },
+    {
+     "t": "AML.M0020",
+     "d": "ATLAS mitigation Generative AI Guardrails."
+    },
+    {
+     "t": "False negative",
+     "d": "A harmful input the filter fails to flag."
+    }
+   ],
+   "trap": "An option that says a guardrail 'prevents' jailbreaks is overstated. Prefer answers describing guardrails as one layer in defence in depth.",
+   "example": "A bank adds an input classifier and declares the chatbot safe. An assessment shows some obfuscated requests pass. The recommendation is to keep the classifier and also remove the bot's ability to view other customers' data.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Input guardrail",
+     "Model alignment",
+     "Output guardrail",
+     "Least-privilege tools",
+     "Human approval"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d2.3.02",
+   "objective": "d2.3",
+   "seq": 8,
+   "title": "Assessing guardrails professionally",
+   "short": "Guardrail testing is **authorised, scoped and evidenced**. Testers measure **attack success rate** across technique families, record exact inputs and outputs, and report findings mapped to **OWASP** and **ATLAS** with remediation.",
+   "deep": "An AI red-team engagement follows the same discipline as any penetration test:\n- **Rules of engagement**: written authorisation, in-scope systems, excluded data, and how to stop if real customer data appears.\n- **Coverage**: test each technique family (direct, indirect, persona framing, obfuscation, multi-turn) against each layer (input filter, model, output filter, tools).\n- **Repeatability**: LLMs are non-deterministic, so run each test several times and report a **success rate**, not a single screenshot.\n- **Evidence**: timestamps, full prompts and responses, model and guardrail versions.\n- **Mapping**: OWASP LLM ID plus ATLAS technique, so defenders can link the finding to controls.\n- **Remediation**: concrete controls, ordered by risk reduction.\n\nTools such as Microsoft PyRIT, garak and promptfoo automate parts of this, but the judgement about impact stays with the assessor.",
+   "terms": [
+    {
+     "t": "Attack success rate",
+     "d": "Share of attempts that achieve the test objective across repeated runs."
+    },
+    {
+     "t": "Rules of engagement",
+     "d": "Agreed scope, limits and safety measures for a security test."
+    },
+    {
+     "t": "PyRIT / garak",
+     "d": "Open-source frameworks for automated generative-AI red teaming."
+    }
+   ],
+   "trap": "Reporting a single successful attempt as 'the guardrail is broken' ignores non-determinism. The exam favours repeated trials and a measured rate.",
+   "example": "A tester runs 50 trials per technique family and finds obfuscated inputs bypass the filter 12% of the time while persona framing never does. The report prioritises output-side controls.",
+   "diagram": {
+    "kind": "cycle",
+    "items": [
+     "Scope",
+     "Test families",
+     "Repeat & measure",
+     "Map OWASP/ATLAS",
+     "Report & retest"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d2.4.01",
+   "objective": "d2.4",
+   "seq": 9,
+   "title": "The workplace-assistant scenario",
+   "short": "A **workplace assistant** that reads email and can act is a prime target: one crafted email becomes **triggered indirect injection** (ATLAS **AML.T0051.002**) the moment the assistant processes the inbox.",
+   "deep": "Picture an assistant that summarises a user's inbox and can send emails, create calendar events and search files. An attacker only needs to **send the victim an email**. When the assistant later processes it, hidden instructions in the message can ask it to search for sensitive files and send them somewhere.\n\nWhat the assessor documents:\n- **Entry**: attacker-controlled email, an untrusted input crossing a trust boundary.\n- **Trigger**: the user's routine request, such as 'summarise my inbox' (**AML.T0051.002 Triggered**).\n- **Action**: tool invocation (**AML.T0053**) and exfiltration (**AML.T0086**).\n- **Root causes**: the assistant had send permissions it didn't need for summarising, and no confirmation step (**LLM06**).\n\nThe OWASP Agentic list calls this **ASI01 Agent Goal Hijack**. If users approve whatever the agent proposes without reading it, add **ASI09 Human-Agent Trust Exploitation**.",
+   "terms": [
+    {
+     "t": "AML.T0051.002",
+     "d": "ATLAS sub-technique Triggered prompt injection."
+    },
+    {
+     "t": "ASI01 Agent Goal Hijack",
+     "d": "OWASP Agentic risk: the agent's objective is redirected by injected content."
+    },
+    {
+     "t": "ASI09",
+     "d": "OWASP Agentic risk Human-Agent Trust Exploitation."
+    }
+   ],
+   "trap": "Blocking the attacker's email address doesn't fix the class of problem. Any external sender can do the same; fix agency and approvals.",
+   "example": "A finance assistant processes a vendor email and drafts a payment change. Because payment actions require a human to approve in a separate system, the attempt fails safely.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Crafted email",
+     "User: summarise",
+     "Assistant reads",
+     "Tool call",
+     "Approval gate"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d2.4.02",
+   "objective": "d2.4",
+   "seq": 10,
+   "title": "Containing agency",
+   "short": "Limit the **blast radius**: give agents only the tools they need, **narrow scopes**, **human approval** for side effects (ATLAS **AML.M0029**), and **no tool calls driven by untrusted content** (**AML.M0030**).",
+   "deep": "Since injection cannot be fully prevented, the strongest controls reduce what an injected agent **can do**:\n- **Least functionality**: remove tools the use case doesn't need. A summariser doesn't need send_email.\n- **Least permission**: scope tokens narrowly, such as read-only, drafts-only, a single folder, or a single recipient domain.\n- **Human in the loop** for consequential actions such as sending, paying or deleting: ATLAS **AML.M0029 Human In-the-Loop for AI Agent Actions**. Show the user exactly what will happen.\n- **Restrict tool invocation on untrusted data**: when external content is in the context, disable or gate high-impact tools. This is ATLAS **AML.M0030**.\n- **Egress control**: allow-list outbound domains and recipients, so even a hijacked call cannot reach the attacker.\n- **Per-user identity**: the agent acts with the user's permissions, never a shared admin account.\n\nThese map directly to OWASP **LLM06 Excessive Agency** mitigations.",
+   "terms": [
+    {
+     "t": "AML.M0029",
+     "d": "ATLAS mitigation Human In-the-Loop for AI Agent Actions."
+    },
+    {
+     "t": "AML.M0030",
+     "d": "ATLAS mitigation Restrict AI Agent Tool Invocation on Untrusted Data."
+    },
+    {
+     "t": "Egress allow-list",
+     "d": "Only pre-approved destinations can receive outbound requests."
+    }
+   ],
+   "trap": "Human approval only helps if the approval screen shows the real action. An 'Approve all' button recreates excessive autonomy.",
+   "example": "An agent may still read the web, but any web content in context switches it into a mode where email and file tools are disabled until the user confirms.",
+   "diagram": {
+    "kind": "stack",
+    "items": [
+     "Remove unneeded tools",
+     "Narrow scopes",
+     "Gate on untrusted data",
+     "Human approval",
+     "Egress allow-list"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d2.4.03",
+   "objective": "d2.4",
+   "seq": 11,
+   "title": "Defence patterns: rails, dual LLM, spotlighting",
+   "short": "Know the named defences: **NeMo Guardrails** rails (input, dialog, retrieval, execution, output), the **dual-LLM pattern** (a quarantined model handles untrusted text), **spotlighting** (mark untrusted content), and **semantic anomaly detection**.",
+   "deep": "**NVIDIA NeMo Guardrails** is an open-source toolkit configured with a config.yml and Colang flows. It defines five rail types:\n- **Input rails** check user input.\n- **Dialog rails** steer the conversation flow.\n- **Retrieval rails** check retrieved chunks before they reach the model.\n- **Execution rails** check tool or action inputs and outputs.\n- **Output rails** check the model's response.\n\nBuilt-in flows include self check input, self check output and jailbreak detection heuristics.\n\n**Dual-LLM pattern**: a **privileged LLM** plans and calls tools but never sees untrusted text. A **quarantined LLM** processes untrusted content and returns results as opaque references that the privileged side passes along without reading. Injection in the content cannot reach the tool-calling model.\n\n**Spotlighting** (Microsoft research): clearly delimit, datamark or encode untrusted content so the model can tell data from instructions. It lowers success rates but does not eliminate them.\n\n**Semantic anomaly detection**: flag outputs or tool calls that are semantically far from the user's request, for example a summarise task that produces an outbound email.",
+   "terms": [
+    {
+     "t": "NeMo Guardrails",
+     "d": "NVIDIA toolkit for programmable input, dialog, retrieval, execution and output rails."
+    },
+    {
+     "t": "Dual-LLM pattern",
+     "d": "Privileged model acts; quarantined model reads untrusted data; they never mix."
+    },
+    {
+     "t": "Spotlighting",
+     "d": "Marking untrusted text (delimiters, datamarking, encoding) so the model treats it as data."
+    }
+   ],
+   "trap": "Retrieval rails check retrieved chunks; input rails check the user's message. Exams test which rail sits where.",
+   "example": "A RAG agent adds a retrieval rail that drops chunks containing instruction-like text, plus an execution rail that refuses send actions not requested by the user.",
+   "diagram": {
+    "kind": "flow",
+    "items": [
+     "Input rail",
+     "Retrieval rail",
+     "Model",
+     "Execution rail",
+     "Output rail"
+    ]
+   }
+  },
+  {
+   "id": "thm-ai1.d2.4.04",
+   "objective": "d2.4",
+   "seq": 12,
+   "title": "Writing up an injection finding",
+   "short": "A strong finding states the **entry point**, the **chain** (OWASP + ATLAS IDs), the **impact** in business terms, **evidence and success rate**, and **remediation ordered by risk reduction**.",
+   "deep": "Template the AI1 graders and real clients both expect:\n- **Title**: for example, 'Indirect prompt injection via inbound email leads to data exfiltration'.\n- **Classification**: OWASP **LLM01 → LLM06**; ATLAS **AML.T0051.001 → AML.T0053 → AML.T0086**.\n- **Affected components** and the **trust boundary** crossed.\n- **Preconditions**: what the attacker needs, such as only the ability to send an email.\n- **Impact**: which data or actions, and for whom.\n- **Evidence**: inputs and outputs, timestamps, versions, and success rate over N trials.\n- **Remediation**, strongest first: remove or scope tools → human approval → gate tools on untrusted data → egress allow-list → guardrails and spotlighting → monitoring.\n- **Retest criteria**: how you'll prove the fix works.\n\nAvoid vague advice like 'improve the prompt'. Graders reward **specific controls tied to the specific chain**.",
+   "terms": [
+    {
+     "t": "Finding chain",
+     "d": "The ordered techniques from entry to impact."
+    },
+    {
+     "t": "Retest criteria",
+     "d": "The test that must pass to close the finding."
+    }
+   ],
+   "trap": "Leading the remediation with 'add instructions to the system prompt' is weak. Lead with architectural controls.",
+   "example": "A report ranks 'scope the send tool to drafts-only' first and 'add a jailbreak classifier' fifth, explaining that the first removes the impact while the fifth only lowers the odds.",
+   "diagram": null
+  }
+ ],
+ "questions": [
+  {
+   "id": "thm-ai1.d2.q001",
+   "lesson": "thm-ai1.d2.1.01",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is the root cause that makes LLM applications vulnerable to prompt injection?",
+   "options": [
+    "Instructions and data share one text channel, so data can be read as instructions",
+    "LLMs cannot process more than one user at a time",
+    "The model's weights are stored unencrypted",
+    "Tokenisers drop special characters from prompts"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "The model sees the system prompt, user text and retrieved content as one stream, so it cannot reliably separate instructions from data. Encryption, concurrency and tokenisation are unrelated."
+  },
+  {
+   "id": "thm-ai1.d2.q002",
+   "lesson": "thm-ai1.d2.1.01",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which OWASP Top 10 for LLM Applications (2025) identifier is Prompt Injection?",
+   "options": [
+    "LLM05",
+    "LLM01",
+    "LLM07",
+    "LLM03"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Prompt Injection is LLM01:2025. LLM03 is Supply Chain, LLM05 Improper Output Handling, LLM07 System Prompt Leakage."
+  },
+  {
+   "id": "thm-ai1.d2.q003",
+   "lesson": "thm-ai1.d2.1.01",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Under which MITRE ATLAS tactic is AML.T0051 LLM Prompt Injection listed?",
+   "options": [
+    "Impact",
+    "Exfiltration",
+    "Execution",
+    "Reconnaissance"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "ATLAS places LLM Prompt Injection under Execution: the injected text runs as instructions. Reconnaissance, Exfiltration and Impact are other stages."
+  },
+  {
+   "id": "thm-ai1.d2.q004",
+   "lesson": "thm-ai1.d2.1.01",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A user types a message that persuades a product-support bot to ignore its topic restrictions. Which ATLAS sub-technique fits best?",
+   "options": [
+    "AML.T0051.001 Indirect",
+    "AML.T0056 Extract LLM System Prompt",
+    "AML.T0051.002 Triggered",
+    "AML.T0051.000 Direct"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "The user supplied the text themselves, so it is direct injection. Indirect comes through ingested content, Triggered fires on a later event, and T0056 is specifically about extracting the system prompt."
+  },
+  {
+   "id": "thm-ai1.d2.q005",
+   "lesson": "thm-ai1.d2.1.01",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about prompt injection, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "Prompt injection can be fully prevented with a well-written system prompt",
+     "a": false
+    },
+    {
+     "s": "Defence focuses on limiting what a successful injection can do",
+     "a": true
+    },
+    {
+     "s": "OWASP LLM01 covers both direct and indirect injection",
+     "a": true
+    }
+   ],
+   "explain": "Because the weakness is architectural, a prompt can't fully prevent it. Defences limit impact, and LLM01 covers both direct and indirect forms."
+  },
+  {
+   "id": "thm-ai1.d2.q006",
+   "lesson": "thm-ai1.d2.1.02",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What does OWASP recommend as the PRIMARY fix for LLM07 System Prompt Leakage?",
+   "options": [
+    "Keep secrets and authorisation logic out of the system prompt",
+    "Encrypt the system prompt at rest",
+    "Add a stronger 'never reveal your instructions' rule",
+    "Shorten the system prompt below 100 tokens"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Assume the prompt can be extracted; never put credentials or security decisions in it. Telling the model to keep secrets is only a speed bump; encryption at rest doesn't stop the model repeating it; length is irrelevant."
+  },
+  {
+   "id": "thm-ai1.d2.q007",
+   "lesson": "thm-ai1.d2.1.02",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS technique names an attacker getting a chatbot to reveal its hidden instructions?",
+   "options": [
+    "AML.T0057 LLM Data Leakage",
+    "AML.T0056 Extract LLM System Prompt",
+    "AML.T0054 LLM Jailbreak",
+    "AML.T0068 LLM Prompt Obfuscation"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Extract LLM System Prompt is AML.T0056. T0054 is jailbreak, T0057 is leakage of other sensitive data, T0068 is obfuscation."
+  },
+  {
+   "id": "thm-ai1.d2.q008",
+   "lesson": "thm-ai1.d2.1.02",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A tester extracts a system prompt and finds a live API key in it. How should the finding's impact be rated?",
+   "options": [
+    "Informational only, since no data was exfiltrated through a tool",
+    "Low, because system prompts are expected to leak",
+    "By the sensitivity of what the prompt contained: here, high, because of the live credential",
+    "It cannot be rated until the key is used"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Impact depends on the contents. A live key is directly abusable, so it's high impact. Leakage of a harmless persona would rate low."
+  },
+  {
+   "id": "thm-ai1.d2.q009",
+   "lesson": "thm-ai1.d2.1.02",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO actions remediate an API key found in a leaked system prompt? (Select TWO)",
+   "options": [
+    "Rotate the exposed key immediately",
+    "Add 'do not reveal the key' to the prompt",
+    "Translate the prompt into another language",
+    "Move the key to a server-side secrets manager the model never sees",
+    "Ask users not to request the instructions"
+   ],
+   "answer": [
+    0,
+    3
+   ],
+   "explain": "The key is compromised, so rotate it, and store secrets outside the model's context. Prompt wording and user requests don't remove the exposure; translation is obfuscation, not protection."
+  },
+  {
+   "id": "thm-ai1.d2.q010",
+   "lesson": "thm-ai1.d2.1.02",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each item, select Yes if it is appropriate to place in a system prompt.",
+   "statements": [
+    {
+     "s": "The assistant's tone and scope, such as 'answer only questions about our products'",
+     "a": true
+    },
+    {
+     "s": "A database connection string the assistant uses",
+     "a": false
+    },
+    {
+     "s": "The rule deciding which customers' records the user may view",
+     "a": false
+    }
+   ],
+   "explain": "Behavioural guidance is fine. Credentials belong in a secrets store; authorisation must be enforced in code, not by the model."
+  },
+  {
+   "id": "thm-ai1.d2.q011",
+   "lesson": "thm-ai1.d2.1.03",
+   "objective": "d2.1",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS technique ID is LLM Jailbreak?",
+   "options": [
+    "AML.T0077",
+    "AML.T0051",
+    "AML.T0053",
+    "AML.T0054"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "LLM Jailbreak is AML.T0054. T0051 is prompt injection, T0053 agent tool invocation, T0077 response rendering."
+  },
+  {
+   "id": "thm-ai1.d2.q012",
+   "lesson": "thm-ai1.d2.1.03",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A request is disguised using an unusual encoding so the input classifier doesn't flag it. Which ATLAS technique is this?",
+   "options": [
+    "AML.T0068 LLM Prompt Obfuscation",
+    "AML.T0070 RAG Poisoning",
+    "AML.T0056 Extract LLM System Prompt",
+    "AML.T0034 Cost Harvesting"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Disguising content to evade detection is LLM Prompt Obfuscation (AML.T0068), under Defense Evasion."
+  },
+  {
+   "id": "thm-ai1.d2.q013",
+   "lesson": "thm-ai1.d2.1.03",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A chat log shows a long series of fabricated example question-and-answer pairs placed before the real request. Which jailbreak family is this?",
+   "options": [
+    "Instruction override",
+    "Many-shot",
+    "Adversarial suffix",
+    "Persona framing"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Filling the context with many fabricated example exchanges to shift behaviour is many-shot. Override claims new rules; suffixes are optimised token strings; persona framing uses a character."
+  },
+  {
+   "id": "thm-ai1.d2.q014",
+   "lesson": "thm-ai1.d2.1.03",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A request is wrapped in a fictional story where a character 'would' explain something. Which family is this, and which layer is it mainly testing?",
+   "options": [
+    "Adversarial suffix; the tokenizer",
+    "Obfuscation; the input filter",
+    "Persona/role-play framing; the model's alignment",
+    "Many-shot; the output filter"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Fictional framing is persona/role-play, which mainly tests whether the model's safety training holds. Obfuscation targets input filters."
+  },
+  {
+   "id": "thm-ai1.d2.q015",
+   "lesson": "thm-ai1.d2.1.03",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Under which TWO ATLAS tactics does AML.T0054 LLM Jailbreak appear?",
+   "options": [
+    "Persistence and Collection",
+    "Reconnaissance and Impact",
+    "Initial Access and Exfiltration",
+    "Defense Evasion and Privilege Escalation"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "ATLAS lists LLM Jailbreak under Defense Evasion and Privilege Escalation: it evades safety controls and gains behaviours the system should deny."
+  },
+  {
+   "id": "thm-ai1.d2.q016",
+   "lesson": "thm-ai1.d2.1.03",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about jailbreaks and prompt injection, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "A jailbreak targets the model's safety training; prompt injection targets the developer's instructions",
+     "a": true
+    },
+    {
+     "s": "Adversarial suffixes are optimised token sequences found through research methods such as GCG",
+     "a": true
+    },
+    {
+     "s": "If a model resists all jailbreaks, tools connected to it no longer need least privilege",
+     "a": false
+    }
+   ],
+   "explain": "The two overlap but differ in whose rules are bypassed. Suffixes are optimised strings. Least privilege is still needed because indirect injection doesn't need a jailbreak."
+  },
+  {
+   "id": "thm-ai1.d2.q017",
+   "lesson": "thm-ai1.d2.1.03",
+   "objective": "d2.1",
+   "difficulty": 3,
+   "type": "multi",
+   "case": null,
+   "stem": "An assessor must classify three logged attempts: (1) text claiming 'new administrator rules replace previous ones', (2) a request split across languages and encodings, (3) a role-play scenario. Which TWO mappings are correct? (Select TWO)",
+   "options": [
+    "(1) AML.T0077 LLM Response Rendering",
+    "(2) Many-shot",
+    "(2) LLM Prompt Obfuscation, AML.T0068",
+    "(3) AML.T0056 Extract LLM System Prompt",
+    "(1) Instruction override"
+   ],
+   "answer": [
+    2,
+    4
+   ],
+   "explain": "Claimed replacement rules are instruction override; splitting and encoding is obfuscation (T0068). Role-play is persona framing, not system-prompt extraction; T0077 is rendering exfiltration; many-shot uses fabricated examples."
+  },
+  {
+   "id": "thm-ai1.d2.q018",
+   "lesson": "thm-ai1.d2.1.01",
+   "objective": "d2.1",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Put the stages of a model call in the order text flows through a typical LLM chat application.",
+   "options": [
+    "Developer's system prompt is loaded",
+    "User message is appended",
+    "Model generates from the combined context",
+    "Output is rendered to the user"
+   ],
+   "explain": "The system prompt is loaded first, the user's text is appended into the same context, the model generates, then the UI renders. That shared context is why injection works."
+  },
+  {
+   "id": "thm-ai1.d2.q019",
+   "lesson": "thm-ai1.d2.2.01",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What distinguishes indirect prompt injection from direct injection?",
+   "options": [
+    "The malicious text arrives in content the model ingests, not from the user typing it",
+    "Indirect injection requires access to model weights",
+    "Indirect injection only affects the attacker's own session",
+    "Indirect injection only works on image models"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Indirect injection rides in documents, web pages, emails or tool results. The victim user never types anything malicious, which is why it scales."
+  },
+  {
+   "id": "thm-ai1.d2.q020",
+   "lesson": "thm-ai1.d2.2.01",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS sub-technique is indirect prompt injection?",
+   "options": [
+    "AML.T0051.002",
+    "AML.T0051.001",
+    "AML.T0054",
+    "AML.T0051.000"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Indirect is AML.T0051.001. .000 is Direct, .002 is Triggered, and T0054 is Jailbreak."
+  },
+  {
+   "id": "thm-ai1.d2.q021",
+   "lesson": "thm-ai1.d2.2.01",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Why does indirect prompt injection usually rate higher in likelihood than direct injection in a multi-user assistant?",
+   "options": [
+    "It only works when the user is an administrator",
+    "It needs physical access to the server",
+    "One planted piece of content can affect every user whose request retrieves it",
+    "Direct injection cannot be performed on chat interfaces"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "A single poisoned page or document can reach many victims, and the attacker needs no account on the system."
+  },
+  {
+   "id": "thm-ai1.d2.q022",
+   "lesson": "thm-ai1.d2.2.01",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each input to an AI assistant, select Yes if it is a channel for indirect prompt injection.",
+   "statements": [
+    {
+     "s": "A web page fetched by the browsing tool",
+     "a": true
+    },
+    {
+     "s": "An email the assistant summarises",
+     "a": true
+    },
+    {
+     "s": "The developer's fixed system prompt stored in the application's code repository",
+     "a": false
+    }
+   ],
+   "explain": "External content the model reads is an injection channel. The developer-controlled system prompt is trusted configuration (though it still shouldn't hold secrets)."
+  },
+  {
+   "id": "thm-ai1.d2.q023",
+   "lesson": "thm-ai1.d2.2.01",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A résumé contains text formatted to be invisible to people but readable by the AI screener, asking it to rate the candidate highly. What does this illustrate?",
+   "options": [
+    "Denial of service",
+    "Training-data poisoning",
+    "System prompt leakage",
+    "Indirect prompt injection hidden from human reviewers"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Hidden instructions in an ingested document are indirect injection. No training data changed, nothing leaked and nothing was overloaded."
+  },
+  {
+   "id": "thm-ai1.d2.q024",
+   "lesson": "thm-ai1.d2.2.01",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "An engineer says 'we scan every user prompt with a classifier, so injection is handled.' Which TWO gaps should the assessor point out? (Select TWO)",
+   "options": [
+    "Retrieved documents and tool results bypass a user-prompt scanner",
+    "User prompts can never contain injection",
+    "The classifier encrypts prompts, hiding them from the model",
+    "Classifiers always block legitimate users",
+    "Classifiers are probabilistic and miss novel or obfuscated phrasing"
+   ],
+   "answer": [
+    0,
+    4
+   ],
+   "explain": "Indirect injection doesn't pass through the user prompt, and classifiers have false negatives. The other statements are false."
+  },
+  {
+   "id": "thm-ai1.d2.q025",
+   "lesson": "thm-ai1.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which OWASP 2025 risk names the root cause when an injected model can trigger harmful actions because it has too many tools or permissions?",
+   "options": [
+    "LLM06 Excessive Agency",
+    "LLM08 Vector and Embedding Weaknesses",
+    "LLM10 Unbounded Consumption",
+    "LLM09 Misinformation"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Excessive Agency (LLM06) is about too much functionality, permission or autonomy. The others cover false output, vector-store flaws and resource exhaustion."
+  },
+  {
+   "id": "thm-ai1.d2.q026",
+   "lesson": "thm-ai1.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS technique describes an attacker causing an agent to call a tool it shouldn't?",
+   "options": [
+    "AML.T0056 Extract LLM System Prompt",
+    "AML.T0053 AI Agent Tool Invocation",
+    "AML.T0077 LLM Response Rendering",
+    "AML.T0024.002 Extract AI Model"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "AML.T0053 is AI Agent Tool Invocation. Response rendering, prompt extraction and model extraction are different techniques."
+  },
+  {
+   "id": "thm-ai1.d2.q027",
+   "lesson": "thm-ai1.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "An injected document makes an agent send internal data out in an email. Which ATLAS technique names the data leaving through the tool?",
+   "options": [
+    "AML.T0054 LLM Jailbreak",
+    "AML.T0070 RAG Poisoning",
+    "AML.T0086 Exfiltration via AI Agent Tool Invocation",
+    "AML.T0051.000 Direct"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Data leaving via an agent's tool call is AML.T0086. Injection and poisoning describe how the attacker got in, not how data left."
+  },
+  {
+   "id": "thm-ai1.d2.q028",
+   "lesson": "thm-ai1.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "OWASP lists three root causes of Excessive Agency. Which set is correct?",
+   "options": [
+    "Excessive tokens, excessive latency, excessive cost",
+    "Excessive users, excessive models, excessive prompts",
+    "Excessive logging, excessive encryption, excessive caching",
+    "Excessive functionality, excessive permissions, excessive autonomy"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "OWASP LLM06 names excessive functionality, permissions and autonomy."
+  },
+  {
+   "id": "thm-ai1.d2.q029",
+   "lesson": "thm-ai1.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "In the OWASP Top 10 for Agentic Applications, which risk best describes an authorised tool being driven to an unintended, harmful use?",
+   "options": [
+    "ASI02 Tool Misuse and Exploitation",
+    "ASI08 Cascading Failures",
+    "ASI10 Rogue Agents",
+    "ASI07 Insecure Inter-Agent Communication"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "ASI02 covers legitimate tools used in harmful ways. Inter-agent communication, rogue agents and cascades are separate risks."
+  },
+  {
+   "id": "thm-ai1.d2.q030",
+   "lesson": "thm-ai1.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "order",
+   "case": null,
+   "stem": "Order the ATLAS techniques in an indirect-injection data theft chain, from entry to data leaving.",
+   "options": [
+    "AML.T0051.001 Indirect prompt injection",
+    "AML.T0053 AI Agent Tool Invocation",
+    "AML.T0086 Exfiltration via AI Agent Tool Invocation"
+   ],
+   "explain": "The injected content enters, causes a tool call, and the tool carries data out."
+  },
+  {
+   "id": "thm-ai1.d2.q031",
+   "lesson": "thm-ai1.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "An agent summarises web pages and has send_email, delete_file and http_request tools. Which TWO changes most reduce the impact of indirect injection for a summarising use case? (Select TWO)",
+   "options": [
+    "Switch to a larger model",
+    "Scope remaining tools to the minimum permissions",
+    "Increase the model's context window",
+    "Allow the agent to retry failed tool calls automatically",
+    "Remove tools the summariser doesn't need"
+   ],
+   "answer": [
+    1,
+    4
+   ],
+   "explain": "Least functionality and least permission shrink the blast radius. Context size, model size and auto-retry don't reduce what a hijacked agent can do."
+  },
+  {
+   "id": "thm-ai1.d2.q032",
+   "lesson": "thm-ai1.d2.2.02",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each scenario, select Yes if the OWASP 2025 mapping is correct.",
+   "statements": [
+    {
+     "s": "An agent with an unnecessary 'delete' tool removes files after reading injected content → LLM06 Excessive Agency",
+     "a": true
+    },
+    {
+     "s": "Model output containing a script is executed in the user's browser → LLM05 Improper Output Handling",
+     "a": true
+    },
+    {
+     "s": "An agent leaks data through an over-scoped email tool → LLM10 Unbounded Consumption",
+     "a": false
+    }
+   ],
+   "explain": "Unneeded tools are excessive agency; unvalidated output executed downstream is improper output handling. Data leakage through a tool is LLM06/LLM02, not resource exhaustion."
+  },
+  {
+   "id": "thm-ai1.d2.q033",
+   "lesson": "thm-ai1.d2.2.03",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A chat UI renders model output as markdown. After summarising an injected document, the browser fetches an image from an unknown domain with conversation text in the URL. Which ATLAS technique is this?",
+   "options": [
+    "AML.T0034 Cost Harvesting",
+    "AML.T0077 LLM Response Rendering",
+    "AML.T0056 Extract LLM System Prompt",
+    "AML.T0053 AI Agent Tool Invocation"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "Exfiltration via automatically rendered output is LLM Response Rendering (T0077). No tool was invoked."
+  },
+  {
+   "id": "thm-ai1.d2.q034",
+   "lesson": "thm-ai1.d2.2.03",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "Which OWASP 2025 risk most directly covers passing model output to a markdown/HTML renderer without sanitisation?",
+   "options": [
+    "LLM03 Supply Chain",
+    "LLM09 Misinformation",
+    "LLM05 Improper Output Handling",
+    "LLM04 Data and Model Poisoning"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "Treating model output as trusted when passing it downstream is LLM05."
+  },
+  {
+   "id": "thm-ai1.d2.q035",
+   "lesson": "thm-ai1.d2.2.03",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO controls close the auto-rendered image exfiltration channel? (Select TWO)",
+   "options": [
+    "Add more examples to the system prompt",
+    "Don't auto-load remote images in model output, or proxy them through an allow-list",
+    "Increase the session timeout",
+    "Raise the model's temperature",
+    "Apply a Content Security Policy restricting which domains the page can contact"
+   ],
+   "answer": [
+    1,
+    4
+   ],
+   "explain": "Blocking remote image loads and restricting origins with CSP stop the browser leaking data. Temperature, prompt examples and timeouts don't affect rendering."
+  },
+  {
+   "id": "thm-ai1.d2.q036",
+   "lesson": "thm-ai1.d2.2.03",
+   "objective": "d2.2",
+   "difficulty": 3,
+   "type": "yesno",
+   "case": null,
+   "stem": "An assessor reviews a chat assistant that has NO tools. For each statement, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "Data can still leak if the UI auto-renders attacker-chosen URLs",
+     "a": true
+    },
+    {
+     "s": "Injection is therefore impossible",
+     "a": false
+    },
+    {
+     "s": "Sanitising output before rendering reduces the risk",
+     "a": true
+    }
+   ],
+   "explain": "No tools doesn't mean no exfiltration: rendering is a channel. Injection is still possible; it is just lower impact. Output sanitisation helps."
+  },
+  {
+   "id": "thm-ai1.d2.q037",
+   "lesson": "thm-ai1.d2.2.03",
+   "objective": "d2.2",
+   "difficulty": 2,
+   "type": "complete",
+   "case": null,
+   "stem": "Complete the HTTP response header so the chat page can only load images from its own origin, blocking the rendering exfiltration channel.",
+   "code": "Content-Security-Policy: default-src 'self'; ____",
+   "options": [
+    "script-src 'unsafe-inline'",
+    "img-src *",
+    "connect-src *",
+    "img-src 'self'"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "img-src 'self' limits image loads to the page's own origin. img-src * allows any domain; unsafe-inline weakens script protection; connect-src * opens fetch/XHR to anywhere."
+  },
+  {
+   "id": "thm-ai1.d2.q038",
+   "lesson": "thm-ai1.d2.3.01",
+   "objective": "d2.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "What is the most accurate description of input/output guardrails?",
+   "options": [
+    "A probabilistic layer that lowers attack success but must be combined with architectural controls",
+    "A replacement for authentication",
+    "A guarantee that jailbreaks fail",
+    "A way to make model outputs deterministic"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Guardrails reduce the rate of successful attacks but have false negatives. They complement, not replace, least privilege and approvals."
+  },
+  {
+   "id": "thm-ai1.d2.q039",
+   "lesson": "thm-ai1.d2.3.01",
+   "objective": "d2.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Which ATLAS mitigation is 'Generative AI Guardrails'?",
+   "options": [
+    "AML.M0029",
+    "AML.M0020",
+    "AML.M0013",
+    "AML.M0030"
+   ],
+   "answer": [
+    1
+   ],
+   "explain": "AML.M0020 is Generative AI Guardrails. M0029 is human-in-the-loop for agent actions, M0030 restricts tool invocation on untrusted data, and M0013 is code signing."
+  },
+  {
+   "id": "thm-ai1.d2.q040",
+   "lesson": "thm-ai1.d2.3.01",
+   "objective": "d2.3",
+   "difficulty": 2,
+   "type": "single",
+   "case": null,
+   "stem": "A bank adds an input classifier to its chatbot and asks whether this is enough. The bot can view any customer's account. What should the assessor recommend FIRST?",
+   "options": [
+    "Nothing further; the classifier blocks injection",
+    "Add a second classifier from another vendor",
+    "Restrict the bot to the signed-in customer's own data, enforced outside the model",
+    "Shorten the system prompt"
+   ],
+   "answer": [
+    2
+   ],
+   "explain": "The biggest risk is the blast radius: cross-customer data access. Enforcing per-user authorisation in code removes the impact; more classifiers only lower the odds."
+  },
+  {
+   "id": "thm-ai1.d2.q041",
+   "lesson": "thm-ai1.d2.3.01",
+   "objective": "d2.3",
+   "difficulty": 2,
+   "type": "yesno",
+   "case": null,
+   "stem": "For each statement about guardrails, select Yes if it is true.",
+   "statements": [
+    {
+     "s": "Guardrail classifiers can produce false negatives on novel phrasing",
+     "a": true
+    },
+    {
+     "s": "An output guardrail can catch harmful text even when the input guardrail missed the attack",
+     "a": true
+    },
+    {
+     "s": "Once guardrails are in place, tool permissions no longer matter",
+     "a": false
+    }
+   ],
+   "explain": "Classifiers miss things, output-side checks add a second chance, and tool permissions still bound the damage when both miss."
+  },
+  {
+   "id": "thm-ai1.d2.q042",
+   "lesson": "thm-ai1.d2.3.01",
+   "objective": "d2.3",
+   "difficulty": 2,
+   "type": "multi",
+   "case": null,
+   "stem": "Which TWO are examples of guardrail components? (Select TWO)",
+   "options": [
+    "The tokenizer's vocabulary size",
+    "A PII redaction step applied to model output",
+    "The GPU that runs inference",
+    "The vector index dimension setting",
+    "A prompt-attack detector such as Microsoft Prompt Shields"
+   ],
+   "answer": [
+    1,
+    4
+   ],
+   "explain": "Prompt-attack detection and PII redaction inspect and constrain text. Hardware, index dimensions and vocabulary size are not guardrails."
+  },
+  {
+   "id": "thm-ai1.d2.q043",
+   "lesson": "thm-ai1.d2.3.01",
+   "objective": "d2.3",
+   "difficulty": 3,
+   "type": "single",
+   "case": null,
+   "stem": "A team's only injection defence is a keyword blocklist on the user prompt. Which finding is MOST accurate?",
+   "options": [
+    "Irrelevant, because blocklists only affect performance",
+    "Adequate, as long as the list is updated weekly",
+    "Strong, because keyword lists have no false negatives",
+    "Weak: obfuscation evades keyword lists, and indirect injection never passes through the user prompt"
+   ],
+   "answer": [
+    3
+   ],
+   "explain": "Keyword lists are easy to evade with rephrasing or encoding (T0068), and they don't see retrieved or tool content."
+  },
+  {
+   "id": "thm-ai1.d2.q044",
+   "lesson": "thm-ai1.d2.3.02",
+   "objective": "d2.3",
+   "difficulty": 1,
+   "type": "single",
+   "case": null,
+   "stem": "Why should a tester run each guardrail test case several times?",
+   "options": [
+    "LLM output is non-deterministic, so results should be reported as a success rate",
+    "Because guardrails only activate after five requests",
+    "To increase the token bill for the client",
+    "To slow the service down deliberately"
+   ],
+   "answer": [
+    0
+   ],
+   "explain": "Models sample their outputs, so one run proves little. Repeated trials give a measured attack success rate."
+  }
+ ]
+}

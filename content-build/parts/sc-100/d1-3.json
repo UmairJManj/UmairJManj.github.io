@@ -1,0 +1,562 @@
+{
+  "exam": "sc-100",
+  "domain": "d1",
+  "lessons": [],
+  "questions": [
+    {
+      "id": "sc-100.d1.q045",
+      "lesson": "sc-100.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "The CAF AI security guidance recommends supplementing your existing threat modelling with which knowledge base of adversary tactics and techniques specific to AI systems?",
+      "options": [
+        "MITRE ATT&CK for ICS",
+        "MITRE ATLAS",
+        "MITRE D3FEND",
+        "CIS Critical Security Controls"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "MITRE ATLAS catalogues adversary techniques against AI and ML systems, and CAF pairs it with OWASP generative AI guidance. ATT&CK for ICS covers industrial systems, D3FEND catalogues defensive techniques, and CIS Controls is a general control set."
+    },
+    {
+      "id": "sc-100.d1.q046",
+      "lesson": "sc-100.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "You need an inventory (AI bill of materials) of generative AI workloads across Azure OpenAI, Amazon Bedrock and Google Vertex AI, with attack paths showing exposed AI endpoints. Which plan must be enabled?",
+      "options": [
+        "Defender for Cloud Foundational CSPM",
+        "Defender for Servers Plan 2",
+        "Defender CSPM",
+        "Defender for Cloud Apps"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "AI security posture management, including the AI BOM and AI attack paths across Azure, AWS and GCP, is delivered through Defender CSPM. Foundational CSPM lacks attack paths, Defender for Servers protects VMs, and Defender for Cloud Apps discovers SaaS apps."
+    },
+    {
+      "id": "sc-100.d1.q047",
+      "lesson": "sc-100.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "multi",
+      "case": "Proseware's employees are pasting customer data into public generative AI websites. Leadership wants to adopt AI safely: approved AI tools for staff, visibility of which AI apps are in use, and prevention of sensitive data leaving in prompts. Proseware has Microsoft 365 E5.",
+      "stem": "Which THREE actions should you include in the secure AI adoption strategy? Select THREE.",
+      "options": [
+        "Use Defender for Cloud Apps to discover generative AI apps and block unsanctioned ones",
+        "Provide an approved AI assistant with user training, governed by an AI Center of Excellence",
+        "Apply Microsoft Purview DLP policies to prevent sensitive data being shared with AI apps",
+        "Block all AI apps permanently at the firewall without offering alternatives",
+        "Turn off audit logging to protect employee privacy"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Discovery and control of AI apps, sanctioned tools with training and central governance, and DLP for prompts together reduce shadow AI. Blanket blocking without alternatives drives workarounds, and disabling audit removes the visibility needed to govern AI."
+    },
+    {
+      "id": "sc-100.d1.q048",
+      "lesson": "sc-100.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about securing AI workloads in Azure, select Yes if true.",
+      "statements": [
+        {
+          "s": "Using managed identities for AI app connections avoids storing credentials in code.",
+          "a": true
+        },
+        {
+          "s": "Defender for Cloud threat protection for AI services scans image and audio tokens as well as text.",
+          "a": false
+        },
+        {
+          "s": "Azure Private Link can restrict access to AI PaaS services to private endpoints.",
+          "a": true
+        }
+      ],
+      "explain": "Managed identities remove stored secrets, and Private Link keeps AI services off the public internet. Threat protection for AI services currently scans only text tokens, not image or audio."
+    },
+    {
+      "id": "sc-100.d1.q049",
+      "lesson": "sc-100.d1.3.01",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "Your organisation is deploying dozens of autonomous AI agents that call Microsoft Graph and line-of-business APIs. Security wants each agent to have its own governed identity that can be targeted by Conditional Access and lifecycle policies. What should you recommend?",
+      "options": [
+        "Microsoft Entra Agent ID",
+        "A shared service account per department",
+        "One app registration with a client secret shared across all agents",
+        "Guest (B2B) accounts for each agent"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Microsoft Entra Agent ID gives AI agents their own identities that can be governed and protected like other identities. Shared accounts and shared secrets break least privilege and accountability, and B2B guest accounts are for external people."
+    },
+    {
+      "id": "sc-100.d1.q050",
+      "lesson": "sc-100.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which CAF methodology produces Azure landing zones as its main output?",
+      "options": [
+        "Strategy",
+        "Ready",
+        "Adopt",
+        "Manage"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "CAF Ready prepares the cloud environment, centred on Azure landing zones. Strategy defines business justification, Adopt migrates or innovates workloads, and Manage covers operations."
+    },
+    {
+      "id": "sc-100.d1.q051",
+      "lesson": "sc-100.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "According to CAF, when should the Secure methodology be applied during cloud adoption?",
+      "options": [
+        "Only after workloads are migrated, during the Manage phase",
+        "Only during Ready, when landing zones are built",
+        "Across every phase, from strategy through management",
+        "Only when an auditor requests evidence"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "CAF states security spans every methodology phase and gaps in any phase weaken posture, so Secure applies end to end. Limiting it to Ready, Manage or audits leaves gaps in strategy, planning and adoption."
+    },
+    {
+      "id": "sc-100.d1.q052",
+      "lesson": "sc-100.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the CAF Govern steps in order.",
+      "options": [
+        "Build a cloud governance team",
+        "Assess cloud risks",
+        "Document cloud governance policies",
+        "Enforce cloud governance policies",
+        "Monitor cloud governance"
+      ],
+      "explain": "CAF Govern first forms a team, assesses risks, documents policies addressing those risks, enforces them (preferably automated with Azure Policy), then monitors compliance and adjusts."
+    },
+    {
+      "id": "sc-100.d1.q053",
+      "lesson": "sc-100.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A global insurer is evaluating its cloud governance. It has a 60-page policy document stating that storage accounts must not allow public access and that resources must be deployed only in two approved regions. Audits find that 30% of new resources break these rules, and no one is notified.",
+      "stem": "Which gap in the CAF Govern methodology is MOST evident, and what is the fix?",
+      "options": [
+        "Missing strategy; write a new business case",
+        "Missing incident response; create a Sentinel playbook to delete non-compliant resources",
+        "Missing landing zones; move all workloads into the Sandbox management group",
+        "Missing enforcement; implement Azure Policy deny and audit assignments at management group scope"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Policies exist on paper but aren't enforced or monitored. CAF recommends automated enforcement, such as Azure Policy deny for public access and allowed locations at management group scope. A business case or Sandbox move doesn't enforce, and deleting resources via playbook is reactive and risky."
+    },
+    {
+      "id": "sc-100.d1.q054",
+      "lesson": "sc-100.d1.3.02",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about CAF and WAF, select Yes if true.",
+      "statements": [
+        {
+          "s": "CAF focuses on the organisation and cloud estate, while WAF focuses on individual workloads.",
+          "a": true
+        },
+        {
+          "s": "CAF Secure recommends aligning security modernisation with the Zero Trust adoption framework.",
+          "a": true
+        },
+        {
+          "s": "The CIA triad stands for control, inspection and authentication.",
+          "a": false
+        }
+      ],
+      "explain": "CAF is estate-level and WAF is workload-level, and CAF Secure points to the Zero Trust adoption framework. The CIA triad is confidentiality, integrity and availability."
+    },
+    {
+      "id": "sc-100.d1.q055",
+      "lesson": "sc-100.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "multi",
+      "case": null,
+      "stem": "Which TWO are pillars of the Azure Well-Architected Framework? Select TWO.",
+      "options": [
+        "Operational Excellence",
+        "Governance",
+        "Cost Optimization",
+        "Compliance",
+        "Identity"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "The five WAF pillars are Reliability, Security, Cost Optimization, Operational Excellence and Performance Efficiency. Governance is a CAF methodology, and compliance and identity are topics within pillars, not pillars themselves."
+    },
+    {
+      "id": "sc-100.d1.q056",
+      "lesson": "sc-100.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A WAF assessment of an App Service workload finds database connection strings stored in plain text in application settings. Which WAF Security checklist recommendation does this finding fall under?",
+      "options": [
+        "SE:03 Classify and apply data labels",
+        "SE:06 Isolate, filter and control network traffic",
+        "SE:09 Protect application secrets",
+        "SE:12 Define and test incident response procedures"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "SE:09 covers protecting application secrets, for example storing them in Key Vault accessed by managed identity. SE:03 is data classification, SE:06 is network control, and SE:12 is incident response."
+    },
+    {
+      "id": "sc-100.d1.q057",
+      "lesson": "sc-100.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A trading platform team must add TLS inspection through Azure Firewall Premium for all outbound traffic. The Performance Efficiency lead warns about added latency and the finance lead about cost. The security lead says inspection is required by the company's baseline.",
+      "stem": "How should the architect handle this according to the Well-Architected Framework?",
+      "options": [
+        "Always choose the Security option because Security overrides all other pillars",
+        "Drop inspection because Performance Efficiency is the priority for trading",
+        "Postpone the decision until after go-live",
+        "Evaluate and document the trade-off, scoping inspection to required traffic and measuring its impact"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "WAF expects explicit, documented trade-offs between pillars, balancing risk against cost and performance, for example scoping inspection. No pillar automatically wins, and deferring past go-live leaves the baseline unmet."
+    },
+    {
+      "id": "sc-100.d1.q058",
+      "lesson": "sc-100.d1.3.03",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A workload team wants a structured self-assessment that scores their architecture against each Well-Architected pillar and produces prioritised recommendations. What should they use?",
+      "options": [
+        "Azure Well-Architected Review",
+        "Microsoft Secure Score",
+        "Microsoft Purview Compliance Manager",
+        "Azure Migrate assessment"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "The Azure Well-Architected Review assesses a workload against the pillars. Secure Score measures security posture only, Compliance Manager tracks regulatory controls, and Azure Migrate assesses servers for migration readiness and sizing."
+    },
+    {
+      "id": "sc-100.d1.q059",
+      "lesson": "sc-100.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which Azure Policy effect prevents a non-compliant resource from being created or updated?",
+      "options": [
+        "Deny",
+        "Audit",
+        "Modify",
+        "AuditIfNotExists"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Deny blocks the create or update request. Audit and AuditIfNotExists only record non-compliance, and Modify changes properties (such as tags) rather than blocking the request."
+    },
+    {
+      "id": "sc-100.d1.q060",
+      "lesson": "sc-100.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure Policy rule so that diagnostic settings are deployed automatically to Key Vaults that don't have them.",
+      "code": "\"if\": { \"field\": \"type\", \"equals\": \"Microsoft.KeyVault/vaults\" },\n\"then\": {\n  \"effect\": \"____\",\n  \"details\": {\n    \"type\": \"Microsoft.Insights/diagnosticSettings\",\n    \"roleDefinitionIds\": [\"/providers/Microsoft.Authorization/roleDefinitions/749f88d5-cbae-40b8-bcfc-e573ddc772fa\"],\n    \"deployment\": { \"properties\": { \"mode\": \"incremental\" } }\n  }\n}",
+      "options": [
+        "auditIfNotExists",
+        "deny",
+        "deployIfNotExists",
+        "append"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "deployIfNotExists deploys a related resource when it is missing, using roleDefinitionIds and a deployment template. auditIfNotExists only reports, deny blocks requests, and append adds fields to the request rather than deploying a related resource."
+    },
+    {
+      "id": "sc-100.d1.q061",
+      "lesson": "sc-100.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Your company needs attack path analysis and the cloud security explorer for Azure and AWS resources. Which TWO statements are correct? Select TWO.",
+      "options": [
+        "These capabilities require the Defender CSPM plan",
+        "Foundational CSPM includes attack path analysis at no cost",
+        "Attack path analysis can include connected AWS accounts when Defender CSPM is enabled on the connector",
+        "Cloud security explorer requires Microsoft Sentinel",
+        "Attack path analysis works only for Azure resources"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "Attack path analysis and cloud security explorer are Defender CSPM features and extend to AWS and GCP connectors with Defender CSPM enabled. Foundational CSPM gives recommendations and Secure Score only, and Sentinel isn't required."
+    },
+    {
+      "id": "sc-100.d1.q062",
+      "lesson": "sc-100.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "Fourth Coffee has 120 subscriptions. Each new application team gets Owner on its subscription. Security requires that every subscription has Defender for Cloud plans on, no public IPs on NICs in Corp workloads, and that application teams cannot weaken these settings.",
+      "stem": "Which design BEST meets the requirements?",
+      "options": [
+        "Assign Policy initiatives at management groups; give app teams Contributor plus scoped roles, not Owner",
+        "Ask each team to configure the settings and run a monthly manual review",
+        "Give the security team Owner on every subscription and leave app teams as Owner",
+        "Use resource locks on every resource group"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Policy at management group scope is inherited by all subscriptions and enforces settings; removing Owner prevents teams from changing policy assignments or RBAC. Manual reviews don't enforce, dual Owners leave teams able to undo settings, and locks block deletion, not configuration drift."
+    },
+    {
+      "id": "sc-100.d1.q063",
+      "lesson": "sc-100.d1.3.04",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the Azure CLI command that assigns a built-in policy initiative at management group scope.",
+      "code": "az policy assignment create \\\n  --name mcsb-baseline \\\n  --policy-set-definition \"1f3afdf9-d0c9-4c3d-847f-89da613e70a8\" \\\n  ____ \"/providers/Microsoft.Management/managementGroups/contoso\"",
+      "options": [
+        "--resource-group",
+        "--scope",
+        "--management-group-id",
+        "--location"
+      ],
+      "answer": [
+        1
+      ],
+      "explain": "--scope takes the full resource ID of the assignment scope, here a management group. --resource-group targets a resource group, --location sets the managed identity location, and --management-group-id isn't a parameter of az policy assignment create."
+    },
+    {
+      "id": "sc-100.d1.q064",
+      "lesson": "sc-100.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "In the Azure landing zone reference architecture, which management group holds subscriptions for shared services such as hub networking, central logging and domain controllers?",
+      "options": [
+        "Landing zones",
+        "Sandbox",
+        "Platform",
+        "Decommissioned"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "Platform (with children such as Identity, Management and Connectivity) hosts shared services run by the platform team. Landing zones hosts workloads, Sandbox is for experimentation, and Decommissioned holds cancelled subscriptions."
+    },
+    {
+      "id": "sc-100.d1.q065",
+      "lesson": "sc-100.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "single",
+      "case": null,
+      "stem": "A team proposes creating Dev, Test and Prod management groups under Landing zones so each environment gets different policies. What does the Azure landing zone guidance recommend?",
+      "options": [
+        "Create the three management groups as proposed",
+        "Create separate tenants for Dev, Test and Prod",
+        "Put all environments in one subscription with tags",
+        "Separate environments into different subscriptions within the same management group"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "CAF advises not to create management groups for environments; use separate subscriptions in the same management group (for example Corp). Separate tenants add heavy overhead, and one subscription with tags gives weak isolation."
+    },
+    {
+      "id": "sc-100.d1.q066",
+      "lesson": "sc-100.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "yesno",
+      "case": null,
+      "stem": "For each statement about Azure landing zones, select Yes if true.",
+      "statements": [
+        {
+          "s": "Internet-facing workloads typically go under the Online management group.",
+          "a": true
+        },
+        {
+          "s": "A management group hierarchy supports up to ten levels below the root.",
+          "a": false
+        },
+        {
+          "s": "Setting a default management group stops new subscriptions landing directly under the tenant root.",
+          "a": true
+        }
+      ],
+      "explain": "Online is for internet-facing workloads and Corp for private, hub-connected ones. The hierarchy supports six levels of depth (not counting root and subscription), and a default management group places new subscriptions in a governed location."
+    },
+    {
+      "id": "sc-100.d1.q067",
+      "lesson": "sc-100.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A retailer's application teams request 10-20 new subscriptions a month. Each must be placed in the right management group, peered to the hub, given budgets and RBAC, and covered by Defender for Cloud and logging policies on day one. Manual setup takes three weeks and is inconsistent.",
+      "stem": "What should the architect recommend?",
+      "options": [
+        "Subscription vending using infrastructure as code to create pre-governed application landing zones",
+        "Give application teams Owner at the intermediate root so they can create their own subscriptions",
+        "Place all new workloads in the Sandbox management group until the platform team has time",
+        "Use a single shared subscription for all application teams"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "Subscription vending automates creation of standardised, policy-governed application landing zones. Owner at the intermediate root breaks least privilege, Sandbox is not for production, and a shared subscription removes isolation and blurs ownership."
+    },
+    {
+      "id": "sc-100.d1.q068",
+      "lesson": "sc-100.d1.3.05",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "order",
+      "case": null,
+      "stem": "Put the levels of the Azure landing zone management group hierarchy in order, from the top.",
+      "options": [
+        "Tenant Root Group",
+        "Intermediate root management group",
+        "Landing zones management group",
+        "Corp management group",
+        "Workload subscription"
+      ],
+      "explain": "The tenant root group contains the intermediate root, which contains Landing zones; Corp is a child of Landing zones, and workload subscriptions sit inside Corp."
+    },
+    {
+      "id": "sc-100.d1.q069",
+      "lesson": "sc-100.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 1,
+      "type": "single",
+      "case": null,
+      "stem": "Which testing technique analyses source code for vulnerabilities without running the application?",
+      "options": [
+        "Dynamic application security testing (DAST)",
+        "Penetration testing",
+        "Static application security testing (SAST)",
+        "Chaos engineering"
+      ],
+      "answer": [
+        2
+      ],
+      "explain": "SAST, such as CodeQL, analyses code at build time without execution. DAST and penetration testing probe a running application, and chaos engineering tests resilience by injecting faults."
+    },
+    {
+      "id": "sc-100.d1.q070",
+      "lesson": "sc-100.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "complete",
+      "case": null,
+      "stem": "Complete the GitHub Actions workflow so the job can sign in to Azure with workload identity federation (OIDC) instead of a stored client secret.",
+      "code": "permissions:\n  ____: write\n  contents: read\nsteps:\n  - uses: azure/login@v2\n    with:\n      client-id: ${{ secrets.AZURE_CLIENT_ID }}\n      tenant-id: ${{ secrets.AZURE_TENANT_ID }}\n      subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+      "options": [
+        "id-token",
+        "secrets",
+        "actions",
+        "deployments"
+      ],
+      "answer": [
+        0
+      ],
+      "explain": "OIDC login needs the id-token: write permission so the job can request a federated token from GitHub. 'actions' and 'deployments' are unrelated permission scopes, and 'secrets' is not a valid workflow permission."
+    },
+    {
+      "id": "sc-100.d1.q071",
+      "lesson": "sc-100.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 2,
+      "type": "multi",
+      "case": null,
+      "stem": "Your organisation connects Azure DevOps to Defender for Cloud. Which TWO capabilities require Defender CSPM rather than Foundational CSPM? Select TWO.",
+      "options": [
+        "Pull request annotations",
+        "Exposed secrets findings",
+        "Code-to-cloud mapping for containers",
+        "IaC misconfiguration findings",
+        "Inventory of DevOps resources"
+      ],
+      "answer": [
+        0,
+        2
+      ],
+      "explain": "PR annotations and code-to-cloud mapping are Defender CSPM features. Secrets, IaC misconfiguration findings and DevOps inventory are available with Foundational CSPM."
+    },
+    {
+      "id": "sc-100.d1.q072",
+      "lesson": "sc-100.d1.3.06",
+      "objective": "d1.3",
+      "difficulty": 3,
+      "type": "single",
+      "case": "A software company is adopting DevSecOps aligned with CAF. Developers complain that security reviews happen only before release and delay launches by weeks. Recent issues included a hard-coded storage key pushed to GitHub and a vulnerable open-source library found in production.",
+      "stem": "Which change BEST addresses both issues while reducing release delays?",
+      "options": [
+        "Add a manual security sign-off meeting before each production release",
+        "Move all source code to a private Azure Repos project",
+        "Run a DAST scan in production once a year",
+        "Shift left: secret scanning with push protection, PR dependency scanning, design-time threat modelling"
+      ],
+      "answer": [
+        3
+      ],
+      "explain": "Shifting left catches secrets before they're pushed and vulnerable dependencies in PRs, and threat modelling moves design review earlier, reducing late delays. More sign-offs add delay, yearly DAST is too infrequent and misses secrets, and private repos don't stop committed secrets or vulnerable packages."
+    }
+  ]
+}
