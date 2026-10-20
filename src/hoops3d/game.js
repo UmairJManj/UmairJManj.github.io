@@ -76,7 +76,8 @@ export function createGame(canvas, opts = {}) {
 
   function camGoals() {
     const f = forward();
-    const b = world.ball.p;
+    // Framed from the shooting spot, not the ball, so the camera holds still in flight.
+    const b = { x: spot.x, z: spot.z };
     const back = mode.kind === "quiz" ? 2.6 : 1.9;
     cam.goalPos.set(b.x - f.x * back, 2.75, b.z - f.z * back);
     // Look at a point a little below the rim line, so floor, ball and hoop all sit in frame.
@@ -92,7 +93,8 @@ export function createGame(canvas, opts = {}) {
       half = Math.max(half, Math.atan2(lat, fwd));
     }
     const vf = 2 * Math.atan(Math.tan(half) / aspect) * (180 / Math.PI);
-    view.camera.fov = Math.max(mode.kind === "quiz" ? 44 : 40, Math.min(80, vf));
+    // At least 50 degrees tall, so the ball stays in frame on wide (full screen) views.
+    view.camera.fov = Math.max(50, Math.min(80, vf));
     view.camera.updateProjectionMatrix();
   }
 
@@ -279,14 +281,9 @@ export function createGame(canvas, opts = {}) {
       setTimeout(() => cb.onResult({ made, hoop: sh.scored, target, kind, pts: spot.pts, spot: spot.name }), 350);
     }
     hype = Math.max(0.15, hype - dt * 0.35);
-    // Camera: settle behind the shooter, drift towards the hoop in flight.
+    // Camera: a fixed broadcast view behind the shooter; it only glides when the spot changes.
     camGoals();
-    if (world.ball.live) {
-      const f = forward();
-      cam.goalPos.addScaledVector(f, 0.6);
-      cam.goalLook.lerp(new THREE.Vector3(world.ball.p.x, Math.max(2.3, world.ball.p.y), world.ball.p.z), 0.25);
-    }
-    const k = 1 - Math.exp(-dt * 4);
+    const k = 1 - Math.exp(-dt * 2.5);
     cam.pos.lerp(cam.goalPos, k);
     cam.look.lerp(cam.goalLook, k);
     view.camera.position.copy(cam.pos);

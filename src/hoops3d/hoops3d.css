@@ -6,10 +6,6 @@
   max-height: calc(100vh - 5.4rem); overflow: hidden;
 }
 .h3d-head { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.6rem 0.5rem 0.75rem; border-bottom: 1px solid var(--line); }
-.h3d-title { display: flex; align-items: baseline; gap: 0.45rem; min-width: 0; flex: 1; background: none; border: 0; padding: 0.15rem 0; color: var(--ink); cursor: pointer; text-align: left; font: inherit; }
-.h3d-tcode { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; color: var(--arena); border: 1px solid var(--arena); border-radius: 5px; padding: 0.05rem 0.35rem; white-space: nowrap; }
-.h3d-arena-label { font-size: 0.86rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.h3d-title > span[aria-hidden] { color: var(--faint); font-size: 0.7rem; }
 .h3d-score { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
 .h3d-score b { color: var(--ink); font-size: 0.9rem; }
 .h3d-tools { display: flex; gap: 0.2rem; }
@@ -19,8 +15,7 @@
 }
 .h3d-tools button:hover { border-color: var(--arena); color: var(--arena); }
 
-.h3d-main { display: flex; flex-direction: column; min-height: 0; flex: 1; }
-.h3d-stage { position: relative; height: clamp(16rem, 44vh, 24rem); background: #05060b; flex: none; }
+.h3d-stage { position: relative; height: clamp(20rem, 64vh, 36rem); background: #05060b; flex: none; }
 .h3d-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; outline: none; }
 .h3d-canvas:active { cursor: grabbing; }
 .h3d-canvas:focus-visible { box-shadow: inset 0 0 0 2px var(--arena); }
@@ -38,7 +33,6 @@
 .h3d-meter-fill { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(#f97316, #facc15); }
 .h3d-meter-sweet { position: absolute; left: 0; right: 0; bottom: 46%; height: 8%; background: rgba(34, 197, 94, 0.85); z-index: 1; mix-blend-mode: screen; }
 
-.h3d-panel { overflow-y: auto; min-height: 0; flex: 1; overscroll-behavior: contain; }
 .h3d-card { padding: 0.75rem 0.85rem 0.85rem; }
 .h3d-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
 .h3d-sect { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--arena); }
@@ -84,71 +78,35 @@
 .h3d-btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
 .h3d-btn.ghost:hover { border-color: var(--arena); }
 .h3d-btn.danger { color: #dc2626; }
-.h3d-link { margin-top: 0.55rem; background: none; border: 0; padding: 0; font: inherit; font-size: 0.74rem; color: var(--faint); text-decoration: underline; cursor: pointer; }
 .h3d-x { background: none; border: 0; color: var(--faint); font-size: 1.15rem; cursor: pointer; line-height: 1; }
 
-.h3d-stem { margin: 0.45rem 0 0.5rem; font-size: 0.9rem; line-height: 1.45; color: var(--ink); font-weight: 600; }
-.h3d-case { font-size: 0.8rem; color: var(--muted); background: var(--bg-2); border-radius: 7px; padding: 0.4rem 0.55rem; margin-top: 0.45rem; }
-.h3d-case summary { cursor: pointer; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--arena); }
-.h3d-case p { margin: 0.3rem 0 0; line-height: 1.5; }
-.h3d-code { margin: 0 0 0.5rem; padding: 0.5rem 0.6rem; border-radius: 7px; background: #0b0d14; color: #e2e8f0; font: 0.76rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-x: auto; white-space: pre; }
-.h3d-opts { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
-.h3d-opt {
-  width: 100%; display: flex; gap: 0.5rem; align-items: flex-start; text-align: left; font: inherit; font-size: 0.82rem; line-height: 1.4;
-  padding: 0.38rem 0.5rem; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: default;
-}
-.h3d-opt[aria-disabled="false"], .h3d-quiz .h3d-opt:not([aria-disabled]) { cursor: pointer; }
-.h3d-opt[aria-disabled="false"]:hover { border-color: var(--arena); }
-.h3d-opt.is-on { border-color: var(--arena); background: color-mix(in srgb, var(--arena) 14%, transparent); }
-.h3d-letter { flex: none; width: 1.35rem; height: 1.35rem; border-radius: 5px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 800; color: #fff; background: var(--arena); }
 .h3d-hint { margin: 0.5rem 0 0; font-size: 0.76rem; color: var(--faint); line-height: 1.45; }
-.h3d-hint a { color: var(--arena); }
-.h3d-yn { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.35rem; font-size: 0.82rem; color: var(--muted); }
-.h3d-yn li.is-now { color: var(--ink); font-weight: 600; }
-.h3d-yn li b { margin-left: 0.4rem; color: var(--arena); }
-.h3d-fb.is-right .h3d-sect { color: #16a34a; }
-.h3d-fb.is-wrong .h3d-sect { color: #dc2626; }
-.h3d-answer { margin: 0.45rem 0; white-space: pre-line; font-size: 0.86rem; font-weight: 600; color: var(--ink); }
 
-.h3d-big { font-size: 2.1rem; font-weight: 800; color: var(--arena); margin: 0.2rem 0; }
-.h3d-bar { margin-top: 0.7rem; }
-.h3d-bar-top { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.8rem; color: var(--ink); }
-.h3d-bar-top span:last-child { color: var(--faint); font-family: var(--font-mono); font-size: 0.7rem; white-space: nowrap; }
-.h3d-bar-track { height: 0.4rem; border-radius: 99px; background: var(--bg-2); margin: 0.25rem 0; overflow: hidden; }
-.h3d-bar-track div { height: 100%; background: var(--arena); border-radius: 99px; transition: width 0.4s ease; }
-.h3d-bar-sub { font-size: 0.7rem; color: var(--faint); }
 
-.h3d-arenas ol { list-style: none; margin: 0.5rem 0 0; padding: 0; display: grid; gap: 0.3rem; }
-.h3d-arena {
-  --arena: #888; width: 100%; display: grid; grid-template-columns: 4.2rem 1fr auto; align-items: center; gap: 0.5rem;
-  text-align: left; font: inherit; padding: 0.45rem 0.55rem; border-radius: 9px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer;
-}
-.h3d-arena:hover:not(:disabled), .h3d-arena.is-on { border-color: var(--arena); background: color-mix(in srgb, var(--arena) 10%, transparent); }
-.h3d-arena:disabled { opacity: 0.5; cursor: default; }
-.h3d-arena-code { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 800; color: var(--arena); }
-.h3d-arena-name { font-size: 0.84rem; font-weight: 600; line-height: 1.25; }
-.h3d-arena-name small { display: block; font-weight: 400; font-size: 0.72rem; color: var(--faint); }
-.h3d-arena-m { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
 
 .h3d-settings fieldset { border: 0; margin: 0.6rem 0 0; padding: 0; }
 .h3d-settings legend { font-size: 0.72rem; font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); margin-bottom: 0.25rem; }
 .h3d-settings label { display: flex; gap: 0.45rem; align-items: center; font-size: 0.84rem; margin: 0.2rem 0; cursor: pointer; }
 .h3d-check { margin-top: 0.6rem !important; }
-.h3d-settings .h3d-btn { margin-top: 0.8rem; }
 
-/* Full screen: the court takes the viewport, the lesson sits beside it. */
-.h3d--full { position: fixed; inset: 0; z-index: 1000; max-height: none; border-radius: 0; border: 0; }
-.h3d--full .h3d-main { flex-direction: row; }
+/* Every shot ends with a flashcard laid over the court. */
+.h3d-name { flex: 1; min-width: 0; margin: 0; font-size: 0.9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.h3d-tip { position: absolute; left: 0; right: 0; bottom: 0.7rem; margin: 0; text-align: center; pointer-events: none; font-size: 0.74rem; color: #e5e7eb; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9); }
+.h3d-overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 0.8rem; background: rgba(5, 6, 11, 0.45); animation: h3d-fade 0.25s ease; }
+.h3d-flash {
+  width: min(26rem, 100%); max-height: 100%; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--card); border: 1px solid var(--arena); border-radius: 0.8rem;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); animation: h3d-flip 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.h3d-settings .h3d-btn { margin-top: 0.8rem; }
+@keyframes h3d-fade { from { opacity: 0; } }
+@keyframes h3d-flip { from { opacity: 0; transform: perspective(800px) rotateX(-18deg) translateY(16px) scale(0.94); } }
+
+/* Full screen: the Fullscreen API (or the fixed fallback) gives the court the whole viewport. */
+.h3d:fullscreen { max-height: none; border-radius: 0; border: 0; width: 100vw; height: 100vh; }
+.h3d--full:not(:fullscreen) { position: fixed; inset: 0; z-index: 1000; max-height: none; border-radius: 0; border: 0; }
 .h3d--full .h3d-stage { height: auto; flex: 1; }
-.h3d--full .h3d-panel { flex: none; width: min(28rem, 40vw); border-left: 1px solid var(--line); }
 .h3d--full .h3d-callout { font-size: 2rem; }
-@media (max-width: 760px) {
-  .h3d--full .h3d-main { flex-direction: column; }
-  .h3d--full .h3d-stage { flex: none; height: 56vh; }
-  .h3d--full .h3d-panel { width: auto; border-left: 0; border-top: 1px solid var(--line); flex: 1; }
-}
-@media (max-width: 900px) {
-  .h3d { max-height: none; }
-  .h3d-panel { max-height: 60vh; }
-}
-@media (prefers-reduced-motion: reduce) { .h3d-callout { animation-duration: 0.01s; } }
+.h3d--full .h3d-flash { width: min(34rem, 100%); }
+@media (max-width: 900px) { .h3d { max-height: none; } }
+@media (prefers-reduced-motion: reduce) { .h3d-callout, .h3d-overlay, .h3d-flash { animation-duration: 0.01s; } }

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { profile, focus, stack, experience, certHighlights, projects } from "../data.js";
 import { Reveal, Stagger, StaggerItem, SpotlightCard } from "../lib/motion.jsx";
 import Footer from "../components/Footer.jsx";
+import LowPolyPortrait from "../components/LowPolyPortrait.jsx";
 import { lazy, Suspense } from "react";
 
 // The 3D game (Three.js) loads after the profile, so the page paints first.
@@ -69,7 +70,7 @@ export default function Home() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <img src="/portrait.png" alt="Umair Javaid Manj" draggable="false" />
+          <LowPolyPortrait src="/portrait.png" alt="Umair Javaid Manj" />
         </motion.div>
       </section>
 
@@ -156,8 +157,8 @@ export default function Home() {
 
       </div>
 
-      {/* Learn my certification path one basket at a time. */}
-      <aside className="home-right" aria-label="Learn by playing: certification basketball">
+      {/* Shoot hoops to master AI security: a flashcard after every shot. */}
+      <aside className="home-right" aria-label="Shoot hoops to master AI security">
         <Suspense fallback={<div className="h3d h3d-loading"><div className="h3d-stage" /></div>}>
           <HoopsArena />
         </Suspense>
