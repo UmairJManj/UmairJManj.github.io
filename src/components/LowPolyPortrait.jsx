@@ -9,10 +9,14 @@ import { delaunay } from "../lib/delaunay.js";
    colour under it. The triangles fly in and assemble on load. Moving the
    mouse over it sends a ripple out from the pointer that knocks triangles
    loose, and springs pull every one back into the picture.
+
+   Flat colour blurs a face this small, so the triangles over the face carry
+   the photo itself, faded into the flat facets at the edge of the head.
 --------------------------------------------------------------------------- */
 
 const EDGE_POINTS = 1500, FILL_POINTS = 220, MIN_GAP = 2.6;
 const FACE_POINTS = 650, FACE = { x0: 0.35, x1: 0.65, y0: 0.04, y1: 0.40 };
+const HEAD = { cx: 0.502, cy: 0.205, rx: 0.17, ry: 0.2 };   // ponytail: also fixed to portrait.png
 const SPRING = 60, DAMP = 9;            // per second; under damped, so pieces wobble home
 const WAVE_SPEED = 420, WAVE_KICK = 26; // px per second, px per second of push
 
@@ -74,6 +78,7 @@ function buildMesh(img, W, H) {
       v: [A[0] - cx, A[1] - cy, B[0] - cx, B[1] - cy, C[0] - cx, C[1] - cy], cx, cy,
       fill: `rgb(${(r / 4) | 0},${(gg / 4) | 0},${(bb / 4) | 0})`,
       ox: 0, oy: 0, rot: 0, vx: 0, vy: 0, vr: 0,
+      face: ((cx / W - HEAD.cx) / HEAD.rx) ** 2 + ((cy / H - HEAD.cy) / HEAD.ry) ** 2 < 1.1,
     });
   }
   return tris;
@@ -86,20 +91,39 @@ export default function LowPolyPortrait({ src, alt, ratio = 819 / 717 }) {
     const canvas = ref.current;
     const ctx = canvas.getContext("2d");
     const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let tris = [], W = 0, H = 0, raf = 0, last = 0, waves = [], alive = true, lastWave = 0;
+    let tris = [], tex = null, W = 0, H = 0, raf = 0, last = 0, waves = [], alive = true, lastWave = 0;
     const img = new Image();
 
+    const path = (t) => {
+      const c = Math.cos(t.rot), s = Math.sin(t.rot), x = t.cx + t.ox, y = t.cy + t.oy, v = t.v;
+      ctx.moveTo(x + v[0] * c - v[1] * s, y + v[0] * s + v[1] * c);
+      ctx.lineTo(x + v[2] * c - v[3] * s, y + v[2] * s + v[3] * c);
+      ctx.lineTo(x + v[4] * c - v[5] * s, y + v[4] * s + v[5] * c);
+      ctx.closePath();
+    };
     function draw() {
       ctx.clearRect(0, 0, W, H);
       for (const t of tris) {
-        const c = Math.cos(t.rot), s = Math.sin(t.rot), x = t.cx + t.ox, y = t.cy + t.oy, v = t.v;
-        ctx.beginPath();
-        ctx.moveTo(x + v[0] * c - v[1] * s, y + v[0] * s + v[1] * c);
-        ctx.lineTo(x + v[2] * c - v[3] * s, y + v[2] * s + v[3] * c);
-        ctx.lineTo(x + v[4] * c - v[5] * s, y + v[4] * s + v[5] * c);
-        ctx.closePath();
+        ctx.beginPath(); path(t);
         ctx.fillStyle = t.fill; ctx.strokeStyle = t.fill;
         ctx.fill(); ctx.stroke();   // the hairline stroke hides seams between neighbours
+      }
+      // Face shards: the ones at home share one clip, the ones in flight are clipped one by one.
+      ctx.beginPath();
+      const moving = [];
+      for (const t of tris) {
+        if (!t.face) continue;
+        const off = Math.abs(t.ox) + Math.abs(t.oy);
+        if (off < 0.3 && Math.abs(t.rot) < 0.004) path(t);
+        else if (off < 24) moving.push(t);   // far flung shards stay flat; no one sees detail mid flight
+      }
+      // A pattern fill, not clip + drawImage: clipping hundreds of shards a frame drops to a few fps.
+      const k = W / tex.width;
+      tex.pat.setTransform(new DOMMatrix([k, 0, 0, k, 0, 0]));
+      ctx.fillStyle = tex.pat; ctx.fill();
+      for (const t of moving) {
+        tex.pat.setTransform(new DOMMatrix().translate(t.cx + t.ox, t.cy + t.oy).rotate(t.rot * 180 / Math.PI).translate(-t.cx, -t.cy).scale(k));
+        ctx.beginPath(); path(t); ctx.fill();
       }
     }
 
@@ -144,6 +168,18 @@ export default function LowPolyPortrait({ src, alt, ratio = 819 / 717 }) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.lineJoin = "round"; ctx.lineWidth = 0.6;
       tris = buildMesh(img, W, H);
+      // The photo at full device resolution, faded out from the middle of the face.
+      tex = document.createElement("canvas");
+      tex.width = W * dpr; tex.height = H * dpr;
+      const g = tex.getContext("2d");
+      g.imageSmoothingQuality = "high";
+      g.drawImage(img, 0, 0, tex.width, tex.height);
+      g.globalCompositeOperation = "destination-in";
+      g.setTransform(HEAD.rx * tex.width, 0, 0, HEAD.ry * tex.height, HEAD.cx * tex.width, HEAD.cy * tex.height);
+      const fade = g.createRadialGradient(0, 0, 0, 0, 0, 1);
+      fade.addColorStop(0.75, "#000"); fade.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = fade; g.fillRect(-10, -10, 20, 20);
+      tex.pat = ctx.createPattern(tex, "no-repeat");
       if (scatter && !still) {
         // Fly in from all round and assemble.
         for (const t of tris) {

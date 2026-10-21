@@ -3,17 +3,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createGame, SPOTS } from "./game.js";
 import { TRACKS } from "./tracks.js";
 import { loadContent, loadSettings, saveSettings } from "./learn.js";
-import { LessonCard, Settings } from "./ui.jsx";
+import { LessonCard, QuizCard, Settings } from "./ui.jsx";
 
 /* ---------------------------------------------------------------------------
    Hoops 3D: shoot hoops to master AI security.
 
-   Every shot, made or missed, ends with the next flashcard in one sequence
-   that runs through every lesson in study order. Dismiss it to shoot again.
+   Every shot, made or missed, ends with a card. Cards alternate: a lesson,
+   then a quick check on that lesson after the next shot. A wrong answer sends
+   the lesson back into the deck three lessons later, so gaps get re-taught.
 --------------------------------------------------------------------------- */
 
 const ACCENT = "#3b82f6";
-const CARD_KEY = "hoops3d:card";
+const CARD_KEY = "hoops3d:card";   // older saves: only the next lesson number
+const LEARN_KEY = "hoops3d:learn";
+const QUIZ_TYPES = ["single", "multi", "yesno"];
 const SCORE_KEY = "hoops3d:score";
 const CALLOUT = {
   swish: "Swish", glass: "Off the glass", rim: "In off the rim",
@@ -40,14 +43,40 @@ let countsP = null;
 const counts = () => (countsP ||= fetch("/hoops/content/index.json").then((r) => r.json())
   .then((rows) => ORDER.map((t) => rows.find((r) => r.id === t.id)?.lessons || 0)));
 
-async function cardAt(n) {
+async function lessonAt(n) {
   const c = await counts();
   const total = c.reduce((a, b) => a + b, 0);
   let i = ((n % total) + total) % total;
+  const no = i + 1;
   let t = 0;
   while (i >= c[t]) { i -= c[t]; t++; }
   const content = await loadContent(ORDER[t].id);
-  return { lesson: content.lessons[i], n: (n % total) + 1, total };
+  const lesson = content.lessons[i];
+  const qs = content.questions.filter((q) => q.lesson === lesson.id && QUIZ_TYPES.includes(q.type));
+  return { lesson, qs, n: no, total };
+}
+
+// Learning state: next new lesson, lessons taught, lessons due again, and the lesson awaiting its check.
+function loadLearn() {
+  try { const s = JSON.parse(localStorage.getItem(LEARN_KEY)); if (s && Array.isArray(s.review)) return s; } catch { /* fresh */ }
+  return { next: readNum(CARD_KEY), taught: 0, review: [], check: null };
+}
+const saveLearn = (s) => { try { localStorage.setItem(LEARN_KEY, JSON.stringify(s)); } catch { /* private mode */ } };
+
+// The card after a shot: the check on the last lesson if one is waiting, otherwise the next lesson (reviews first).
+async function nextCard(L) {
+  if (L.check != null) {
+    const i = L.check;
+    L.check = null;
+    const { lesson, qs } = await lessonAt(i);
+    if (qs.length) return { kind: "quiz", i, q: qs[Math.floor(Math.random() * qs.length)], title: lesson.title };
+  }
+  const r = L.review.findIndex((x) => x.due <= L.taught);
+  const review = r >= 0;
+  const i = review ? L.review.splice(r, 1)[0].i : L.next++;
+  L.taught++;
+  L.check = i;
+  return { kind: "lesson", i, review, ...(await lessonAt(i)) };
 }
 
 export default function HoopsArena() {
@@ -67,7 +96,7 @@ export default function HoopsArena() {
   const [meter, setMeter] = useState(null);
   const [spotName, setSpotName] = useState(SPOTS[0].name);
   const [wind, setWind] = useState(0);
-  const cardNo = useRef(readNum(CARD_KEY));
+  const learn = useRef(loadLearn());
   const pendingSpot = useRef(null);
 
   const setSettings = (patch) => setSettingsState((s) => { const n = { ...s, ...patch }; saveSettings(n); return n; });
@@ -128,12 +157,17 @@ export default function HoopsArena() {
     setScore(s); setStreak(st); writeNum(SCORE_KEY, s);
     g.setScore(s, st);
     pendingSpot.current = r.made ? nextSpot(st) : null;
-    const n = cardNo.current;
-    cardNo.current = n + 1;
-    writeNum(CARD_KEY, cardNo.current);
-    cardAt(n).then((c) => { setDeep(false); setCard(c); })
+    nextCard(learn.current).then((c) => { saveLearn(learn.current); setDeep(false); setCard({ ...c, k: Math.random() }); })
       .catch(() => { setErr("The flashcards could not load. Refresh to try again."); g.next(); });
   };
+
+  // Retrieval practice: a right answer earns a point, a wrong one re-queues the lesson.
+  function onAnswer(ok) {
+    const L = learn.current;
+    if (ok) { const s = score + 1; setScore(s); writeNum(SCORE_KEY, s); gameRef.current?.setScore(s, streak); }
+    else L.review.push({ i: card.i, due: L.taught + 3 });
+    saveLearn(L);
+  }
 
   function nextShot() {
     setCard(null);
@@ -173,13 +207,14 @@ export default function HoopsArena() {
   if (showSettings) overlay = (
     <Settings s={settings} set={setSettings} onClose={() => setShowSettings(false)}
       onReset={() => {
-        cardNo.current = 0; writeNum(CARD_KEY, 0); writeNum(SCORE_KEY, 0);
+        learn.current = { next: 0, taught: 0, review: [], check: null }; saveLearn(learn.current); writeNum(SCORE_KEY, 0);
         setScore(0); setStreak(0); gameRef.current?.setScore(0, 0); setShowSettings(false);
       }} />
   );
   else if (err) overlay = <div className="h3d-card"><p className="h3d-short">{err}</p></div>;
+  else if (card?.kind === "quiz") overlay = <QuizCard key={card.k} q={card.q} title={card.title} onAnswer={onAnswer} onDone={nextShot} />;
   else if (card) overlay = (
-    <LessonCard lesson={card.lesson} domain="Flashcard" deep={deep} setDeep={setDeep}
+    <LessonCard lesson={card.lesson} review={card.review} domain="Lesson" deep={deep} setDeep={setDeep}
       n={card.n} total={card.total} onDone={nextShot} doneLabel="Next shot" />
   );
 
@@ -200,7 +235,7 @@ export default function HoopsArena() {
           <span className="h3d-spot">{spotName}</span>
           {wind !== 0 && <span className="h3d-wind">Wind {wind < 0 ? "←" : "→"} {Math.abs(wind).toFixed(1)} m/s</span>}
         </div>
-        {!overlay && <p className="h3d-tip">{settings.control === "flick" ? "Flick the ball up to shoot" : "Hold, aim, release on the green"}. Every shot shows the next flashcard.</p>}
+        {!overlay && <p className="h3d-tip">{settings.control === "flick" ? "Flick the ball up to shoot" : "Hold, aim, release on the green"}. After each shot: a lesson, then a quick check on it.</p>}
         {callout && <div key={callout.k} className={`h3d-callout ${callout.good ? "is-good" : ""}`}>{callout.text}</div>}
         {meter != null && (
           <div className="h3d-meter" aria-hidden><div className="h3d-meter-sweet" /><div className="h3d-meter-fill" style={{ height: `${meter * 100}%` }} /></div>

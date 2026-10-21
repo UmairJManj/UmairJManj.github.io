@@ -167,7 +167,7 @@ export function createGame(canvas, opts = {}) {
 
   /* --- input ----------------------------------------------------------------- */
 
-  let pts = [], pressing = false, meterT0 = 0, meterVal = 0, aimAlpha = 0;
+  let pts = [], pressing = false, meterT0 = 0, meterVal = 0, aimAlpha = 0, keyAim = false;
   function local(e) {
     const r = canvas.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top, t: performance.now() };
@@ -183,6 +183,7 @@ export function createGame(canvas, opts = {}) {
     canvas.setPointerCapture?.(e.pointerId);
     pressing = true;
     pts = [local(e)];
+    keyAim = false;
     if (control === "meter") { meterT0 = performance.now(); aimAlpha = aimFromPointer(pts[0]); }
   }
   function onMove(e) {
@@ -221,9 +222,11 @@ export function createGame(canvas, opts = {}) {
   function onKey(e) {
     // Keyboard: arrows aim, space shoots at perfect power (accessibility).
     if (!world.ball.held) return;
-    if (e.key === "ArrowLeft") { aimAlpha -= 0.05; e.preventDefault(); }
-    else if (e.key === "ArrowRight") { aimAlpha += 0.05; e.preventDefault(); }
-    else if (e.key === " " || e.key === "Enter") { e.preventDefault(); fire(1, aimAlpha); }
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      aimAlpha += e.key === "ArrowLeft" ? -0.05 : 0.05;
+      keyAim = true; meterVal = 0.5;   // show the aim line at perfect power
+      e.preventDefault();
+    } else if (e.key === " " || e.key === "Enter") { e.preventDefault(); keyAim = false; fire(1, aimAlpha); }
   }
   canvas.addEventListener("pointerdown", onDown);
   canvas.addEventListener("pointermove", onMove);
@@ -288,8 +291,8 @@ export function createGame(canvas, opts = {}) {
     cam.look.lerp(cam.goalLook, k);
     view.camera.position.copy(cam.pos);
     view.camera.lookAt(cam.look);
-    // Meter mode: show where the shot is pointing.
-    if (pressing && control === "meter") {
+    // Meter mode and keyboard aim: show where the shot is pointing.
+    if ((pressing && control === "meter") || (keyAim && world.ball.held)) {
       const { index, err } = pickTarget(aimAlpha);
       const h = world.hoops[index];
       const key = `${index}|${spot.x}|${spot.z}|${world.hoops.length}`;

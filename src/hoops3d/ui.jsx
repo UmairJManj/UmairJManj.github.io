@@ -1,4 +1,5 @@
 /* Small presentational pieces for the Hoops 3D panel. */
+import { useState } from "react";
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -71,13 +72,69 @@ export function LessonCard({ lesson, review, domain, deep, setDeep, onDone, done
             </dl>
           )}
           {lesson.example && <p className="h3d-ex"><b>Example</b> {lesson.example}</p>}
-          {lesson.trap && <p className="h3d-trap"><b>Exam trap</b> {lesson.trap}</p>}
+          {lesson.trap && <p className="h3d-trap"><b>Common mistake</b> {lesson.trap}</p>}
         </div>
       )}
       <div className="h3d-actions">
         <button className="h3d-btn ghost" onClick={() => setDeep(!deep)}>{deep ? "Show less" : "Go deeper"}</button>
         {onDone && <button className="h3d-btn" onClick={onDone} autoFocus>{doneLabel}</button>}
       </div>
+    </div>
+  );
+}
+
+/** A check on the lesson just taught: single choice, multiple choice or yes/no statements. */
+export function QuizCard({ q, title, onAnswer, onDone }) {
+  const [pick, setPick] = useState(() => (q.type === "yesno" ? q.statements.map(() => null) : []));
+  const [ok, setOk] = useState(null);   // null until answered
+  const done = ok !== null;
+  const check = (p) => {
+    const right = q.type === "yesno"
+      ? q.statements.every((s, i) => p[i] === s.a)
+      : p.length === q.answer.length && q.answer.every((a) => p.includes(a));
+    setOk(right); onAnswer(right);
+  };
+  const choose = (i) => {
+    if (done) return;
+    if (q.type === "single") { setPick([i]); check([i]); }
+    else setPick((p) => (p.includes(i) ? p.filter((x) => x !== i) : [...p, i]));
+  };
+  const ready = q.type === "yesno" ? pick.every((v) => v !== null) : pick.length > 0;
+  return (
+    <div className="h3d-card">
+      <div className="h3d-card-top"><span className="h3d-sect">Quick check</span><span className="h3d-prog">{title}</span></div>
+      {q.case && <p className="h3d-case">{q.case}</p>}
+      <h4>{q.stem}</h4>
+      {q.type === "yesno" ? (
+        <div className="h3d-yn">
+          {q.statements.map((s, i) => (
+            <div key={i} className={`h3d-yn-row ${done ? (pick[i] === s.a ? "is-right" : "is-wrong") : ""}`}>
+              <span>{s.s}</span>
+              {[true, false].map((v) => (
+                <button key={String(v)} disabled={done} aria-pressed={pick[i] === v}
+                  onClick={() => setPick((p) => p.map((x, j) => (j === i ? v : x)))}>{v ? "Yes" : "No"}</button>
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="h3d-opts">
+          {q.options.map((o, i) => {
+            const cls = !done ? (pick.includes(i) ? "is-picked" : "") : q.answer.includes(i) ? "is-right" : pick.includes(i) ? "is-wrong" : "";
+            return <button key={i} className={cls} disabled={done} onClick={() => choose(i)} autoFocus={i === 0}>{o}</button>;
+          })}
+        </div>
+      )}
+      {!done && q.type !== "single" && (
+        <div className="h3d-actions"><button className="h3d-btn" disabled={!ready} onClick={() => check(pick)}>Check</button></div>
+      )}
+      {done && (
+        <>
+          <p className={`h3d-verdict ${ok ? "is-right" : "is-wrong"}`}>{ok ? "Correct. +1 point." : "Not quite. This lesson comes back in a few cards."}</p>
+          <Md text={q.explain} className="h3d-short" />
+          <div className="h3d-actions"><button className="h3d-btn" onClick={onDone} autoFocus>Next shot</button></div>
+        </>
+      )}
     </div>
   );
 }
