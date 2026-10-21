@@ -1,0 +1,1912 @@
+{
+  "id": "sc-100",
+  "code": "SC-100",
+  "title": "Microsoft Cybersecurity Architect",
+  "modules": [
+    {
+      "title": "Design solutions that align with security best practices",
+      "intro": "An architect decides what to build before anyone configures it. This module covers resilience against ransomware, Microsoft's reference architectures and benchmark, Zero Trust adoption, and the Cloud Adoption and Well-Architected frameworks (about 20 to 25 percent of the exam). Meet **Harlow Lines**, an electricity distributor with 2,000 staff, control rooms and substations full of operational technology, on premises Active Directory, Microsoft 365, Azure and some AWS. Ana, its new cybersecurity architect, must design a security programme the board can fund.",
+      "lessons": [
+        {
+          "title": "A resiliency strategy built on critical assets",
+          "steps": [
+            [
+              "Start with the business",
+              "**Business resiliency** means the business keeps running, or recovers fast, even when an attack succeeds. Ana starts by mapping key business processes, such as fault restoration and billing, to the systems behind them: apps, databases, identity systems, domain controllers and backups."
+            ],
+            [
+              "Rank threats and set targets",
+              "She ranks threats by their impact on those assets: ransomware, data theft and extortion, insider misuse and outages. For each critical process she agrees a **recovery time objective (RTO)**, how long it can be down, and a **recovery point objective (RPO)**, how much data can be lost."
+            ],
+            [
+              "Assume breach",
+              "Following the Zero Trust idea of **assume breach**, the plan covers detection, containment and recovery, not just prevention. Identity systems such as Microsoft Entra ID and Active Directory are always critical, because whoever controls identity controls everything else."
+            ],
+            [
+              "Tools that help prioritise",
+              "**Microsoft Security Exposure Management** offers **critical asset management**, with built in and custom classifications such as domain controllers and sensitive databases, so attack paths and alerts touching them stand out. Defender for Cloud attack path analysis and Secure Score show which fixes cut the most risk."
+            ]
+          ],
+          "check": {
+            "q": "Harlow Lines' board asks Ana where its resilience strategy should start. What is the right first step?",
+            "options": [
+              "Buy the newest endpoint protection product",
+              "Patch every server to the latest version",
+              "Map critical business processes to the assets behind them",
+              "Move all data to a single cloud region"
+            ],
+            "answer": 2,
+            "why": "Resilience starts from what the business cannot lose, so the first step is identifying critical processes and their supporting assets, then setting RTO and RPO. Buying tools or patching everything without priorities skips that, and a single region increases risk."
+          },
+          "key": "A resiliency strategy starts with critical business assets, ranks threats by impact, sets RTO and RPO, and plans for breach."
+        },
+        {
+          "title": "BCDR and secure backup across hybrid and multicloud",
+          "steps": [
+            [
+              "Two halves of BCDR",
+              "**Business continuity and disaster recovery (BCDR)** has two halves. **Azure Backup** keeps data safe and restorable, covering Azure VMs, databases in VMs, files, blobs and disks, plus on premises servers through the MARS agent or Azure Backup Server. **Azure Site Recovery** keeps workloads running by replicating VMs and servers to another region or into Azure, with recovery plans and test failovers."
+            ],
+            [
+              "Matching tools to targets",
+              "Backup alone means a longer RTO. Replication gives a short RTO but also copies corruption or encryption, so point in time backups are still needed. Ana pairs Site Recovery for the outage management system with daily backups."
+            ],
+            [
+              "Backups attackers cannot destroy",
+              "**Soft delete** keeps deleted backup data recoverable, **immutable vaults** block deleting recovery points or cutting retention (and once locked, cannot be undone), and **multi user authorisation** requires permission on a separate **Resource Guard**, owned by the security team, for critical operations."
+            ],
+            [
+              "Isolation and testing",
+              "Backups need separate credentials and subscriptions, ideally a Resource Guard in a different tenant, protected domain controller backups and recovery documents. Restores must be tested regularly, because an untested backup is a hope, not a plan."
+            ]
+          ],
+          "check": {
+            "q": "Harlow Lines replicates its outage system to a second region with Site Recovery. Why does Ana still require point in time backups?",
+            "options": [
+              "Replication also copies corruption or ransomware encryption",
+              "Site Recovery cannot replicate VMs",
+              "Backups are cheaper than nothing",
+              "Replication only works on premises"
+            ],
+            "answer": 0,
+            "why": "Replication mirrors changes, including malicious ones, so clean point in time backups are needed for recovery. Site Recovery does replicate VMs, works with Azure, and cost is not the main reason."
+          },
+          "key": "Combine Azure Backup for data and Site Recovery for running workloads, and protect backups with soft delete, immutability, MUA and regular restore tests."
+        },
+        {
+          "title": "Ransomware protection in priority order",
+          "steps": [
+            [
+              "Human operated ransomware",
+              "**Human operated ransomware** is a hands on attack: criminals get in, steal credentials, move sideways, escalate privilege, often steal data for extortion, then encrypt critical systems. It is far more dangerous than automated commodity malware."
+            ],
+            [
+              "Step 1: prepare recovery",
+              "Microsoft orders the work by priority. First, **prepare a recovery plan** that removes the attacker's leverage: back up critical systems including Active Directory, protect backups with immutability or offline copies, protect recovery documents and test recovery so it meets the agreed times."
+            ],
+            [
+              "Step 2: limit the damage",
+              "Second, **limit the scope of damage** by protecting privileged roles so one compromise cannot reach everything: secure admin workstations, unique local admin passwords, controls against privilege escalation and Conditional Access for admin sessions."
+            ],
+            [
+              "Step 3: make entry hard",
+              "Third, **make it hard to get in**: patch internet facing systems, require MFA, protect email, enable attack surface reduction rules (audit first, then block) and replace exposed admin access with Bastion or application proxies. This step never ends, so it must not delay steps one and two."
+            ]
+          ],
+          "check": {
+            "q": "Ana's team wants to spend the first six months only on hardening email and endpoints against ransomware. What does Microsoft's guidance say?",
+            "options": [
+              "That is correct, prevention always comes first",
+              "Ransomware cannot be prevented, so do nothing",
+              "Only backups matter",
+              "Recovery readiness and protecting privileged access come first, and hardening must not delay them"
+            ],
+            "answer": 3,
+            "why": "Microsoft prioritises preparing recovery and limiting damage through privileged access, because entry hardening is never finished. Prevention matters, but leading with it leaves the organisation unable to recover."
+          },
+          "key": "Ransomware defence goes recovery plan first, then protecting privileged access, then making entry hard, without letting step three delay the others."
+        },
+        {
+          "title": "Evaluating security update solutions",
+          "steps": [
+            [
+              "Every asset needs a path",
+              "A good update design covers every kind of asset and gives one view of compliance. Ana lists Harlow's Windows and Linux servers in Azure, on premises and in AWS, staff laptops and phones, and the OT systems that cannot be patched on a normal schedule."
+            ],
+            [
+              "Servers",
+              "**Azure Update Manager** patches Windows and Linux servers in Azure and, through **Azure Arc**, on premises and in other clouds. It assesses machines every 24 hours, installs in customer defined maintenance windows, and supports **hotpatching** some Windows Server VMs without reboots."
+            ],
+            [
+              "Clients",
+              "**Windows Autopatch** automates Windows quality and feature updates, drivers and Microsoft 365 Apps, Edge and Teams updates for client devices in rings, managed through **Intune**, which also offers its own update policies."
+            ],
+            [
+              "Prioritising",
+              "**Defender Vulnerability Management** and Defender for Cloud rank missing updates by exposure and exploitability. Internet facing VPNs and appliances are patched fastest, because ransomware crews exploit them. Systems that cannot be patched are isolated or replaced."
+            ]
+          ],
+          "check": {
+            "q": "Harlow Lines needs one service to schedule patching for Windows and Linux servers in Azure, on premises and in AWS. What should Ana recommend?",
+            "options": [
+              "Windows Autopatch",
+              "Azure Update Manager with Azure Arc for non Azure servers",
+              "Intune update rings for servers",
+              "Manual patching per site"
+            ],
+            "answer": 1,
+            "why": "Update Manager handles servers in Azure and, through Arc, elsewhere, with maintenance windows and assessment. Autopatch and Intune rings target client devices, and manual patching gives no central view."
+          },
+          "key": "Use Azure Update Manager (with Arc) for servers, Windows Autopatch and Intune for clients, and Defender Vulnerability Management to prioritise."
+        },
+        {
+          "title": "The Microsoft Cybersecurity Reference Architectures",
+          "steps": [
+            [
+              "What MCRA is",
+              "The **Microsoft Cybersecurity Reference Architectures (MCRA)** are a set of diagrams showing end to end security based on Zero Trust across legacy IT, multicloud, IoT, operational technology and AI. They are part of Microsoft's Security Adoption Framework."
+            ],
+            [
+              "What it contains",
+              "MCRA shows Microsoft's security capabilities across identity, endpoints, apps, data, infrastructure and security operations, plus views for Zero Trust user access, the SOC, OT and multicloud. **Attack chain coverage** maps products such as Defender for Office 365, Defender for Endpoint and Defender for Identity to attack stages, so gaps are visible."
+            ],
+            [
+              "How architects use it",
+              "Ana uses MCRA as a starting template for Harlow's target architecture, to compare current tools with recommended capabilities, to find integration points with existing third party tools, and to explain capabilities to executives."
+            ],
+            [
+              "MCRA versus MCSB",
+              "MCRA describes what capabilities fit where. The **Microsoft cloud security benchmark** describes what controls to configure. Architects use both: MCRA for the shape of the solution, MCSB for the settings."
+            ]
+          ],
+          "check": {
+            "q": "Ana wants to show executives which attack stages Harlow's current products cover and where gaps remain. Which resource fits best?",
+            "options": [
+              "A single Azure Policy definition",
+              "The MCRA attack chain coverage view",
+              "A KQL query",
+              "The Azure pricing calculator"
+            ],
+            "answer": 1,
+            "why": "MCRA's attack chain view maps capabilities to attack stages, which highlights gaps in a way executives can follow. Policies and queries are implementation details, and pricing does not show coverage."
+          },
+          "key": "MCRA shows which Microsoft capabilities fit where in a Zero Trust architecture, including attack chain coverage, while MCSB says what to configure."
+        },
+        {
+          "title": "The Microsoft cloud security benchmark",
+          "steps": [
+            [
+              "Concrete controls",
+              "The **Microsoft cloud security benchmark (MCSB)** gives concrete security controls with implementation guidance for Azure, AWS and GCP, mapped to frameworks such as CIS, NIST SP 800-53 and PCI DSS. Control IDs combine a domain and number, such as NS-1 for network security."
+            ],
+            [
+              "Control domains",
+              "Domains include network security (NS), identity management (IM), privileged access (PA), data protection (DP), asset management (AM), logging and threat detection (LT), incident response (IR), posture and vulnerability management (PV), endpoint security (ES), backup and recovery (BR) and DevOps security (DS). Version 2, in preview, adds an AI domain."
+            ],
+            [
+              "How it is applied",
+              "Defender for Cloud enables MCSB by default for Azure, AWS and GCP, and its recommendations feed secure score and the compliance dashboard. Microsoft also publishes per service **security baselines** that apply MCSB to individual services such as Key Vault."
+            ],
+            [
+              "What mappings mean",
+              "A mapping shows a feature helps meet a requirement, not that you are fully compliant. Ana uses MCSB as the baseline for Harlow's landing zones and every new workload."
+            ]
+          ],
+          "check": {
+            "q": "Ana needs a cloud agnostic set of security controls with Azure, AWS and GCP guidance to baseline Harlow's landing zones. What should she use?",
+            "options": [
+              "Windows Autopatch",
+              "The MCRA diagrams only",
+              "A Sentinel workbook",
+              "The Microsoft cloud security benchmark"
+            ],
+            "answer": 3,
+            "why": "MCSB provides concrete controls with multicloud guidance and framework mappings. MCRA shows capabilities rather than settings, and workbooks and Autopatch serve other purposes."
+          },
+          "key": "MCSB provides concrete, multicloud security controls grouped by domain, applied by default in Defender for Cloud and through per service baselines."
+        },
+        {
+          "title": "Insider, external and supply chain attacks",
+          "steps": [
+            [
+              "External attacks",
+              "**External attacks** come through phishing, credential theft and exposed services. Controls include phishing resistant MFA and Conditional Access, Defender for Office 365 and Defender for Endpoint, Defender XDR for correlated detection, and Exposure Management to close attack paths."
+            ],
+            [
+              "Insider risk",
+              "**Insider risk** comes from trusted people misusing access, on purpose or by accident, such as a departing engineer copying network diagrams. Controls include **Purview Insider Risk Management** (pseudonymised by default), communication compliance, data loss prevention, sensitivity labels, least privilege, PIM, access reviews and separation of duties."
+            ],
+            [
+              "Supply chain attacks",
+              "**Supply chain attacks** compromise a trusted supplier: a software update, an open source package, a build pipeline or a service provider's privileged access. Controls include a **software bill of materials (SBOM)**, dependency scanning, protected pipelines with workload identity federation instead of secrets, and signed artefacts."
+            ],
+            [
+              "Partner access",
+              "Third party access is limited and monitored: granular delegated admin for Microsoft 365 partners, B2B guests with Conditional Access and access reviews. Harlow's SCADA vendor gets time limited, monitored access through Private Access rather than a standing VPN account."
+            ]
+          ],
+          "check": {
+            "q": "Harlow Lines worries that a compromised open source library in its billing app could reach production. Which control most directly addresses this?",
+            "options": [
+              "Dependency scanning with an SBOM in the build pipeline",
+              "Insider Risk Management",
+              "A longer password policy",
+              "Azure Site Recovery"
+            ],
+            "answer": 0,
+            "why": "Inventorying and scanning dependencies in the pipeline catches vulnerable or malicious packages before release. Insider risk targets staff behaviour, and passwords or replication do not address supply chain code."
+          },
+          "key": "Design for external attacks with identity and XDR, insider risk with Purview and least privilege, and supply chain risk with SBOMs, secure pipelines and controlled partner access."
+        },
+        {
+          "title": "AI security in the MCSB",
+          "steps": [
+            [
+              "Three pillars",
+              "The MCSB **AI domain** groups controls into **AI platform security** (protect models, training data and infrastructure), **AI application security** (protect prompts, orchestration and plugins from injection and leakage) and **monitor and respond**."
+            ],
+            [
+              "Controls AI-1 to AI-4",
+              "**AI-1** use only approved models that passed verification. **AI-2** apply layered content filtering on input, intermediate processing and output, such as Azure AI Content Safety and Prompt Shields. **AI-3** use safety system instructions that resist jailbreaks. **AI-4** apply least privilege to agent tools and plugins."
+            ],
+            [
+              "Controls AI-5 to AI-7",
+              "**AI-5** keep a human in the loop for critical actions. **AI-6** monitor for jailbreaks, prompt injection, anomalies and data exfiltration, for example with Defender for Cloud threat protection for AI services. **AI-7** run continuous AI red teaming with tools such as PyRIT."
+            ],
+            [
+              "At Harlow",
+              "Harlow is building an outage assistant that can draft customer notices and create work orders. Ana requires an approved model, content filters, an agent identity with least privilege, human approval before any work order is issued, and Defender monitoring."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's outage assistant can create field work orders. Which MCSB AI control requires a person to approve those actions?",
+            "options": [
+              "AI-7 Perform continuous red teaming",
+              "AI-1 Ensure use of approved models",
+              "AI-5 Ensure human in the loop",
+              "AI-2 Multi layered content filtering"
+            ],
+            "answer": 2,
+            "why": "AI-5 requires human approval for critical actions. Approved models, red teaming and content filtering are all important controls, but none of them puts a person in front of the action."
+          },
+          "key": "The MCSB AI domain covers approved models, layered filtering, safety instructions, least privilege for agents, human approval, monitoring and red teaming."
+        },
+        {
+          "title": "The Zero Trust adoption framework",
+          "steps": [
+            [
+              "Principles",
+              "**Zero Trust** rests on three principles: **verify explicitly** using all signals, **use least privilege access**, and **assume breach** by segmenting, encrypting and detecting."
+            ],
+            [
+              "Business scenarios",
+              "The **Zero Trust adoption framework** turns those principles into business led plans. Its scenarios are: rapidly modernise your security posture (usually the start), secure remote and hybrid work, identify and protect sensitive business data, prevent or reduce damage from a breach, and meet regulatory and compliance requirements."
+            ],
+            [
+              "The adoption lifecycle",
+              "Each scenario moves through **define strategy** (the business case), **plan**, **ready**, **adopt** in increments, **govern** by tracking progress, and **manage** by monitoring and maturing. Technology pillars include identities, endpoints, data, apps, infrastructure, network and security operations."
+            ],
+            [
+              "RaMP",
+              "The **Rapid Modernization Plan (RaMP)** is a prioritised checklist of quick wins, such as explicitly validating trust for all access requests, ransomware recovery readiness and data protection. Ana uses RaMP to show the board early results while the longer scenarios progress."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's board wants visible Zero Trust progress within a quarter. Which part of Microsoft's guidance gives a prioritised checklist of quick wins?",
+            "options": [
+              "A Sentinel hunting query",
+              "The MCRA OT diagram",
+              "The Well-Architected cost pillar",
+              "The Rapid Modernization Plan (RaMP)"
+            ],
+            "answer": 3,
+            "why": "RaMP is designed as a prioritised, checklist style plan for fast results. The other options are useful elsewhere but do not provide a Zero Trust quick win plan."
+          },
+          "key": "The Zero Trust adoption framework uses business scenarios and a strategy to manage lifecycle, with RaMP providing prioritised quick wins."
+        },
+        {
+          "title": "A strategy for secure AI adoption",
+          "steps": [
+            [
+              "Governance first",
+              "Secure AI adoption starts with **governance**: an AI centre of excellence sets responsible AI policies and approved tools, and staff get sanctioned AI tools and training so they do not turn to unapproved shadow AI."
+            ],
+            [
+              "Discover risks",
+              "The Cloud Adoption Framework's AI guidance has three steps. **Discover** AI security risks by extending threat modelling with MITRE ATLAS and OWASP generative AI risks, assessing data risk, testing for prompt injection and data leakage, and red teaming."
+            ],
+            [
+              "Protect and detect",
+              "**Protect** AI resources and data: inventory AI assets with Defender for Cloud AI security posture management (part of Defender CSPM), use managed identities and private networking, classify data with Purview and prevent leakage with DLP. **Detect** threats with AI posture recommendations, Defender for AI Services alerts and AI specific incident response plans."
+            ],
+            [
+              "Finding shadow AI",
+              "Defender for Cloud Apps catalogues generative AI apps in use, Purview DSPM for AI shows sensitive data in prompts, and agents get identities through Entra Agent ID. Ana finds staff using three unapproved chatbots and replaces them with a sanctioned Copilot rollout."
+            ]
+          ],
+          "check": {
+            "q": "Ana wants an inventory of every AI workload across Harlow's Azure and AWS accounts, with misconfigurations and attack paths. Which capability fits?",
+            "options": [
+              "Azure Site Recovery",
+              "Windows Autopatch",
+              "AI security posture management in Defender CSPM",
+              "A storage lifecycle policy"
+            ],
+            "answer": 2,
+            "why": "AI security posture management discovers AI workloads across clouds and shows their risks and attack paths. The other services do not inventory or assess AI workloads."
+          },
+          "key": "Secure AI adoption starts with governance, then discovers, protects and detects AI risks using posture management, identity, Purview and Defender for AI."
+        },
+        {
+          "title": "CAF and WAF security and governance strategy",
+          "steps": [
+            [
+              "Cloud Adoption Framework",
+              "The **Cloud Adoption Framework (CAF)** guides the whole cloud journey through strategy, plan, ready, adopt, govern, secure and manage. Its **secure** methodology applies from the start, covering security posture modernisation, incident preparedness, the CIA triad and sustaining posture, aligned with Zero Trust."
+            ],
+            [
+              "CAF govern",
+              "CAF's **govern** methodology builds a governance team, assesses cloud risks, documents policies, enforces them, preferably automatically with Azure Policy, management groups and RBAC, and monitors compliance."
+            ],
+            [
+              "Well-Architected Framework",
+              "The **Azure Well-Architected Framework (WAF)** is the workload level counterpart, with five pillars: reliability, security, cost optimisation, operational excellence and performance efficiency. Architects balance trade offs between them, such as extra inspection adding cost and delay."
+            ],
+            [
+              "The security checklist",
+              "WAF's security checklist runs from SE:01 (a security baseline) through secure development, data classification, segmentation, identity, network control, encryption, hardening, secrets, monitoring and testing, to SE:12 (incident response). The **Well-Architected Review** assesses a workload against it, and Azure Advisor gives recommendations."
+            ]
+          ],
+          "check": {
+            "q": "Ana must review one new workload, the customer outage portal, against security best practice. Which framework is designed for that level?",
+            "options": [
+              "The Azure Well-Architected Framework security pillar",
+              "The Cloud Adoption Framework strategy methodology",
+              "The Zero Trust business scenarios",
+              "RaMP"
+            ],
+            "answer": 0,
+            "why": "WAF is the workload level framework, with a security checklist and review tool. CAF and Zero Trust scenarios work at estate and organisation level, and RaMP is a quick win plan."
+          },
+          "key": "CAF guides estate wide adoption, security and governance, while WAF's security pillar and checklist assess individual workloads."
+        },
+        {
+          "title": "Recommending governance solutions and landing zones",
+          "steps": [
+            [
+              "Turning frameworks into solutions",
+              "Governance in practice uses **Azure Policy** (deny, audit, modify, deployIfNotExists and initiatives assigned at management group scope), **management groups** for inheritance, **Azure RBAC** with PIM, resource locks, **Defender for Cloud** posture, Azure Advisor, Azure Resource Graph for inventory and cost management with tagging."
+            ],
+            [
+              "What a landing zone is",
+              "An **Azure landing zone** is CAF's ready output: a secure, scalable foundation built across design areas such as identity, resource organisation, networking, security, management and governance."
+            ],
+            [
+              "Management group hierarchy",
+              "The reference hierarchy has an intermediate root for broad policies, a **platform** group with identity, management and connectivity subscriptions, a **landing zones** group with **corp** (private) and **online** (internet facing) children, plus **sandbox** and **decommissioned**. Keep it flat, and use subscriptions rather than management groups for environments."
+            ],
+            [
+              "Platform and application landing zones",
+              "A central platform team runs shared services such as domain controllers, Sentinel and the hub firewall. Workload teams own application landing zones. **Subscription vending** creates pre governed subscriptions, and policy enforces security by default. Harlow's new outage portal lands in an online landing zone with policies inherited automatically."
+            ]
+          ],
+          "check": {
+            "q": "Harlow wants every new subscription to inherit security policies automatically. Where should Ana assign the core policy initiatives?",
+            "options": [
+              "On each resource after deployment",
+              "At management group scope in the landing zone hierarchy",
+              "Only in the sandbox group",
+              "In each developer's personal subscription"
+            ],
+            "answer": 1,
+            "why": "Assigning initiatives at management group scope means every subscription placed beneath inherits them. Per resource assignment misses new resources, and sandbox and personal scopes do not cover production."
+          },
+          "key": "Govern with Azure Policy, RBAC and Defender for Cloud assigned through a landing zone management group hierarchy, so new subscriptions inherit controls."
+        },
+        {
+          "title": "DevSecOps aligned with CAF",
+          "steps": [
+            [
+              "Security owned by developers too",
+              "**DevSecOps** makes security continuous and shared by developers, often called shift left, while still assuming breach and measuring time to detect and recover. It follows Microsoft's **Security Development Lifecycle**."
+            ],
+            [
+              "Plan, develop, build",
+              "Plan with security requirements and **threat modelling**. Develop with secure coding and pre commit secret checks. Build with **static analysis (SAST)**, secret scanning with push protection, dependency scanning with an SBOM, infrastructure as code scanning and container image scanning, for example through GitHub Advanced Security and the Microsoft Security DevOps extension."
+            ],
+            [
+              "Deploy and operate",
+              "Deploy with protected branches, approvals, least privilege service connections and **workload identity federation** instead of stored secrets, with secrets in Key Vault and policy gates. Operate with **dynamic testing (DAST)**, penetration testing, Defender for Cloud and Sentinel."
+            ],
+            [
+              "Defender for Cloud DevOps security",
+              "**DevOps security** in Defender for Cloud connects Azure DevOps, GitHub and GitLab. Foundational CSPM shows code, secret, IaC and dependency findings. Defender CSPM adds pull request annotations and **code to cloud** mapping, linking a running resource to the code that deployed it."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's pipelines store cloud credentials as long lived secrets. What should Ana require instead?",
+            "options": [
+              "Secrets stored in the repository README",
+              "Longer secrets rotated yearly",
+              "Workload identity federation for pipeline sign in",
+              "A shared admin account for all pipelines"
+            ],
+            "answer": 2,
+            "why": "Workload identity federation lets pipelines exchange their own tokens for Entra tokens, so no secret is stored. Longer or shared secrets still exist to leak, and storing them in a README exposes them."
+          },
+          "key": "DevSecOps builds threat modelling, SAST, secret and dependency scanning, IaC scanning and federated pipeline identity into every stage, visible in Defender for Cloud DevOps security."
+        }
+      ]
+    },
+    {
+      "title": "Design security operations, identity and compliance",
+      "intro": "This module covers how Harlow Lines will detect and respond to attacks, how people, partners, workloads and agents get access, how privileged access is protected, and how regulations become controls (about 25 to 30 percent of the exam). As a regulated electricity distributor with critical infrastructure duties, Harlow needs designs Ana can defend to auditors as well as attackers.",
+      "lessons": [
+        {
+          "title": "Detection and response with XDR and SIEM",
+          "steps": [
+            [
+              "What XDR is",
+              "**XDR (extended detection and response)** uses deep telemetry from Microsoft's own protection products, correlated automatically into incidents, with built in response actions. **Microsoft Defender XDR** covers endpoints, email, identity, cloud apps and Defender for Cloud alerts."
+            ],
+            [
+              "What a SIEM adds",
+              "A **SIEM** ingests logs from almost anything (firewalls, Linux, AWS, SaaS, line of business apps), runs your own analytics rules, keeps data for long periods and supports compliance reporting. **Microsoft Sentinel** is the cloud native SIEM, with a data lake tier for cheap long term storage."
+            ],
+            [
+              "The recommended pattern",
+              "Turn on Defender XDR for Microsoft workloads, connect it to Sentinel, and onboard Sentinel to the **Defender portal** so one incident queue spans both. Use Sentinel for third party sources and detections that need data XDR does not have."
+            ],
+            [
+              "Cost design",
+              "Alerts and incidents from Microsoft Defender products are free to ingest into Sentinel, while raw advanced hunting tables are billed. Ana sends Harlow's OT sensor alerts and firewall logs to Sentinel, and keeps Defender endpoint raw data in XDR unless hunts need it longer."
+            ]
+          ],
+          "check": {
+            "q": "Harlow Lines needs detection across Microsoft 365, its OT firewall logs and AWS CloudTrail in one incident queue. What should Ana design?",
+            "options": [
+              "Defender XDR connected to Sentinel, both in the Defender portal",
+              "Defender XDR alone",
+              "Sentinel alone with no XDR",
+              "Separate consoles for each source"
+            ],
+            "answer": 0,
+            "why": "XDR gives deep Microsoft coverage and Sentinel ingests third party and AWS data, with the Defender portal unifying incidents. XDR alone cannot ingest the firewall and AWS logs, and Sentinel alone loses XDR's native depth and response."
+          },
+          "key": "Pair Defender XDR for deep Microsoft coverage with Sentinel for everything else, unified in the Defender portal."
+        },
+        {
+          "title": "Centralised logging and Purview Audit",
+          "steps": [
+            [
+              "Questions a logging design answers",
+              "A logging design decides what to collect, where to store it, how long to keep it and who can read it. Ana starts with Harlow's regulatory retention duties and the sources investigators need most: sign ins, admin actions, endpoint and OT alerts."
+            ],
+            [
+              "Few workspaces",
+              "Microsoft recommends as few **Log Analytics workspaces** as possible. Extra workspaces are justified by data residency, separate billing, different retention or strict separation, and resource context and table level access control should be tried before splitting."
+            ],
+            [
+              "Purview Audit",
+              "**Microsoft Purview Audit** is the Microsoft 365 unified audit log. **Audit (Standard)** is on by default and keeps 180 days. **Audit (Premium)** keeps key records for a year, adds custom retention policies and forensic insights. Ten year retention needs Premium plus an add on, and is not retroactive."
+            ],
+            [
+              "Bringing it together",
+              "For correlation and long retention, Microsoft 365 activity can be streamed into Sentinel, and Entra sign in and audit logs sent there through diagnostic settings. Harlow keeps sign in logs for seven years using Sentinel's data lake tier."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's lawyers want Microsoft 365 audit records kept for ten years. What is required?",
+            "options": [
+              "Nothing, records are kept forever by default",
+              "Audit (Standard) only",
+              "A second Log Analytics workspace",
+              "Audit (Premium) plus the ten year retention add on, from the date the policy is set"
+            ],
+            "answer": 3,
+            "why": "Ten year retention needs Audit (Premium) and the add on licence, and only applies going forward. Standard keeps 180 days, and a workspace alone does not change Purview retention."
+          },
+          "key": "Keep workspaces few, use Purview Audit Standard or Premium for Microsoft 365 records, and stream key logs to Sentinel for correlation and long retention."
+        },
+        {
+          "title": "Monitoring hybrid and multicloud environments",
+          "steps": [
+            [
+              "Two layers",
+              "Hybrid and multicloud monitoring has two layers: **posture and protection**, and **log collection**. Both should end up in the same tools so the SOC sees one picture."
+            ],
+            [
+              "Posture and protection",
+              "Defender for Cloud connects AWS accounts and GCP projects through native connectors. Non Azure servers are projected into Azure with **Azure Arc**, so Defender for Servers and Azure Policy apply. Defender for Containers covers EKS and GKE clusters."
+            ],
+            [
+              "Log collection",
+              "Windows and Linux machines send logs with the **Azure Monitor Agent** and data collection rules. Network appliances send Syslog or CEF to a Linux forwarder. AWS logs such as CloudTrail and VPC flow logs come through the S3 connector, GCP through Pub/Sub connectors, and SaaS through Defender for Cloud Apps and vendor connectors."
+            ],
+            [
+              "Many tenants",
+              "Service providers and groups with several tenants use **Azure Lighthouse** and Sentinel's multi tenant management. Harlow has a separate tenant for its retail energy subsidiary, which Ana's SOC monitors through multi tenant management in the Defender portal."
+            ]
+          ],
+          "check": {
+            "q": "Harlow wants its on premises and AWS EC2 servers covered by Defender for Servers and Azure Policy. What should Ana include?",
+            "options": [
+              "A second Sentinel workspace",
+              "Azure Arc for the non Azure servers",
+              "Azure Site Recovery",
+              "Windows Autopatch"
+            ],
+            "answer": 1,
+            "why": "Arc makes non Azure servers Azure resources so Defender for Servers and Policy can apply. A second workspace, Site Recovery and Autopatch do not extend those controls to the servers."
+          },
+          "key": "Monitor hybrid and multicloud with Defender for Cloud connectors and Arc for posture, and AMA, forwarders and cloud connectors for logs."
+        },
+        {
+          "title": "Designing SOAR with Sentinel and Defender XDR",
+          "steps": [
+            [
+              "Why automate",
+              "**SOAR** (security orchestration, automation and response) reduces analyst effort and time to contain. Harlow's SOC is small, so automation is part of the design, not an afterthought."
+            ],
+            [
+              "Sentinel automation",
+              "**Automation rules** run in order when incidents or alerts are created or updated. Without code they assign owners, change status or severity, add tags and task lists, close noise and run playbooks. **Playbooks** are Logic Apps that call APIs: open a ticket, block an IP, post to Teams or disable a user."
+            ],
+            [
+              "Permissions",
+              "Sentinel's service account needs Microsoft Sentinel Automation Contributor on a playbook's resource group before automation rules can run it, and analysts need Playbook Operator to run playbooks by hand."
+            ],
+            [
+              "Defender XDR automation",
+              "**Automated investigation and response** investigates alerts and proposes or takes remediation, depending on automation level. **Automatic attack disruption** contains in progress attacks such as ransomware with high confidence. Ana's rule of thumb: built in XDR actions first, automation rules for routing and hygiene, playbooks only for cross system orchestration."
+            ]
+          ],
+          "check": {
+            "q": "Ana wants every confirmed phishing incident to open a ticket in Harlow's IT service system and notify the duty manager in Teams. What should handle that?",
+            "options": [
+              "A workbook",
+              "A Sentinel playbook triggered by an automation rule",
+              "A hunting query",
+              "An Azure Policy assignment"
+            ],
+            "answer": 1,
+            "why": "Cross system actions such as opening tickets and posting to Teams are what playbooks do, triggered by automation rules. Workbooks display data, hunting queries search it, and policies govern resources."
+          },
+          "key": "Use XDR's built in response first, Sentinel automation rules for routing and hygiene, and Logic App playbooks for cross system orchestration."
+        },
+        {
+          "title": "Incident response, hunting and incident management",
+          "steps": [
+            [
+              "The incident response lifecycle",
+              "Incident response follows **preparation** (playbooks, roles, contacts, emergency procedures, out of band communication), **detection and analysis**, **containment, eradication and recovery**, and **post incident activity**, where lessons feed new detections and controls."
+            ],
+            [
+              "Incident management in the tools",
+              "The Defender portal gives one queue for XDR and Sentinel incidents. Analysts assign owners, set status and severity, use tasks for standard steps and **classify** incidents when closing so tuning data is captured. Playbooks connect to IT service management, and Security Copilot summarises incidents and drafts reports."
+            ],
+            [
+              "Major incidents",
+              "For major incidents Microsoft stresses separate roles (incident lead, investigators, communications), protecting privileged accounts first, and assuming the attacker can read normal email, so Harlow keeps an out of band channel ready."
+            ],
+            [
+              "Threat hunting",
+              "**Threat hunting** assumes something slipped past detections. Hunters start from a **hypothesis**, query advanced hunting across XDR and Sentinel tables, investigate and bookmark findings, then turn reliable logic into detection rules mapped to MITRE ATT&CK. Finding nothing but adding a detection is still a success."
+            ]
+          ],
+          "check": {
+            "q": "During a major ransomware incident at Harlow, why does Ana insist on an out of band communication channel?",
+            "options": [
+              "Auditors require paper notes",
+              "Email is too slow for incidents",
+              "Teams cannot be used by SOC staff",
+              "The attacker may be able to read normal email"
+            ],
+            "answer": 3,
+            "why": "Microsoft's guidance assumes the attacker may have access to normal channels, so responders coordinate elsewhere. Speed, Teams licensing and paper notes are not the reason."
+          },
+          "key": "Design incident response across preparation to lessons learned, manage incidents in one queue with classification, and run hypothesis driven hunts that end in detections."
+        },
+        {
+          "title": "Evaluating detection coverage with MITRE ATT&CK",
+          "steps": [
+            [
+              "Tactics and techniques",
+              "**MITRE ATT&CK** is a public catalogue of real attacker behaviour. **Tactics** are goals, such as initial access or lateral movement. **Techniques** are methods, such as credential dumping."
+            ],
+            [
+              "Three matrices",
+              "The **Enterprise** matrix covers Windows, macOS, Linux, cloud, network devices and containers. **Mobile** covers Android and iOS. **ICS** covers industrial control systems, with tactics such as inhibit response function and impair process control. Harlow needs all three."
+            ],
+            [
+              "Measuring coverage",
+              "Sentinel's MITRE ATT&CK page shows **active** coverage from enabled rules and **simulated** coverage from templates not yet enabled. Rules, hunting queries and bookmarks are tagged with techniques. Product coverage maps too: Defender for Endpoint for Enterprise, mobile threat defence for Mobile, and Defender for IoT for ICS."
+            ],
+            [
+              "Prioritising gaps",
+              "Gaps are prioritised by threat intelligence relevant to the sector, not by trying to fill every cell. Ana focuses first on ICS techniques seen in attacks on power utilities, then on enterprise techniques used by ransomware groups."
+            ]
+          ],
+          "check": {
+            "q": "Ana wants to check detection coverage for Harlow's substation control systems. Which MITRE ATT&CK matrix applies?",
+            "options": [
+              "ICS",
+              "Mobile",
+              "Enterprise only",
+              "None, OT is not covered"
+            ],
+            "answer": 0,
+            "why": "The ICS matrix covers industrial control systems and operational technology. Mobile covers phones and tablets, and Enterprise covers IT systems but not ICS specific tactics."
+          },
+          "key": "Evaluate coverage with ATT&CK's Enterprise, Mobile and ICS matrices, using Sentinel's active and simulated views, and prioritise gaps by sector threat intelligence."
+        },
+        {
+          "title": "Designing agent identities",
+          "steps": [
+            [
+              "Agents need governed identities",
+              "AI agents act on data and systems, so they need identities governed like users and apps. **Microsoft Entra Agent ID** provides them."
+            ],
+            [
+              "Building blocks",
+              "An **agent identity blueprint** is a template for a kind of agent. It holds the credentials and gets tokens for its agents, so admins can disable or apply policy to every agent of that kind at once. An **agent identity** is a service principal created from a blueprint, with no credentials of its own. An optional **agent user account** serves systems that need a user. A **sponsor** is the accountable person or group."
+            ],
+            [
+              "Conditional Access for agents",
+              "For app only calls, policies target agent identities or the **blueprint**, which also covers future agents. For on behalf of calls, user policies apply. Agent users are not covered by all users policies and must be targeted separately. Typical policies block agents at high risk."
+            ],
+            [
+              "Limits",
+              "Conditional Access cannot help if an agent uses an **API key** instead of Entra tokens. Ana therefore requires Harlow's outage assistant to use its agent identity for every call, with API keys disabled on the resources it uses."
+            ]
+          ],
+          "check": {
+            "q": "Harlow will create dozens of field agents from one design. How can Ana apply one Conditional Access policy to all current and future agents of that kind?",
+            "options": [
+              "Target all users",
+              "List each agent identity by name",
+              "Target the agent identity blueprint",
+              "Use a shared API key"
+            ],
+            "answer": 2,
+            "why": "Targeting the blueprint covers every agent created from it, including new ones. Listing names misses future agents, all users policies do not cover agents, and API keys bypass Conditional Access."
+          },
+          "key": "Entra Agent ID uses blueprints, agent identities, optional agent users and sponsors, and Conditional Access can target blueprints but not API key access."
+        },
+        {
+          "title": "Access to SaaS, PaaS, IaaS, on premises and multicloud",
+          "steps": [
+            [
+              "Centralise on Entra ID",
+              "Zero Trust access design centralises authentication and policy in **Microsoft Entra ID**, so Conditional Access applies everywhere. Every separate identity store is a separate attack surface."
+            ],
+            [
+              "SaaS and Azure",
+              "SaaS apps join through the Entra gallery with SAML or OpenID Connect single sign on, SCIM provisioning for account lifecycle, and Defender for Cloud Apps for discovery and session control. Azure resources use **Azure RBAC** for management and data roles where supported, with **managed identities** for workloads."
+            ],
+            [
+              "On premises apps",
+              "**Microsoft Entra Private Access** replaces VPNs with per app access to any TCP or UDP app, and **application proxy** publishes on premises web apps. Both bring Conditional Access and MFA to legacy apps, with Kerberos delegation through the connector."
+            ],
+            [
+              "Multicloud",
+              "AWS IAM Identity Center and Google Cloud are federated with Entra ID using SAML and SCIM, so the same identities, MFA and access reviews apply. Harlow's AWS engineers now sign in with their Entra accounts instead of separate AWS users."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's engineers have separate local user accounts in AWS. What should Ana design instead?",
+            "options": [
+              "Keep local accounts but rotate passwords",
+              "Give each engineer two AWS accounts",
+              "Share one AWS root account",
+              "Federate AWS IAM Identity Center with Entra ID using SAML and SCIM"
+            ],
+            "answer": 3,
+            "why": "Federation brings AWS access under Entra identities, MFA, Conditional Access and access reviews. Extra or shared accounts multiply risk, and rotating local passwords keeps a separate identity store."
+          },
+          "key": "Centralise access in Entra ID: gallery SSO and SCIM for SaaS, RBAC and managed identities for Azure, Private Access for on premises, and federation for other clouds."
+        },
+        {
+          "title": "Entra ID for hybrid environments",
+          "steps": [
+            [
+              "Sync options",
+              "**Microsoft Entra Cloud Sync** uses light agents with configuration in the cloud, several agents for availability, and handles **disconnected forests**. **Microsoft Entra Connect Sync** is the full server based engine, needed for features such as merging attributes across forests, rich filtering and very large groups. Both can run side by side during migration."
+            ],
+            [
+              "Password hash sync",
+              "**Password hash synchronisation** syncs a hash of the password hash and authenticates in the cloud. It is the simplest and most resilient method and enables leaked credential detection. Microsoft recommends it, at least as a backup."
+            ],
+            [
+              "Pass-through and federation",
+              "**Pass through authentication** validates passwords on premises through agents, so on premises policies apply, but outages affect cloud sign in. **Federation with AD FS** is the most complex and a target for forged token attacks, so Microsoft recommends moving to cloud authentication with **staged rollout**."
+            ],
+            [
+              "Protecting the bridge",
+              "The sync server, AD FS and related systems belong to the control plane (Tier 0) and must be protected as strongly as domain controllers. Harlow moves from AD FS to password hash sync and decommissions its federation servers."
+            ]
+          ],
+          "check": {
+            "q": "Harlow still federates sign in through an ageing AD FS farm. What does Microsoft recommend Ana design?",
+            "options": [
+              "Move to pass through authentication with one agent",
+              "Add more AD FS servers",
+              "Move to cloud authentication, such as password hash sync, using staged rollout",
+              "Remove MFA to simplify federation"
+            ],
+            "answer": 2,
+            "why": "Microsoft recommends migrating from AD FS to cloud authentication with staged rollout to reduce complexity and attack surface. More AD FS servers keep the risk, a single PTA agent is fragile, and removing MFA weakens security."
+          },
+          "key": "Choose Cloud Sync or Connect Sync by feature needs, prefer password hash sync, migrate off AD FS with staged rollout, and protect sync servers as Tier 0."
+        },
+        {
+          "title": "External identities and decentralised identity",
+          "steps": [
+            [
+              "B2B collaboration",
+              "**B2B collaboration** invites partners as **guest users** who sign in with their own identity provider. **B2B direct connect** creates mutual trust without guest objects, mainly for Teams shared channels, and is blocked by default."
+            ],
+            [
+              "Cross tenant access",
+              "**Cross tenant access settings** control inbound and outbound collaboration by default and per partner, trust partners' MFA and device claims so guests are not prompted twice, and support cross tenant synchronisation. **Tenant restrictions v2** controls which outside tenants Harlow's users may sign in to. Guests are governed with entitlement management and access reviews."
+            ],
+            [
+              "Decentralised identity",
+              "In **decentralised identity**, an **issuer** gives a person a signed **verifiable credential**, the **holder** keeps it in a wallet such as Microsoft Authenticator, and a **verifier** checks the signature without calling the issuer each time. **Microsoft Entra Verified ID** issues and verifies these credentials."
+            ],
+            [
+              "Use cases",
+              "Verified ID helps remote onboarding (verify an ID before issuing a Temporary Access Pass), help desk recovery (require a credential, optionally with Face Check, before resets) and partner access packages that require an employed by credential. Harlow uses it to stop social engineering at its help desk."
+            ]
+          ],
+          "check": {
+            "q": "Attackers keep phoning Harlow's help desk pretending to be staff who lost their phones. Which design best stops this?",
+            "options": [
+              "Require a Verified ID credential with Face Check before resets",
+              "Ask callers their manager's name",
+              "Allow resets by email to any address",
+              "Turn off MFA for help desk resets"
+            ],
+            "answer": 0,
+            "why": "A verifiable credential plus liveness matching proves who is calling far better than knowledge questions. Asking for a manager's name is easy to research, and the other options weaken security."
+          },
+          "key": "Govern partners with B2B, cross tenant settings and access reviews, and use Entra Verified ID credentials for strong identity proofing."
+        },
+        {
+          "title": "Modern authentication and authorisation",
+          "steps": [
+            [
+              "Conditional Access building blocks",
+              "Conditional Access evaluates when a token is issued: assignments (users, roles, agents, workload identities), conditions (risk, device, location, client app) and controls (block, MFA, **authentication strength**, compliant device, app protection, session limits). It needs P1, and risk conditions need P2."
+            ],
+            [
+              "Authentication strengths and context",
+              "Built in strengths are multifactor, passwordless and **phishing resistant** (FIDO2 keys, Windows Hello for Business and multifactor certificates). **Authentication context** labels sensitive resources, such as a labelled SharePoint site or a PIM activation, so stricter policy applies only there."
+            ],
+            [
+              "Continuous access evaluation",
+              "**Continuous access evaluation (CAE)** lets services such as Exchange, SharePoint, Teams and Graph react within minutes to critical events: account disabled, password reset, sessions revoked or high user risk. They also enforce IP based locations instantly, so tokens can live longer safely."
+            ],
+            [
+              "Risk scoring and protected actions",
+              "**ID Protection** scores sign in and user risk. Recommended policies require risk remediation for high user risk and MFA for medium or high sign in risk, in separate policies. **Protected actions** require an authentication context when admins change Conditional Access, named locations or cross tenant settings, or hard delete objects."
+            ]
+          ],
+          "check": {
+            "q": "Ana wants any admin who edits a Conditional Access policy to have just completed phishing resistant MFA, regardless of how they got their role. What should she design?",
+            "options": [
+              "A longer sign in frequency",
+              "A protected action using an authentication context",
+              "A trusted IP range for admins",
+              "Security defaults"
+            ],
+            "answer": 1,
+            "why": "Protected actions enforce an authentication context at the moment of sensitive operations, whatever role grants them. Sign in frequency and trusted IPs apply at sign in, and security defaults cannot do this."
+          },
+          "key": "Modern access design combines Conditional Access with authentication strengths and context, CAE for fast revocation, risk policies, and protected actions for sensitive admin changes."
+        },
+        {
+          "title": "Validating Conditional Access against Zero Trust",
+          "steps": [
+            [
+              "A persona based framework",
+              "Microsoft's Zero Trust guidance recommends organising Conditional Access by **persona**: global, admins, internal users, guests, workload identities and agents, with consistent naming so gaps are easy to spot."
+            ],
+            [
+              "Baseline policies",
+              "Ana checks for policies that block legacy authentication, require MFA or a strength for all users, require **phishing resistant MFA** for admins, require compliant or hybrid joined devices for corporate resources, apply user and sign in risk, secure security info and device registration, and restrict unknown platforms and high risk countries."
+            ],
+            [
+              "Validation techniques",
+              "She uses **What If** to simulate sign ins, **report only** mode before enforcement, the insights workbook, and sign in log queries for sign ins where no policy applied or legacy clients were used."
+            ],
+            [
+              "Exclusions",
+              "Only emergency access accounts should be broadly excluded, and exclusion groups need access reviews. The Conditional Access optimisation agent in Security Copilot can flag users and apps not covered by baselines. At Harlow she finds a contractors group excluded from MFA two years ago and never reviewed."
+            ]
+          ],
+          "check": {
+            "q": "Ana wants to find sign ins that no Conditional Access policy covered at all. What is the most direct method?",
+            "options": [
+              "Check Secure Score only",
+              "Read the policy names",
+              "Query sign in logs for a not applied Conditional Access status",
+              "Ask users"
+            ],
+            "answer": 2,
+            "why": "Sign in logs record each sign in's Conditional Access result, so filtering for not applied reveals uncovered sign ins. Policy names and Secure Score do not show actual coverage gaps."
+          },
+          "key": "Validate Conditional Access by persona baselines, What If, report only mode, sign in log queries and strict review of exclusions."
+        },
+        {
+          "title": "Hardening Active Directory Domain Services",
+          "steps": [
+            [
+              "Write requirements, not clicks",
+              "An architect specifies AD DS hardening as measurable requirements. Ana groups Harlow's into privileged accounts, credentials, protocols and configuration, and monitoring and recovery."
+            ],
+            [
+              "Privileged accounts and credentials",
+              "Keep Domain Admins and similar groups nearly empty, use separate Tier 0 admin accounts, add them to **Protected Users**, and allow admin logons only from privileged workstations. Use **Windows LAPS** for unique local admin passwords, **group managed service accounts** for services (resisting Kerberoasting), and rotate the krbtgt account periodically and twice after compromise."
+            ],
+            [
+              "Protocols and configuration",
+              "Reduce NTLM and remove SMBv1, enforce SMB and LDAP signing and channel binding, fix unconstrained delegation, weak permissions and old stored passwords in Group Policy, and remove vulnerable **AD Certificate Services** templates."
+            ],
+            [
+              "Monitoring and recovery",
+              "Deploy **Defender for Identity** sensors on domain controllers, AD FS, AD CS and Entra Connect servers, and review its identity posture assessments in Secure Score. Keep offline or immutable domain controller backups and a tested forest recovery plan."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's service accounts use short passwords that never change, and attackers could request their tickets to crack offline. What should Ana require?",
+            "options": [
+              "Group managed service accounts with long automatic passwords",
+              "Adding the accounts to Domain Admins",
+              "Turning off Defender for Identity",
+              "Enabling SMBv1"
+            ],
+            "answer": 0,
+            "why": "gMSAs use long, automatically rotated passwords that resist Kerberoasting. Adding them to Domain Admins raises the impact, and the other options weaken defences."
+          },
+          "key": "Harden AD DS with minimal Tier 0 accounts, Protected Users, LAPS, gMSAs, protocol hardening, AD CS fixes, Defender for Identity and tested forest recovery."
+        },
+        {
+          "title": "Designing secrets, keys and certificates management",
+          "steps": [
+            [
+              "Choosing the service",
+              "**Key Vault Standard** stores software protected keys, secrets and certificates. **Premium** adds HSM backed keys in a shared service. **Managed HSM** is a dedicated single tenant HSM pool with its own security domain and local RBAC that subscription owners cannot override, suited to strict key custody requirements."
+            ],
+            [
+              "Design rules",
+              "Use one vault per application, environment and region to limit blast radius. Use **Azure RBAC** for data access, with roles such as Key Vault Secrets User for apps. Soft delete is always on, and **purge protection** should be enabled, as many customer managed key scenarios require it."
+            ],
+            [
+              "Network and identity",
+              "Disable public access and use private endpoints. Apps authenticate with **managed identities**. Logs go to Log Analytics, and Defender for Key Vault detects unusual access."
+            ],
+            [
+              "Rotation and discovery",
+              "Key rotation policies, certificate auto renewal with integrated CAs and Event Grid near expiry events drive automation. **Secret scanning** in GitHub Advanced Security finds hard coded secrets. Harlow's regulator requires that only Harlow can access its encryption keys, so Ana chooses Managed HSM."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's regulator requires single tenant HSMs whose access even Azure subscription owners cannot override. Which service should Ana choose?",
+            "options": [
+              "Secrets in app configuration files",
+              "Key Vault Standard",
+              "Key Vault Premium",
+              "Azure Key Vault Managed HSM"
+            ],
+            "answer": 3,
+            "why": "Managed HSM provides dedicated single tenant HSMs with its own security domain and local RBAC. Standard and Premium are multitenant services governed by Azure RBAC, and config files are not a key store."
+          },
+          "key": "Choose Key Vault Standard, Premium or Managed HSM by key custody needs, with one vault per app, RBAC, purge protection, private endpoints and automated rotation."
+        },
+        {
+          "title": "Privileged role design with the enterprise access model",
+          "steps": [
+            [
+              "Planes of control",
+              "Microsoft's **enterprise access model** replaces the old tier model. The **control plane** (expanded Tier 0) covers identity and access for the whole enterprise: Global Administrator, domain controllers, Entra Connect, AD FS, AD CS, PIM and Conditional Access. The **management plane** covers enterprise wide IT management. The **data and workload plane** covers per app administration. **User access** and **app access** cover employees, partners, customers and APIs."
+            ],
+            [
+              "The golden rule",
+              "Lower planes must never control higher planes. A workload admin must never be able to reset a control plane admin's password or edit a Tier 0 Group Policy object."
+            ],
+            [
+              "Delegation",
+              "Use the narrowest built in roles, such as Helpdesk Administrator, and **administrative units** to scope by region, rather than Global Administrator. Use **PIM** for just in time elevation, separate cloud only admin accounts used only from privileged workstations, and two or more emergency access accounts."
+            ],
+            [
+              "Azure",
+              "In Azure, assign at management group or subscription scope only when truly needed, and delegate resource group scope to workload teams. Ana gives Harlow's regional IT teams Helpdesk Administrator scoped to their region's administrative unit."
+            ]
+          ],
+          "check": {
+            "q": "A Harlow workload admin can edit a Group Policy object that applies to domain controllers. Why is this a design flaw?",
+            "options": [
+              "Group Policy is deprecated",
+              "A lower plane controls a higher plane",
+              "Workload admins should be Global Administrators",
+              "Domain controllers do not use Group Policy"
+            ],
+            "answer": 1,
+            "why": "The enterprise access model forbids lower planes from controlling higher ones, and domain controllers are control plane assets. Group Policy is still used, and giving workload admins more power makes it worse."
+          },
+          "key": "The enterprise access model separates control, management, workload and access planes, and lower planes must never control higher ones."
+        },
+        {
+          "title": "Evaluating Entra ID governance and access reviews",
+          "steps": [
+            [
+              "PIM",
+              "**PIM** removes standing privilege with **eligible** assignments activated just in time, using MFA or authentication context, justification and approval, for Entra roles, Azure roles and groups. PIM controls activation, while Conditional Access and protected actions protect the use of a role."
+            ],
+            [
+              "Entitlement management",
+              "**Entitlement management** bundles groups, apps and sites into **access packages** in catalogs, with request policies, approval stages, expiry, separation of duties and connected organisations for partners, whose guests are removed when their last assignment ends."
+            ],
+            [
+              "Access reviews",
+              "**Access reviews** check group and app access, access package assignments and privileged roles. Design choices include reviewers (owners, managers, self), scope (all, guests or inactive users), recurrence, decision helpers and **auto apply** of results. Native reviews cover Entra integrated resources, and other systems need custom reviews or third party tools."
+            ],
+            [
+              "Licensing",
+              "P2 covers PIM, core access reviews and basic entitlement management. **Entra ID Governance** adds lifecycle workflows, custom extensions, Verified ID in packages, automatic assignment, machine learning assisted and inactive user reviews. New governance features arrive in ID Governance. Review history provides audit evidence for frameworks such as ISO 27001."
+            ]
+          ],
+          "check": {
+            "q": "Harlow wants joiner and leaver tasks automated from HR dates, such as issuing a Temporary Access Pass before day one. Which licence does that need?",
+            "options": [
+              "Entra ID Free",
+              "Microsoft Entra ID Governance",
+              "Entra ID P1 only",
+              "Defender for Endpoint Plan 2"
+            ],
+            "answer": 1,
+            "why": "Lifecycle workflows are an Entra ID Governance feature. Free and P1 lack them, and Defender for Endpoint is unrelated to identity lifecycle."
+          },
+          "key": "Evaluate governance through PIM for just in time roles, entitlement management for packaged access, and access reviews, with advanced features in Entra ID Governance."
+        },
+        {
+          "title": "Active Directory attack resilience",
+          "steps": [
+            [
+              "Credential reuse attacks",
+              "**Pass the hash** and **pass the ticket** reuse cached credentials to move between machines. Mitigations are tiered logon restrictions, Credential Guard, Windows LAPS, Protected Users and never using Tier 0 accounts on workstations."
+            ],
+            [
+              "Kerberos attacks",
+              "**Kerberoasting** requests service tickets for accounts with service names and cracks them offline: use gMSAs or very long passwords with AES only. **AS-REP roasting** targets accounts without Kerberos pre authentication: require it. A **Golden Ticket** forges tickets with the krbtgt key: protect domain controllers and reset krbtgt twice after compromise."
+            ],
+            [
+              "Replication and certificate abuse",
+              "**DCSync** and **DCShadow** abuse replication rights: restrict them to domain controllers and detect with Defender for Identity. Misconfigured **AD CS** templates let attackers request certificates as any user: review templates and enrolment rights."
+            ],
+            [
+              "Governance and recovery",
+              "Review privileged groups and **lateral movement paths** shown in Defender for Identity, track identity posture in Secure Score, and keep offline domain controller backups and a documented forest recovery plan. Harlow's tabletop exercise reveals no one has practised a forest recovery, so Ana schedules one."
+            ]
+          ],
+          "check": {
+            "q": "After a suspected Golden Ticket attack, what must Harlow do with the krbtgt account?",
+            "options": [
+              "Leave it, since tickets expire",
+              "Delete it",
+              "Add it to Domain Admins",
+              "Reset its password twice"
+            ],
+            "answer": 3,
+            "why": "Forged tickets are signed with the krbtgt key, so resetting it twice invalidates them. It cannot be deleted, adding it to groups is meaningless, and forged tickets can be made with long lifetimes."
+          },
+          "key": "Design AD resilience against pass the hash, Kerberos, replication and AD CS attacks, with Defender for Identity monitoring and practised forest recovery."
+        },
+        {
+          "title": "Secure administration of tenants, SaaS and multicloud, and CIEM",
+          "steps": [
+            [
+              "Microsoft 365 and Entra",
+              "Use **cloud only** accounts for Entra privileged roles so an on premises compromise cannot take over the cloud. Keep fewer than five Global Administrators and at least two emergency accounts protected with FIDO2 and monitored. Use PIM, phishing resistant MFA for admins and protected actions, and review high privilege app consents."
+            ],
+            [
+              "Azure, SaaS and other clouds",
+              "In Azure use management groups, least privilege RBAC, PIM for Owner and User Access Administrator, policy guardrails and Activity logs into Sentinel. Federate AWS and Google Cloud admin access to Entra ID and avoid AWS root and long lived keys. Use Defender for Cloud Apps SaaS posture management for apps such as ServiceNow, and granular delegated admin for partners."
+            ],
+            [
+              "What CIEM is",
+              "**Cloud infrastructure entitlement management (CIEM)** closes the gap between permissions granted and permissions used: an AWS role with full access, a GCP service account with Owner, an Azure service principal with Contributor. It discovers identities and entitlements across clouds, compares them with activity, and recommends removing inactive or overprovisioned access."
+            ],
+            [
+              "Which product",
+              "Microsoft Entra Permissions Management has been retired, and Microsoft now recommends **Defender CSPM** for CIEM, where overprovisioned identities also appear in attack paths. Ana pairs CIEM findings with PIM for Azure roles and time bound federated access in AWS."
+            ]
+          ],
+          "check": {
+            "q": "Ana needs CIEM for Harlow's Azure and AWS identities. What does Microsoft currently recommend?",
+            "options": [
+              "Defender CSPM in Defender for Cloud",
+              "Microsoft Entra Permissions Management",
+              "Windows LAPS",
+              "Azure Site Recovery"
+            ],
+            "answer": 0,
+            "why": "Entra Permissions Management has been retired, and Microsoft recommends Defender CSPM's CIEM capabilities. LAPS and Site Recovery solve different problems."
+          },
+          "key": "Administer tenants with cloud only, PIM protected, phishing resistant admin accounts, and use Defender CSPM's CIEM to right size multicloud permissions."
+        },
+        {
+          "title": "Privileged access workstations and secure remote administration",
+          "steps": [
+            [
+              "Device security profiles",
+              "Microsoft defines **enterprise** devices for normal productivity, **specialised** devices with no local admin and only approved apps, and **privileged access workstations (PAW)** for roles whose compromise would seriously harm the organisation."
+            ],
+            [
+              "PAW requirements",
+              "A PAW blocks email and general browsing, allows only listed sites, is managed by Intune with baselines and Defender for Endpoint, deployed with Autopilot, enforces application control, gives no local admin, and uses TPM, Secure Boot, Credential Guard and BitLocker. Admins use a separate device or account for everyday work."
+            ],
+            [
+              "Enforcing PAW use",
+              "A Conditional Access policy with a **device filter** or compliant device requirement for admin roles makes sure admin sign ins come only from PAWs, combined with PIM authentication context and protected actions. Hardened Windows 365 Cloud PCs can serve where physical PAWs are impractical."
+            ],
+            [
+              "Remote administration",
+              "**Azure Bastion** gives browser or native client access to VMs without public IPs, with session recording on Premium. **Just in time VM access** opens management ports briefly for approved users. **Private Access** gives per app access to RDP or SSH targets on premises. Harlow's control system admins work only from PAWs through Private Access."
+            ]
+          ],
+          "check": {
+            "q": "How can Ana make sure Harlow's Global Administrators can only sign in from privileged access workstations?",
+            "options": [
+              "A longer password for admins",
+              "A memo asking admins to use PAWs",
+              "A Conditional Access policy using a device filter for PAWs on admin roles",
+              "Turning off MFA on PAWs"
+            ],
+            "answer": 2,
+            "why": "A Conditional Access device filter or compliant device requirement for admin roles technically enforces PAW use. A memo cannot enforce anything, and the other options weaken security."
+          },
+          "key": "Admins use hardened PAWs enforced by Conditional Access device filters, and reach servers through Bastion, just in time access or Private Access."
+        },
+        {
+          "title": "Turning compliance requirements into controls",
+          "steps": [
+            [
+              "What versus how",
+              "A regulation says what, such as protect customer data or keep logs of access. The architect designs how. Ana inventories Harlow's obligations: privacy law, energy sector security rules, ISO 27001 and contracts."
+            ],
+            [
+              "Mapping and responsibility",
+              "Obligations are mapped to a control framework such as MCSB or Compliance Manager templates. Under the **shared responsibility model**, some controls are Microsoft's (physical security), some are Harlow's (MFA, classification) and some are shared."
+            ],
+            [
+              "Technical controls",
+              "Data residency becomes an Azure Policy allowed locations rule. Encryption becomes customer managed keys. Access logging becomes Purview Audit and diagnostic settings to Sentinel. Data protection becomes labels, DLP and retention. Least privilege becomes PIM and access reviews."
+            ],
+            [
+              "Testable controls and evidence",
+              "Controls must be testable: all storage accounts deny public network access can be checked, data is secure cannot. Evidence comes from Defender for Cloud regulatory compliance, Compliance Manager, audit reports and the Service Trust Portal for Microsoft's own audits."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's regulator requires customer data to stay in New Zealand and Australia. Which control expresses that requirement in Azure?",
+            "options": [
+              "A longer password policy",
+              "A sensitivity label",
+              "A Sentinel workbook",
+              "An Azure Policy allowed locations assignment"
+            ],
+            "answer": 3,
+            "why": "Allowed locations policy blocks resources outside approved regions, which is a testable residency control. Labels, workbooks and password rules do not restrict where resources are created."
+          },
+          "key": "Translate regulations into testable controls mapped to a framework and the shared responsibility model, with evidence from Defender for Cloud and Compliance Manager."
+        },
+        {
+          "title": "Compliance solutions with Microsoft Purview",
+          "steps": [
+            [
+              "Compliance Manager",
+              "**Compliance Manager** offers many regulatory templates and custom ones to create **assessments**, each listing Microsoft managed, customer managed and shared controls. **Improvement actions** are assigned, evidenced and tracked, rolling up to a risk based compliance score."
+            ],
+            [
+              "Protecting information",
+              "**Information Protection** uses sensitivity labels for encryption and marking with auto labelling. **Data loss prevention** covers email, SharePoint, OneDrive, Teams and endpoints. **Data lifecycle and records management** keep or delete content with retention policies and labels."
+            ],
+            [
+              "Investigating and monitoring people",
+              "**Audit** and **eDiscovery** support investigations and legal holds. **Communication compliance** and **insider risk management** address conduct and insider threats. **DSPM for AI** covers AI related data risk."
+            ],
+            [
+              "Data across the estate",
+              "**Data Map** and the **Unified Catalog** discover and classify data across Azure, on premises and other clouds. Ana's design principle is to choose the solution that produces the required evidence and enforcement, not just visibility."
+            ]
+          ],
+          "check": {
+            "q": "Harlow must show auditors which ISO 27001 controls are Microsoft's responsibility and which are its own, with progress tracked. Which Purview solution fits?",
+            "options": [
+              "Communication compliance",
+              "eDiscovery",
+              "Compliance Manager",
+              "Data Map"
+            ],
+            "answer": 2,
+            "why": "Compliance Manager assessments separate Microsoft, customer and shared controls and track improvement actions. eDiscovery and communication compliance serve investigations and conduct, and Data Map catalogues data."
+          },
+          "key": "Purview covers compliance tracking with Compliance Manager, protection with labels, DLP and retention, investigation with Audit and eDiscovery, and data discovery with Data Map."
+        },
+        {
+          "title": "Azure Policy and Defender for Cloud for compliance",
+          "steps": [
+            [
+              "Policy building blocks",
+              "**Azure Policy** uses definitions grouped into **initiatives**, such as the MCSB or a regulatory initiative, assigned at management group, subscription or resource group scope with parameters, exclusions and time limited **exemptions** (waiver or mitigated)."
+            ],
+            [
+              "Effects and design",
+              "Effects include deny, audit, modify and append, deployIfNotExists (needing a managed identity), denyAction and manual attestation. Assign guardrails at management group level, start in audit then move to deny, use remediation tasks for existing resources, and manage policies as code. Policy also reaches Arc enabled servers and AKS."
+            ],
+            [
+              "Regulatory compliance in Defender for Cloud",
+              "Defender for Cloud enables MCSB automatically across Azure, AWS and GCP. Standards such as PCI DSS, ISO 27001 and NIST can be added with a qualifying paid plan, and custom standards need Defender CSPM. Each control shows passing, failing or not automatically assessable, with **manual attestation** for procedural controls."
+            ],
+            [
+              "Reporting",
+              "Compliance reports can be downloaded, exported continuously and charted in workbooks, and Defender for Cloud results can feed Compliance Manager for one view across Microsoft 365 and cloud. Neither Secure Score nor the dashboard proves certification by itself."
+            ]
+          ],
+          "check": {
+            "q": "Some of Harlow's ISO 27001 controls are procedural, such as staff screening, and cannot be checked automatically. How should Ana record them in Defender for Cloud?",
+            "options": [
+              "With manual attestation",
+              "By deleting those controls",
+              "By assigning a deny policy",
+              "By raising secure score"
+            ],
+            "answer": 0,
+            "why": "Manual attestation adds evidence for controls that cannot be assessed automatically. Deleting controls hides them, and deny policies and secure score do not evidence procedural controls."
+          },
+          "key": "Use Azure Policy initiatives at management group scope to enforce controls, and Defender for Cloud regulatory compliance, with manual attestation, to validate alignment."
+        }
+      ]
+    },
+    {
+      "title": "Design security solutions for infrastructure",
+      "intro": "Infrastructure covers posture across clouds, servers and clients, IoT and operational technology, cloud services and networks (about 25 to 30 percent of the exam). Harlow Lines has all of these: Azure and AWS workloads, on premises servers, thousands of laptops and phones, smart meters, and substations whose control systems cannot be scanned or patched like normal IT.",
+      "lessons": [
+        {
+          "title": "Posture with Defender for Cloud, MCSB and Secure Score",
+          "steps": [
+            [
+              "Defender for Cloud",
+              "**Microsoft Defender for Cloud** combines **cloud security posture management (CSPM)**, **cloud workload protection (CWPP)** and **DevOps security**. Architects use it to answer how well configured every cloud is."
+            ],
+            [
+              "The yardstick",
+              "The **Microsoft cloud security benchmark** is the default standard. Its policies evaluate resources and produce recommendations that feed **secure score**, and the regulatory compliance dashboard shows its status. Microsoft also publishes per service security baselines."
+            ],
+            [
+              "Two secure scores",
+              "The classic **Defender for Cloud secure score** groups MCSB recommendations into controls, giving points only when all a control's recommendations are fixed, with preview ones excluded. The newer **Cloud Secure Score** in Exposure Management is risk based, weighting by risk level, asset exposure and criticality."
+            ],
+            [
+              "Microsoft Secure Score",
+              "**Microsoft Secure Score** in the Defender portal covers Entra ID, Defender products, Exchange, Teams, SharePoint and connected SaaS apps. Actions are worth up to 10 points, some partially by coverage, and can be marked planned, risk accepted or resolved through a third party or alternate mitigation. Ana reports both scores to Harlow's board each quarter."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's board asks for one number showing Microsoft 365 and identity security posture. Which score should Ana report?",
+            "options": [
+              "Defender for Cloud classic secure score",
+              "Microsoft Secure Score",
+              "Compliance score in Compliance Manager",
+              "An MCSB control ID"
+            ],
+            "answer": 1,
+            "why": "Microsoft Secure Score covers Microsoft 365, identity and Defender products. Defender for Cloud's score covers cloud resources, compliance score tracks regulatory actions, and a control ID is not a score."
+          },
+          "key": "Defender for Cloud measures cloud posture against MCSB with its secure scores, while Microsoft Secure Score measures Microsoft 365 and identity posture."
+        },
+        {
+          "title": "Integrated posture, workload protection and Azure Arc",
+          "steps": [
+            [
+              "One view of every environment",
+              "An integrated design brings AWS (through a connector deployed with CloudFormation or Terraform, ideally at the management account), GCP (project or organisation connectors), on premises and other cloud servers (through **Azure Arc**) and code repositories (DevOps connectors) into Defender for Cloud."
+            ],
+            [
+              "Free and paid posture",
+              "**Foundational CSPM** gives inventory, recommendations, secure score and remediation. **Defender CSPM** adds attack paths, cloud security explorer, risk prioritisation, governance rules, regulatory standards, agentless scanning, data and AI posture and code to cloud mapping. Enabling plans at management group scope covers new subscriptions."
+            ],
+            [
+              "Choosing workload protection",
+              "Choosing **CWPP** is mapping workload to plan: **Servers** (Plan 1 for Defender for Endpoint, Plan 2 adding agentless scanning, file integrity monitoring and just in time access), **Storage**, **Databases**, **Containers**, **App Service**, **Key Vault**, **Resource Manager**, **APIs** and **AI Services**. Alerts flow into Defender XDR."
+            ],
+            [
+              "Azure Arc",
+              "**Azure Arc** gives non Azure machines an Azure resource ID, RBAC and a managed identity, unlocking Defender for Servers, Azure Policy machine configuration, Update Manager and the Azure Monitor Agent. Arc is only for machines outside Azure, and AWS and GCP connectors can deploy it automatically. Arc enabled Kubernetes extends Defender for Containers."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's 40 on premises SCADA historian servers run Windows. Which design brings them under Defender for Servers and Azure Policy?",
+            "options": [
+              "Use Defender for Office 365",
+              "Treat them as Azure VMs without changes",
+              "Onboard them with Azure Arc",
+              "Use Windows Autopatch only"
+            ],
+            "answer": 2,
+            "why": "Arc makes on premises servers Azure resources so Defender for Servers and Policy apply. They are not Azure VMs, and Office 365 protection and Autopatch do not provide server workload protection."
+          },
+          "key": "Integrate AWS, GCP, Arc enabled servers and DevOps into Defender for Cloud, choose Defender CSPM and CWPP plans by workload, and use Arc for non Azure machines."
+        },
+        {
+          "title": "External attack surface and exposure management",
+          "steps": [
+            [
+              "Defender EASM",
+              "**Defender External Attack Surface Management** recreates an attacker's view from the internet. From **discovery seeds** such as domains, IP blocks and ASNs, it follows connections to find related infrastructure, including forgotten sites. Assets are labelled approved, candidate, dependency, monitor only or requires investigation, and dashboards show exposed vulnerabilities and expiring certificates."
+            ],
+            [
+              "Attack paths",
+              "The **cloud security graph** in Defender CSPM links resources, permissions, network exposure, vulnerabilities and sensitive data. **Attack path analysis** finds chains from an entry point, through lateral movement, to a critical target, with fixes that break the chain. **Cloud security explorer** lets teams query the graph proactively."
+            ],
+            [
+              "Exposure Management",
+              "**Microsoft Security Exposure Management** runs a continuous exposure management cycle: **security initiatives** for areas such as ransomware or identity with metrics, **exposure insights**, an attack surface map, attack paths with **choke points** where many paths meet, and **critical asset management**."
+            ],
+            [
+              "Attack surface reduction",
+              "**Attack surface reduction rules** in Defender for Endpoint block risky behaviours such as Office apps starting child processes, rolled out in audit then block. Ana requires a monthly process: review new external assets, break the top attack paths to critical assets and track initiative scores."
+            ]
+          ],
+          "check": {
+            "q": "Many of Harlow's attack paths pass through one over privileged service account. What does Exposure Management call such a point, and why fix it first?",
+            "options": [
+              "A choke point, because fixing it breaks many paths at once",
+              "A seed, because it starts discovery",
+              "A candidate asset, because it is unconfirmed",
+              "A dependency, because a third party owns it"
+            ],
+            "answer": 0,
+            "why": "A choke point is where many attack paths converge, so fixing it removes many risks together. Seeds, candidates and dependencies are EASM inventory concepts, not path convergence points."
+          },
+          "key": "Use EASM for the outside in view, attack paths and explorer for chained risk, and Exposure Management initiatives and choke points to run a continuous posture process."
+        },
+        {
+          "title": "Server and client endpoint requirements",
+          "steps": [
+            [
+              "Server requirements",
+              "A good server specification covers protection (Defender for Endpoint through Defender for Servers), vulnerability management with a patch deadline through Update Manager, an OS baseline through Azure Policy machine configuration, no public RDP or SSH (Bastion or just in time access), managed identities and LAPS, monitoring through the Azure Monitor Agent, and protected backups, applied the same way through Arc everywhere."
+            ],
+            [
+              "Corporate devices",
+              "Corporate owned phones and laptops enrol in **Intune** (for example with Windows Autopilot or Apple business enrolment), with **compliance policies** for encryption, OS version, passcodes and jailbreak detection, plus configuration profiles."
+            ],
+            [
+              "Personal devices",
+              "For personal devices, **app protection policies** protect corporate data inside apps such as Outlook and Teams without managing the whole device: block copying to personal apps, require a PIN and allow selective wipe. **Defender for Endpoint on iOS and Android** detects phishing sites and malicious apps."
+            ],
+            [
+              "Enforcement",
+              "Conditional Access enforces it all with require compliant device or require app protection policy, plus authentication strengths. Harlow's field crews use corporate phones with full enrolment, while office staff use personal phones with app protection only."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's office staff refuse to enrol personal phones but need Outlook and Teams. What should Ana require?",
+            "options": [
+              "Blocking mobile access entirely",
+              "Full device enrolment anyway",
+              "No controls on personal phones",
+              "Intune app protection policies with Conditional Access requiring them"
+            ],
+            "answer": 3,
+            "why": "App protection secures corporate data inside managed apps without enrolling the device, and Conditional Access enforces it. Forcing enrolment ignores the requirement, no controls leaves data exposed, and blocking all access hurts the business."
+          },
+          "key": "Specify servers with EDR, patching, baselines and no public admin ports, and clients with Intune compliance for corporate devices and app protection for personal ones."
+        },
+        {
+          "title": "IoT devices and operational technology",
+          "steps": [
+            [
+              "IoT device requirements",
+              "Every IoT device needs a **unique identity**, ideally an X.509 certificate backed by hardware, never a shared fleet key, with secure enrolment through the IoT Hub Device Provisioning Service. Add secure defaults, signed firmware updates and network segmentation with no inbound internet access."
+            ],
+            [
+              "Monitoring devices without agents",
+              "Many devices cannot run an agent, so monitoring is network based. **Enterprise IoT** in Defender for IoT uses Defender for Endpoint network discovery to inventory printers, cameras and phones and show their vulnerabilities. The Defender for IoT micro agent is scheduled to retire, so new designs should not depend on it."
+            ],
+            [
+              "OT and ICS",
+              "Operational technology such as PLCs, HMIs and SCADA cannot tolerate scanning or agents. **Defender for IoT OT sensors** connect to a SPAN port or network tap and passively inspect industrial protocols, building an inventory, network map and vulnerability list. Analysis happens on the sensor, so only metadata leaves low bandwidth sites."
+            ],
+            [
+              "Deployment models",
+              "OT sensors can be **cloud connected** (alerts to the Defender portal and Sentinel), **locally managed** for air gapped sites, or hybrid. Ana maps detections to MITRE ATT&CK for ICS and places sensors according to Harlow's network levels, with locally managed sensors at the most isolated substations."
+            ]
+          ],
+          "check": {
+            "q": "Ana needs visibility of PLCs in Harlow's substations without disrupting them. What should she specify?",
+            "options": [
+              "Active vulnerability scans of every PLC weekly",
+              "Defender for IoT OT sensors on a SPAN port, passively monitoring",
+              "Defender for Endpoint agents installed on the PLCs",
+              "No monitoring, because OT is isolated"
+            ],
+            "answer": 1,
+            "why": "Passive sensors on mirrored traffic give inventory and threat detection without touching fragile devices. Active scans and agents can disrupt PLCs, and isolation is not a reason to stop monitoring."
+          },
+          "key": "IoT devices need unique identities, secure updates and segmentation, and OT is monitored passively with Defender for IoT sensors, cloud connected or locally managed."
+        },
+        {
+          "title": "Endpoint baselines and Windows LAPS",
+          "steps": [
+            [
+              "Choosing a baseline tool",
+              "**Intune security baselines** cover Windows, Defender for Endpoint, Edge, Microsoft 365 Apps and Windows 365, are versioned and can conflict with other profiles. The **Security Compliance Toolkit** provides Group Policy baselines with Policy Analyzer for domain joined servers. **Azure Policy machine configuration** audits Azure and Arc servers against the Azure compute baseline."
+            ],
+            [
+              "Rolling out baselines",
+              "Baselines start in audit, are tested in a pilot ring, then enforced. Defender for Endpoint security settings management can push some endpoint policies to devices not enrolled in Intune."
+            ],
+            [
+              "Why LAPS matters",
+              "If every machine shares one local admin password, one stolen hash unlocks the estate through pass the hash. **Windows LAPS**, built into supported Windows versions, gives each device a unique, rotating password."
+            ],
+            [
+              "LAPS design",
+              "Entra joined devices back up passwords to Entra ID, AD joined devices to AD, and hybrid joined devices to one of the two. AD backup can encrypt passwords and keep history, and protect the directory services restore password on domain controllers. Passwords can rotate after use. Reading them should be limited with custom roles."
+            ]
+          ],
+          "check": {
+            "q": "Every Harlow laptop shares the same local administrator password. Which control should Ana require?",
+            "options": [
+              "A longer shared password",
+              "Windows LAPS with unique, rotating passwords",
+              "Disabling BitLocker",
+              "Removing Defender for Endpoint"
+            ],
+            "answer": 1,
+            "why": "LAPS gives each device its own rotating password, stopping one stolen hash from opening every machine. A longer shared password still lets one compromise spread, and the other options weaken security."
+          },
+          "key": "Pick baselines by management model (Intune, Group Policy or machine configuration), roll out in audit first, and use Windows LAPS for unique local admin passwords."
+        },
+        {
+          "title": "Baselines for SaaS, PaaS and IaaS, and IoT workloads",
+          "steps": [
+            [
+              "IaaS",
+              "With **IaaS** you own the operating system, middleware and network rules. The baseline covers OS hardening, patching, EDR, network security groups and disk encryption."
+            ],
+            [
+              "PaaS",
+              "With **PaaS**, Microsoft runs the operating system and you configure the service. Microsoft's per service security baselines apply MCSB controls such as network isolation, identity, data protection and logging, enforced with Azure Policy initiatives at management group scope in a landing zone."
+            ],
+            [
+              "SaaS",
+              "With **SaaS**, you configure identity, sharing and tenant settings. Posture is measured with Microsoft Secure Score and **SaaS security posture management** in Defender for Cloud Apps, connected through app connectors and tracked in the SaaS security initiative. Identity is always yours in every model."
+            ],
+            [
+              "IoT workloads",
+              "The cloud side of IoT needs requirements too: devices authenticate with certificates or per device keys, back end services use Entra ID and RBAC rather than shared access policies, IoT Hub and provisioning use private endpoints, data travels over TLS 1.2 or later, compromised devices can be revoked, and logs flow to Sentinel. Harlow's smart meter platform follows this pattern."
+            ]
+          ],
+          "check": {
+            "q": "For Harlow's Azure SQL databases, which part of the security baseline remains Harlow's job under the shared responsibility model?",
+            "options": [
+              "Replacing failed disks",
+              "Patching the database server operating system",
+              "Physical datacentre security",
+              "Configuring network isolation, identity, encryption keys and logging for the service"
+            ],
+            "answer": 3,
+            "why": "For PaaS, Microsoft runs the OS and hardware while the customer configures the service's security settings. Patching the OS, physical security and hardware are Microsoft's responsibility."
+          },
+          "key": "Baselines follow shared responsibility: OS hardening for IaaS, per service settings for PaaS, tenant and identity settings for SaaS, and identity first design for IoT workloads."
+        },
+        {
+          "title": "Web, container and orchestration requirements",
+          "steps": [
+            [
+              "Web workloads",
+              "A web workload needs an edge with **Front Door Premium** or **Application Gateway** running WAF managed rules (detection first, then prevention), an origin locked to that edge, **DDoS Protection**, HTTPS only and TLS 1.2 on App Service with basic auth off, managed identities with Key Vault references, private endpoints to back ends, and API Management with Defender for APIs."
+            ],
+            [
+              "Containers",
+              "Container requirements include a private registry with Entra authentication and the admin user disabled, image vulnerability scanning with Defender for Containers, signed images and SBOMs with only signed, scanned images admitted, minimal base images with no baked in secrets, and runtime rules: non root, read only file systems, no privileged containers."
+            ],
+            [
+              "Runtime detection",
+              "The Defender sensor gives Kubernetes aware detections mapped to MITRE ATT&CK, including **binary drift detection**, which alerts on or blocks executables that were not in the original image."
+            ],
+            [
+              "Orchestration",
+              "For **AKS**: Entra integration with Azure RBAC, local accounts disabled, a private API server or authorised IP ranges, workload identity for pods, Pod Security Admission and the Azure Policy add on, network policies including blocking the metadata endpoint where not needed, egress through Azure Firewall, Key Vault secrets through the CSI driver, and regular node image upgrades."
+            ]
+          ],
+          "check": {
+            "q": "Harlow wants an alert or block if a running container starts an executable that was not in its image. Which capability should Ana specify?",
+            "options": [
+              "Binary drift detection in Defender for Containers",
+              "WAF prevention mode",
+              "Azure DDoS Protection",
+              "Front Door Standard custom rules"
+            ],
+            "answer": 0,
+            "why": "Binary drift detection compares running executables with the original image. WAF, DDoS Protection and Front Door rules protect web traffic, not container runtime behaviour."
+          },
+          "key": "Specify layered edge, app and back end controls for web workloads, signed scanned images and runtime limits for containers, and Entra based, policy enforced AKS."
+        },
+        {
+          "title": "Security for Azure AI services",
+          "steps": [
+            [
+              "Identity over keys",
+              "Azure AI services should use **Microsoft Entra ID and RBAC**, not API keys. Setting **disableLocalAuth** to true, enforced with a built in policy, turns keys off. Apps and the AI resource itself use managed identities."
+            ],
+            [
+              "Network and data",
+              "Use private endpoints, disable public network access and use managed network isolation for Foundry projects. Encrypt with **customer managed keys** where required and use identity based storage access."
+            ],
+            [
+              "AI specific controls",
+              "**Azure AI Content Safety** filters and **Prompt Shields** catch jailbreaks and indirect prompt injection. **Defender for AI Services** raises real time alerts for jailbreak, data leakage and credential theft, flowing into Defender XDR. **AI security posture management** in Defender CSPM finds AI workloads, misconfigurations and attack paths."
+            ],
+            [
+              "Data governance",
+              "**Purview DSPM for AI** covers prompts and sensitive data in AI interactions. Ana's design for the outage assistant ticks each box and aligns with the MCSB AI domain."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's developers call Azure OpenAI with an API key in their config. What should Ana require?",
+            "options": [
+              "The key stored in source control",
+              "A longer API key",
+              "Entra ID authentication with managed identity, and local auth disabled",
+              "Public network access left open"
+            ],
+            "answer": 2,
+            "why": "Entra authentication with managed identity removes stored keys, and disabling local auth stops key use entirely. Longer keys or keys in source control keep the same risk, and open public access widens exposure."
+          },
+          "key": "Secure Azure AI with Entra auth and disabled keys, private networking, CMK where needed, Content Safety and Prompt Shields, Defender for AI and AI posture management."
+        },
+        {
+          "title": "Evaluating network designs",
+          "steps": [
+            [
+              "Topology and segmentation",
+              "Ana checks for **hub and spoke** (or secured Virtual WAN hubs) inside a landing zone, with shared services in the hub and spokes not peered directly. Segmentation uses **NSGs** at subnets, **application security groups** by role and default deny, with micro segmentation for sensitive tiers."
+            ],
+            [
+              "Inspection",
+              "**Azure Firewall** with user defined routes inspects traffic. **Basic** suits small sites, **Standard** adds threat intelligence filtering and web categories, and **Premium** adds TLS inspection, IDPS and full URL filtering for sensitive workloads. Firewall Manager policies manage rules centrally."
+            ],
+            [
+              "PaaS access and edge",
+              "PaaS access uses **private endpoints** with private DNS and public access disabled, since service endpoints are the weaker older option. The edge has **DDoS Protection** and **WAF**. Admin access uses Bastion or just in time access, with no public RDP or SSH."
+            ],
+            [
+              "Visibility and hybrid",
+              "Virtual network flow logs, Traffic Analytics and firewall logs flow to Sentinel. Hybrid links use ExpressRoute or VPN, and **Security Service Edge** increasingly replaces user VPNs. Harlow's existing design has spokes peered directly to each other, bypassing the firewall, which Ana flags first."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's spoke networks are peered directly to each other, so traffic between them never passes the hub firewall. What should Ana recommend?",
+            "options": [
+              "Give every VM a public IP",
+              "Add more direct peerings",
+              "Disable the hub firewall",
+              "Remove spoke to spoke peering and route traffic through the hub firewall"
+            ],
+            "answer": 3,
+            "why": "Hub and spoke designs send traffic between spokes through the hub firewall for inspection. More direct peering or removing the firewall loses inspection, and public IPs add exposure."
+          },
+          "key": "Evaluate networks for hub and spoke inspection, segmentation, private endpoints, edge DDoS and WAF, no public admin ports, and flow logs into Sentinel."
+        },
+        {
+          "title": "Microsoft Entra Internet Access",
+          "steps": [
+            [
+              "Security Service Edge",
+              "**Security Service Edge (SSE)** moves network security into the cloud, close to users. Microsoft's SSE is **Global Secure Access**, made up of Microsoft Entra Internet Access and Microsoft Entra Private Access."
+            ],
+            [
+              "A secure web gateway",
+              "**Internet Access** acquires traffic through the Global Secure Access client or branch remote networks. **Web content filtering** policies allow or block by category, domain or URL, grouped into **security profiles**. Linking a profile through Conditional Access makes filtering user and context aware, while a baseline profile covers all traffic. TLS inspection, threat intelligence and AI protections extend it."
+            ],
+            [
+              "Microsoft services and tenants",
+              "The Microsoft traffic profile adds **universal tenant restrictions**, enforcing tenant restrictions v2 so users can only sign in to allowed tenants without a proxy injecting headers, which stops data going to personal or foreign tenants. The **compliant network check** lets Conditional Access require traffic through Global Secure Access, enforced at sign in and, for CAE apps, in near real time. **Source IP restoration** keeps users' real IPs in logs."
+            ],
+            [
+              "Firewall versus Internet Access",
+              "Azure Firewall protects Azure workloads' outbound traffic. Internet Access protects **users** wherever they are. Ana chooses Internet Access for Harlow's field staff, who rarely connect to the office network."
+            ]
+          ],
+          "check": {
+            "q": "Harlow wants to stop staff uploading files to personal Microsoft 365 tenants from any location, without running an on premises proxy. Which feature fits?",
+            "options": [
+              "A WAF custom rule",
+              "Azure Firewall Premium",
+              "Universal tenant restrictions through the Microsoft traffic profile",
+              "Network security groups"
+            ],
+            "answer": 2,
+            "why": "Universal tenant restrictions enforce tenant restrictions v2 for client traffic anywhere, with no proxy. Azure Firewall protects Azure workloads, and WAF and NSGs do not control which tenants users sign in to."
+          },
+          "key": "Entra Internet Access is a user centric secure web gateway, and its Microsoft profile adds universal tenant restrictions and the compliant network check."
+        },
+        {
+          "title": "Evaluating Microsoft Entra Private Access",
+          "steps": [
+            [
+              "Why move from VPN",
+              "Traditional VPNs put a user on the network, which allows lateral movement. **Private Access** grants access per application instead."
+            ],
+            [
+              "Components",
+              "The Global Secure Access client with the Private Access profile, **private network connectors** that make only outbound connections from near the apps, grouped by site, and apps defined as enterprise applications."
+            ],
+            [
+              "Quick Access and per app",
+              "**Quick Access** is one broad app holding many addresses and ports, the fast way to retire a VPN. **Per app** applications carve out subsets that need their own users, Conditional Access or time limits."
+            ],
+            [
+              "Security and pattern",
+              "Each app gets its own assignments and **Conditional Access**, such as MFA, compliant devices or authentication strengths, even for older protocols like RDP, SMB and SSH. It supports TCP and UDP, private DNS and Kerberos SSO. Ana's pattern for Harlow: start with Quick Access to retire the VPN, then move the SCADA engineering servers into per app applications with stricter policies."
+            ]
+          ],
+          "check": {
+            "q": "Ana wants Harlow's SCADA engineering servers to require phishing resistant MFA and a compliant device, while other internal apps need only MFA. How should she design Private Access?",
+            "options": [
+              "Per app applications for the SCADA servers with their own Conditional Access",
+              "One Quick Access app for everything",
+              "Keep the legacy VPN",
+              "Open RDP to the internet"
+            ],
+            "answer": 0,
+            "why": "Per app applications can carry stricter Conditional Access than the broad Quick Access app. A single Quick Access app applies one policy to everything, and VPNs or public RDP lose per app control."
+          },
+          "key": "Private Access replaces VPNs with per app access through outbound connectors, starting with Quick Access and carving sensitive apps into per app applications."
+        }
+      ]
+    },
+    {
+      "title": "Design security solutions for applications and data",
+      "intro": "The final module covers Microsoft 365, applications and data (about 20 to 25 percent of the exam). Harlow Lines keeps customer records, network diagrams and outage data in Microsoft 365, Azure SQL, Cosmos DB and Storage, builds its own customer apps, and is rolling out Microsoft 365 Copilot, so Ana's designs here protect what matters most.",
+      "lessons": [
+        {
+          "title": "Microsoft 365 posture, Defender for Office 365 and Defender for Cloud Apps",
+          "steps": [
+            [
+              "Measuring Microsoft 365 posture",
+              "**Microsoft Secure Score** gives Microsoft 365 a measurable posture, with actions worth up to 10 points, partial credit by coverage, statuses such as planned or resolved through alternate mitigation, and history and comparison with similar organisations. It is different from Defender for Cloud's secure score."
+            ],
+            [
+              "Email and collaboration",
+              "**Exchange Online Protection** gives every cloud mailbox anti malware, anti spam and zero hour auto purge. **Defender for Office 365 Plan 1** adds Safe Attachments, Safe Links and impersonation protection. **Plan 2** adds Threat Explorer, campaigns, automated investigation, attack simulation training and Defender XDR hunting."
+            ],
+            [
+              "Cloud app controls",
+              "**Defender for Cloud Apps** offers **Cloud Discovery** for shadow IT, **app connectors** for API based scanning of sanctioned apps, **Conditional Access app control** for real time browser session policies, **app governance** for risky OAuth apps and **SaaS posture management** feeding Secure Score."
+            ],
+            [
+              "Choosing",
+              "Ana evaluates which controls Harlow needs. Phishing is the top entry point, so Plan 2 is justified for the SOC's investigation tools. Contractors use personal laptops, so session policies block downloads of network diagrams on unmanaged devices."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's SOC needs to search all email for a phishing campaign and run phishing simulations for staff. What does Ana need?",
+            "options": [
+              "Exchange Online Protection only",
+              "Defender for Office 365 Plan 2",
+              "Defender for Office 365 Plan 1",
+              "Defender for Cloud Apps Cloud Discovery"
+            ],
+            "answer": 1,
+            "why": "Threat Explorer and attack simulation training are Plan 2 features. EOP and Plan 1 lack them, and Cloud Discovery finds shadow IT rather than investigating email."
+          },
+          "key": "Measure Microsoft 365 with Secure Score, choose Defender for Office 365 Plan 1 or 2 by need, and pick Defender for Cloud Apps controls from discovery to session policy."
+        },
+        {
+          "title": "Intune, Purview and Copilot data security",
+          "steps": [
+            [
+              "Intune",
+              "**Intune** enrols corporate devices, deploys configuration and endpoint security policies, and defines **compliance** (OS version, encryption, passwords, optionally Defender for Endpoint risk) that Conditional Access requires. **App protection policies** protect data in managed apps on personal devices without enrolment."
+            ],
+            [
+              "Purview for Microsoft 365 data",
+              "**Sensitivity labels** classify and can encrypt items, with protection that travels. **Container labels** control Teams, groups and sites. Auto labelling works in Office apps and as service side policies run in simulation first. **DLP** warns, blocks or audits, **retention** keeps or deletes, and **insider risk** with Adaptive Protection tightens DLP for risky users."
+            ],
+            [
+              "How Copilot uses data",
+              "Microsoft 365 Copilot grounds answers in content the user can already access, respects labels (needing view and extract rights for encrypted items), and generated content can inherit the highest priority label of its sources. The risk is surfacing overshared content."
+            ],
+            [
+              "Copilot controls",
+              "**DSPM** data risk assessments find oversharing. **SharePoint Advanced Management** adds Restricted Content Discovery, restricted access control and site access reviews. A **DLP policy for the Copilot location** can stop Copilot processing labelled items or prompts containing sensitive information. Audit, eDiscovery, retention and the risky AI usage template cover prompts and responses."
+            ]
+          ],
+          "check": {
+            "q": "Harlow wants Copilot never to use documents labelled Highly Confidential in its answers. Which control fits?",
+            "options": [
+              "An Intune compliance policy",
+              "A longer retention policy",
+              "A DLP policy for the Microsoft 365 Copilot location excluding that label",
+              "Defender for Office 365 Safe Links"
+            ],
+            "answer": 2,
+            "why": "DLP for the Copilot location can stop Copilot processing items with specified labels. Retention, device compliance and Safe Links do not control what Copilot can ground on."
+          },
+          "key": "Intune supplies device and app health, Purview labels, DLP and retention protect data, and Copilot is governed with DSPM, SharePoint Advanced Management and Copilot DLP."
+        },
+        {
+          "title": "Application portfolio posture and threat modelling",
+          "steps": [
+            [
+              "Assessing the portfolio",
+              "Before redesigning, Ana inventories every Harlow app with its owner, hosting, data classification and internet exposure, scores its business criticality, and gathers posture data from Defender for Cloud recommendations, DevOps security findings, Defender CSPM attack paths and Defender for Cloud Apps. Internet facing apps with sensitive data and exploitable findings come first."
+            ],
+            [
+              "What threat modelling is",
+              "**Threat modelling** is a structured design review and a core Security Development Lifecycle practice, with five steps: define security requirements, diagram the application, identify threats, mitigate them and validate the mitigations."
+            ],
+            [
+              "Diagrams and trust boundaries",
+              "The diagram is a **data flow diagram** of processes, data stores, external entities, data flows and **trust boundaries**, where privilege or ownership changes, such as internet to web tier. Threats cluster at boundary crossings."
+            ],
+            [
+              "STRIDE",
+              "**STRIDE** maps each threat to the property it breaks: spoofing (authentication), tampering (integrity), repudiation (audit logs), information disclosure (confidentiality), denial of service (availability) and elevation of privilege (authorisation). The free Microsoft Threat Modeling Tool suggests threats from the diagram, and models are revisited whenever the design changes."
+            ]
+          ],
+          "check": {
+            "q": "In a threat model of Harlow's outage portal, an attacker could deny submitting a false outage report because nothing is logged. Which STRIDE category is this?",
+            "options": [
+              "Repudiation",
+              "Spoofing",
+              "Tampering",
+              "Elevation of privilege"
+            ],
+            "answer": 0,
+            "why": "Repudiation is the ability to deny an action because there is no trustworthy record, mitigated with audit logs. Spoofing is pretending to be someone else, tampering is changing data, and elevation of privilege is gaining extra rights."
+          },
+          "key": "Assess the app portfolio by criticality and exposure, then threat model key apps with data flow diagrams, trust boundaries and STRIDE."
+        },
+        {
+          "title": "Application security lifecycle and secure development standards",
+          "steps": [
+            [
+              "Controls at every stage",
+              "A full lifecycle strategy adds security requirements and threat modelling in design, secure coding and **secret scanning with push protection** in code, **SAST** and **software composition analysis** at pull requests, IaC and image scanning with signed artefacts at build, **DAST** in test, policy guardrails at release, and runtime protection in operation."
+            ],
+            [
+              "Shift left, shield right",
+              "Finding issues early is cheapest, but runtime protection is still needed. Defender for Cloud DevOps security gives one view across Azure DevOps, GitHub and GitLab."
+            ],
+            [
+              "Standards to adopt",
+              "The **Security Development Lifecycle** defines core practices. The **OWASP Top 10** and **OWASP API Security Top 10** raise awareness of key risks. **OWASP ASVS** gives testable requirements at three levels, useful as acceptance criteria, and **OWASP SAMM** measures programme maturity."
+            ],
+            [
+              "Mandatory practices",
+              "No secrets in code (Key Vault and managed identities), parameterised queries and output encoding, Entra ID sign in through MSAL and no home made cryptography, TLS 1.2 or later, peer review and branch protection. Ana enforces them through golden templates and pipeline gates rather than documents alone."
+            ]
+          ],
+          "check": {
+            "q": "Harlow wants detailed, testable security requirements to use as acceptance criteria for new apps. Which standard fits best?",
+            "options": [
+              "STRIDE",
+              "The OWASP Top 10 awareness list",
+              "OWASP SAMM",
+              "OWASP ASVS"
+            ],
+            "answer": 3,
+            "why": "ASVS provides detailed, testable requirements at levels, ideal for acceptance criteria. The Top 10 raises awareness, SAMM measures maturity, and STRIDE classifies threats."
+          },
+          "key": "Build security into every lifecycle stage from threat modelling to runtime, and adopt SDL and OWASP standards such as ASVS enforced through templates and gates."
+        },
+        {
+          "title": "Mapping technologies to application requirements",
+          "steps": [
+            [
+              "Identity",
+              "Workforce sign in, MFA and Conditional Access map to **Microsoft Entra ID**. Customer or partner sign in maps to **Entra External ID**. App to Azure authentication without secrets maps to **managed identities** or workload identity federation."
+            ],
+            [
+              "Secrets and edge",
+              "Secrets, keys, certificates and rotation map to **Key Vault** or Managed HSM. OWASP Top 10 protection at layer 7 maps to **Azure WAF** on Application Gateway or Front Door. Volumetric network floods map to **DDoS Protection**."
+            ],
+            [
+              "APIs, networking and detection",
+              "API throttling, token validation and versioning map to **API Management**, with **Defender for APIs** for threat detection. Private connectivity to PaaS maps to **private endpoints**. Runtime threat detection maps to Defender for Cloud workload plans. Code and pipeline security maps to DevOps security with GitHub Advanced Security, and SIEM and SOAR to **Sentinel**."
+            ],
+            [
+              "Check the tier",
+              "Ana always confirms the SKU delivers the feature, for example that managed WAF rules on Front Door need the Premium tier."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's customer self service app needs consumer sign up and sign in with branding. Which technology maps to that requirement?",
+            "options": [
+              "Azure DDoS Protection",
+              "Microsoft Entra External ID",
+              "Managed identities",
+              "Azure Firewall"
+            ],
+            "answer": 1,
+            "why": "External ID provides customer identity with branded sign up and sign in. DDoS Protection and Firewall are network controls, and managed identities authenticate workloads, not customers."
+          },
+          "key": "Map requirements to services: Entra ID and External ID for people, managed identities for apps, Key Vault for secrets, WAF and DDoS at the edge, APIM for APIs, Sentinel for operations."
+        },
+        {
+          "title": "Workload identities, API Management and WAF design",
+          "steps": [
+            [
+              "Workload identities",
+              "Use **managed identities** for code in Azure (system assigned lives with one resource, user assigned is shared and pre authorised). Use **workload identity federation** for external platforms such as GitHub Actions or AKS, with issuer, subject and audience matching exactly. Use certificates only when needed, and Workload Identities Premium for Conditional Access on service principals."
+            ],
+            [
+              "API Management security",
+              "Subscription keys identify callers but are not strong authentication. API Management validates OAuth tokens (validate-jwt or the Entra specific policy), mTLS client certificates, rate limits and quotas by key, IP filters and content validation. It calls back ends with a **managed identity**, and back ends accept traffic only from APIM."
+            ],
+            [
+              "API network design",
+              "APIM can run inside a virtual network in internal mode, with Application Gateway WAF in front for public exposure and private endpoints to back ends. Named values come from Key Vault. **Defender for APIs** inventories APIs, finds unauthenticated or unused endpoints and detects runtime anomalies."
+            ],
+            [
+              "WAF design",
+              "**Front Door** WAF works globally at the edge (Premium for managed rules, bot protection and Private Link to origins). **Application Gateway WAF v2** is regional, with policies per site or per URI. The Default Rule Set uses anomaly scoring, custom rules add geo filtering and rate limits, and rollout goes detection, tuning with exclusions, then prevention."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's partner API currently accepts any caller with a valid subscription key. What should Ana add?",
+            "options": [
+              "A second subscription key",
+              "Token validation with validate-jwt for Entra issued tokens",
+              "A longer cache duration",
+              "A public IP on the back end"
+            ],
+            "answer": 1,
+            "why": "Subscription keys identify apps but do not authenticate them strongly, so OAuth token validation is needed. Extra keys, caching and public back ends do not add real authentication."
+          },
+          "key": "Prefer managed identities and federation for workloads, protect APIs with token validation, throttling and locked back ends in APIM, and choose Front Door or Application Gateway WAF by scope."
+        },
+        {
+          "title": "Data discovery, classification and priorities",
+          "steps": [
+            [
+              "Classification methods",
+              "**Sensitive information types** match patterns with checksums and keywords. **Exact data match** compares content with real values from your own tables, with few false positives. **Trainable classifiers** use machine learning for content without patterns, such as contracts or network diagrams."
+            ],
+            [
+              "Where discovery runs",
+              "**Purview Information Protection** covers Microsoft 365 content. **Purview Data Map and Unified Catalog** scan Azure SQL, Storage, Synapse, Cosmos DB, on premises SQL Server and Amazon S3. **Defender for Cloud sensitive data discovery** samples storage and databases to flag sensitive resources for attack paths and alert priority, but is not a full catalogue. Azure SQL has column level classification."
+            ],
+            [
+              "Mapping threats to data",
+              "Ransomware needs immutable backups and versioning. Exfiltration needs private endpoints, no shared keys and Defender alerts. Insider risk needs least privilege, DLP and insider risk management. Oversharing needs labels and access reviews. Key compromise needs RBAC, purge protection and separation of duties."
+            ],
+            [
+              "Prioritising",
+              "Ana prioritises controls that remove whole attack paths, such as identity based access and private networking, over controls that only detect. Encryption at rest protects against stolen media but not an attacker with valid credentials."
+            ]
+          ],
+          "check": {
+            "q": "Harlow needs a catalogue of where sensitive customer data lives across Azure SQL, Storage, on premises SQL Server and Amazon S3. Which solution fits?",
+            "options": [
+              "Azure Firewall",
+              "Defender for Cloud sensitive data discovery alone",
+              "Exchange Online Protection",
+              "Purview Data Map and Unified Catalog"
+            ],
+            "answer": 3,
+            "why": "Data Map scans and classifies data across Azure, on premises and other clouds into a catalogue. Defender's discovery samples data for risk context but is not a full catalogue, and EOP and Firewall do not classify data."
+          },
+          "key": "Choose discovery tools by depth (Purview Data Map for catalogues, Defender for risk context), map threats to data classes, and prioritise controls that remove attack paths."
+        },
+        {
+          "title": "Encryption and securing data for AI",
+          "steps": [
+            [
+              "At rest",
+              "Azure encrypts data at rest with 256 bit AES using Microsoft managed keys by default. **Customer managed keys** in Key Vault or Managed HSM add control and revocation, and need soft delete and purge protection. **Infrastructure encryption** for Storage adds a second layer, chosen at creation. **Encryption at host** covers VM temp disks and caches and replaces Azure Disk Encryption, which retires in 2028."
+            ],
+            [
+              "In transit and in use",
+              "In transit means TLS 1.2 or later, HTTPS only and secure transfer, with IPsec or MACsec on network links. In use means **confidential computing**, such as confidential VMs and Always Encrypted secure enclaves."
+            ],
+            [
+              "Data used by AI",
+              "AI data can leak through the model, retrieval or prompts. Ana requires minimising and classifying training and grounding data, **document level security filters** in Azure AI Search so users only retrieve what they could open at the source, managed identities and private endpoints for AI services, and customer managed keys for datasets."
+            ],
+            [
+              "AI runtime and governance",
+              "Prompt Shields and Defender for AI Services detect jailbreaks and leakage. Purview DSPM, endpoint DLP blocking pastes into unapproved AI sites, and the risky AI usage template cover governance. Agents get their own Entra Agent IDs with least privilege."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's outage assistant retrieves documents from an AI Search index built from many SharePoint sites. How should Ana stop users seeing documents they could not open at the source?",
+            "options": [
+              "Apply document level security filters in the search index",
+              "Turn up the temperature of the model",
+              "Encrypt the index with Microsoft managed keys only",
+              "Disable Prompt Shields"
+            ],
+            "answer": 0,
+            "why": "An index flattens documents, so permission aware filtering restores per user access. Encryption at rest does not limit who can retrieve results, and model settings or disabling Prompt Shields do not enforce permissions."
+          },
+          "key": "Encrypt at rest with customer managed or double encryption where needed, in transit with TLS 1.2+, and secure AI data with permission aware retrieval, identity and Purview governance."
+        },
+        {
+          "title": "Data security for Azure SQL, Synapse and Cosmos DB",
+          "steps": [
+            [
+              "Azure SQL",
+              "**Entra only authentication** turns off SQL logins, and apps use managed identities. Private endpoints and no public access secure the network. **TDE** encrypts at rest, optionally with customer managed keys. **Always Encrypted** keeps chosen columns encrypted from the server and DBAs. **Dynamic data masking** hides values in results but is not encryption, and **row level security** filters rows per user."
+            ],
+            [
+              "Tamper evidence",
+              "Auditing goes to Storage, Log Analytics or Event Hubs. **Ledger** tables give cryptographic tamper evidence, with digests stored in immutable storage, and a ledger database cannot be converted back."
+            ],
+            [
+              "Synapse",
+              "Azure Synapse can use a managed virtual network with **data exfiltration protection**, limiting outbound traffic to approved tenants, which must be chosen when the workspace is created. Dedicated SQL pools support Entra auth, column and row level security, masking and TDE."
+            ],
+            [
+              "Cosmos DB",
+              "Cosmos DB keys grant full data access, so Ana requires **disableLocalAuth** so clients must use Entra ID. Data plane access uses Cosmos DB's own RBAC with built in data reader and contributor roles, separate from Azure RBAC for management. Private endpoints, customer managed keys, Defender for Cosmos DB and continuous backup complete the design."
+            ]
+          ],
+          "check": {
+            "q": "Harlow's auditors need cryptographic proof that billing records in Azure SQL have not been altered. Which feature fits?",
+            "options": [
+              "Row level security",
+              "Dynamic data masking",
+              "Ledger tables",
+              "A longer TDE key"
+            ],
+            "answer": 2,
+            "why": "Ledger tables provide cryptographic tamper evidence. Masking hides values in results, row level security filters access, and TDE encrypts at rest without proving data was not changed."
+          },
+          "key": "Secure SQL with Entra only auth, TDE, Always Encrypted and ledger, Synapse with exfiltration protection at creation, and Cosmos DB with keys disabled and its own data RBAC."
+        },
+        {
+          "title": "Data security for Storage with Defender for Storage and Databases",
+          "steps": [
+            [
+              "Storage access",
+              "Use Entra ID with data roles and managed identities. **Disallowing Shared Key** blocks account keys and key signed SAS, while user delegation SAS still works. Disable anonymous blob access and set SAS expiry policies."
+            ],
+            [
+              "Network and encryption",
+              "Use private endpoints, deny or restrict public access, require secure transfer and a minimum TLS version. Add customer managed keys and, if mandated, infrastructure encryption at creation."
+            ],
+            [
+              "Protection against loss",
+              "**Soft delete**, **versioning** and point in time restore recover from mistakes and ransomware. **Immutable storage** with time based retention or legal hold prevents changes, and a **locked** time based policy cannot be shortened or deleted, as some regulations require. A lock stops account deletion."
+            ],
+            [
+              "Threat detection",
+              "**Defender for Storage** watches activity, scans uploads for malware (with automatic soft delete of malicious blobs) and raises severity for sensitive data, enabled at subscription level. **Defender for Databases** covers Azure SQL, SQL on machines through Arc, open source databases and Cosmos DB. Alerts flow to Defender XDR and Sentinel. Harlow keeps its regulated network records in locked immutable storage."
+            ]
+          ],
+          "check": {
+            "q": "Harlow must keep network asset records unchangeable for seven years, with no way for anyone to shorten the period. What should Ana specify?",
+            "options": [
+              "A storage firewall",
+              "Blob soft delete for 14 days",
+              "An unlocked time based retention policy",
+              "Immutable storage with a locked time based retention policy"
+            ],
+            "answer": 3,
+            "why": "A locked time based retention policy cannot be shortened or deleted, meeting strict retention rules. Soft delete is short and reversible, unlocked policies are for testing, and firewalls do not make data immutable."
+          },
+          "key": "Secure Storage with Entra access and no Shared Key, private networking, CMK, soft delete, versioning and locked immutability, plus Defender for Storage and Databases."
+        }
+      ]
+    }
+  ]
+}

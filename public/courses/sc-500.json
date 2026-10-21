@@ -1,0 +1,2044 @@
+{
+  "id": "sc-500",
+  "code": "SC-500",
+  "title": "Implementing End-to-End Security Controls for Cloud and AI Workloads",
+  "modules": [
+    {
+      "title": "Manage identity, access and governance",
+      "intro": "Every cloud control starts with who can sign in, what secrets apps use, and which rules keep resources in line (about 20 to 25 percent of the exam). Meet **Brightwater Insurance**, an 800 person insurer that runs claims processing on Azure: a customer portal on App Service, claim photos in Storage, a policy database in Azure SQL, containers on AKS and a claims assistant agent built in Microsoft Foundry. Tomasi, its cloud security engineer, has to secure all of it, starting with identity and governance.",
+      "lessons": [
+        {
+          "title": "Privileged Identity Management",
+          "steps": [
+            [
+              "Standing privilege is the risk",
+              "If a permanent Global Administrator or subscription Owner is phished, the attacker has everything. **Privileged Identity Management (PIM)** replaces standing rights with **just in time** and **time bound** access."
+            ],
+            [
+              "Eligible and active",
+              "An **eligible** assignment holds no permissions until the user **activates** it, often with MFA, a reason and approval. An **active** assignment works immediately but can still have an end date. PIM covers Microsoft Entra roles, Azure resource roles such as Owner on a subscription, and PIM for Groups."
+            ],
+            [
+              "Role settings",
+              "Each role's settings set the longest activation (1 to 24 hours), require MFA or a Conditional Access **authentication context** (to demand phishing resistant MFA or a compliant device), justification, ticket information and **approval**. For Azure resources, settings are per role and per scope."
+            ],
+            [
+              "Licensing and management",
+              "PIM needs Entra ID P2 or ID Governance for users with eligible or time bound assignments. Privileged Role Administrator manages PIM for Entra roles, and Owner or User Access Administrator manages it for Azure resources. Tomasi makes the platform team eligible for Contributor on the claims subscription for four hours with approval."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's platform engineers need Contributor on production only during change windows. How should Tomasi assign it?",
+            "options": [
+              "Permanent active Contributor",
+              "Owner on the management group",
+              "Eligible Contributor in PIM with approval",
+              "A dynamic group with Contributor"
+            ],
+            "answer": 2,
+            "why": "An eligible assignment means no rights until activation, and approval adds a second check for production. Permanent active and Owner both give standing access, and a dynamic group still grants rights all the time."
+          },
+          "key": "PIM makes privileged roles just in time: eligible users activate for a limited time with MFA, authentication context, reasons or approval."
+        },
+        {
+          "title": "Conditional Access policies",
+          "steps": [
+            [
+              "If, then",
+              "A **Conditional Access** policy is an if then rule checked after the first sign in step. The if part names **users** (always excluding emergency access accounts), **target resources** and **conditions** such as risk, device platform, location and client app. The then part blocks or grants access with requirements. It needs Entra ID P1."
+            ],
+            [
+              "Grant requirements",
+              "Grant controls include MFA, an **authentication strength** (such as phishing resistant MFA), a compliant or hybrid joined device, an app protection policy and a password change. Every matching policy applies, all requirements must be met, and **block always wins**."
+            ],
+            [
+              "Deploying safely",
+              "**Report only** mode evaluates policies on real sign ins without enforcing them, **What If** simulates a sign in, and the insights workbook shows the impact over time once logs reach a Log Analytics workspace."
+            ],
+            [
+              "Session controls and a baseline",
+              "Session controls set sign in frequency, persistent browser sessions, app enforced restrictions, Defender for Cloud Apps session control and token protection. Tomasi's baseline: phishing resistant strength for admin roles, block legacy authentication, and MFA for Azure management."
+            ]
+          ],
+          "check": {
+            "q": "Two policies apply to a Brightwater admin: one grants access with MFA, the other blocks access from outside New Zealand. She signs in from Fiji. What happens?",
+            "options": [
+              "She is blocked",
+              "She is let in once she completes MFA",
+              "The policy created most recently decides",
+              "She gets a limited, browser only session"
+            ],
+            "answer": 0,
+            "why": "All matching policies apply and a block overrides any grant. Completing MFA cannot lift a block, and policy age has no effect on evaluation."
+          },
+          "key": "Conditional Access combines users, resources and conditions into block or grant decisions, all matching policies apply, and block wins."
+        },
+        {
+          "title": "Authentication methods, MFA and passwordless",
+          "steps": [
+            [
+              "One methods policy",
+              "Methods are managed in the **authentication methods policy**, targeting each method to users or groups. Older tenants migrate away from the legacy MFA and SSPR method settings. **Authentication Policy Administrator** configures the policy."
+            ],
+            [
+              "Common methods",
+              "**Microsoft Authenticator** offers push with **number matching**, passwordless phone sign in and passkeys. A **Temporary Access Pass** is a time limited code for onboarding or recovery. Text and voice are the weakest and best kept as fallbacks. OATH tokens offer one time codes."
+            ],
+            [
+              "Passwordless and phishing resistant",
+              "**Passkeys (FIDO2)**, **Windows Hello for Business** and multifactor **certificate based authentication** are phishing resistant, because the key only works with the genuine site. Passkey profiles can restrict passkey types, enforce attestation and allow or block specific key models."
+            ],
+            [
+              "Enforcing strength",
+              "Conditional Access **require authentication strength** with phishing resistant MFA enforces those methods. Users must have done MFA in the last five minutes to register a passkey, and a TAP satisfies that for new staff. Brightwater gives every admin a FIDO2 key."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi wants Brightwater admins to use only methods that a fake login page cannot reuse. What should he require?",
+            "options": [
+              "Authenticator push with number matching",
+              "MFA with any registered method",
+              "Text message codes with a short expiry",
+              "Phishing resistant authentication strength"
+            ],
+            "answer": 3,
+            "why": "Phishing resistant strength allows only FIDO2 passkeys, Windows Hello for Business and multifactor CBA. Push with number matching and text codes can still be relayed by a phishing site, and plain MFA accepts those weaker methods."
+          },
+          "key": "Manage methods in one policy, and enforce passkeys, Windows Hello or certificate auth with a phishing resistant authentication strength."
+        },
+        {
+          "title": "Identity for applications",
+          "steps": [
+            [
+              "Two objects per app",
+              "An **app registration** (the application object) lives in the home tenant and defines the app: client ID, redirect addresses, credentials, permissions it asks for and app roles. An **enterprise application** (the service principal) is the app's instance in each tenant that uses it, holding consented permissions, assignments and SSO settings."
+            ],
+            [
+              "Enterprise app properties",
+              "**Assignment required** set to yes means only assigned users or groups get tokens. **Visible to users** only controls My Apps. **Enabled for users to sign in** is the kill switch. Application Administrator and Cloud Application Administrator manage apps, and Application Developer can register them."
+            ],
+            [
+              "Credentials",
+              "Apps prove who they are with a **client secret** (easy but leak prone), a **certificate** (recommended, ideally kept in Key Vault) or a **federated identity credential**, which trusts tokens from GitHub Actions, Kubernetes or another cloud so no secret exists at all. Application management policies can limit secret lifetimes or block secrets."
+            ],
+            [
+              "Workload ID Premium",
+              "**Microsoft Entra Workload ID Premium** adds Conditional Access for workload identities, such as blocking a service principal outside known IP ranges, ID Protection for risky service principals and access reviews for privileged service principals. Brightwater's deployment pipeline uses a federated credential, so there is no secret to steal."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's GitHub Actions pipeline deploys to Azure. Tomasi wants no stored secret for it at all. What should the app registration use?",
+            "options": [
+              "A client secret rotated monthly",
+              "A federated identity credential",
+              "A certificate in the repository",
+              "A shared user account"
+            ],
+            "answer": 1,
+            "why": "Workload identity federation lets Entra ID trust GitHub's tokens, so no secret exists to leak. Rotated secrets and stored certificates still exist somewhere, and user accounts are for people."
+          },
+          "key": "App registrations define an app, enterprise apps are its per tenant instance, and federated credentials or certificates beat client secrets."
+        },
+        {
+          "title": "OAuth permission grants and consent",
+          "steps": [
+            [
+              "Delegated and application permissions",
+              "**Delegated** permissions let an app act as the signed in user and never exceed that user's rights. **Application** permissions let it act as itself with no user, often across the whole tenant, and always need **admin consent**."
+            ],
+            [
+              "What consent creates",
+              "Consent creates a **permission grant** on the app's service principal. Admin consent grants on behalf of everyone. Grants can be reviewed and revoked on the enterprise app's permissions page."
+            ],
+            [
+              "User consent settings",
+              "Options are: do not allow user consent; allow it for **verified publishers** and only for permissions classified as **low impact** (recommended); or allow it for any app, the risky legacy setting. Permission classifications decide what counts as low impact."
+            ],
+            [
+              "The attack and the workflow",
+              "**Illicit consent grant**, or consent phishing, tricks users into granting a malicious app access to their mail or files. The **admin consent workflow** lets users request consent with a reason, reviewed by chosen people who already hold a role able to grant it. Tomasi finds and revokes a grant a claims handler gave to an unknown PDF tool."
+            ]
+          ],
+          "check": {
+            "q": "A Brightwater user was tricked into granting an unknown app permission to read her mail. What should Tomasi do first?",
+            "options": [
+              "Rotate the app's client secret",
+              "Revoke the app's permission grant",
+              "Block the user from signing in",
+              "Turn off user consent for the future only"
+            ],
+            "answer": 1,
+            "why": "Removing the grant on the service principal stops the app using it now. The malicious app's own secret belongs to the attacker, blocking the user does not remove the app's existing access, and changing consent settings affects only future requests."
+          },
+          "key": "Application permissions always need admin consent, limit user consent to verified publishers and low impact permissions, and revoke illicit grants."
+        },
+        {
+          "title": "Managed identities",
+          "steps": [
+            [
+              "Identity without secrets",
+              "A **managed identity** is a service principal whose credentials Azure creates and rotates. Code on the resource asks for a token through the Azure Identity library or the local metadata endpoint, then uses it with Key Vault, Storage, SQL or Azure Resource Manager."
+            ],
+            [
+              "System assigned",
+              "A **system assigned** identity is enabled on one resource, shares its name, is deleted automatically with it, and cannot be shared with any other resource."
+            ],
+            [
+              "User assigned",
+              "A **user assigned** identity is its own Azure resource that can be attached to many resources and must be deleted on its own. It suits scale sets, resources rebuilt often and granting access before deployment. **Managed Identity Contributor** creates them and **Managed Identity Operator** attaches them."
+            ],
+            [
+              "Authorisation is separate",
+              "Turning on an identity grants nothing. Tomasi gives the claims portal's identity **Key Vault Secrets User** on its vault and Storage Blob Data Reader on the photos container. Without those role assignments, token requests succeed but calls are refused."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater rebuilds its VM scale set weekly, and every instance needs the same Key Vault access. Which identity type fits best?",
+            "options": [
+              "A system assigned identity on each VM",
+              "A client secret stored in each image",
+              "A service principal with a certificate",
+              "A user assigned managed identity"
+            ],
+            "answer": 3,
+            "why": "A user assigned identity survives rebuilds and keeps its role assignments. System assigned identities are recreated with each resource, and secrets or certificates reintroduce credentials to manage."
+          },
+          "key": "Managed identities remove secrets, system assigned ones live with one resource, user assigned ones are shared, and both still need role assignments."
+        },
+        {
+          "title": "Deploying and configuring Key Vault",
+          "steps": [
+            [
+              "Tiers",
+              "**Azure Key Vault** stores secrets, keys and certificates. **Standard** uses software protected keys. **Premium** adds HSM protected keys. **Managed HSM** is a dedicated single tenant HSM cluster with its own security domain and local RBAC, holding keys only."
+            ],
+            [
+              "Design choices",
+              "One vault per application, environment and region limits blast radius. New vaults default to the **Azure RBAC** permission model. Tomasi creates separate vaults for the claims portal in test and production."
+            ],
+            [
+              "Recovery settings",
+              "**Soft delete** is always on and keeps deleted items for 7 to 90 days (90 by default), set at creation. **Purge protection** is optional but cannot be turned off once on, and stops anyone purging deleted items before the retention ends. Services using customer managed keys, such as Storage, require it."
+            ],
+            [
+              "Access flags and logging",
+              "Flags let VMs retrieve certificates, Azure Disk Encryption unwrap keys, and Resource Manager read secrets during template deployment. **Diagnostic settings** send AuditEvent logs of every data plane request to Log Analytics, and Event Grid can raise events when items near expiry."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater will use its own key to encrypt a storage account. What must be enabled on the vault that holds the key?",
+            "options": [
+              "Purge protection, with soft delete",
+              "Public network access from all networks",
+              "The template deployment flag only",
+              "The Standard tier"
+            ],
+            "answer": 0,
+            "why": "Customer managed key scenarios require soft delete and purge protection so the key cannot be permanently destroyed early. Network and tier choices do not meet that requirement, and the template flag is for deployments."
+          },
+          "key": "Choose the Key Vault tier, one vault per app and environment, and turn on purge protection, which customer managed keys require."
+        },
+        {
+          "title": "Key Vault access and firewall",
+          "steps": [
+            [
+              "Two planes",
+              "The **control plane** creates and configures vaults and uses Azure RBAC, such as Key Vault Contributor. The **data plane** reads secrets and uses keys, governed by the vault's permission model. **Key Vault Contributor never grants data access** by itself."
+            ],
+            [
+              "RBAC versus access policies",
+              "With **Azure RBAC** (recommended), data roles such as Key Vault Secrets User, Crypto User or Certificates Officer can be assigned at vault level or on one secret, and work with PIM. Legacy **access policies** apply to the whole vault, and anyone with Key Vault Contributor can edit them to grant themselves access."
+            ],
+            [
+              "Firewall options",
+              "Public access can be open, limited to **IP rules** (public addresses only) and **virtual network rules** using service endpoints, or disabled so only **private endpoints** work. A trusted Microsoft services bypass lets some Azure services through."
+            ],
+            [
+              "Gotchas",
+              "Firewall rules affect the data plane only, so management operations still work. The portal cannot list secrets unless the admin's IP is allowed. Tomasi disables public access to the production vault and uses a private endpoint with the privatelink vaultcore private DNS zone."
+            ]
+          ],
+          "check": {
+            "q": "A Brightwater developer holds Key Vault Contributor and the vault uses access policies. Why is this a risk?",
+            "options": [
+              "Access policies expire after 24 hours",
+              "Contributor can read every secret directly",
+              "It can rewrite the policies to grant itself access",
+              "Contributor can bypass purge protection"
+            ],
+            "answer": 2,
+            "why": "With access policies, Contributor can change the policies and give itself data rights. Contributor does not read secrets directly, which is the tempting answer, and purge protection applies to everyone."
+          },
+          "key": "Key Vault separates control and data planes, Azure RBAC is preferred over access policies, and private endpoints remove public access."
+        },
+        {
+          "title": "Managing keys, secrets and certificates",
+          "steps": [
+            [
+              "Keys",
+              "Keys can be RSA or EC, software or HSM protected, and are used to encrypt, sign or **wrap** other keys. HSM key material never leaves the HSM, and you can bring your own key from an on premises HSM. Keys have activation and expiry dates."
+            ],
+            [
+              "Automatic rotation",
+              "A **rotation policy** creates a new key version after a set time or before expiry, and can notify through Event Grid first. Services using customer managed keys should point at the **versionless** key address so they pick up new versions automatically."
+            ],
+            [
+              "Secrets",
+              "Secrets hold passwords, connection strings and API keys, and each update creates a version. Expiry dates and Event Grid near expiry events let an Azure Function rotate a credential at its source and store the new value as a new version."
+            ],
+            [
+              "Certificates",
+              "A certificate in Key Vault also creates a key and a secret with the same name. Its **policy** sets subject, key type, validity and issuer, and **lifetime actions** auto renew or email contacts before expiry. Partnered CAs such as DigiCert and GlobalSign support auto renewal. Brightwater's portal TLS certificate now renews 30 days before expiry."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's storage account uses a customer managed key, and Tomasi enables key rotation. How should the storage account reference the key so it uses each new version?",
+            "options": [
+              "By the secret with the same name",
+              "By the exact current version ID",
+              "By copying the key into the storage account",
+              "By the versionless key URI"
+            ],
+            "answer": 3,
+            "why": "A versionless reference lets the service pick up new versions as they are created. A fixed version would keep using the old key, and copying keys out of the vault defeats the purpose."
+          },
+          "key": "Rotate keys with a rotation policy and versionless references, rotate secrets with expiry events, and auto renew certificates with lifetime actions."
+        },
+        {
+          "title": "Secrets scanning and Defender for Key Vault",
+          "steps": [
+            [
+              "Finding leaked secrets",
+              "Leaked SSH keys, connection strings and tokens let attackers move sideways. **Defender CSPM** scans for them agentlessly on VM disks, in cloud deployment resources and in connected Azure DevOps repositories. Machine secrets scanning also comes with Defender for Servers Plan 2."
+            ],
+            [
+              "Where findings appear",
+              "Findings show as recommendations, in asset inventory, in **cloud security explorer** queries and in **attack paths**, which show how a secret on an internet exposed VM could reach a critical asset. The fix is to rotate the credential, store it in Key Vault and have the workload read it with a managed identity."
+            ],
+            [
+              "Defender for Key Vault",
+              "**Microsoft Defender for Key Vault** watches vault operations and raises alerts for access from Tor or suspicious IPs, unusual users or apps, unusually high operation volumes, and patterns such as listing then reading many secrets, which suggests someone dumping the vault."
+            ],
+            [
+              "Responding",
+              "It is enabled per subscription in Defender for Cloud. For an alert, Tomasi identifies the source, contains it with the vault firewall or by removing the principal's access, measures impact from the AuditEvent logs, and rotates every affected secret, key and certificate."
+            ]
+          ],
+          "check": {
+            "q": "Defender for Key Vault alerts that an app listed then read dozens of secrets it never normally touches. What should Tomasi do after containing the source?",
+            "options": [
+              "Delete the vault",
+              "Dismiss the alert because the app is known",
+              "Rotate every secret that was read",
+              "Turn off diagnostic logs"
+            ],
+            "answer": 2,
+            "why": "Any secret that may have been exposed must be rotated. Recognising the app does not mean it was not compromised, deleting the vault breaks production, and logs are needed to measure impact."
+          },
+          "key": "Defender CSPM finds leaked secrets on disks and in code, and Defender for Key Vault alerts on suspicious vault access that may need secrets rotated."
+        },
+        {
+          "title": "Azure Policy definitions and effects",
+          "steps": [
+            [
+              "What a policy definition is",
+              "An **Azure Policy** definition is a JSON rule: if a resource matches conditions on its properties, then apply an **effect**. Thousands of built in definitions exist, and custom ones use property aliases when none fits. An **initiative** bundles definitions to assign together."
+            ],
+            [
+              "Effects that block or report",
+              "**Deny** blocks a non compliant create or update. **Audit** allows it but reports non compliance. **AuditIfNotExists** reports when a related resource, such as a diagnostic setting, is missing. **DenyAction** blocks specific actions such as delete."
+            ],
+            [
+              "Effects that change things",
+              "**Modify** adds or changes properties or tags on the request, and **deployIfNotExists** deploys a missing related resource using a template. Both need a managed identity with suitable roles. **Append** adds fields, **manual** records attestation by a person, and **disabled** turns a rule off."
+            ],
+            [
+              "At Brightwater",
+              "Tomasi assigns a deny policy so no storage account can allow anonymous blob access, a deployIfNotExists policy that adds diagnostic settings to every Key Vault, and a denyAction policy that stops anyone deleting the production SQL server."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi wants every new Key Vault to get a diagnostic setting automatically. Which effect does that?",
+            "options": [
+              "DeployIfNotExists",
+              "Audit",
+              "Deny",
+              "Disabled"
+            ],
+            "answer": 0,
+            "why": "DeployIfNotExists deploys a missing related resource such as a diagnostic setting, using a managed identity. Deny would block vault creation, audit only reports, and disabled does nothing."
+          },
+          "key": "Policy effects deny, audit, modify or deploy missing resources, and modify and deployIfNotExists need a managed identity."
+        },
+        {
+          "title": "Policy assignment, exemptions and remediation",
+          "steps": [
+            [
+              "Assigning a policy",
+              "An **assignment** applies a definition or initiative at a scope (management group, subscription, resource group or resource), inherited downwards. It can exclude child scopes, set parameters and include a managed identity for modify and deployIfNotExists. **Resource Policy Contributor** manages assignments."
+            ],
+            [
+              "Testing first",
+              "**Enforcement mode** can be set to do not enforce, so the policy is evaluated and reported without its effect being applied. Tomasi uses this to see how many storage accounts would fail before switching to deny."
+            ],
+            [
+              "Remediation tasks",
+              "Policies evaluate on create and update and in a regular compliance scan. Modify and deployIfNotExists act automatically only on new or changed resources, so existing non compliant resources are fixed with a **remediation task**."
+            ],
+            [
+              "Exemptions",
+              "An **exemption** marks a resource or scope as exempt, either as a **waiver** (non compliance accepted for now) or **mitigated** (the goal is met another way), with an optional expiry date. Brightwater exempts a legacy app's storage account for 60 days while it is migrated."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater assigns a deployIfNotExists policy, but 40 existing VMs remain non compliant. What should Tomasi run?",
+            "options": [
+              "A new definition",
+              "A remediation task",
+              "A resource lock",
+              "An exemption for all 40"
+            ],
+            "answer": 1,
+            "why": "DeployIfNotExists only acts on new or updated resources automatically, so a remediation task fixes existing ones. Exempting them would hide the problem, and locks and new definitions do not deploy anything."
+          },
+          "key": "Assign policies at the right scope, test with do not enforce, fix existing resources with remediation tasks, and record waivers as exemptions."
+        },
+        {
+          "title": "Compliance, standards and recommendations in Defender for Cloud",
+          "steps": [
+            [
+              "Regulatory compliance",
+              "**Regulatory compliance** in Defender for Cloud shows control by control how resources meet a standard. Each control maps to automatically checked recommendations: green passes, red fails, greyed out cannot be assessed automatically. The **Microsoft cloud security benchmark (MCSB)** is on by default."
+            ],
+            [
+              "Adding standards",
+              "Standards such as ISO 27001, PCI DSS, NIST SP 800-53 and SOC 2 can be added once any paid Defender plan is on except Defender for Servers Plan 1 or Defender for APIs Plan 1, by someone with rights to assign policy. A passing dashboard is technical evidence, not certification."
+            ],
+            [
+              "Standards and recommendations",
+              "In Azure, each **security standard** is backed by a policy initiative. **Recommendations** have severity, risk level, affected resources and fix steps, often with quick fix or enforce buttons. Resources can be exempted, and **governance rules** assign owners and due dates."
+            ],
+            [
+              "Secure score and custom content",
+              "**Secure score** drops most for open high risk recommendations, and preview ones do not count. Custom recommendations can be written as KQL over the cloud security graph (needs Defender CSPM) or as custom Azure Policy definitions. Brightwater adds PCI DSS for its card payment component and assigns owners to every critical finding."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater wants PCI DSS tracked in Defender for Cloud, but the option is unavailable. Only Defender for Servers Plan 1 is enabled. What is needed?",
+            "options": [
+              "Assign the standard with a resource lock",
+              "Foundational CSPM is enough",
+              "A qualifying paid plan, such as Defender CSPM",
+              "An Entra ID P2 licence"
+            ],
+            "answer": 2,
+            "why": "Adding regulatory standards needs a paid Defender plan other than Servers Plan 1 or APIs Plan 1. Foundational CSPM is free and not enough, and locks and Entra licences are unrelated."
+          },
+          "key": "Regulatory compliance maps standards to recommendations, extra standards need a qualifying paid plan, and recommendations feed secure score and governance."
+        },
+        {
+          "title": "Resource locks",
+          "steps": [
+            [
+              "Two lock levels",
+              "**Resource locks** protect resources from accidental change. **CanNotDelete** allows reading and changing but not deleting. **ReadOnly** allows reading only. Locks can sit on a subscription, resource group or resource."
+            ],
+            [
+              "Locks beat roles",
+              "Locks override RBAC: even an Owner must remove the lock first. They are inherited by everything below, including resources created later, and the most restrictive applies. A lock on any resource also blocks deletion of its resource group."
+            ],
+            [
+              "Control plane only",
+              "Locks apply to management operations only. A lock on a storage account does not protect the blobs inside, and a ReadOnly lock on a SQL server does not stop data changes in its databases."
+            ],
+            [
+              "Side effects",
+              "Some operations are implemented as POST requests, so ReadOnly can break them: listing storage keys fails, VMs in a ReadOnly group cannot start, and App Service plans cannot scale. Only roles with lock permissions, such as Owner and User Access Administrator, manage locks, and Contributor cannot. Brightwater puts CanNotDelete on its production resource groups."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi puts a ReadOnly lock on the resource group holding Brightwater's batch VMs, and the nightly job can no longer start them. Why?",
+            "options": [
+              "ReadOnly blocks starting VMs",
+              "The lock stops the VMs' scheduled tasks",
+              "ReadOnly removes the VMs' managed identities",
+              "Locks block all outbound network traffic"
+            ],
+            "answer": 0,
+            "why": "Starting a VM is a management operation that ReadOnly blocks. CanNotDelete would have prevented deletion while letting the job run. Locks do not touch identities, scheduled tasks or networking."
+          },
+          "key": "CanNotDelete and ReadOnly locks override RBAC, are inherited, protect only management operations, and ReadOnly can break routine actions."
+        },
+        {
+          "title": "Built-in and custom role assignments",
+          "steps": [
+            [
+              "Who, what, where",
+              "**Azure RBAC** answers who can do what where. Prefer **groups** over individuals and managed identities for workloads, choose the narrowest **job function role** (such as Virtual Machine Contributor or Storage Blob Data Reader) and assign at the lowest scope, because permissions inherit downwards."
+            ],
+            [
+              "Privileged roles",
+              "**Owner**, **Contributor**, **User Access Administrator** and **Role Based Access Control Administrator** are high risk. Contributor manages resources but cannot assign roles. RBAC Administrator only manages role assignments and supports **conditions** that limit which roles it may assign. Owner of a storage account does not automatically read data: data roles grant data actions."
+            ],
+            [
+              "Custom Azure roles",
+              "A custom Azure role lists Actions, NotActions, DataActions and NotDataActions with assignable scopes. NotActions is not a deny: another assignment can still grant the action. Roles with data actions cannot be assigned at management group scope. A good start is cloning a built in role and trimming it."
+            ],
+            [
+              "Custom Entra roles",
+              "Custom **Entra roles** are built from directory permissions, need P1 for assignees, and can be scoped to the tenant, an administrative unit or a single app. Azure roles never grant directory permissions, and Entra roles never grant Azure resource rights."
+            ]
+          ],
+          "check": {
+            "q": "A Brightwater custom Azure role lists delete in NotActions, but the user can still delete resources. Why?",
+            "options": [
+              "Custom roles take effect only after a day",
+              "Delete is a data action, not an action",
+              "NotActions applies only at management group scope",
+              "NotActions is not a deny"
+            ],
+            "answer": 3,
+            "why": "NotActions only subtracts from that role's own actions. If another assignment, such as Contributor, grants delete, the union of assignments allows it. Real denial needs a lock or a deny assignment."
+          },
+          "key": "Assign narrow job roles to groups at low scope, treat Owner and User Access Administrator as high risk, and remember NotActions is not a deny."
+        },
+        {
+          "title": "Finding and fixing overprivileged access",
+          "steps": [
+            [
+              "Least privilege",
+              "**Least privilege** means the smallest role, at the lowest scope, for the shortest time. Azure RBAC is additive, so a principal's effective rights are the union of every assignment."
+            ],
+            [
+              "Finding the problems",
+              "Tomasi lists role assignments in access control and with Azure Resource Graph to find Owners at subscription or management group scope. Defender for Cloud recommends limiting subscription owners and removing blocked or guest accounts with owner rights. **CIEM** in Defender CSPM finds inactive and overprovisioned identities across Azure, AWS and GCP based on actual use."
+            ],
+            [
+              "Fixing them",
+              "Replace Owner and Contributor with job specific roles, move assignments down to resource groups or resources, assign to groups, and convert standing privileged assignments to **PIM eligible** with approval. Remove orphaned assignments shown as identity not found, and unused service principals."
+            ],
+            [
+              "Keeping it fixed",
+              "Recurring **access reviews** of Azure roles through PIM, with auto apply removing denied access, stop the problem coming back. RBAC conditions limit what delegated admins can assign. Brightwater cuts its subscription Owners from eleven to three."
+            ]
+          ],
+          "check": {
+            "q": "CIEM shows a Brightwater service principal holds Contributor on the subscription but has only ever read one storage container. What is the best fix?",
+            "options": [
+              "Move it to Contributor on one resource group",
+              "Storage Blob Data Reader on that container",
+              "Leave it, as it has never misused the role",
+              "Make it eligible for Contributor in PIM"
+            ],
+            "answer": 1,
+            "why": "Least privilege means matching the role and scope to real use, which is read access to one container. Contributor on a resource group is still far too broad, and PIM eligibility helps people rather than an always running service principal."
+          },
+          "key": "Find broad and unused rights with role listings, Defender recommendations and CIEM, then narrow roles and scopes, use PIM and review access regularly."
+        },
+        {
+          "title": "Azure Backup security features",
+          "steps": [
+            [
+              "Attackers go after backups",
+              "Ransomware crews often delete backups before encrypting production. Recovery Services vaults and Backup vaults offer layers to stop that."
+            ],
+            [
+              "Soft delete and immutability",
+              "**Enhanced soft delete** keeps deleted backup data recoverable for 14 to 180 days, and always on soft delete cannot be disabled. An **immutable vault** blocks deleting recovery points before expiry or reducing retention. It can be enabled and later **locked**, after which it cannot be undone."
+            ],
+            [
+              "Multi user authorisation",
+              "**Multi user authorisation (MUA)** uses a separate **Resource Guard** owned by a security admin, ideally in another subscription or tenant. Critical operations, such as disabling soft delete or reducing protection, need a permission on the Resource Guard, which the security admin grants only temporarily, ideally through PIM."
+            ],
+            [
+              "Other controls",
+              "Backup roles (Backup Contributor, Operator, Reader), customer managed key encryption, private endpoints and alerts in Azure Monitor and Defender for Cloud complete the picture. Brightwater locks immutability on the claims database vault and puts its Resource Guard in a separate security subscription."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi wants a backup admin to be unable to disable soft delete on Brightwater's vault without a second person approving. What should he configure?",
+            "options": [
+              "A CanNotDelete lock on the vault",
+              "Multi user authorisation with a Resource Guard",
+              "Increase the soft delete period to 180 days",
+              "Immutable vault in the enabled state only"
+            ],
+            "answer": 1,
+            "why": "MUA requires permission on a Resource Guard controlled by someone else before critical operations such as disabling soft delete. A lock does not cover backup settings, and a longer period or reversible immutability does not stop the change itself."
+          },
+          "key": "Protect backups with enhanced soft delete, immutable vaults and multi user authorisation through a separately owned Resource Guard."
+        },
+        {
+          "title": "Security controls with infrastructure as code",
+          "steps": [
+            [
+              "No secrets in templates",
+              "**Infrastructure as code (IaC)** describes resources in files such as Bicep or ARM templates. Secrets never belong in them: use secure parameters and reference Key Vault secrets, with getSecret in Bicep or a Key Vault reference in a parameter file. The vault needs template deployment enabled."
+            ],
+            [
+              "Deploying controls as code",
+              "Locks, role assignments, policy assignments, diagnostic settings and private endpoints can all be declared in templates, so every environment gets the same controls. **Policy as code** keeps definitions and assignments in Git, deployed through pipelines."
+            ],
+            [
+              "Deployment stacks",
+              "**Deployment stacks** manage a set of resources as one unit with **deny settings** that block deletes, or writes and deletes, on the managed resources, with a few excluded principals such as the pipeline identity."
+            ],
+            [
+              "Scanning before deployment",
+              "**Microsoft Security DevOps** runs scanners such as Template Analyzer, Checkov and Terrascan in GitHub or Azure DevOps pipelines, and results appear in Defender for Cloud DevOps security. what-if deployments preview changes. Brightwater's pipeline now fails if a template opens storage to anonymous access."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's Bicep template needs the SQL admin password during deployment. How should Tomasi provide it?",
+            "options": [
+              "Email it to the pipeline owner",
+              "Hard code it in the template",
+              "Put it in a plain text parameter file in Git",
+              "Reference a Key Vault secret with getSecret"
+            ],
+            "answer": 3,
+            "why": "Referencing a Key Vault secret keeps the password out of code and history. Hard coding it or storing it in Git exposes it to anyone with repository access."
+          },
+          "key": "Keep secrets out of templates with Key Vault references, deploy controls as code, protect with deployment stacks and scan templates in the pipeline."
+        }
+      ]
+    },
+    {
+      "title": "Secure storage, databases and networking",
+      "intro": "Data is what attackers want, and networks decide how they reach it. This module secures storage accounts, Azure SQL and other databases, and the network paths between them (about 25 to 30 percent of the exam). Brightwater Insurance keeps claim photos in Storage, policies in Azure SQL, and connects branch offices and remote assessors to Azure, so every lesson has a real target.",
+      "lessons": [
+        {
+          "title": "Storage account baseline and encryption",
+          "steps": [
+            [
+              "The account baseline",
+              "Before anything else, Tomasi locks down the account. **Secure transfer required** rejects plain HTTP. **Minimum TLS version** should be 1.2. **Allow blob anonymous access** set to false means no container can be read anonymously, whatever its own setting. **Public network access** can be open, limited to chosen networks, or disabled."
+            ],
+            [
+              "Policy keeps it that way",
+              "Built in Azure Policy definitions, such as requiring secure transfer or disallowing anonymous access, stop new accounts drifting from the baseline."
+            ],
+            [
+              "Customer managed keys",
+              "Storage always encrypts data. With **customer managed keys**, the account wraps its data keys with a key in Key Vault or Managed HSM. The vault needs soft delete and purge protection, and the account's managed identity needs get, wrap and unwrap rights. Disabling the key cuts off access to the data."
+            ],
+            [
+              "Infrastructure encryption",
+              "**Infrastructure encryption** adds a second encryption layer with a separate Microsoft managed key. It must be chosen when the account is created and cannot be changed later. **Encryption scopes** allow different keys per container. Brightwater uses its own key for the claim photos account."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's compliance team wants double encryption on a new claims archive account. When must Tomasi choose infrastructure encryption?",
+            "options": [
+              "When creating the account",
+              "Any time from the encryption page",
+              "Only after enabling customer managed keys",
+              "After the first year"
+            ],
+            "answer": 0,
+            "why": "Infrastructure encryption can only be set at creation and cannot be turned on or off later. It does not depend on customer managed keys."
+          },
+          "key": "Secure storage with HTTPS, TLS 1.2, no anonymous access and limited network access, and use customer managed keys or infrastructure encryption where needed."
+        },
+        {
+          "title": "Azure Storage firewall rules",
+          "steps": [
+            [
+              "Default deny",
+              "Choosing **enabled from selected networks** makes the storage firewall deny by default. Only listed sources reach the public endpoint, and they still need valid authorisation. The firewall never grants data access by itself."
+            ],
+            [
+              "IP and network rules",
+              "**IP rules** allow public IPv4 addresses or ranges only, not private ranges, and do not apply to clients in the same Azure region. **Virtual network rules** allow a subnet that has the Microsoft.Storage service endpoint, so traffic arrives from that subnet."
+            ],
+            [
+              "Resource instances and trusted services",
+              "**Resource instance rules** allow a specific instance of a supported service in the same tenant, such as one analytics workspace. **Trusted service exceptions** let certain Azure services, such as logging and backup, connect with strong authentication."
+            ],
+            [
+              "At Brightwater",
+              "The claims photo account allows only the portal's subnet and Brightwater's office public IP, plus trusted services for backup. A SAS restricted to an IP can never grant more than the network rules allow."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi adds an IP rule for an Azure VM in the same region as the storage account, but the VM is still blocked. Why?",
+            "options": [
+              "The VM needs a SAS as well as the rule",
+              "IP rules apply only to IPv6 clients",
+              "Same region clients ignore IP rules",
+              "The rule needs a priority number"
+            ],
+            "answer": 2,
+            "why": "Same region traffic uses private Azure addresses, so IP rules have no effect. A virtual network rule with a service endpoint, or a private endpoint, fixes it. IP rules are IPv4 and have no priorities."
+          },
+          "key": "The storage firewall denies by default once enabled, allowing listed public IPs, subnets with service endpoints, resource instances and trusted services."
+        },
+        {
+          "title": "Defender for Storage",
+          "steps": [
+            [
+              "What it watches",
+              "**Microsoft Defender for Storage** raises alerts for suspicious activity such as access from Tor or known malicious IPs, unusual data extraction and anomalous SAS use. It needs no resource logs and does not affect performance."
+            ],
+            [
+              "Malware scanning",
+              "**Malware scanning** checks blobs with Microsoft Defender Antivirus either **on upload** (every new or changed blob) or **on demand** (an account, container or single blob, for example during an incident). A monthly cap per account, 10,000 GB by default, stops scanning when reached. It is billed per GB scanned."
+            ],
+            [
+              "Results and response",
+              "Results are written as **blob index tags**, security alerts, Event Grid events and a Log Analytics table. Tags are not tamper proof. Responses include the built in option to soft delete malicious blobs, access conditions that block unscanned or malicious blobs, or an Azure Function that moves clean files onward."
+            ],
+            [
+              "Sensitive data and enablement",
+              "**Sensitive data threat detection** raises the severity of alerts that touch data classified as sensitive. Microsoft recommends enabling the plan at subscription level, with per account overrides. Brightwater scans every claim photo upload, because customers upload files directly."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater customers upload claim photos and documents directly to Storage. Tomasi wants every upload checked for malware automatically. Which setting fits?",
+            "options": [
+              "A CanNotDelete lock",
+              "On-demand malware scanning once a month",
+              "Infrastructure encryption",
+              "On-upload malware scanning"
+            ],
+            "answer": 3,
+            "why": "On-upload scanning checks every new or modified blob as it arrives. Monthly on-demand scans leave a gap, and encryption and locks do not detect malware."
+          },
+          "key": "Defender for Storage detects suspicious access and scans uploads for malware, with results as tags, alerts and events for automated response."
+        },
+        {
+          "title": "Managing access to storage",
+          "steps": [
+            [
+              "SAS types",
+              "A **shared access signature (SAS)** grants limited, time bound access. A **user delegation SAS** is signed with Entra credentials, lasts at most seven days and is the recommended type. A **service SAS** and an **account SAS** are signed with an account key."
+            ],
+            [
+              "Stored access policies",
+              "A **stored access policy** on a container sets start, expiry and permissions for any service SAS that references it, and up to five can exist per container. Deleting or changing the policy revokes those SAS tokens. Without one, a key signed SAS can only be revoked by regenerating the key. An **expiry policy** can cap SAS lifetimes."
+            ],
+            [
+              "Entra ID data roles",
+              "Data access through Entra uses **data roles** such as Storage Blob Data Reader, Contributor and Owner, assigned at the narrowest scope. Plain Reader cannot read blob data. Control plane roles that can list keys effectively get full data access through those keys."
+            ],
+            [
+              "Turning off Shared Key",
+              "Anyone with an account key has full access. Tomasi assigns the policy that audits shared key access, finds remaining key and SAS clients in metrics and logs, moves them to Entra ID, sets **allow shared key access** to false, then switches the policy to deny."
+            ]
+          ],
+          "check": {
+            "q": "A partner's service SAS for a Brightwater container leaked. It references a stored access policy. What is the fastest way to revoke it?",
+            "options": [
+              "Rotate the storage account keys",
+              "Wait for the SAS to expire",
+              "Delete or change the stored access policy",
+              "Remove the partner's Entra role"
+            ],
+            "answer": 2,
+            "why": "A SAS tied to a stored access policy is revoked by deleting or changing the policy, without disrupting other key users. Rotating keys also works but breaks everything signed with that key, waiting leaves the leak open, and Entra roles do not govern a SAS."
+          },
+          "key": "Prefer user delegation SAS and Entra data roles, use stored access policies for revocable service SAS, and disable Shared Key access when you can."
+        },
+        {
+          "title": "Azure SQL platform security",
+          "steps": [
+            [
+              "Network access",
+              "Azure SQL can disable public access (private endpoints only) or allow selected networks. **Server level IP rules** cover every database, **database level rules** cover one. The option to allow Azure services admits all of Azure, including other customers, so explicit rules or private access are better. Minimum TLS should be 1.2."
+            ],
+            [
+              "Entra only authentication",
+              "**Microsoft Entra only authentication** lets only Entra identities connect, so SQL logins stop working. An Entra admin must be set first. Owner, Contributor or **SQL Security Manager** can switch it on, while SQL Server Contributor cannot, which keeps duties separate."
+            ],
+            [
+              "Transparent data encryption",
+              "**TDE** encrypts data at rest with a database key protected by a **TDE protector**: service managed by default, or a customer managed key in Key Vault. If access to that key is removed, the database becomes inaccessible. TDE does not hide data from anyone who can query it."
+            ],
+            [
+              "Always Encrypted",
+              "**Always Encrypted** encrypts chosen columns in the client driver, so the server only stores ciphertext. A column master key in a trusted store protects the column encryption key. **Deterministic** encryption allows equality lookups, while **randomised** is stronger. Brightwater encrypts policyholders' bank numbers so even database admins cannot read them."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater wants database administrators unable to read policyholders' bank account numbers, while the app still uses them. Which feature fits?",
+            "options": [
+              "Always Encrypted on that column",
+              "TDE with a service managed key",
+              "A server level firewall rule",
+              "Entra only authentication"
+            ],
+            "answer": 0,
+            "why": "Always Encrypted keeps the column encrypted on the server, so admins see ciphertext unless they hold the column master key. TDE only protects data at rest and shows plaintext to anyone who can query it."
+          },
+          "key": "Lock down SQL network access, enforce Entra only authentication, use TDE for data at rest, and Always Encrypted to hide columns from admins."
+        },
+        {
+          "title": "Auditing Azure SQL Database and Managed Instance",
+          "steps": [
+            [
+              "SQL Database auditing",
+              "**Auditing** records database events for compliance and investigations. By default it captures completed queries and successful and failed logins. A **server level** policy covers every database on the server, and a database level policy runs alongside it, producing two records if both are on."
+            ],
+            [
+              "Destinations",
+              "Audit logs can go to **storage** (files readable in SSMS), **Log Analytics** or **Event Hubs**. Storage should be reached with a managed identity, and a storage firewall needs trusted services allowed. Deleting the diagnostic setting silently stops Log Analytics auditing, so Tomasi alerts on its removal."
+            ],
+            [
+              "Managed Instance auditing",
+              "**SQL Managed Instance** is configured like SQL Server with T-SQL: a credential for the storage container, a server audit to that URL (or to an external monitor for Log Analytics), an audit specification listing groups such as failed logins, then turning the audit on."
+            ],
+            [
+              "Microsoft support operations",
+              "Both services can audit operations performed by Microsoft support engineers. On Managed Instance this is a separate audit. Brightwater sends all SQL audit logs to Log Analytics and keeps a copy in immutable storage."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi wants auditing on every existing and future database on Brightwater's SQL logical server. Where should he enable it?",
+            "options": [
+              "On each database separately",
+              "At the server level",
+              "Only on the master database",
+              "In the storage firewall"
+            ],
+            "answer": 1,
+            "why": "A server level audit policy applies to all existing and new databases on that server. Database level policies must be set one by one and run in addition to any server audit."
+          },
+          "key": "Enable server level auditing for all databases, send logs to storage, Log Analytics or Event Hubs, and configure Managed Instance auditing with T-SQL."
+        },
+        {
+          "title": "Defender for Databases",
+          "steps": [
+            [
+              "One plan, four parts",
+              "**Defender for Databases** covers **Azure SQL** (databases, managed instances and Synapse dedicated pools), **SQL Server on machines** (Azure VMs, on premises and other clouds through Arc), **open source relational databases** (PostgreSQL and MySQL flexible servers and some Amazon RDS engines) and **Azure Cosmos DB for NoSQL**."
+            ],
+            [
+              "Vulnerability assessment",
+              "**SQL vulnerability assessment** scans for misconfigurations, excessive permissions and unprotected sensitive data, and lets you approve a **baseline** so accepted results stop being flagged. Express configuration, recommended and at no extra cost, stores results for you."
+            ],
+            [
+              "Threat protection",
+              "Threat protection raises alerts such as **potential SQL injection**, brute force sign in attempts, access from unusual locations or suspicious IPs, and, for Cosmos DB, suspicious key enumeration and data extraction. Alerts carry MITRE tactics and flow to Defender XDR and Sentinel."
+            ],
+            [
+              "Turning it on",
+              "In Defender for Cloud environment settings, switching **Databases** on enables all parts for the subscription, or parts can be chosen individually. Brightwater enables it at subscription level so new databases are covered automatically."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater runs a SQL Server instance on an on premises VM that is connected with Azure Arc. Which part of Defender for Databases protects it?",
+            "options": [
+              "Defender for Open-Source Relational Databases",
+              "Defender for Azure SQL Databases",
+              "Defender for SQL Servers on Machines",
+              "Defender for Servers Plan 1"
+            ],
+            "answer": 2,
+            "why": "SQL Server on VMs, on premises or in other clouds through Arc, is covered by Defender for SQL Servers on Machines. The Azure SQL part covers PaaS, the open source part covers PostgreSQL and MySQL, and Servers Plan 1 does not include SQL threat protection."
+          },
+          "key": "Defender for Databases covers Azure SQL, SQL on machines, open source databases and Cosmos DB with vulnerability assessment and threat alerts."
+        },
+        {
+          "title": "Network security groups and application security groups",
+          "steps": [
+            [
+              "NSG rules",
+              "A **network security group (NSG)** rule has a priority, source and destination (address, range, service tag or ASG), ports, protocol and allow or deny. Processing stops at the first match. NSGs are stateful, so replies to allowed traffic return automatically. Default rules allow traffic inside the virtual network and deny other inbound traffic."
+            ],
+            [
+              "Subnet and network card",
+              "Inbound traffic is checked by the subnet NSG first, then the network card NSG, and outbound the other way round. Traffic must be allowed by both. **Service tags** stand for Microsoft maintained address lists, so rules do not break when Azure addresses change."
+            ],
+            [
+              "Application security groups",
+              "An **application security group (ASG)** groups VMs by role, such as web or database, so a rule can say allow web to database on port 1433. As the app scales, network cards are added to the group with no address lists to update. All members must be in the same virtual network."
+            ],
+            [
+              "Flow logs",
+              "NSG flow logs are being retired in favour of **virtual network flow logs** with Traffic analytics. Brightwater's claims app uses three ASGs, and its database subnet only accepts traffic from the app tier ASG."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's web tier scales from 4 to 20 VMs during storms. Tomasi wants NSG rules that never need IP address updates. What should he use?",
+            "options": [
+              "Application security groups",
+              "A rule per VM IP address",
+              "Service tags for the web subnet",
+              "Augmented rules listing every IP"
+            ],
+            "answer": 0,
+            "why": "ASGs let rules target roles rather than addresses, so new VMs simply join the group. Per IP and augmented rules need edits as the tier scales, and service tags describe Microsoft services, not your VMs."
+          },
+          "key": "NSGs filter traffic by first matching rule at subnet and NIC level, and ASGs let rules target application roles instead of addresses."
+        },
+        {
+          "title": "Azure Virtual Network Manager security admin rules",
+          "steps": [
+            [
+              "Central rules across many networks",
+              "**Azure Virtual Network Manager (AVNM)** manages many virtual networks from one place. Its scope covers management groups or subscriptions. **Network groups** collect virtual networks, either statically or dynamically by conditions such as a tag."
+            ],
+            [
+              "Security admin rules",
+              "A **security admin configuration** holds rule collections targeted at network groups. Nothing applies until the configuration is **deployed** to regions, and only one security admin configuration can be deployed per region."
+            ],
+            [
+              "Three actions",
+              "**Deny** blocks traffic before NSGs ever see it. **Always allow** permits traffic that NSGs cannot block. **Allow** permits it at the admin layer and then NSG rules still decide. Lower priority numbers win."
+            ],
+            [
+              "Why it matters",
+              "App teams own their NSGs, but some rules must never be overridden. Tomasi deploys a deny rule for inbound RDP and SSH from the internet to every Brightwater virtual network, and an always allow rule for the vulnerability scanner."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi needs a rule blocking inbound RDP from the internet that application teams cannot override with their own NSGs. Which tool and action fit?",
+            "options": [
+              "An NSG rule at priority 100 in each subnet",
+              "A route table sending RDP to a firewall",
+              "An AVNM security admin rule set to Allow",
+              "An AVNM security admin rule with Deny"
+            ],
+            "answer": 3,
+            "why": "AVNM deny rules are evaluated before NSGs, so app teams cannot override them. Teams can edit their own NSGs, an AVNM Allow defers to NSGs, and routing alone does not stop the traffic."
+          },
+          "key": "AVNM security admin rules apply centrally to groups of virtual networks, with Deny and Always allow taking precedence over NSGs."
+        },
+        {
+          "title": "Securing Azure Virtual WAN",
+          "steps": [
+            [
+              "Virtual WAN",
+              "**Azure Virtual WAN** provides managed hubs connecting virtual networks, branches and remote users. Only the **Standard** type supports Azure Firewall and other security appliances, so Brightwater upgrades from Basic."
+            ],
+            [
+              "Secured hubs",
+              "A **secured hub** is a Virtual WAN hub with Azure Firewall deployed through **Azure Firewall Manager** using a firewall policy, or with a supported partner appliance or service."
+            ],
+            [
+              "Routing intent",
+              "**Routing intent** decides what the hub's firewall inspects. An **internet traffic** policy sends internet bound traffic from spokes, branches and users through it. A **private traffic** policy sends branch to network, network to network and hub to hub traffic through it. For hub to hub inspection, every hub needs routing intent."
+            ],
+            [
+              "Partners",
+              "Security partner providers can filter internet traffic while Azure Firewall handles private traffic. Brightwater sets both routing intent policies on its Auckland and Sydney hubs so branch traffic to Azure is inspected."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater wants all branch to Azure traffic through its Virtual WAN hub inspected by Azure Firewall. What should Tomasi configure?",
+            "options": [
+              "Upgrade to Standard but skip routing intent",
+              "Routing intent with a private traffic policy",
+              "An internet traffic routing policy only",
+              "An NSG on each branch connection"
+            ],
+            "answer": 1,
+            "why": "A private traffic policy sends branch to network traffic through the hub firewall. Standard without routing intent does not force inspection, an internet policy covers internet bound traffic only, and NSGs do not route traffic through a firewall."
+          },
+          "key": "Secure Virtual WAN with Standard secured hubs and routing intent policies that send internet and private traffic through the firewall."
+        },
+        {
+          "title": "Securing VPN connections",
+          "steps": [
+            [
+              "Site to site VPN",
+              "A **site to site** connection links an Azure virtual network gateway to a local network gateway that represents the on premises device. New gateways use zone redundant SKUs. The Basic SKU is for testing and lacks features such as custom IPsec policies."
+            ],
+            [
+              "Custom IPsec and IKE policy",
+              "A **custom IPsec/IKE policy** sets the exact encryption, integrity, Diffie Hellman group and lifetime for a connection, and must match the on premises device. A strong example uses AES 256 and GCM algorithms with high DH groups. A strong pre shared key should be rotated."
+            ],
+            [
+              "Point to site VPN",
+              "**Point to site** VPN connects individual devices. **OpenVPN** works through most firewalls on port 443 and supports every major platform. Authentication can be certificates, RADIUS or **Microsoft Entra ID**, which needs OpenVPN and the Azure VPN Client."
+            ],
+            [
+              "Conditional Access for VPN",
+              "With Entra ID authentication, **Conditional Access** applies to the VPN sign in, so Brightwater can require MFA and a compliant device before a loss assessor's laptop joins the network. Certificate based clients are revoked by adding them to a revocation list."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater wants remote assessors' VPN sign in to require MFA and a compliant device. Which point to site set up fits?",
+            "options": [
+              "IKEv2 with certificate authentication",
+              "OpenVPN with Entra ID authentication",
+              "OpenVPN with RADIUS authentication",
+              "SSTP with certificate authentication"
+            ],
+            "answer": 1,
+            "why": "Entra ID authentication, which uses OpenVPN and the Azure VPN Client, lets Conditional Access require MFA and device compliance. Certificate and RADIUS options authenticate without Conditional Access."
+          },
+          "key": "Use custom IPsec/IKE policies for strong site to site tunnels, and OpenVPN with Entra ID authentication so Conditional Access protects point to site VPN."
+        },
+        {
+          "title": "Microsoft Entra Private Access",
+          "steps": [
+            [
+              "Identity aware access instead of VPN",
+              "**Microsoft Entra Private Access** gives users access to specific private apps over TCP and UDP based on identity, rather than opening a whole network through a VPN."
+            ],
+            [
+              "Components",
+              "Devices run the **Global Secure Access client** with the Private Access forwarding profile on. A **private network connector**, a light Windows Server agent near the apps, makes only outbound connections, so no inbound firewall ports are needed. Connectors sit in groups, and more than one per group gives failover."
+            ],
+            [
+              "Quick Access and per app",
+              "**Quick Access** puts a broad set of internal addresses into one app as a fast VPN replacement. **Per app** applications each have their own segments, assignments and Conditional Access, and take priority over overlapping Quick Access segments. Private DNS lets users reach internal short names."
+            ],
+            [
+              "Set up and licensing",
+              "The order is connector group, apps and segments, user assignments (no nested groups), Conditional Access, then turning on the forwarding profile. It needs a Private Access or Entra Suite licence. Brightwater publishes its on premises claims archive as a per app application requiring a compliant device."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's security team refuses to open any inbound firewall ports for remote access to the claims archive. Why does Private Access satisfy them?",
+            "options": [
+              "It tunnels over a site to site VPN",
+              "It publishes the server on a public IP",
+              "It routes through Azure Firewall DNAT",
+              "Its connectors only connect outbound"
+            ],
+            "answer": 3,
+            "why": "Private network connectors reach out to Microsoft's service, so no inbound ports are needed. Site to site VPN, public IPs and DNAT all involve inbound paths."
+          },
+          "key": "Private Access uses outbound only connectors and per app applications with Conditional Access to replace broad VPN access."
+        },
+        {
+          "title": "Private endpoints and DNS",
+          "steps": [
+            [
+              "What a private endpoint does",
+              "A **private endpoint** gives a specific PaaS resource, such as one storage account's blob service, a private IP address in your subnet. Traffic stays on Microsoft's network and works from peered networks and on premises. Once endpoints exist, Tomasi sets the resource's public network access to disabled."
+            ],
+            [
+              "Sub resources and approval",
+              "Each endpoint targets a sub resource, such as blob, file, sqlServer or vault. Approval is automatic if you have rights on the target, otherwise the owner approves a manual request. A **service endpoint**, by contrast, keeps the public address but lets the service firewall recognise your subnet, and does not work from on premises."
+            ],
+            [
+              "DNS makes it work",
+              "Azure points the normal name, such as the account's blob address, at a privatelink name. A **private DNS zone**, such as the privatelink blob zone, linked to your networks resolves that name to the private IP. A **DNS zone group** on the endpoint creates and removes records automatically."
+            ],
+            [
+              "On premises and policies",
+              "On premises clients need DNS forwarding to a resolver in Azure. Apps keep using the normal name, never the privatelink name. NSGs and route tables only apply to private endpoints when network policies are enabled on the subnet."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater created a private endpoint for its storage account, but VMs still resolve the account to a public IP. What is most likely missing?",
+            "options": [
+              "The privatelink DNS zone link",
+              "A service endpoint on the subnet",
+              "Approval of the private endpoint",
+              "Network policies on the subnet"
+            ],
+            "answer": 0,
+            "why": "Without the privatelink DNS zone linked to the network, the name still resolves to the public IP. A service endpoint is a different mechanism, an unapproved endpoint would not change DNS, and network policies govern NSGs and routes."
+          },
+          "key": "Private endpoints give PaaS resources private IPs, and private DNS zones linked to your networks make the normal names resolve to them."
+        },
+        {
+          "title": "Azure Private Link service",
+          "steps": [
+            [
+              "Publishing, not consuming",
+              "A private endpoint consumes a service privately. A **Private Link service** lets you **publish** your own service so other virtual networks, tenants or customers can reach it through their own private endpoints."
+            ],
+            [
+              "Provider set up",
+              "The app sits behind a **Standard Load Balancer**, and the Private Link service is created on its frontend. Consumer traffic is source translated to NAT addresses from a chosen subnet. **TCP Proxy v2** passes the original client details if the app needs them."
+            ],
+            [
+              "Controlling who connects",
+              "**Visibility** limits who can find the service: RBAC only, chosen subscriptions or anyone with the alias. **Auto approval** lists subscriptions approved automatically, and others wait for manual approval. Consumers use a globally unique **alias** instead of your resource ID."
+            ],
+            [
+              "At Brightwater",
+              "Brightwater publishes its claims status API to three partner repair networks through a Private Link service, visible only to their subscriptions. Each partner creates a private endpoint, which stays pending until Tomasi approves it."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater wants partner companies to reach its internal claims API privately from their own Azure networks. What should Tomasi create?",
+            "options": [
+              "A public endpoint with WAF and IP rules",
+              "A private endpoint to the partner's network",
+              "A Private Link service",
+              "VNet peering with each partner"
+            ],
+            "answer": 2,
+            "why": "A Private Link service publishes your service so consumers connect through their own private endpoints. A public endpoint exposes it to the internet, a private endpoint consumes rather than publishes, and peering connects whole networks rather than one service."
+          },
+          "key": "Private Link service publishes your own service behind a Standard Load Balancer to consumers' private endpoints, controlled by visibility and approval."
+        },
+        {
+          "title": "Azure Firewall",
+          "steps": [
+            [
+              "SKUs",
+              "**Azure Firewall** Basic suits small sites with alert only threat intelligence. **Standard** adds threat intelligence deny, DNS proxy and web categories. **Premium** adds **TLS inspection**, signature based **IDPS** and full URL filtering."
+            ],
+            [
+              "Firewall policy",
+              "Rules live in a **firewall policy** managed in Azure Firewall Manager, organised into rule collection groups holding **DNAT**, **network** and **application** collections. Threat intelligence is checked first, then DNAT, network and application rules. First match wins and unmatched traffic is denied. A parent policy's rules take precedence over a child's."
+            ],
+            [
+              "Routing traffic to it",
+              "Spoke networks send traffic to the firewall with user defined routes in hub and spoke designs, or routing intent in Virtual WAN. Inbound web apps should use a web application firewall instead of DNAT."
+            ],
+            [
+              "Premium features",
+              "**TLS inspection** decrypts outbound and east west traffic using an intermediate CA certificate stored in Key Vault, read through a user assigned managed identity. Without it, IDPS only sees unencrypted traffic. Brightwater uses Premium to inspect traffic between its claims app and payment services."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's firewall must detect attacks hidden inside encrypted outbound HTTPS traffic. What does Tomasi need?",
+            "options": [
+              "Azure Firewall Standard with web categories",
+              "Azure Firewall Basic with threat intelligence",
+              "Application Gateway WAF in prevention mode",
+              "Azure Firewall Premium with TLS inspection"
+            ],
+            "answer": 3,
+            "why": "Only Premium can decrypt outbound TLS so IDPS and URL filtering see inside. Standard and Basic cannot inspect encrypted content, and Application Gateway WAF protects inbound web apps rather than outbound traffic."
+          },
+          "key": "Azure Firewall policies process threat intelligence, DNAT, network then application rules, and Premium adds TLS inspection and IDPS."
+        },
+        {
+          "title": "Evaluating rules with Network Watcher",
+          "steps": [
+            [
+              "Effective security rules",
+              "**Network Watcher** diagnoses network problems. **Effective security rules** shows, for one network card, the combined rules from the subnet NSG, the card's NSG and AVNM security admin rules, with service tags expanded. It shows what actually applies."
+            ],
+            [
+              "IP flow verify and NSG diagnostics",
+              "**IP flow verify** takes a VM, direction, protocol and addresses and returns allowed or denied with the name of the rule that decided. **NSG diagnostics** does similar checks for more resource types and can suggest a rule to fix the problem."
+            ],
+            [
+              "Routing checks",
+              "**Next hop** shows where traffic from a VM goes next, such as a virtual appliance, the internet or nothing, revealing routes that bypass the firewall. **Connection troubleshoot** tests a connection end to end."
+            ],
+            [
+              "A typical investigation",
+              "When the claims app cannot reach its database, Tomasi runs IP flow verify to find the blocking rule, effective security rules to see which NSG it comes from, and next hop to confirm traffic is routed through the firewall. **VNet flow logs** with Traffic analytics show real flows over time."
+            ]
+          ],
+          "check": {
+            "q": "A Brightwater VM cannot connect to a database on port 1433. Tomasi wants to know exactly which rule blocks it. Which tool should he run first?",
+            "options": [
+              "Traffic analytics only",
+              "Next hop",
+              "IP flow verify",
+              "Packet capture"
+            ],
+            "answer": 2,
+            "why": "IP flow verify reports whether the traffic is allowed and names the deciding rule. Next hop shows routing rather than rule decisions, and traffic analytics and packet capture are slower and less direct."
+          },
+          "key": "Network Watcher's effective security rules, IP flow verify and next hop pinpoint which rule blocks traffic and where it is routed."
+        }
+      ]
+    },
+    {
+      "title": "Secure compute",
+      "intro": "Compute is where code runs: AI apps and agents, virtual machines, containers and app platforms (about 20 to 25 percent of the exam). Brightwater Insurance is rolling out Microsoft 365 Copilot, a Copilot Studio agent for staff, and a Foundry claims assistant for customers, alongside VMs, AKS, Functions and App Service. This module secures each of them, starting with AI.",
+      "lessons": [
+        {
+          "title": "Finding and containing overshared SharePoint content",
+          "steps": [
+            [
+              "Why oversharing matters for AI",
+              "Microsoft 365 Copilot does not add permissions: it can read whatever each user can already read. If a site is shared with everyone in the company, Copilot can surface its contents to anyone who asks the right question. Fixing oversharing is the first step before rolling out Copilot."
+            ],
+            [
+              "Finding exposure",
+              "**SharePoint Advanced Management** includes **data access governance reports**: sharing link activity, content shared with everyone except external users, a sensitivity label snapshot across sites, permission state reports, and every site a given user can reach."
+            ],
+            [
+              "Containing it",
+              "A **site access review** asks site owners to confirm or remove access. **Restricted access control** limits a site to members of chosen groups, even if items inside are shared more widely. **Restricted Content Discovery** hides a site's content from organisation wide search and from Copilot, while people with access can still open files directly."
+            ],
+            [
+              "Choosing the control",
+              "Restricted Content Discovery changes discoverability, while restricted access control changes who can get in. Neither replaces fixing permissions. Brightwater finds its HR investigations site shared with everyone, so Tomasi applies Restricted Content Discovery at once and sends the owners an access review."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater wants an overshared site hidden from Copilot answers straight away, while its owners clean up permissions. Which control fits?",
+            "options": [
+              "Restricted Content Discovery",
+              "A storage account firewall",
+              "A data access governance report",
+              "A CanNotDelete lock"
+            ],
+            "answer": 0,
+            "why": "Restricted Content Discovery removes the site from organisation search and Copilot quickly. A report only shows the problem, and storage firewalls and locks do not affect SharePoint discovery."
+          },
+          "key": "Copilot follows existing permissions, so find oversharing with data access governance reports and contain it with Restricted Content Discovery or restricted access control."
+        },
+        {
+          "title": "Data Security Posture Management for AI",
+          "steps": [
+            [
+              "What DSPM for AI does",
+              "**Data Security Posture Management (DSPM)** for AI in Microsoft Purview shows how people use Copilot, enterprise AI apps and third party AI sites, and where sensitive data is at risk."
+            ],
+            [
+              "Reports and activity",
+              "Reports and **activity explorer** group AI interactions by Copilot experiences and agents, enterprise AI apps and other AI apps, with events such as AI interactions, sensitive information found and visits to AI websites."
+            ],
+            [
+              "One click policies and assessments",
+              "Recommended **one click policies** turn on data loss prevention, insider risk and communication compliance policies for AI, collecting data within about a day. **Data risk assessments** find oversharing in SharePoint: a default weekly assessment of the top 100 sites, plus custom ones that expire after 30 days."
+            ],
+            [
+              "Prerequisites",
+              "Purview **Audit** must be on. Seeing third party AI sites also needs devices onboarded to Purview and the Purview browser extension. Tomasi learns that claims staff paste policy numbers into a public chatbot, and turns on the recommended DLP policy to block it."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi wants to see whether Brightwater staff paste sensitive data into third party AI websites. What must be in place besides Purview Audit?",
+            "options": [
+              "Defender for Cloud Apps discovery alone",
+              "Device onboarding and the browser extension",
+              "A DSPM data risk assessment",
+              "Communication compliance policies"
+            ],
+            "answer": 1,
+            "why": "Third party AI site activity is captured from onboarded devices through the Purview browser extension. Data risk assessments look at SharePoint oversharing, communication compliance covers messages, and discovery alone does not capture what users type into AI sites."
+          },
+          "key": "DSPM for AI reports AI usage and sensitive data risk, offers one click protective policies, and needs Audit plus device onboarding for third party AI sites."
+        },
+        {
+          "title": "Real-time protection for Copilot Studio agents",
+          "steps": [
+            [
+              "Checking actions before they run",
+              "A Copilot Studio agent builds a plan of tools to call for each prompt. **Real time protection during agent runtime** sends that plan and its inputs to Microsoft Defender before each tool runs, and Defender answers allow or block."
+            ],
+            [
+              "Setting it up",
+              "In the Defender portal, security for AI agents, Tomasi turns on agent protection and real time protection and copies the Defender address. A Power Platform admin enables Defender threat protection for Copilot Studio agents, pastes the address and creates an Entra app, then gives the app ID back to Tomasi to finish the connection."
+            ],
+            [
+              "Behaviour to know",
+              "Defender must answer within about one second. If it does not, the agent **fails open** and the tool runs. Protection applies to new sessions only. Blocked calls appear as alerts in incidents and alerts."
+            ],
+            [
+              "Supporting data",
+              "The Microsoft 365 app connector in Defender for Cloud Apps must be connected so audit data and alerts flow in. Brightwater's staff agent can look up and update claim records, so stopping a manipulated plan before it acts matters."
+            ]
+          ],
+          "check": {
+            "q": "If Defender does not respond within about a second during a Copilot Studio tool check, what happens?",
+            "options": [
+              "The session is deleted",
+              "The agent blocks every tool permanently",
+              "The agent fails open and runs the tool",
+              "The user is disabled"
+            ],
+            "answer": 2,
+            "why": "Microsoft documents that the agent fails open if the check times out, so the tool runs. That is why other controls such as least privilege for agent tools still matter."
+          },
+          "key": "Real time protection checks each Copilot Studio tool call with Defender before it runs, fails open on timeout, and applies to new sessions."
+        },
+        {
+          "title": "Conditional Access and access for Entra Agent ID",
+          "steps": [
+            [
+              "Agents have identities",
+              "**Microsoft Entra Agent ID** gives AI agents their own identities. An agent can act **on behalf of a user** (user policies apply), **as itself** with an **agent identity**, or as an **agent user** account. Each path needs its own Conditional Access thinking."
+            ],
+            [
+              "Conditional Access for agent identities",
+              "Policies can target all agent identities, chosen ones, agents with custom security attributes, or an **agent identity blueprint** covering all agents built from it. The only grant control is **block**, because agents cannot do MFA, and the only condition is **agent risk** from ID Protection. Policies for all users do not cover agent users."
+            ],
+            [
+              "Owners, sponsors and managers",
+              "An **owner** is the technical admin who can change the agent's settings and credentials. A **sponsor**, required for agent identities, is the business person accountable for it and decides on renewal. A **manager** places it in the organisation. If a sponsor leaves, sponsorship passes to their manager."
+            ],
+            [
+              "Governing access",
+              "**Access packages** in ID Governance can grant agents group memberships, API permissions and roles, with expiry and sponsor driven extension. The **Agent ID Administrator** role manages agents tenant wide. Tomasi blocks any Brightwater agent identity rated high risk."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi creates a Conditional Access policy for Brightwater's agent identities. Which grant control can he use?",
+            "options": [
+              "Block access",
+              "Require MFA",
+              "Require a compliant device",
+              "Require terms of use"
+            ],
+            "answer": 0,
+            "why": "Agent identities cannot complete interactive steps such as MFA, so block is the only grant control. Device and terms of use controls apply to agent user accounts, not agent identities acting as themselves."
+          },
+          "key": "Entra Agent ID policies can only block, using agent risk as a condition, and every agent identity needs an accountable sponsor."
+        },
+        {
+          "title": "Agent blast radius and management",
+          "steps": [
+            [
+              "Measuring blast radius",
+              "An agent's **blast radius** comes from three things: its **permissions** (tenant wide application permissions reach far more than delegated or selected ones), its **knowledge sources** and their sensitivity, and its **capabilities**, especially actions that send data out, such as emailing or running code."
+            ],
+            [
+              "In Defender XDR",
+              "The Defender portal's **AI agents** inventory gives Foundry and some other cloud agents a risk score, recommendations and attack paths on a map. Prebuilt advanced hunting queries and the AIAgentsInfo table show each agent's tools, knowledge and authentication, while CloudAppEvents shows what it did."
+            ],
+            [
+              "Shrinking it",
+              "Rank attack paths by how critical the target is, not just their length. Replace broad scopes with narrow ones such as selected sites, remove knowledge sources and actions the agent does not need, and apply Conditional Access."
+            ],
+            [
+              "Microsoft 365 admin center",
+              "The **agents** page in the Microsoft 365 admin center lists every agent, pending publish requests, ownerless agents and at risk agents. Admins can install, **block** for the organisation, delete (restorable for 30 days), assign a new owner and approve publishing. AI Administrator approves requests and assigns owners."
+            ]
+          ],
+          "check": {
+            "q": "A Brightwater agent has read and write access to every mailbox through an application permission, but only needs one shared mailbox. How should Tomasi reduce its blast radius?",
+            "options": [
+              "Add a sponsor who checks it monthly",
+              "Give it a sensitivity labelled knowledge source",
+              "Block it in the Microsoft 365 admin center",
+              "Replace it with a narrowly scoped permission"
+            ],
+            "answer": 3,
+            "why": "Narrowing permissions directly shrinks what a compromised agent could reach while keeping it working. A sponsor adds accountability but not less access, a labelled source does not limit mailbox rights, and blocking stops the agent entirely."
+          },
+          "key": "Agent blast radius is permissions plus knowledge plus capabilities, shown in Defender's AI agents inventory, and managed through narrow scopes and the Microsoft 365 agents page."
+        },
+        {
+          "title": "AI gateway in API Management for Foundry",
+          "steps": [
+            [
+              "Why a gateway",
+              "If apps call model endpoints directly, keys are shared, one app can use all the tokens and nobody sees consumption. The **AI gateway** in Azure API Management sits in front of Microsoft Foundry endpoints and fixes all three."
+            ],
+            [
+              "Adding it",
+              "From Foundry, Tomasi adds an AI gateway to the Foundry resource, either creating a new API Management instance (Basic v2, for dev and test) or choosing an existing v2 instance. Microsoft recommends Standard v2 or Premium v2 for production. There is one gateway per Foundry resource, shared by its projects."
+            ],
+            [
+              "Token controls",
+              "**Token limits** cap tokens per minute per project, returning 429 when exceeded, and total token **quotas** return 403. Token metrics flow to Azure Monitor, a content safety policy checks prompts, and semantic caching reuses similar answers."
+            ],
+            [
+              "Identity",
+              "The gateway authenticates to the model back end with a **managed identity**, so client apps never hold model keys. Brightwater gives the customer claims assistant a token limit so a sudden traffic spike cannot exhaust capacity for the staff tools."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's customer chatbot keeps using up the model capacity shared with internal tools. What should Tomasi configure in the AI gateway?",
+            "options": [
+              "A content safety policy on prompts",
+              "A per project tokens per minute limit",
+              "A semantic cache for repeated answers",
+              "A token metrics policy to Azure Monitor"
+            ],
+            "answer": 1,
+            "why": "Token limits cap each project's consumption, returning 429 when exceeded, so one app cannot starve the others. Content safety, caching and metrics are useful AI gateway policies but do not cap usage."
+          },
+          "key": "The AI gateway in API Management fronts Foundry with token limits, quotas, monitoring, content safety and managed identity access to models."
+        },
+        {
+          "title": "Defender for AI Services and Foundry guardrails",
+          "steps": [
+            [
+              "Defender for AI Services",
+              "**Defender for AI Services** is a Defender for Cloud plan enabled per subscription by an Owner or Contributor. It watches Azure OpenAI and Foundry model deployments and detects jailbreak attempts flagged by Prompt Shields, sensitive data leakage, credential theft and suspicious access. Alerts correlate into Defender XDR incidents."
+            ],
+            [
+              "Plan settings",
+              "**User prompt evidence** includes the suspicious parts of prompts and responses in alerts, with sensitive data redacted. **Data security for AI interactions** lets Purview classify and govern prompts. **AI model security** scans models in Azure Machine Learning registries for malware and unsafe serialisation."
+            ],
+            [
+              "Foundry guardrails",
+              "**Guardrails** detect risks such as hate, sexual, self harm and violence content (each with a severity threshold), user prompt attacks, **indirect attacks** hidden in documents or tool output, protected material, personal information and task drift. They apply at **user input** and **output**, and for agents also at **tool call** and **tool response**, with actions to annotate or annotate and block."
+            ],
+            [
+              "Inheritance",
+              "An agent with no guardrail inherits its model deployment's guardrail. An agent with its own guardrail uses only that one. Brightwater's claims assistant reads customer uploaded documents, so Tomasi adds an indirect attack control on tool responses set to annotate and block."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's Foundry agent reads customer documents through a grounding tool, and Tomasi fears hidden instructions inside them. Which guardrail setting fits?",
+            "options": [
+              "A violence threshold set to low on user input",
+              "Indirect attack control on tool response, blocking",
+              "A user prompt attack control set to annotate",
+              "PII detection on the agent's output"
+            ],
+            "answer": 1,
+            "why": "Instructions hidden in retrieved documents arrive in the tool response, so an indirect attack control there with blocking addresses it. Input side controls do not see tool output, annotate only does not block, and PII detection targets personal data."
+          },
+          "key": "Defender for AI Services detects attacks on model deployments, and Foundry guardrails filter inputs, outputs and agent tool traffic, including indirect attacks."
+        },
+        {
+          "title": "The Data and AI security dashboard",
+          "steps": [
+            [
+              "One view of data and AI",
+              "The **Data and AI security dashboard** in Defender for Cloud groups resources into storage, managed databases, hosted databases and AI services, and shows whether each is fully, partly or not protected by the relevant plans."
+            ],
+            [
+              "Top issues",
+              "It highlights the most severe alerts by MITRE tactic, critical and high recommendations, and attack paths that end at data or AI resources."
+            ],
+            [
+              "Closer looks",
+              "The data view shows sensitive data discovered, data threat alerts and explorer queries such as public storage holding sensitive data. The AI view shows **AI discovery**, AI threat protection results and queries such as sensitive data used for grounding and internet exposed resources used for grounding."
+            ],
+            [
+              "Getting the full picture",
+              "A complete dashboard needs Defender CSPM with sensitive data discovery, Defender for Storage, Defender for Databases and the AI services plan, with each subscription registered for the Microsoft Security provider. Tomasi uses it to spot a storage account holding claim documents that grounds the assistant and is reachable from the internet."
+            ]
+          ],
+          "check": {
+            "q": "Parts of Brightwater's Data and AI security dashboard are empty. What is the most likely cause?",
+            "options": [
+              "Purge protection is off on Key Vaults",
+              "Subscriptions lack the needed Defender plans",
+              "The dashboard only works in Sentinel",
+              "Too many storage accounts exist"
+            ],
+            "answer": 3,
+            "why": "The dashboard draws on several Defender plans, and sections stay empty without them. The number of resources, Sentinel and purge protection do not control what it shows."
+          },
+          "key": "The Data and AI security dashboard shows protection coverage, top risks and AI grounding exposure, and needs the relevant Defender plans enabled."
+        },
+        {
+          "title": "Disk encryption and Trusted launch",
+          "steps": [
+            [
+              "Disk encryption options",
+              "**Server side encryption** is always on for managed disks with platform keys, or your own keys through a **disk encryption set**, but does not cover temp disks or caches. **Encryption at host** encrypts temp disks, caches and data in transit to storage, and Microsoft recommends it for new VMs."
+            ],
+            [
+              "Azure Disk Encryption",
+              "**Azure Disk Encryption** encrypts inside the guest using BitLocker or DM-Crypt with keys in Key Vault. Microsoft has announced it retires in September 2028, so Brightwater plans to move to encryption at host."
+            ],
+            [
+              "Trusted launch",
+              "A VM's **security type** is set at creation: standard, **Trusted launch** (Generation 2 VMs, the default for new ones) or confidential. **Secure Boot** allows only signed boot components, blocking bootkits. A **vTPM** stores keys and measures the boot chain."
+            ],
+            [
+              "Integrity monitoring and confidential VMs",
+              "**Boot integrity monitoring** uses Secure Boot, the vTPM and the guest attestation extension, and Defender for Cloud alerts when attestation fails. **Confidential VMs** add hardware memory encryption and can bind OS disk encryption to the vTPM. Existing Generation 1 VMs can be upgraded to Trusted launch."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater needs VM temp disks and caches encrypted, not just the managed disks. Which option covers them?",
+            "options": [
+              "Encryption at host",
+              "Server side encryption with platform keys alone",
+              "A storage firewall",
+              "A CanNotDelete lock"
+            ],
+            "answer": 0,
+            "why": "Encryption at host encrypts temp disks and caches at the host. Server side encryption alone covers managed disks but not temp disks or caches, and firewalls and locks do not encrypt."
+          },
+          "key": "Use encryption at host for full VM disk coverage, plan off Azure Disk Encryption, and use Trusted launch for Secure Boot, vTPM and integrity monitoring."
+        },
+        {
+          "title": "Azure Bastion and just in time VM access",
+          "steps": [
+            [
+              "Bastion",
+              "**Azure Bastion** is a managed jump host. Admins connect over TLS on port 443 to Bastion, which opens RDP or SSH to the VM's private address, so ports 3389 and 22 never face the internet. It needs a subnet named AzureBastionSubnet of at least /26, except for the free Developer tier."
+            ],
+            [
+              "Bastion SKUs",
+              "**Developer** is free for testing. **Basic** reaches peered networks. **Standard** adds native client connections, IP based connections, shareable links and scaling. **Premium** adds **session recording** and private only deployment. SKUs can be upgraded but not downgraded."
+            ],
+            [
+              "Just in time access",
+              "**Just in time VM access**, part of Defender for Servers Plan 2, adds deny rules to the VM's NSG or Azure Firewall for management ports. An approved request opens the port only for the requester's IP and only for a limited time, up to three hours by default, then closes it."
+            ],
+            [
+              "Permissions",
+              "Requesting access and configuring policies need separate permissions, so Brightwater gives its support staff a custom role that can only request. Defender for Cloud recommends protecting management ports with just in time access."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's auditors want recordings of every admin session to sensitive VMs. Which Bastion SKU does Tomasi need?",
+            "options": [
+              "Developer",
+              "Basic",
+              "Premium",
+              "Standard"
+            ],
+            "answer": 2,
+            "why": "Session recording is a Premium feature. Standard adds native client and shareable links but not recording, and Basic and Developer have fewer features still."
+          },
+          "key": "Bastion removes public RDP and SSH, with Premium adding session recording, and just in time access opens management ports briefly for approved requesters."
+        },
+        {
+          "title": "Azure Arc and onboarding Defender for Servers",
+          "steps": [
+            [
+              "Azure Arc",
+              "**Azure Arc** brings servers outside Azure under Azure management. The **Connected Machine agent** connects outbound over 443 and registers the server as an Azure resource with tags, RBAC and a managed identity. Azure Policy, Machine Configuration, Defender for Servers, Update Manager and the Azure Monitor Agent then work as on Azure VMs."
+            ],
+            [
+              "Arc details",
+              "The agent sends a heartbeat every five minutes, and silent machines show as disconnected. An **Arc Private Link Scope** keeps agent traffic private. AWS and GCP connectors in Defender for Cloud can deploy Arc automatically."
+            ],
+            [
+              "Onboarding Defender for Servers",
+              "For Azure VMs, Tomasi turns the **Servers** plan on per subscription in Defender for Cloud. AWS and GCP machines are covered through multicloud connectors, ideally with Arc. On premises servers use Arc, or **direct onboarding** through Defender for Endpoint, which loses Azure Policy and Machine Configuration."
+            ],
+            [
+              "Plan scope",
+              "Plan 1 can be enabled or disabled per resource. Plan 2 is enabled at subscription level and can only be disabled per resource. Brightwater's 30 on premises claims servers are onboarded through Arc so they get the full Plan 2 features."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater wants Azure Policy and Machine Configuration on its on premises servers as well as Defender for Servers. How should Tomasi onboard them?",
+            "options": [
+              "With Azure Bastion",
+              "With direct onboarding through Defender for Endpoint only",
+              "With a site to site VPN",
+              "With Azure Arc"
+            ],
+            "answer": 3,
+            "why": "Arc makes the servers Azure resources, so Policy and Machine Configuration apply. Direct onboarding skips those features, and VPNs or Bastion do not register servers with Azure."
+          },
+          "key": "Azure Arc makes non Azure servers Azure resources for Policy, Machine Configuration and Defender for Servers, while direct onboarding loses those extras."
+        },
+        {
+          "title": "Defender for Servers settings and agentless scanning",
+          "steps": [
+            [
+              "Plan components",
+              "Defender for Servers settings switch components on. **Endpoint protection** deploys Microsoft Defender for Endpoint for EDR. **Vulnerability assessment** uses Defender Vulnerability Management, on by default where Defender for Endpoint runs. Plan 2 adds premium vulnerability features, file integrity monitoring and the OS baseline assessment."
+            ],
+            [
+              "Plan 2 extras",
+              "Plan 2 also covers just in time access, the network map, DNS alerts and 500 MB a day of free security data ingestion per machine. The old Log Analytics agent is retired."
+            ],
+            [
+              "Agentless scanning",
+              "**Agentless scanning** takes a snapshot of a VM's disks, analyses the copy in the same region in an isolated environment, then deletes it. It finds software, vulnerabilities, plaintext secrets and, with Plan 2, malware, without touching the VM. It comes with Defender CSPM and Defender for Servers Plan 2."
+            ],
+            [
+              "Scanning details",
+              "Scans run every 24 hours on running machines and cannot be rescheduled. Disks encrypted with customer managed keys need the scanner granted key access. Brightwater's legacy VM cannot run an agent, so agentless scanning is its only source of vulnerability data."
+            ]
+          ],
+          "check": {
+            "q": "A Brightwater VM runs an appliance image where no security agent can be installed. How can Tomasi still find its vulnerabilities and secrets?",
+            "options": [
+              "Defender for Endpoint live response",
+              "Defender for Endpoint EDR in block mode",
+              "Agentless scanning",
+              "File integrity monitoring"
+            ],
+            "answer": 2,
+            "why": "Agentless scanning reads a snapshot of the disks, so no agent is needed on the VM. Live response, EDR block mode and file integrity monitoring all depend on the Defender for Endpoint sensor running inside the machine."
+          },
+          "key": "Defender for Servers settings enable EDR, vulnerability assessment and Plan 2 extras, and agentless scanning reads disk snapshots without touching the VM."
+        },
+        {
+          "title": "Azure Machine Configuration",
+          "steps": [
+            [
+              "Inside the operating system",
+              "Azure Policy alone checks Azure resource properties. **Machine Configuration** reaches **inside the guest OS** of Windows and Linux machines, using configuration packages, to audit or enforce settings such as password rules or TLS versions."
+            ],
+            [
+              "Prerequisites",
+              "Azure VMs need the machine configuration extension and a system assigned managed identity, deployed at scale with a built in initiative. Arc enabled servers need nothing extra, because the service is built into the Arc agent."
+            ],
+            [
+              "Assignment types",
+              "**Audit** only reports compliance. **Apply and monitor** applies a configuration once, then reports drift. **Apply and autocorrect** applies it and fixes drift automatically. The agent re evaluates configurations every 15 minutes."
+            ],
+            [
+              "Security use",
+              "Built in policies audit the Windows and Linux security baselines that Defender for Servers Plan 2 reports as OS misconfigurations. Tomasi uses an apply and autocorrect configuration to keep TLS 1.0 disabled on Brightwater's servers, even if someone turns it back on."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi wants a Windows setting enforced and automatically put back if an admin changes it. Which Machine Configuration assignment type fits?",
+            "options": [
+              "Apply and autocorrect",
+              "Audit",
+              "Apply and monitor",
+              "Disabled"
+            ],
+            "answer": 0,
+            "why": "Apply and autocorrect enforces the setting and fixes drift. Audit only reports, apply and monitor applies once and then just reports drift, and disabled does nothing."
+          },
+          "key": "Machine Configuration audits or enforces settings inside the guest OS, with apply and autocorrect fixing drift automatically."
+        },
+        {
+          "title": "Defender for Containers and AKS security",
+          "steps": [
+            [
+              "Defender for Containers",
+              "**Defender for Containers** covers four areas: **posture** (agentless cluster discovery and the Azure Policy add on, which can deny risky deployments such as privileged containers), **vulnerability assessment** of images in registries and running containers, **runtime threat protection** through a sensor on each node, and agentless scanning of node VMs."
+            ],
+            [
+              "Coverage",
+              "AKS needs no connector. EKS and GKE connect through the AWS and GCP connectors, and on premises clusters through Arc. **Gating** can audit or block images that fail vulnerability rules."
+            ],
+            [
+              "AKS identity and API access",
+              "**Entra integration** with **Azure RBAC for Kubernetes** controls who can do what in a cluster or namespace. **Disabling local accounts** removes the static admin credential. **Workload identity** lets pods get Entra tokens without secrets. A **private cluster** or authorised IP ranges limit API server exposure."
+            ],
+            [
+              "Inside the cluster",
+              "**Network policies** control pod to pod traffic, which is otherwise all allowed. **Pod Security Admission** enforces baseline or restricted pod standards. The Key Vault secrets store driver mounts secrets, and KMS encryption protects Kubernetes secrets at rest. Brightwater blocks privileged containers through the policy add on."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater wants every AKS sign in to go through Entra ID and Conditional Access, with no static admin credential left. What should Tomasi do?",
+            "options": [
+              "Enable network policies on the cluster",
+              "Disable local accounts with Entra integration",
+              "Make the API server a private cluster",
+              "Turn on Pod Security Admission"
+            ],
+            "answer": 1,
+            "why": "Disabling local accounts removes the static admin credential, so all access goes through Entra and Conditional Access. Network policies and pod security govern workloads, and a private cluster limits network reach but leaves the local account in place."
+          },
+          "key": "Defender for Containers covers posture, image scanning and runtime threats, while AKS is secured with Entra and RBAC, no local accounts, network policies and pod security standards."
+        },
+        {
+          "title": "Container Registry, Container Instances and Container Apps",
+          "steps": [
+            [
+              "Registry authentication",
+              "**Azure Container Registry** should be accessed with managed identities or service principals for automation and individual Entra sign in for people. The **admin user** is a shared full access account, disabled by default, and should stay off. Repository scoped tokens cover special cases."
+            ],
+            [
+              "Registry authorisation and network",
+              "Roles such as AcrPull and AcrPush, or newer repository roles with ABAC conditions, limit what each identity can do. **Private endpoints** need the Premium tier, after which public access can be disabled, with a trusted services bypass for Defender. Defender for Containers scans pushed images."
+            ],
+            [
+              "Container Instances",
+              "**Azure Container Instances** can deploy into a delegated subnet with private IPs, use a managed identity to pull images and reach Key Vault, and keep secrets in secure environment variables. Confidential containers run in hardware protected environments."
+            ],
+            [
+              "Container Apps",
+              "**Azure Container Apps** offers external or **internal** ingress, IP restrictions, built in authentication with Entra ID, managed identity for registry pulls and Key Vault references for secrets. Brightwater's claims processing jobs run in an internal only Container Apps environment."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's registry still has the admin user enabled for a build script. What should Tomasi do?",
+            "options": [
+              "Rotate the admin password every month",
+              "Use a repository scoped token for everyone",
+              "Disable it and give the build an identity",
+              "Move the registry to the Premium tier"
+            ],
+            "answer": 2,
+            "why": "The admin user is a shared full access credential, so it should be disabled and replaced with a managed identity holding only AcrPush. Rotating keeps a shared credential, a shared token for everyone repeats the problem, and Premium adds private endpoints but not identity hygiene."
+          },
+          "key": "Secure ACR with identities instead of the admin user, narrow roles and Premium private endpoints, and use managed identity and private networking for ACI and Container Apps."
+        },
+        {
+          "title": "Functions, Logic Apps and App Service",
+          "steps": [
+            [
+              "Azure Functions",
+              "HTTP triggered functions use **access keys**: function keys, host keys and the master key. Keys are shared secrets, not identities, so real caller authentication should use built in authentication with Entra ID or API Management. Functions support access restrictions, private endpoints on suitable plans, managed identities and Key Vault references."
+            ],
+            [
+              "Logic Apps",
+              "A Logic App request trigger's callback URL carries a signature and must be treated like a password, regenerated if leaked. Consumption logic apps can require **Entra OAuth** instead and restrict inbound IPs. **Secure inputs and outputs** hide secrets in run history, and anyone who can edit a workflow can use its managed identity."
+            ],
+            [
+              "App Service",
+              "Turn on **HTTPS only**, set minimum TLS to 1.2, and disable FTP or require FTPS. **Access restrictions** allow or deny by IP, service tag or subnet, with separate rules for the deployment site. **Private endpoints** remove public inbound access. Built in authentication, managed identity and Key Vault references keep secrets out of config."
+            ],
+            [
+              "Deployment hygiene",
+              "Turning off **basic authentication** for FTP and deployment forces Entra based deployment. Defender for App Service detects attacks and dangling DNS. Brightwater's portal now allows inbound traffic only from Azure Front Door."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's App Service still accepts deployments with a shared FTP username and password. What should Tomasi change?",
+            "options": [
+              "Disable basic authentication for deployment",
+              "Enable HTTPS only and leave FTP as it is",
+              "Add access restrictions to the main site",
+              "Raise the minimum TLS version to 1.3"
+            ],
+            "answer": 0,
+            "why": "Disabling basic authentication stops shared publishing credentials and forces Entra based deployment. HTTPS, TLS and main site restrictions protect traffic to the app, not the deployment credentials, and the SCM site has its own rules."
+          },
+          "key": "Use Entra authentication over keys for Functions, secure Logic App triggers and run history, and harden App Service with HTTPS, restrictions and no basic auth."
+        },
+        {
+          "title": "Web Application Firewall and API Management protection",
+          "steps": [
+            [
+              "Where WAF runs",
+              "**Azure Web Application Firewall** runs on **Application Gateway** (regional, with policies per gateway, listener or path) or **Azure Front Door** (at Microsoft's global edge). Managed rule sets and bot protection on Front Door need the Premium tier."
+            ],
+            [
+              "WAF policy",
+              "**Managed rules** such as Microsoft's Default Rule Set block SQL injection, cross site scripting and other common attacks using **anomaly scoring**. **Custom rules** run first and can allow or block by IP, country or rate. **Exclusions** stop specific fields causing false positives. **Detection** mode logs, **prevention** mode blocks: start in detection and tune."
+            ],
+            [
+              "API Management policies",
+              "**API Management** policies protect back end APIs. **validate-jwt** or the Entra specific token validation policy checks callers' tokens, audiences and claims. **ip-filter**, **rate-limit** and **quota** policies restrict and throttle, and content validation checks request bodies. Subscription keys identify apps but are not strong authentication."
+            ],
+            [
+              "Locking the back end",
+              "API Management can call back ends with a **managed identity** or client certificate. The back end should accept traffic only from API Management, through private networking or access restrictions, so callers cannot skip the gateway. Brightwater puts Front Door WAF in front of API Management in front of its claims API."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's claims API must reject calls without a valid Entra token for the right audience. Which API Management policy does that?",
+            "options": [
+              "A WAF custom rule matching on country",
+              "A rate-limit-by-key policy",
+              "A required subscription key",
+              "validate-jwt"
+            ],
+            "answer": 3,
+            "why": "Token validation checks the JWT's signature, audience and claims and returns 401 if they fail. Rate limits throttle, subscription keys identify apps but are not strong authentication, and geo rules filter by location."
+          },
+          "key": "WAF on Application Gateway or Front Door blocks web attacks with managed and custom rules, and API Management validates tokens, throttles callers and protects back ends."
+        }
+      ]
+    },
+    {
+      "title": "Manage and monitor security posture",
+      "intro": "Controls drift and attackers adapt, so posture must be measured and events collected continuously (about 20 to 25 percent of the exam). This module covers Defender for Cloud posture and workload protection across Azure, AWS and GCP, external attack surface discovery, collecting events in Microsoft Sentinel, and setting up Microsoft Security Copilot. Brightwater Insurance runs a small security team, so Tomasi needs these tools to do much of the watching.",
+      "lessons": [
+        {
+          "title": "Identifying risk with Defender CSPM",
+          "steps": [
+            [
+              "Foundational and paid CSPM",
+              "**Cloud security posture management (CSPM)** continuously checks resources for misconfigurations. **Foundational CSPM** is free and gives asset inventory, recommendations based on the Microsoft cloud security benchmark, secure score and remediation across Azure, AWS and GCP."
+            ],
+            [
+              "The cloud security graph",
+              "**Defender CSPM** is paid, billed per resource. It builds a **cloud security graph** of how resources connect, which powers attack path analysis, cloud security explorer, risk prioritisation and internet exposure analysis."
+            ],
+            [
+              "Attack paths and explorer",
+              "**Attack path analysis** shows chains from an entry point, such as an internet exposed VM, to a critical target. It needs agentless scanning on. **Cloud security explorer** runs graph queries such as internet exposed VMs with severe vulnerabilities that can reach storage holding sensitive data. Fixed paths can take up to a day to disappear."
+            ],
+            [
+              "More features",
+              "Defender CSPM also covers critical asset protection, data security posture, governance rules, custom recommendations and AI security posture. Tomasi starts each week with Brightwater's attack paths that end at the claims database."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi wants to see whether any internet exposed VM could reach Brightwater's claims database through a chain of weaknesses. Which capability shows this?",
+            "options": [
+              "The secure score trend",
+              "Attack path analysis",
+              "Network Watcher next hop",
+              "The regulatory compliance dashboard"
+            ],
+            "answer": 1,
+            "why": "Attack path analysis traces chains from exposed entry points to critical targets using the cloud security graph. Secure score and compliance summarise posture, and next hop checks routing for one VM."
+          },
+          "key": "Defender CSPM builds a cloud security graph for attack paths, explorer queries and risk prioritisation beyond free foundational CSPM."
+        },
+        {
+          "title": "Compliance and workload protection plans",
+          "steps": [
+            [
+              "Compliance against frameworks",
+              "The **regulatory compliance** dashboard maps a standard's controls to recommendations. Azure gets the Microsoft cloud security benchmark by default, AWS adds the AWS foundational practices and GCP its default standard. Extra standards such as PCI DSS or ISO 27001 need a qualifying paid plan and policy rights, and are assigned at the highest useful scope."
+            ],
+            [
+              "Workload protection",
+              "CSPM finds weaknesses. **Workload protection plans** detect active attacks and raise **security alerts**. They are enabled per subscription under environment settings, Defender plans, and each plan's settings choose its components."
+            ],
+            [
+              "Plans to know",
+              "Plans cover Servers, Storage (activity monitoring, malware scanning, sensitive data detection), Containers, Databases, App Service, Key Vault, Resource Manager (suspicious management operations), APIs and AI services. DNS alerts now come with Servers Plan 2."
+            ],
+            [
+              "Servers plans compared",
+              "Both Servers plans include Defender for Endpoint and agent based vulnerability scanning. Plan 2 adds agentless scanning, premium vulnerability management, file integrity monitoring, just in time access and free data ingestion. Brightwater runs Plan 2 on production and Plan 1 on test VMs, set per resource."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater wants alerts when someone performs suspicious management operations, such as mass deletions through Azure Resource Manager. Which plan provides them?",
+            "options": [
+              "Defender for Storage",
+              "Defender for Resource Manager",
+              "Foundational CSPM",
+              "Defender for APIs"
+            ],
+            "answer": 1,
+            "why": "Defender for Resource Manager watches control plane operations for suspicious patterns. Storage watches data access, foundational CSPM checks configuration, and APIs protects published APIs."
+          },
+          "key": "Regulatory compliance tracks standards, and workload protection plans for servers, storage, containers, databases and more raise alerts on active attacks."
+        },
+        {
+          "title": "Connecting AWS, GCP and hybrid environments",
+          "steps": [
+            [
+              "Connectors",
+              "A **multicloud connector** is an Azure resource that links an AWS account or GCP project to Defender for Cloud. Creating one needs Contributor on the Azure subscription that holds it."
+            ],
+            [
+              "AWS",
+              "Onboarding an AWS **management account** creates connectors for every member account, including new ones, through CloudFormation StackSets. A single account covers one. Tomasi chooses regions, a scan interval, the plans and default or least privilege access, then deploys the CloudFormation template or Terraform."
+            ],
+            [
+              "GCP",
+              "GCP onboarding covers a project or an organisation. A generated script run in Cloud Shell creates the workload identity pool and service accounts, so Defender for Cloud uses **workload identity federation** rather than stored keys."
+            ],
+            [
+              "Hybrid machines and vulnerability management",
+              "On premises and other cloud servers are protected through **Azure Arc**, which connectors can deploy automatically. **Defender Vulnerability Management** for VMs is on by default with Defender for Servers, using the endpoint sensor, and agentless scanning adds snapshot based assessment with Plan 2 or Defender CSPM."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater has 15 AWS accounts under one AWS Organization and expects more. How should Tomasi connect them?",
+            "options": [
+              "A single account connector for each account",
+              "Connect each account through Azure Arc",
+              "A connector in each AWS region",
+              "Onboard the AWS management account"
+            ],
+            "answer": 3,
+            "why": "Management account onboarding uses StackSets to create connectors for all member accounts, including new ones. Single account connectors need manual work for each new account, Arc covers servers rather than accounts, and connectors are not per region."
+          },
+          "key": "Multicloud connectors bring AWS and GCP into Defender for Cloud, management account onboarding covers new AWS accounts, and Arc covers hybrid servers."
+        },
+        {
+          "title": "Defender External Attack Surface Management",
+          "steps": [
+            [
+              "The outside in view",
+              "**Defender External Attack Surface Management (EASM)** maps what an attacker sees of you from the internet: domains, hosts, IP blocks, certificates and web apps, including ones IT forgot about."
+            ],
+            [
+              "Discovery",
+              "Discovery starts from **seeds** such as organisation names, domains, IP blocks and ASNs, but not private addresses. Seeds sit in **discovery groups** with their own schedules, and exclusions stop unrelated assets being added. Many organisations get a prebuilt attack surface to start from."
+            ],
+            [
+              "Inventory and dashboards",
+              "Assets are marked **approved**, candidate, dependency, monitor only or requires investigation. Dashboards cover inventory changes, security posture, GDPR compliance, OWASP Top 10, CWE Top 25 and CISA known exploited vulnerabilities."
+            ],
+            [
+              "With Defender CSPM",
+              "Defender CSPM includes EASM integration without a separate licence, adding internet exposure validation and attack paths that start from internet facing addresses. Tomasi finds an old marketing site on a forgotten Brightwater domain running an outdated, exploitable plugin."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater suspects old websites on forgotten domains are still online. Which tool is built to find them?",
+            "options": [
+              "Defender EASM",
+              "Network Watcher next hop",
+              "Azure Backup",
+              "Machine Configuration"
+            ],
+            "answer": 0,
+            "why": "EASM discovers internet facing assets from seeds such as domains and organisation names, including forgotten ones. The other tools work on resources you already know about inside Azure."
+          },
+          "key": "Defender EASM discovers internet facing assets from seeds and flags exposed vulnerabilities, with integration included in Defender CSPM."
+        },
+        {
+          "title": "Sentinel workspaces, roles and content hub",
+          "steps": [
+            [
+              "Workspaces",
+              "**Microsoft Sentinel** runs on a **Log Analytics workspace**. Enabling it needs Contributor on the subscription, and the workspace cannot be moved afterwards. In the Defender portal, one **primary workspace** receives Defender XDR incidents and correlates with them; secondary workspaces can still ingest Defender tables. Keep one workspace unless residency, billing or separation demands more."
+            ],
+            [
+              "Roles",
+              "**Reader** views, **Responder** also manages incidents, and **Contributor** also creates rules and installs content. **Playbook Operator** runs playbooks by hand, and **Automation Contributor** is for Sentinel's service account only. Logic App Contributor builds playbooks and Workbook Contributor saves workbooks."
+            ],
+            [
+              "Content hub",
+              "The **content hub** installs **solutions**, packages of connectors, rules, hunting queries, workbooks, parsers and playbooks for a product, plus standalone items. Installing turns nothing on: each item must be configured, such as creating rules from templates. Some solutions depend on others."
+            ],
+            [
+              "At Brightwater",
+              "Tomasi uses one workspace in the Australia East region, gives the two analysts Responder and Playbook Operator, and installs the Microsoft Entra, Azure Activity and Windows Security Events solutions, then creates rules from their templates."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi installs a content hub solution, but no new detections appear. Why?",
+            "options": [
+              "The workspace needs to be moved first",
+              "The solution only adds workbooks",
+              "Its rules must be created from the templates",
+              "Responders cannot see new rules"
+            ],
+            "answer": 2,
+            "why": "Installed solutions provide templates, and each rule must be created and enabled. Solutions include rules, connectors and more, workspaces cannot be moved after Sentinel is enabled, and Responders can see rules."
+          },
+          "key": "Sentinel runs on a Log Analytics workspace with one primary in the Defender portal, uses layered roles, and content hub solutions provide templates you must enable."
+        },
+        {
+          "title": "Collecting Azure, Syslog, CEF and Windows events",
+          "steps": [
+            [
+              "Microsoft and Azure connectors",
+              "API based connectors such as **Microsoft Entra ID** write sign in, audit and risk logs to their own tables, with sign in logs needing P1 or P2. Azure resources use **diagnostic settings**, often deployed with Azure Policy and a remediation task, and Azure Activity lands in AzureActivity."
+            ],
+            [
+              "Syslog and CEF",
+              "Appliances send **Syslog** or **CEF** to a Linux forwarder running the Azure Monitor Agent. A **data collection rule (DCR)** sets the forwarder and the minimum log level per facility, and a script configures the daemon to listen on port 514. Data lands in Syslog or CommonSecurityLog. Using the same facility for both duplicates data."
+            ],
+            [
+              "Windows Security events",
+              "**Windows Security Events via AMA** uses a DCR to collect from Azure or Arc enabled servers with event sets All, Common, Minimal or custom XPath, and writes to **SecurityEvent**, which most built in rules query."
+            ],
+            [
+              "Windows Event Forwarding",
+              "**WEF** sends events from many computers to a collector, where the AMA forwards them into **WindowsEvent**. It avoids installing agents everywhere, but rules expecting SecurityEvent must be adapted. Brightwater uses Security Events via AMA on servers and WEF for branch PCs."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater's built in Sentinel rules query SecurityEvent, but events from WEF collectors never match. Why?",
+            "options": [
+              "The DCR level is set too high",
+              "WEF strips the event IDs",
+              "WEF data lands in WindowsEvent",
+              "The collector needs Security Events via AMA too"
+            ],
+            "answer": 3,
+            "why": "The Windows Forwarded Events connector writes to WindowsEvent, so rules written for SecurityEvent must be adapted or those machines collected with Security Events via AMA directly. WEF keeps event IDs, and the collector setting is not the issue."
+          },
+          "key": "Use API and diagnostic settings connectors for Azure, a Linux forwarder for Syslog and CEF, and choose Security Events via AMA or WEF knowing the table each writes to."
+        },
+        {
+          "title": "Custom tables, automation and retention",
+          "steps": [
+            [
+              "Custom tables",
+              "Custom tables end in _CL. Text files from servers use **Custom Logs via AMA** into a table with TimeGenerated and RawData. Apps push data through the **Logs Ingestion API** using a DCR with a transformation and an Entra app holding Monitoring Metrics Publisher on the DCR."
+            ],
+            [
+              "Automation rules",
+              "**Automation rules** trigger when incidents are created or updated or alerts are created. They change status, severity, owner and tags, add tasks or run playbooks, sequentially by order, and can expire on a set date for temporary suppression."
+            ],
+            [
+              "Playbooks",
+              "**Playbooks** are Logic Apps with incident, alert or entity triggers that take actions such as blocking a user or posting to Teams. Logic App Contributor builds them, Playbook Operator runs them by hand, and Sentinel's service account needs permission on the playbook's resource group, granted by an Owner."
+            ],
+            [
+              "Retention",
+              "The **analytics tier** keeps data for rules and hunting, 30 days by default and up to two years, with 90 days free for Sentinel solution tables. The **data lake tier** stores data cheaply, with total retention up to 12 years, queried with KQL jobs. Moving a table to the lake stops rules on it, and lowering total retention has a 30 day grace period."
+            ]
+          ],
+          "check": {
+            "q": "Brightwater must keep proxy logs for seven years but never runs detection rules on them. Where should Tomasi store them?",
+            "options": [
+              "Analytics tier for two years, then delete",
+              "The analytics tier for seven years",
+              "The data lake tier",
+              "Defender XDR advanced hunting"
+            ],
+            "answer": 2,
+            "why": "The data lake tier is cheap long term storage, up to 12 years. The analytics tier tops out at two years and costs more, so seven years is not possible there, and advanced hunting keeps 30 days."
+          },
+          "key": "Bring custom data in with DCRs and the Logs Ingestion API, automate with automation rules and playbooks, and use the data lake tier for long, cheap retention."
+        },
+        {
+          "title": "Querying Purview Audit in Defender XDR",
+          "steps": [
+            [
+              "The unified audit log",
+              "The **unified audit log** records user and admin activity across Exchange, SharePoint, OneDrive, Teams, Entra ID and more. **Audit (Standard)** is on by default with 180 day retention. **Audit (Premium)** keeps key records for a year, adds custom retention and insights such as **MailItemsAccessed**, and a 10 year add on extends retention."
+            ],
+            [
+              "Audit search in Defender",
+              "The **Audit** page in the Defender portal works like Purview's: filter by dates, activities, users and record types, then export. It needs the **Audit Logs** or **View-Only Audit Logs** role, for least privilege rather than Global Administrator."
+            ],
+            [
+              "KQL in advanced hunting",
+              "The **CloudAppEvents** table in advanced hunting holds Office 365 and connected app activity, once the Microsoft 365 app connector in Defender for Cloud Apps collects Microsoft 365 activities. Useful columns include the action type, account, admin operation flag, external user flag, IP address and object name."
+            ],
+            [
+              "Scripting",
+              "Search-UnifiedAuditLog in Exchange Online PowerShell searches the same log. When a claims manager's mailbox forwards mail outside Brightwater, Tomasi queries CloudAppEvents for new inbox rules by that account in the last week."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi wants to query Microsoft 365 user activity with KQL in Defender XDR advanced hunting. Which table should he use, and what must be connected?",
+            "options": [
+              "CloudAppEvents with the Microsoft 365 connector",
+              "OfficeActivity with the Azure Activity policy",
+              "AuditLogs with Entra diagnostic settings",
+              "EmailEvents with Defender for Office 365"
+            ],
+            "answer": 0,
+            "why": "CloudAppEvents holds Office 365 activity once the Microsoft 365 app connector collects it. OfficeActivity is a Sentinel table fed by a different connector, AuditLogs covers Entra directory changes, and EmailEvents covers mail delivery only."
+          },
+          "key": "Audit search in Defender mirrors Purview Audit, and CloudAppEvents in advanced hunting holds Microsoft 365 activity once the app connector is set up."
+        },
+        {
+          "title": "Security Copilot workspaces and roles",
+          "steps": [
+            [
+              "Workspaces",
+              "A **Security Copilot workspace** is created with a unique name that cannot be renamed, a **capacity** of provisioned Security Compute Units (SCUs) with optional overage, and a **data storage location** that cannot be changed later. A capacity serves one workspace at a time. Prompts can be evaluated in the same geography or anywhere with capacity."
+            ],
+            [
+              "Owner settings",
+              "Each workspace's owners control capacity, data sharing with Microsoft, file upload permissions and plugins. Audit logging to Purview is set tenant wide by a Security Administrator. Some Microsoft 365 E5 tenants receive an included SCU allowance."
+            ],
+            [
+              "Copilot owner and contributor",
+              "**Copilot owners** manage settings, plugins, roles and agents. **Copilot contributors** create sessions, submit prompts and run promptbooks. These are not Entra roles and grant no access to security data: Copilot works on behalf of the user, who still needs, for example, Sentinel Reader to query Sentinel."
+            ],
+            [
+              "Assigning access",
+              "Roles are assigned per workspace to users, security groups (recommended), Entra roles or managed identities. Some admin roles, such as Global Administrator and Security Administrator, inherit owner automatically. Tomasi gives contributor to a Brightwater security analysts group rather than handing out Security Administrator."
+            ]
+          ],
+          "check": {
+            "q": "A Brightwater analyst is a Copilot contributor but Copilot cannot read Sentinel incidents for her. Why?",
+            "options": [
+              "Contributors cannot use Sentinel plugins",
+              "She also needs a Sentinel role",
+              "Only owners can query incidents",
+              "Her workspace has no SCUs left"
+            ],
+            "answer": 1,
+            "why": "Copilot roles grant no data access, and Copilot uses the user's own permissions, so she needs a role such as Sentinel Reader. Contributors can use plugins, the owner role adds settings rather than data access, and exhausted SCUs would affect all prompts, not just Sentinel."
+          },
+          "key": "Security Copilot workspaces fix name and data location at creation, and owner and contributor roles grant no data access, because Copilot uses the user's own permissions."
+        },
+        {
+          "title": "Copilot plugins and agents",
+          "steps": [
+            [
+              "Plugins",
+              "**Plugins** connect Security Copilot to products and data. Users manage them from Sources in the prompt bar, and some need per user setup such as choosing a workspace. Owners decide whether preinstalled plugins are available to all users or owners only, and who may add custom plugins for themselves or the whole organisation."
+            ],
+            [
+              "Custom plugins",
+              "A custom **Security Copilot plugin** manifest, in YAML or JSON, has a descriptor and skill groups. Skills can call REST APIs described with OpenAPI, run KQL against Sentinel or Defender, or use GPT prompts. Tomasi uploads a plugin that queries Brightwater's claims fraud API."
+            ],
+            [
+              "Microsoft agents",
+              "**Agents** run tasks on a trigger or on demand. Setting one up means choosing an identity, ideally a new **Entra Agent ID** with only the permissions granted, rather than an existing user account. The **Phishing Triage Agent** needs Defender for Office 365 Plan 2, and the **Conditional Access Optimization Agent** suggests or creates policies in report only mode."
+            ],
+            [
+              "Security Store agents",
+              "The **Security Store** offers partner agents and solutions billed through Azure Marketplace. Getting one needs Contributor or Owner on the billing subscription and Copilot owner or contributor to set it up. If a partner agent reaches Microsoft products, a Global Administrator must approve its permissions before setup works."
+            ]
+          ],
+          "check": {
+            "q": "Tomasi buys a partner agent from the Security Store that reads Defender and Entra data, but its Set up button is disabled. What is needed?",
+            "options": [
+              "A Copilot owner must enable the plugin",
+              "A new Sentinel workspace is required",
+              "Global Administrator approval",
+              "The Azure subscription needs Owner"
+            ],
+            "answer": 2,
+            "why": "Partner agents that call Microsoft product skills need a Global Administrator to approve their permissions before setup is enabled. Plugin settings, workspaces and subscription ownership do not replace that approval step."
+          },
+          "key": "Owners control which plugins users get, custom plugins add skills, and agents should run as Entra Agent IDs, with partner agents needing Global Administrator approval."
+        }
+      ]
+    }
+  ]
+}

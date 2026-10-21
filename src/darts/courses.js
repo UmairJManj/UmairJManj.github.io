@@ -23,9 +23,9 @@ export const COURSES = [
   { id: "ai-901", tab: "AI-901", accent: "#8b5cf6" },
   { id: "governance", tab: "Governance", accent: "#f59e0b" },
   { id: "sc-300", tab: "SC-300", accent: "#06b6d4" },
-  { id: "sc-200", tab: "SC-200", accent: "#f97316", soon: true },
-  { id: "sc-500", tab: "SC-500", accent: "#ec4899", soon: true },
-  { id: "sc-100", tab: "SC-100", accent: "#14b8a6", soon: true },
+  { id: "sc-200", tab: "SC-200", accent: "#f97316" },
+  { id: "sc-500", tab: "SC-500", accent: "#ec4899" },
+  { id: "sc-100", tab: "SC-100", accent: "#14b8a6" },
 ];
 
 const cache = {};
