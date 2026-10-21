@@ -5,8 +5,9 @@ import { createAudio } from "./audio.js";
 
    A regulation board hangs on a dark wall. The aim reticle follows the
    pointer (or the arrow keys) and sways like a real hand, so the skill is
-   releasing as the sway passes over the target. Release throws; the dart
-   flies in, sticks, and the hit is scored the way a real board scores it.
+   releasing as the sway passes over the target. Wind pushes the dart sideways
+   in flight, so you aim upwind. Release throws; the dart flies in, sticks, and
+   the hit is scored the way a real board scores it.
 --------------------------------------------------------------------------- */
 
 // Clockwise from the top, and ring radii as fractions of the double's outer edge (170 mm).
@@ -14,6 +15,7 @@ const NUMBERS = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9,
 const BULL = 6.35 / 170, OUTER_BULL = 15.9 / 170, T_IN = 99 / 170, T_OUT = 107 / 170, D_IN = 162 / 170;
 const FLIGHT = 0.32;          // seconds from hand to board
 const KEEP = 3;               // darts left in the board
+const DRIFT = 0.05;           // sideways drift per m/s of wind, in board radii (4 m/s is about one segment)
 
 /** Score a hit at (x, y) in board units: radius 1 is the outside of the double ring, y points down. */
 export function scoreAt(x, y) {
@@ -88,6 +90,7 @@ export function createGame(canvas, cb = {}) {
   let W = 0, H = 0, dpr = 1, R = 0, cx = 0, cy = 0, bg = null;
   // Aim and stuck darts live in board units (radius 1 = outside of the doubles), so a resize keeps them on the board.
   let aim = { x: 0, y: 0 }, ready = true, pressing = false, touchLift = 0;
+  let wind = 0, gusts = [];
   let level = 0, accent = "#3b82f6", fly = null, raf = 0, visible = true, last = performance.now(), t = 0;
   const stuck = [];
   const toPx = (p) => ({ x: cx + p.x * R, y: cy + p.y * R });
@@ -105,11 +108,11 @@ export function createGame(canvas, cb = {}) {
     const a = toPx(aim), scatter = R * 0.012;
     const to = { x: a.x + s.x + (Math.random() - 0.5) * scatter, y: a.y + s.y + (Math.random() - 0.5) * scatter };
     ready = false;
-    fly = { from: { x: W / 2 + W * 0.12, y: H * 1.08 }, to, t: 0 };
+    fly = { from: { x: W / 2 + W * 0.12, y: H * 1.08 }, to, drift: wind * DRIFT * R, t: 0 };
   }
 
   function land() {
-    const { to } = fly;
+    const to = { x: fly.to.x + fly.drift, y: fly.to.y };
     fly = null;
     const b = { x: (to.x - cx) / R, y: (to.y - cy) / R };
     const hit = scoreAt(b.x, b.y);
@@ -129,10 +132,26 @@ export function createGame(canvas, cb = {}) {
     if (fly && (fly.t += dt / FLIGHT) >= 1) land();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.drawImage(bg, 0, 0, W, H);
+    // Wind streaks drift across the board at the wind's speed.
+    if (wind) {
+      while (gusts.length < 18) gusts.push({ x: Math.random() * W, y: Math.random() * H, len: 20 + Math.random() * 40 });
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.12)"; ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (const g of gusts) {
+        g.x += wind * dt * W * 0.09;
+        if (g.x > W + 60) g.x = -60; else if (g.x < -60) g.x = W + 60;
+        ctx.moveTo(g.x, g.y); ctx.lineTo(g.x - Math.sign(wind) * g.len, g.y);
+      }
+      ctx.stroke();
+    }
+    ctx.font = `600 ${Math.max(11, Math.round(R * 0.075))}px Calibri, Carlito, system-ui, sans-serif`;
+    ctx.textAlign = "left"; ctx.textBaseline = "top";
+    ctx.fillStyle = wind ? "#fde68a" : "rgba(229, 231, 235, 0.7)";
+    ctx.fillText(wind ? `WIND ${wind < 0 ? "←" : "→"} ${Math.abs(wind).toFixed(1)} m/s` : "NO WIND", 12, 12);
     for (const p of stuck) { const q = toPx(p); drawDart(ctx, q.x, q.y, R / 150, accent, false); }
     if (fly) {
       const k = fly.t, e = 1 - (1 - k) ** 2;
-      const x = fly.from.x + (fly.to.x - fly.from.x) * e;
+      const x = fly.from.x + (fly.to.x - fly.from.x) * e + fly.drift * k * k;   // wind bends the flight
       const y = fly.from.y + (fly.to.y - fly.from.y) * e - Math.sin(Math.PI * k) * H * 0.06;
       drawDart(ctx, x, y, (R / 150) * (1 + (1 - k) * 2.2), accent, true);
     } else if (ready) {
@@ -198,6 +217,7 @@ export function createGame(canvas, cb = {}) {
     audio, resize,
     next() { ready = true; },
     setLevel(n) { level = n; },
+    setWind(v) { wind = v; gusts = []; },
     setAccent(a) { accent = a; },
     destroy() {
       cancelAnimationFrame(raf); io.disconnect();

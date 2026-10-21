@@ -1,78 +1,48 @@
 import "./darts.css";
 import { useEffect, useRef, useState } from "react";
 import { createGame } from "./game.js";
-import { loadContent, loadSettings, saveSettings } from "./learn.js";
-import { LessonCard, QuizCard, Settings } from "./ui.jsx";
+import { loadSettings, saveSettings } from "./learn.js";
+import { SEQUENCE } from "./curriculum.js";
+import { CourseCard, QuizCard, Settings } from "./ui.jsx";
 
 /* ---------------------------------------------------------------------------
    Darts: throw to master AI security.
 
-   Every throw ends with a card. Cards alternate: a lesson, then a quick check
-   on that lesson after the next throw. The ring the dart hit sets how hard the
-   check is. A wrong answer sends the lesson back three lessons later.
+   Every throw shows the next card of a short AI security course: a module
+   intro, a lesson taught step by step, then a question on it. A wrong answer
+   brings a recap and the same question back a few cards later.
 --------------------------------------------------------------------------- */
 
 const ACCENT = "#3b82f6";
-// Keys keep their hoops3d names so progress made in the basketball version carries over.
-const CARD_KEY = "hoops3d:card";
-const LEARN_KEY = "hoops3d:learn";
-const SCORE_KEY = "hoops3d:score";
-const QUIZ_TYPES = ["single", "multi", "yesno"];
+const COURSE_KEY = "darts:course";
+const SCORE_KEY = "darts:score";
 const QUIZ_PTS = 10;
-const DIFFICULTY = { miss: 1, single: 1, outer: 2, double: 2, treble: 3, bull: 3 };
+const RETRY_AFTER = 4;   // cards before a missed question comes back
 
 const readNum = (k) => { try { return Number(localStorage.getItem(k)) || 0; } catch { return 0; } };
 const writeNum = (k, v) => { try { localStorage.setItem(k, String(v)); } catch { /* private mode */ } };
 
-// The lesson sequence: AI security first, then the wider security path.
-const ORDER = ["thm-ai1", "secai-plus", "ai-901", "governance", "sc-900", "sc-300", "sc-200", "sc-500", "sc-100"];
+// Course state: the next card in SEQUENCE, plus missed lessons waiting for a recap and a second try.
+const fresh = () => ({ pos: 0, retry: [] });
+function loadCourse() {
+  try { const s = JSON.parse(localStorage.getItem(COURSE_KEY)); if (s && Array.isArray(s.retry)) return s; } catch { /* fresh */ }
+  return fresh();
+}
+const saveCourse = (s) => { try { localStorage.setItem(COURSE_KEY, JSON.stringify(s)); } catch { /* private mode */ } };
 
-// Lesson counts per track, so lesson n maps to a track file without loading all of them.
-let countsP = null;
-const counts = () => (countsP ||= fetch("/hoops/content/index.json").then((r) => r.json())
-  .then((rows) => ORDER.map((id) => rows.find((r) => r.id === id)?.lessons || 0)));
-
-async function lessonAt(n) {
-  const c = await counts();
-  const total = c.reduce((a, b) => a + b, 0);
-  let i = ((n % total) + total) % total;
-  const no = i + 1;
-  let t = 0;
-  while (i >= c[t]) { i -= c[t]; t++; }
-  const content = await loadContent(ORDER[t]);
-  const lesson = content.lessons[i];
-  const qs = content.questions.filter((q) => q.lesson === lesson.id && QUIZ_TYPES.includes(q.type));
-  return { lesson, qs, n: no, total };
+// The card after a throw. A retry that is due comes as a recap card, then its question on the next throw.
+function nextCard(C) {
+  const r = C.retry.findIndex((x) => x.due <= C.pos && !x.recapped);
+  if (r >= 0) { C.retry[r].recapped = true; return { kind: "recap", li: C.retry[r].li }; }
+  const q = C.retry.findIndex((x) => x.recapped);
+  if (q >= 0) return { kind: "check", li: C.retry.splice(q, 1)[0].li, review: true };
+  const card = SEQUENCE[C.pos];
+  C.pos = card.kind === "done" ? 0 : C.pos + 1;
+  return card;
 }
 
-// Learning state: next new lesson, lessons taught, lessons due again, and the lesson awaiting its check.
-// A check left pending from an earlier visit is dropped, so a returning visitor starts on a new lesson.
-function loadLearn() {
-  try {
-    const s = JSON.parse(localStorage.getItem(LEARN_KEY));
-    if (s && Array.isArray(s.review)) return { ...s, check: null };
-  } catch { /* fresh */ }
-  return { next: readNum(CARD_KEY), taught: 0, review: [], check: null };
-}
-const saveLearn = (s) => { try { localStorage.setItem(LEARN_KEY, JSON.stringify(s)); } catch { /* private mode */ } };
-
-// The card after a throw: the check on the last lesson if one is waiting, otherwise the next lesson (reviews first).
-async function nextCard(L, difficulty) {
-  if (L.check != null) {
-    const i = L.check;
-    L.check = null;
-    const { lesson, qs } = await lessonAt(i);
-    const pool = qs.filter((q) => q.difficulty === difficulty);
-    const from = pool.length ? pool : qs;
-    if (from.length) return { kind: "quiz", i, q: from[Math.floor(Math.random() * from.length)], title: lesson.title };
-  }
-  const r = L.review.findIndex((x) => x.due <= L.taught);
-  const review = r >= 0;
-  const i = review ? L.review.splice(r, 1)[0].i : L.next++;
-  L.taught++;
-  L.check = i;
-  return { kind: "lesson", i, review, ...(await lessonAt(i)) };
-}
+// Wind: calm for the first few throws, then stronger and from either side.
+const windFor = (n) => (n < 3 ? 0 : (Math.random() < 0.5 ? -1 : 1) * Math.min(4, 0.8 + n * 0.12) * (0.5 + Math.random() * 0.5));
 
 export default function DartsArena() {
   const rootRef = useRef(null);
@@ -80,14 +50,12 @@ export default function DartsArena() {
   const canvasRef = useRef(null);
   const gameRef = useRef(null);
   const [settings, setSettingsState] = useState(loadSettings);
-  const [err, setErr] = useState(null);
   const [card, setCard] = useState(null);
-  const [deep, setDeep] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [score, setScore] = useState(() => readNum(SCORE_KEY));
   const [callout, setCallout] = useState(null);
-  const learn = useRef(loadLearn());
+  const course = useRef(loadCourse());
   const throws = useRef(0);
 
   const setSettings = (patch) => setSettingsState((s) => { const n = { ...s, ...patch }; saveSettings(n); return n; });
@@ -106,7 +74,6 @@ export default function DartsArena() {
   }, []);
 
   useEffect(() => { gameRef.current?.audio.setEnabled(settings.sound); }, [settings.sound]);
-  useEffect(() => { counts().catch(() => setErr("The lessons could not load. Refresh to try again.")); }, []);
   useEffect(() => { if (!callout) return undefined; const t = setTimeout(() => setCallout(null), 1300); return () => clearTimeout(t); }, [callout]);
 
   /* --- throw results: every throw ends with a card ---------------------------- */
@@ -115,20 +82,23 @@ export default function DartsArena() {
     setCallout({ text: hit.pts ? `${hit.label} +${hit.pts}` : hit.label, good: hit.pts >= 25, k: Math.random() });
     throws.current += 1;
     gameRef.current?.setLevel(Math.floor(throws.current / 4));
-    nextCard(learn.current, DIFFICULTY[hit.ring]).then((c) => { saveLearn(learn.current); setDeep(false); setCard({ ...c, k: Math.random() }); })
-      .catch(() => { setErr("The lessons could not load. Refresh to try again."); gameRef.current?.next(); });
+    const c = nextCard(course.current);
+    saveCourse(course.current);
+    setCard({ ...c, k: Math.random() });
   };
 
   // Retrieval practice: a right answer earns points, a wrong one re-queues the lesson.
   function onAnswer(ok) {
-    const L = learn.current;
+    const C = course.current;
     if (ok) addScore(QUIZ_PTS);
-    else L.review.push({ i: card.i, due: L.taught + 3 });
-    saveLearn(L);
+    else C.retry.push({ li: card.li, due: C.pos + RETRY_AFTER });
+    saveCourse(C);
   }
 
   function nextThrow() {
     setCard(null);
+    const w = windFor(throws.current);
+    gameRef.current?.setWind(w);
     gameRef.current?.next();
     canvasRef.current?.focus();
   }
@@ -161,16 +131,15 @@ export default function DartsArena() {
   if (showSettings) overlay = (
     <Settings s={settings} set={setSettings} onClose={() => setShowSettings(false)}
       onReset={() => {
-        learn.current = { next: 0, taught: 0, review: [], check: null }; saveLearn(learn.current);
+        course.current = fresh(); saveCourse(course.current);
         writeNum(SCORE_KEY, 0); setScore(0); setShowSettings(false);
       }} />
   );
-  else if (err) overlay = <div className="dt-card"><p className="dt-short">{err}</p></div>;
-  else if (card?.kind === "quiz") overlay = <QuizCard key={card.k} q={card.q} title={card.title} pts={QUIZ_PTS} onAnswer={onAnswer} onDone={nextThrow} />;
-  else if (card) overlay = (
-    <LessonCard lesson={card.lesson} review={card.review} domain="Lesson" deep={deep} setDeep={setDeep}
-      n={card.n} total={card.total} onDone={nextThrow} doneLabel="Next throw" />
+  else if (card?.kind === "check") overlay = (
+    <QuizCard key={card.k} li={card.li} review={card.review} pts={QUIZ_PTS} pos={course.current.pos} total={SEQUENCE.length}
+      onAnswer={onAnswer} onDone={nextThrow} />
   );
+  else if (card) overlay = <CourseCard card={card} pos={course.current.pos} total={SEQUENCE.length} onDone={nextThrow} />;
 
   return (
     <div ref={rootRef} className={`dt ${expanded ? "dt--full" : ""}`} style={{ "--arena": ACCENT }}>
@@ -185,7 +154,7 @@ export default function DartsArena() {
       <div className="dt-stage" ref={stageRef}>
         <canvas ref={canvasRef} className="dt-canvas" tabIndex={0}
           aria-label="Dartboard. Aim with the pointer or arrow keys, release or press space to throw." />
-        {!overlay && <p className="dt-tip">Aim, then let go to throw. Trebles and the bull earn harder questions.</p>}
+        {!overlay && <p className="dt-tip">Aim, then let go to throw. Each throw teaches the next card.</p>}
         {callout && <div key={callout.k} className={`dt-callout ${callout.good ? "is-good" : ""}`}>{callout.text}</div>}
         {overlay && <div className="dt-overlay" aria-live="polite"><div className="dt-flash">{overlay}</div></div>}
       </div>

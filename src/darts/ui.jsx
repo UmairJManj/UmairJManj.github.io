@@ -1,137 +1,108 @@
 /* Small presentational pieces for the darts panel. */
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { MODULES, LESSONS } from "./curriculum.js";
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-/** Tiny, safe markdown: **bold**, `code`, "- " bullets, blank-line paragraphs. */
+/** Tiny, safe markdown: **bold** and blank-line paragraphs. */
 export function Md({ text, className }) {
-  const blocks = String(text || "").split(/\n{2,}/);
-  const inline = (s) => esc(s)
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
-    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  const html = blocks.map((b) => {
-    const lines = b.split("\n");
-    if (lines.every((l) => /^\s*[-•]\s+/.test(l))) {
-      return `<ul>${lines.map((l) => `<li>${inline(l.replace(/^\s*[-•]\s+/, ""))}</li>`).join("")}</ul>`;
-    }
-    return lines.map((l) => (/^\s*[-•]\s+/.test(l) ? `<span class="md-li">${inline(l.replace(/^\s*[-•]\s+/, ""))}</span>` : inline(l))).join("<br>").replace(/^/, "<p>") + "</p>";
-  }).join("");
+  const html = String(text || "").split(/\n{2,}/)
+    .map((b) => `<p>${esc(b).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")}</p>`).join("");
   return <div className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-export function Diagram({ d }) {
-  if (!d) return null;
-  if (d.kind === "compare") {
-    return (
-      <div className="dt-dg dt-dg-table" role="img" aria-label="Comparison table">
-        <table>
-          <thead><tr>{d.cols.map((c) => <th key={c}>{c}</th>)}</tr></thead>
-          <tbody>{d.rows.map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody>
-        </table>
-      </div>
-    );
-  }
-  const items = d.items || [];
-  if (d.kind === "stack") {
-    return (
-      <div className="dt-dg dt-dg-stack" role="img" aria-label={`Layers: ${items.join(", ")}`}>
-        {items.map((it, i) => <div key={i} style={{ opacity: 1 - i * 0.07 }}>{it}</div>)}
-      </div>
-    );
-  }
+function Top({ mi, right }) {
   return (
-    <div className={`dt-dg dt-dg-flow ${d.kind === "cycle" ? "is-cycle" : ""}`} role="img"
-      aria-label={`${d.kind === "cycle" ? "Cycle" : "Flow"}: ${items.join(" then ")}`}>
-      {items.map((it, i) => (
-        <span key={i} className="dt-dg-step">
-          <span className="dt-dg-box">{it}</span>
-          {(i < items.length - 1 || d.kind === "cycle") && <span className="dt-dg-arrow" aria-hidden>{i < items.length - 1 ? "→" : "↺"}</span>}
-        </span>
-      ))}
+    <div className="dt-card-top">
+      <span className="dt-sect">Module {mi + 1} of {MODULES.length} · {MODULES[mi].title}</span>
+      {right && <span className="dt-prog">{right}</span>}
     </div>
   );
 }
 
-export function LessonCard({ lesson, review, domain, deep, setDeep, onDone, doneLabel, n, total }) {
-  if (!lesson) return null;
+function Progress({ pos, total }) {
+  return <div className="dt-bar" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={pos}
+    aria-label="Course progress"><span style={{ width: `${(100 * pos) / total}%` }} /></div>;
+}
+
+/** A teaching card: module intro, one step of a lesson, a recap before a retry, or the finish. */
+export function CourseCard({ card, pos, total, onDone }) {
+  let body;
+  if (card.kind === "intro") {
+    const m = MODULES[card.mi];
+    body = (
+      <>
+        <div className="dt-card-top"><span className="dt-sect">Module {card.mi + 1} of {MODULES.length}</span><span className="dt-prog">New module</span></div>
+        <h4 className="dt-big">{m.title}</h4>
+        <Md text={m.intro} className="dt-short" />
+        <ol className="dt-plan">{m.lessons.map((l) => <li key={l.title}>{l.title}</li>)}</ol>
+      </>
+    );
+  } else if (card.kind === "step") {
+    const l = LESSONS[card.li];
+    const [title, text] = l.steps[card.si];
+    body = (
+      <>
+        <Top mi={l.mi} right={`Lesson ${l.no}: step ${card.si + 1} of ${l.steps.length}`} />
+        <p className="dt-lesson">{l.title}</p>
+        <h4>{title}</h4>
+        <Md text={text} className="dt-short" />
+      </>
+    );
+  } else if (card.kind === "recap") {
+    const l = LESSONS[card.li];
+    body = (
+      <>
+        <Top mi={l.mi} right="Recap" />
+        <p className="dt-lesson">{l.title}</p>
+        <h4>Remember this</h4>
+        <p className="dt-key">{l.key}</p>
+        <p className="dt-hint">Your next throw brings this lesson's question back.</p>
+      </>
+    );
+  } else {
+    body = (
+      <>
+        <div className="dt-card-top"><span className="dt-sect">Course complete</span></div>
+        <h4 className="dt-big">You've finished AI security basics</h4>
+        <p className="dt-short">Eight modules: how AI apps work, threat modelling, prompt injection, unsafe output, data leakage, poisoning and supply chain, attacks on models, and defence and governance. Your next throw starts the course again from the top.</p>
+      </>
+    );
+  }
   return (
     <div className="dt-card">
-      <div className="dt-card-top">
-        <span className="dt-sect">{review ? "Review · " : ""}{domain}</span>
-        <span className="dt-prog">{n} / {total}</span>
-      </div>
-      <h4>{lesson.title}</h4>
-      <Md text={lesson.short} className="dt-short" />
-      {deep && (
-        <div className="dt-deep">
-          <Md text={lesson.deep} />
-          <Diagram d={lesson.diagram} />
-          {lesson.terms?.length > 0 && (
-            <dl className="dt-terms">
-              {lesson.terms.map((t) => (<div key={t.t}><dt>{t.t}</dt><dd>{t.d}</dd></div>))}
-            </dl>
-          )}
-          {lesson.example && <p className="dt-ex"><b>Example</b> {lesson.example}</p>}
-          {lesson.trap && <p className="dt-trap"><b>Common mistake</b> {lesson.trap}</p>}
-        </div>
-      )}
-      <div className="dt-actions">
-        <button className="dt-btn ghost" onClick={() => setDeep(!deep)}>{deep ? "Show less" : "Go deeper"}</button>
-        {onDone && <button className="dt-btn" onClick={onDone} autoFocus>{doneLabel}</button>}
-      </div>
+      {body}
+      <Progress pos={pos} total={total} />
+      <div className="dt-actions"><button className="dt-btn" onClick={onDone} autoFocus>Next throw</button></div>
     </div>
   );
 }
 
-/** A check on the lesson just taught: single choice, multiple choice or yes/no statements. */
-export function QuizCard({ q, title, pts, onAnswer, onDone }) {
-  const [pick, setPick] = useState(() => (q.type === "yesno" ? q.statements.map(() => null) : []));
-  const [ok, setOk] = useState(null);   // null until answered
-  const done = ok !== null;
-  const check = (p) => {
-    const right = q.type === "yesno"
-      ? q.statements.every((s, i) => p[i] === s.a)
-      : p.length === q.answer.length && q.answer.every((a) => p.includes(a));
-    setOk(right); onAnswer(right);
-  };
-  const choose = (i) => {
-    if (done) return;
-    if (q.type === "single") { setPick([i]); check([i]); }
-    else setPick((p) => (p.includes(i) ? p.filter((x) => x !== i) : [...p, i]));
-  };
-  const ready = q.type === "yesno" ? pick.every((v) => v !== null) : pick.length > 0;
+/** The check that ends a lesson. Options are shuffled each time it is shown. */
+export function QuizCard({ li, review, pts, pos, total, onAnswer, onDone }) {
+  const l = LESSONS[li], c = l.check;
+  const order = useMemo(() => c.options.map((_, i) => i).sort(() => Math.random() - 0.5), [c]);
+  const [pick, setPick] = useState(null);
+  const done = pick !== null;
+  const choose = (i) => { if (done) return; setPick(i); onAnswer(i === c.answer); };
   return (
     <div className="dt-card">
-      <div className="dt-card-top"><span className="dt-sect">Quick check</span><span className="dt-prog">{title}</span></div>
-      {q.case && <p className="dt-case">{q.case}</p>}
-      <h4>{q.stem}</h4>
-      {q.type === "yesno" ? (
-        <div className="dt-yn">
-          {q.statements.map((s, i) => (
-            <div key={i} className={`dt-yn-row ${done ? (pick[i] === s.a ? "is-right" : "is-wrong") : ""}`}>
-              <span>{s.s}</span>
-              {[true, false].map((v) => (
-                <button key={String(v)} disabled={done} aria-pressed={pick[i] === v}
-                  onClick={() => setPick((p) => p.map((x, j) => (j === i ? v : x)))}>{v ? "Yes" : "No"}</button>
-              ))}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="dt-opts">
-          {q.options.map((o, i) => {
-            const cls = !done ? (pick.includes(i) ? "is-picked" : "") : q.answer.includes(i) ? "is-right" : pick.includes(i) ? "is-wrong" : "";
-            return <button key={i} className={cls} disabled={done} onClick={() => choose(i)} autoFocus={i === 0}>{o}</button>;
-          })}
-        </div>
-      )}
-      {!done && q.type !== "single" && (
-        <div className="dt-actions"><button className="dt-btn" disabled={!ready} onClick={() => check(pick)}>Check</button></div>
-      )}
+      <Top mi={l.mi} right={review ? "Second try" : "Check your understanding"} />
+      <p className="dt-lesson">{l.title}</p>
+      <h4>{c.q}</h4>
+      <div className="dt-opts">
+        {order.map((i, k) => {
+          const cls = !done ? "" : i === c.answer ? "is-right" : i === pick ? "is-wrong" : "";
+          return <button key={i} className={cls} disabled={done} onClick={() => choose(i)} autoFocus={k === 0}>{c.options[i]}</button>;
+        })}
+      </div>
       {done && (
         <>
-          <p className={`dt-verdict ${ok ? "is-right" : "is-wrong"}`}>{ok ? `Correct. +${pts} points.` : "Not quite. This lesson comes back in a few cards."}</p>
-          <Md text={q.explain} className="dt-short" />
+          <p className={`dt-verdict ${pick === c.answer ? "is-right" : "is-wrong"}`}>
+            {pick === c.answer ? `Correct. +${pts} points.` : "Not quite. You'll get a recap and another go in a few cards."}
+          </p>
+          <Md text={c.why} className="dt-short" />
+          <Progress pos={pos} total={total} />
           <div className="dt-actions"><button className="dt-btn" onClick={onDone} autoFocus>Next throw</button></div>
         </>
       )}
@@ -148,7 +119,7 @@ export function Settings({ s, set, onReset, onClose }) {
       </div>
       <label className="dt-check"><input type="checkbox" checked={s.sound} onChange={(e) => set({ sound: e.target.checked })} /> Sound</label>
       <p className="dt-hint">Keyboard: arrow keys to aim, Space to throw. Progress is saved in this browser only.</p>
-      <button className="dt-btn ghost danger" onClick={onReset}>Start the flashcards again</button>
+      <button className="dt-btn ghost danger" onClick={onReset}>Start the course again</button>
     </div>
   );
 }
