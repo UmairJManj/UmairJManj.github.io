@@ -62,7 +62,7 @@ export function Contents({ course, pos, best, onStart, onResume }) {
         })}
       </ol>
       <Progress pos={pos} total={total} />
-      <div className="dt-actions"><button className="dt-btn" onClick={onResume} autoFocus>{pos ? "Carry on where I left off" : "Start from the beginning"}</button></div>
+      <div className="dt-actions"><button className="dt-btn" onClick={onResume}>{pos ? "Carry on where I left off" : "Start from the beginning"}</button></div>
     </div>
   );
 }

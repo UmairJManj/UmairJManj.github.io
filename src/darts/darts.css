@@ -117,7 +117,7 @@
 /* ===== Flashcards: a panel of its own under the darts ===== */
 .fc { margin-top: 1rem; border: 1px solid var(--line); border-radius: 0.9rem; background: var(--card); overflow: hidden; }
 .fc-main { display: grid; grid-template-columns: 8.4rem minmax(0, 1fr); }
-.fc-body { max-height: 34rem; overflow-y: auto; overscroll-behavior: contain; border-left: 1px solid var(--line); }
+.fc-body { max-height: 34rem; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; border-left: 1px solid var(--line); }
 .fc-body .dt-card { animation: dt-flip 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 
 /* Index tabs down the side, like the coloured tabs on a book's pages: the open one joins the page. */
@@ -139,3 +139,16 @@
   .fc-tabs button { flex: none; max-width: 11rem; margin: 0 0 -1px; border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0; box-shadow: inset 0 4px 0 var(--tab); }
   .fc-body { border-left: 0; border-top: 1px solid var(--line); max-height: none; }
 }
+
+/* 501 scoreboard in the corner of the stage, like the chalkboard at the oche. */
+.dt-board {
+  position: absolute; right: 0.6rem; top: 0.55rem; pointer-events: none; text-align: right;
+  display: grid; justify-items: end; gap: 0.15rem; color: #f1f5f9; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+}
+.dt-board b { font-size: 1.9rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.dt-visit { display: flex; gap: 0.25rem; }
+.dt-visit i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #f1f5f9; box-shadow: 0 0 6px rgba(0, 0, 0, 0.8); }
+.dt-visit i.used { background: transparent; border: 1px solid rgba(241, 245, 249, 0.6); }
+.dt-darts { font-family: var(--font-mono); font-size: 0.7rem; color: #cbd5e1; }
+.dt-out { font-family: var(--font-mono); font-size: 0.68rem; color: #fde68a; }
+.dt--full .dt-board b { font-size: 2.6rem; }
