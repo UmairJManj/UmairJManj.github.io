@@ -14,18 +14,19 @@
 --------------------------------------------------------------------------- */
 
 // Tab order: the AI security course first, then the certifications in study order.
-// soon: the course file is still being written; its tab shows but can't be picked.
+// name: what the course teaches, shown on its tab (no exam codes in the UI).
+// soon: no course file yet, so it has no tab.
 export const COURSES = [
-  { id: "ai-security", tab: "AI security", accent: "#3b82f6" },
-  { id: "sc-900", tab: "SC-900", accent: "#0ea5e9" },
-  { id: "thm-ai1", tab: "AI1", accent: "#22c55e", soon: true },
-  { id: "secai-plus", tab: "SecAI+", accent: "#ef4444", soon: true },
-  { id: "ai-901", tab: "AI-901", accent: "#8b5cf6" },
-  { id: "governance", tab: "Governance", accent: "#f59e0b" },
-  { id: "sc-300", tab: "SC-300", accent: "#06b6d4" },
-  { id: "sc-200", tab: "SC-200", accent: "#f97316" },
-  { id: "sc-500", tab: "SC-500", accent: "#ec4899" },
-  { id: "sc-100", tab: "SC-100", accent: "#14b8a6" },
+  { id: "ai-security", name: "Securing AI systems", accent: "#3b82f6" },
+  { id: "sc-900", name: "Security, compliance and identity basics", accent: "#0ea5e9" },
+  { id: "thm-ai1", name: "Attacking and defending AI", accent: "#22c55e", soon: true },
+  { id: "secai-plus", name: "AI security operations", accent: "#ef4444", soon: true },
+  { id: "ai-901", name: "AI fundamentals on Azure", accent: "#8b5cf6" },
+  { id: "governance", name: "AI and security governance", accent: "#f59e0b" },
+  { id: "sc-300", name: "Identity and access management", accent: "#06b6d4" },
+  { id: "sc-200", name: "Security operations and threat hunting", accent: "#f97316" },
+  { id: "sc-500", name: "Securing cloud and AI workloads", accent: "#ec4899" },
+  { id: "sc-100", name: "Cybersecurity architecture", accent: "#14b8a6" },
 ];
 
 const cache = {};
@@ -33,7 +34,7 @@ export function loadCourse(id) {
   return (cache[id] ||= fetch(`/courses/${id}.json`).then((r) => {
     if (!r.ok) throw new Error(`course ${id}: ${r.status}`);
     return r.json();
-  }).then(withSequence).catch((e) => { delete cache[id]; throw e; }));
+  }).then((c) => withSequence({ ...c, name: COURSES.find((x) => x.id === id)?.name || c.title })).catch((e) => { delete cache[id]; throw e; }));
 }
 
 /* Flattens a course into its cards: module intro, each lesson's steps, then its check, then the finish. */

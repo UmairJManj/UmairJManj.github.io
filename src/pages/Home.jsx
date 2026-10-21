@@ -6,8 +6,9 @@ import Footer from "../components/Footer.jsx";
 import LowPolyPortrait from "../components/LowPolyPortrait.jsx";
 import { lazy, Suspense } from "react";
 
-// The darts game loads after the profile, so the page paints first.
+// The darts game and the flashcards load after the profile, so the page paints first.
 const DartsArena = lazy(() => import("../darts/DartsArena.jsx"));
+const Flashcards = lazy(() => import("../darts/Flashcards.jsx"));
 
 function Row({ label, children, id }) {
   return (
@@ -157,10 +158,13 @@ export default function Home() {
 
       </div>
 
-      {/* Throw darts to master AI security: a lesson or a quick check after every throw. */}
-      <aside className="home-right" aria-label="Throw darts to master AI security">
+      {/* Darts to play, and security flashcards below it. */}
+      <aside className="home-right" aria-label="Darts and security flashcards">
         <Suspense fallback={<div className="dt dt-loading"><div className="dt-stage" /></div>}>
           <DartsArena />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Flashcards />
         </Suspense>
       </aside>
 

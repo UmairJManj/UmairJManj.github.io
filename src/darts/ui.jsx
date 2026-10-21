@@ -11,15 +11,14 @@ export function Md({ text, className }) {
   return <div className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-/** Book style index tabs down the side of the panel: free play, then one per course. */
+/** Book style index tabs down the side of the flashcards, one per subject. */
 export function Tabs({ tab, onPick }) {
-  const all = [{ id: "play", tab: "Play", accent: "#64748b" }, ...COURSES];
   return (
-    <nav className="dt-tabs" aria-label="Choose what to learn">
-      {all.map((c) => (
-        <button key={c.id} className={tab === c.id ? "is-on" : ""} style={{ "--tab": c.accent }} disabled={c.soon}
-          aria-pressed={tab === c.id} title={c.soon ? `${c.tab}: course coming soon` : c.id === "play" ? "Just play darts" : `Learn ${c.tab}`} onClick={() => onPick(c.id)}>
-          {c.tab}
+    <nav className="fc-tabs" aria-label="Choose a subject">
+      {COURSES.filter((c) => !c.soon).map((c) => (
+        <button key={c.id} className={tab === c.id ? "is-on" : ""} style={{ "--tab": c.accent }}
+          aria-pressed={tab === c.id} onClick={() => onPick(c.id)}>
+          {c.name}
         </button>
       ))}
     </nav>
@@ -29,7 +28,7 @@ export function Tabs({ tab, onPick }) {
 function Top({ course, mi, right }) {
   return (
     <div className="dt-card-top">
-      <span className="dt-sect">{course.code} · Module {mi + 1} of {course.modules.length}</span>
+      <span className="dt-sect">Module {mi + 1} of {course.modules.length}</span>
       {right && <span className="dt-prog">{right}</span>}
     </div>
   );
@@ -41,17 +40,17 @@ function Progress({ pos, total }) {
 }
 
 /** The course's contents: resume, or start any module (exam domain). */
-export function Contents({ course, pos, onStart, onResume }) {
+export function Contents({ course, pos, best, onStart, onResume }) {
   const total = course.seq.length;
   return (
     <div className="dt-card">
-      <div className="dt-card-top"><span className="dt-sect">{course.code}</span><span className="dt-prog">{course.lessons.length} lessons</span></div>
-      <h4 className="dt-big">{course.title}</h4>
-      <p className="dt-hint">Each throw shows the next card. Start at the top, or pick a module.</p>
+      <div className="dt-card-top"><span className="dt-sect">Contents</span><span className="dt-prog">{course.lessons.length} lessons</span></div>
+      <h4 className="dt-big">{course.name}</h4>
+      <p className="dt-hint">{course.id === "ai-security" ? "A short course on how AI apps are attacked and defended." : `Follows the official outline for ${course.title}.`} Start at the top, or pick a module.</p>
       <ol className="dt-toc">
         {course.modules.map((m, mi) => {
           const a = course.starts[mi], b = course.starts[mi + 1] ?? total - 1;
-          const pct = Math.round(100 * Math.min(1, Math.max(0, (pos - a) / (b - a))));
+          const pct = Math.round(100 * Math.min(1, Math.max(0, ((best[mi] || 0) - a) / (b - a))));
           return (
             <li key={m.title}>
               <button onClick={() => onStart(a)}>
@@ -75,7 +74,7 @@ export function CourseCard({ course, card, pos, onDone }) {
     const m = course.modules[card.mi];
     body = (
       <>
-        <div className="dt-card-top"><span className="dt-sect">{course.code} · Module {card.mi + 1} of {course.modules.length}</span><span className="dt-prog">New module</span></div>
+        <div className="dt-card-top"><span className="dt-sect">Module {card.mi + 1} of {course.modules.length}</span><span className="dt-prog">New module</span></div>
         <h4 className="dt-big">{m.title}</h4>
         <Md text={m.intro} className="dt-short" />
         <ol className="dt-plan">{m.lessons.map((l) => <li key={l.title}>{l.title}</li>)}</ol>
@@ -100,15 +99,15 @@ export function CourseCard({ course, card, pos, onDone }) {
         <p className="dt-lesson">{l.title}</p>
         <h4>Remember this</h4>
         <p className="dt-key">{l.key}</p>
-        <p className="dt-hint">Your next throw brings this lesson's question back.</p>
+        <p className="dt-hint">The next card brings this lesson's question back.</p>
       </>
     );
   } else {
     body = (
       <>
-        <div className="dt-card-top"><span className="dt-sect">{course.code} · Course complete</span></div>
-        <h4 className="dt-big">You've finished {course.title}</h4>
-        <p className="dt-short">That's every module: {course.modules.map((m) => m.title).join(", ")}. Your next throw starts the course again from the top, or pick another tab.</p>
+        <div className="dt-card-top"><span className="dt-sect">Course complete</span></div>
+        <h4 className="dt-big">You've finished {course.name}</h4>
+        <p className="dt-short">That's every module: {course.modules.map((m) => m.title).join(", ")}. Next starts the course again from the top, or pick another subject.</p>
       </>
     );
   }
@@ -116,7 +115,7 @@ export function CourseCard({ course, card, pos, onDone }) {
     <div className="dt-card">
       {body}
       <Progress pos={pos} total={course.seq.length} />
-      <div className="dt-actions"><button className="dt-btn" onClick={onDone} autoFocus>Next throw</button></div>
+      <div className="dt-actions"><button className="dt-btn" onClick={onDone} autoFocus>Next</button></div>
     </div>
   );
 }
@@ -146,7 +145,7 @@ export function QuizCard({ course, li, review, pts, pos, onAnswer, onDone }) {
           </p>
           <Md text={c.why} className="dt-short" />
           <Progress pos={pos} total={course.seq.length} />
-          <div className="dt-actions"><button className="dt-btn" onClick={onDone} autoFocus>Next throw</button></div>
+          <div className="dt-actions"><button className="dt-btn" onClick={onDone} autoFocus>Next</button></div>
         </>
       )}
     </div>
@@ -161,8 +160,8 @@ export function Settings({ s, set, onReset, onClose, course }) {
         <button className="dt-x" onClick={onClose} aria-label="Close">×</button>
       </div>
       <label className="dt-check"><input type="checkbox" checked={s.sound} onChange={(e) => set({ sound: e.target.checked })} /> Sound</label>
-      <p className="dt-hint">Keyboard: arrow keys to aim, Space to throw. Progress is saved in this browser only.</p>
-      {course && <button className="dt-btn ghost danger" onClick={onReset}>Start {course.code} again</button>}
+      <p className="dt-hint">{course ? "Progress is saved in this browser only." : "Keyboard: arrow keys to aim, Space to throw."}</p>
+      {course && <button className="dt-btn ghost danger" onClick={onReset}>Start this subject again</button>}
     </div>
   );
 }
