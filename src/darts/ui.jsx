@@ -1,6 +1,6 @@
 /* Small presentational pieces for the darts panel. */
 import { useMemo, useState } from "react";
-import { MODULES, LESSONS } from "./curriculum.js";
+import { COURSES } from "./courses.js";
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -11,10 +11,25 @@ export function Md({ text, className }) {
   return <div className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-function Top({ mi, right }) {
+/** Book style index tabs down the side of the panel: free play, then one per course. */
+export function Tabs({ tab, onPick }) {
+  const all = [{ id: "play", tab: "Play", accent: "#64748b" }, ...COURSES];
+  return (
+    <nav className="dt-tabs" aria-label="Choose what to learn">
+      {all.map((c) => (
+        <button key={c.id} className={tab === c.id ? "is-on" : ""} style={{ "--tab": c.accent }} disabled={c.soon}
+          aria-pressed={tab === c.id} title={c.soon ? `${c.tab}: course coming soon` : c.id === "play" ? "Just play darts" : `Learn ${c.tab}`} onClick={() => onPick(c.id)}>
+          {c.tab}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+function Top({ course, mi, right }) {
   return (
     <div className="dt-card-top">
-      <span className="dt-sect">Module {mi + 1} of {MODULES.length} · {MODULES[mi].title}</span>
+      <span className="dt-sect">{course.code} · Module {mi + 1} of {course.modules.length}</span>
       {right && <span className="dt-prog">{right}</span>}
     </div>
   );
@@ -25,35 +40,63 @@ function Progress({ pos, total }) {
     aria-label="Course progress"><span style={{ width: `${(100 * pos) / total}%` }} /></div>;
 }
 
+/** The course's contents: resume, or start any module (exam domain). */
+export function Contents({ course, pos, onStart, onResume }) {
+  const total = course.seq.length;
+  return (
+    <div className="dt-card">
+      <div className="dt-card-top"><span className="dt-sect">{course.code}</span><span className="dt-prog">{course.lessons.length} lessons</span></div>
+      <h4 className="dt-big">{course.title}</h4>
+      <p className="dt-hint">Each throw shows the next card. Start at the top, or pick a module.</p>
+      <ol className="dt-toc">
+        {course.modules.map((m, mi) => {
+          const a = course.starts[mi], b = course.starts[mi + 1] ?? total - 1;
+          const pct = Math.round(100 * Math.min(1, Math.max(0, (pos - a) / (b - a))));
+          return (
+            <li key={m.title}>
+              <button onClick={() => onStart(a)}>
+                <span>{m.title}</span>
+                <span className="dt-pct">{pct ? `${pct}%` : `${m.lessons.length} lessons`}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+      <Progress pos={pos} total={total} />
+      <div className="dt-actions"><button className="dt-btn" onClick={onResume} autoFocus>{pos ? "Carry on where I left off" : "Start from the beginning"}</button></div>
+    </div>
+  );
+}
+
 /** A teaching card: module intro, one step of a lesson, a recap before a retry, or the finish. */
-export function CourseCard({ card, pos, total, onDone }) {
+export function CourseCard({ course, card, pos, onDone }) {
   let body;
   if (card.kind === "intro") {
-    const m = MODULES[card.mi];
+    const m = course.modules[card.mi];
     body = (
       <>
-        <div className="dt-card-top"><span className="dt-sect">Module {card.mi + 1} of {MODULES.length}</span><span className="dt-prog">New module</span></div>
+        <div className="dt-card-top"><span className="dt-sect">{course.code} · Module {card.mi + 1} of {course.modules.length}</span><span className="dt-prog">New module</span></div>
         <h4 className="dt-big">{m.title}</h4>
         <Md text={m.intro} className="dt-short" />
         <ol className="dt-plan">{m.lessons.map((l) => <li key={l.title}>{l.title}</li>)}</ol>
       </>
     );
   } else if (card.kind === "step") {
-    const l = LESSONS[card.li];
+    const l = course.lessons[card.li];
     const [title, text] = l.steps[card.si];
     body = (
       <>
-        <Top mi={l.mi} right={`Lesson ${l.no}: step ${card.si + 1} of ${l.steps.length}`} />
+        <Top course={course} mi={l.mi} right={`Lesson ${l.no}: step ${card.si + 1} of ${l.steps.length}`} />
         <p className="dt-lesson">{l.title}</p>
         <h4>{title}</h4>
         <Md text={text} className="dt-short" />
       </>
     );
   } else if (card.kind === "recap") {
-    const l = LESSONS[card.li];
+    const l = course.lessons[card.li];
     body = (
       <>
-        <Top mi={l.mi} right="Recap" />
+        <Top course={course} mi={l.mi} right="Recap" />
         <p className="dt-lesson">{l.title}</p>
         <h4>Remember this</h4>
         <p className="dt-key">{l.key}</p>
@@ -63,31 +106,31 @@ export function CourseCard({ card, pos, total, onDone }) {
   } else {
     body = (
       <>
-        <div className="dt-card-top"><span className="dt-sect">Course complete</span></div>
-        <h4 className="dt-big">You've finished AI security basics</h4>
-        <p className="dt-short">Eight modules: how AI apps work, threat modelling, prompt injection, unsafe output, data leakage, poisoning and supply chain, attacks on models, and defence and governance. Your next throw starts the course again from the top.</p>
+        <div className="dt-card-top"><span className="dt-sect">{course.code} · Course complete</span></div>
+        <h4 className="dt-big">You've finished {course.title}</h4>
+        <p className="dt-short">That's every module: {course.modules.map((m) => m.title).join(", ")}. Your next throw starts the course again from the top, or pick another tab.</p>
       </>
     );
   }
   return (
     <div className="dt-card">
       {body}
-      <Progress pos={pos} total={total} />
+      <Progress pos={pos} total={course.seq.length} />
       <div className="dt-actions"><button className="dt-btn" onClick={onDone} autoFocus>Next throw</button></div>
     </div>
   );
 }
 
 /** The check that ends a lesson. Options are shuffled each time it is shown. */
-export function QuizCard({ li, review, pts, pos, total, onAnswer, onDone }) {
-  const l = LESSONS[li], c = l.check;
+export function QuizCard({ course, li, review, pts, pos, onAnswer, onDone }) {
+  const l = course.lessons[li], c = l.check;
   const order = useMemo(() => c.options.map((_, i) => i).sort(() => Math.random() - 0.5), [c]);
   const [pick, setPick] = useState(null);
   const done = pick !== null;
   const choose = (i) => { if (done) return; setPick(i); onAnswer(i === c.answer); };
   return (
     <div className="dt-card">
-      <Top mi={l.mi} right={review ? "Second try" : "Check your understanding"} />
+      <Top course={course} mi={l.mi} right={review ? "Second try" : "Check your understanding"} />
       <p className="dt-lesson">{l.title}</p>
       <h4>{c.q}</h4>
       <div className="dt-opts">
@@ -102,7 +145,7 @@ export function QuizCard({ li, review, pts, pos, total, onAnswer, onDone }) {
             {pick === c.answer ? `Correct. +${pts} points.` : "Not quite. You'll get a recap and another go in a few cards."}
           </p>
           <Md text={c.why} className="dt-short" />
-          <Progress pos={pos} total={total} />
+          <Progress pos={pos} total={course.seq.length} />
           <div className="dt-actions"><button className="dt-btn" onClick={onDone} autoFocus>Next throw</button></div>
         </>
       )}
@@ -110,7 +153,7 @@ export function QuizCard({ li, review, pts, pos, total, onAnswer, onDone }) {
   );
 }
 
-export function Settings({ s, set, onReset, onClose }) {
+export function Settings({ s, set, onReset, onClose, course }) {
   return (
     <div className="dt-card dt-settings">
       <div className="dt-card-top">
@@ -119,7 +162,7 @@ export function Settings({ s, set, onReset, onClose }) {
       </div>
       <label className="dt-check"><input type="checkbox" checked={s.sound} onChange={(e) => set({ sound: e.target.checked })} /> Sound</label>
       <p className="dt-hint">Keyboard: arrow keys to aim, Space to throw. Progress is saved in this browser only.</p>
-      <button className="dt-btn ghost danger" onClick={onReset}>Start the course again</button>
+      {course && <button className="dt-btn ghost danger" onClick={onReset}>Start {course.code} again</button>}
     </div>
   );
 }

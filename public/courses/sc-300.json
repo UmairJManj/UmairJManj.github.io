@@ -1,0 +1,1780 @@
+{
+  "id": "sc-300",
+  "code": "SC-300",
+  "title": "Microsoft Identity and Access Administrator",
+  "modules": [
+    {
+      "title": "Implement and manage user identities",
+      "intro": "This module covers the tenant itself, the people and devices in it, partners from outside, and the link to on premises Active Directory (about 20 to 25 percent of the exam). Meet **Matai Engineering**, a 600 person engineering consultancy with offices in Auckland, Christchurch and Sydney. It still runs Active Directory on premises, and it has just bought **Ridge Survey**, a 40 person firm with its own Microsoft 365 tenant. Leilani, Matai's new identity administrator, has to bring all of this under control.",
+      "lessons": [
+        {
+          "title": "Built-in and custom Entra roles",
+          "steps": [
+            [
+              "Three parts of a role assignment",
+              "Admin power in Microsoft Entra ID comes from **role assignments**. Each has a **role definition** (the permissions), a **security principal** (a user, a role assignable group or a service principal) and a **scope** (the whole tenant, an administrative unit or a single resource such as one app registration)."
+            ],
+            [
+              "Built-in roles",
+              "Built in roles cannot be edited. **Global Administrator** can do almost everything. **Privileged Role Administrator** manages role assignments and PIM. **User Administrator** manages users and groups. **Helpdesk Administrator** resets passwords for non admins. **Global Reader** sees everything but changes nothing. Leilani gives the service desk Helpdesk Administrator, not User Administrator."
+            ],
+            [
+              "Custom roles",
+              "A **custom role** is a definition you build from a list of permissions, such as the one that lets someone update an app's credentials. People assigned custom roles need **Entra ID P1**, and creating them needs at least Privileged Role Administrator. Custom Entra roles are separate from Azure RBAC custom roles, which control Azure resources."
+            ],
+            [
+              "Working out effective permissions",
+              "To see what someone can really do, open the user's **Assigned roles**. It shows each role, its scope and whether it came directly or through a group. Permissions from all active roles add together, and there are no deny assignments. A role that is only **eligible** in PIM grants nothing until it is activated."
+            ]
+          ],
+          "check": {
+            "q": "Matai's application team needs to rotate client secrets on app registrations and nothing else. What should Leilani do?",
+            "options": [
+              "Assign them the Global Administrator role",
+              "Copy Application Administrator and remove extra permissions from it",
+              "A custom role with only the credential update permission",
+              "Assign them the Cloud Application Administrator role"
+            ],
+            "answer": 2,
+            "why": "A custom role grants exactly the permissions needed. Built-in roles cannot be edited or trimmed in place, and both Global Administrator and Cloud Application Administrator give far more power than rotating secrets."
+          },
+          "key": "A role assignment joins a definition, a principal and a scope, built-in roles cannot be edited, and custom roles (P1) give exactly the permissions needed."
+        },
+        {
+          "title": "Administrative units",
+          "steps": [
+            [
+              "Scoping admin power",
+              "Without extra setup, a Helpdesk Administrator can reset passwords for every non admin in the tenant. An **administrative unit (AU)** limits a role assignment to the users, groups and devices inside the unit. Leilani creates one AU per office so the Sydney service desk only manages Sydney staff."
+            ],
+            [
+              "When not to use them",
+              "AUs scope management only. They do not hide objects, because users can still browse the directory. They are not full isolation, which needs a separate tenant, and they are not just in time access, which is PIM. Global Administrator cannot be scoped to an AU."
+            ],
+            [
+              "Building one",
+              "Create the AU, add members by hand, by CSV or with a **dynamic membership** rule such as department equals Sydney, then assign roles scoped to it on its Roles and administrators page. AUs cannot be nested. Adding a group to an AU lets scoped admins manage the group itself, not the users inside it. Each admin with an AU scoped role needs P1."
+            ],
+            [
+              "Restricted management AUs",
+              "A **restricted management** AU goes further: tenant wide admins, including Global Administrators, cannot change its members. Only admins scoped to that AU can. It suits executive accounts. The setting must be chosen when the AU is created and cannot be changed later. Matai puts the directors' accounts in one."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants its directors' accounts protected so that even tenant wide User Administrators cannot reset their passwords. What should Leilani create?",
+            "options": [
+              "A restricted management AU",
+              "A normal administrative unit scoped to directors",
+              "A role assignable group for the directors",
+              "Conditional Access requiring MFA for the directors"
+            ],
+            "answer": 0,
+            "why": "Restricted management AUs block tenant scoped admins from changing their members. A normal AU only adds scoped admins and blocks no one, a role assignable group is for granting roles, and MFA on the directors' sign in does not stop admins resetting their passwords."
+          },
+          "key": "Administrative units scope admin roles to a subset of objects, and restricted management AUs also block tenant wide admins."
+        },
+        {
+          "title": "Domains and company branding",
+          "steps": [
+            [
+              "The initial domain",
+              "Every tenant starts with a **name.onmicrosoft.com** domain that cannot be changed or deleted. Staff should sign in with the company's own domain instead, so Leilani adds **mataieng.co.nz** as a custom domain."
+            ],
+            [
+              "Verifying a custom domain",
+              "In Domain names, add the domain, copy the TXT (or MX) value shown, create that record at the DNS registrar, then select Verify. DNS changes can take time to spread. Once verified, Leilani can make it the **primary** domain so new users default to it. A domain can be verified in only one tenant at a time."
+            ],
+            [
+              "Ridge Survey's domain",
+              "To move ridgesurvey.co.nz into Matai's tenant later, Leilani must first remove it from Ridge Survey's tenant, which means removing every user name, email address and app that still uses it. Domains can be managed (cloud sign in) or federated, for example with AD FS."
+            ],
+            [
+              "Company branding",
+              "**Company branding** customises the sign in page: background image, banner logo, colours, sign in text and links. You can add versions per browser language. On shared Microsoft sites, branding appears after the user types their username, because only then is the tenant known. Guests see their home tenant's branding."
+            ]
+          ],
+          "check": {
+            "q": "Leilani tries to verify ridgesurvey.co.nz in Matai's tenant, but verification fails. Ridge Survey's tenant still uses the domain. What must happen first?",
+            "options": [
+              "Add a second TXT record with a longer TTL",
+              "Switch the domain to federated in Matai's tenant",
+              "Make it the primary domain in Matai's tenant",
+              "Remove it, and every reference to it, from Ridge's tenant"
+            ],
+            "answer": 3,
+            "why": "A domain can be verified in only one directory, so it must be removed from Ridge Survey's tenant first, including user names and addresses that use it. Extra DNS records, federation or making it primary cannot get around that rule."
+          },
+          "key": "Custom domains are verified with a DNS record, can live in only one tenant, and company branding customises the sign in page."
+        },
+        {
+          "title": "Tenant, user, group and device settings",
+          "steps": [
+            [
+              "Tenant properties",
+              "Tenant properties hold the name, the **country or region** (set at creation and unchangeable), the technical contact, and the privacy contact and statement link that guests see. A Global Administrator can temporarily turn on **access management for Azure resources** to get User Access Administrator over all subscriptions, for example to regain access, then turn it off."
+            ],
+            [
+              "User settings",
+              "User settings control whether ordinary users can **register applications**, create tenants or create security groups. Restricting access to the Entra admin center only hides pages from non admins, and is not a security control, because Graph and PowerShell still work."
+            ],
+            [
+              "Group settings",
+              "Group settings decide who can create groups and how owners manage requests. Microsoft 365 groups can have an **expiration** policy, where unused groups expire unless renewed, and a **naming policy** with prefixes and blocked words. Both need P1. Deleted Microsoft 365 groups can be restored for 30 days."
+            ],
+            [
+              "Device settings",
+              "Device settings decide who can **join** devices to Entra ID and who can **register** personal devices, the maximum devices per user, extra local administrators, and Windows LAPS. Microsoft recommends requiring MFA for joining through a Conditional Access user action rather than the old device setting."
+            ]
+          ],
+          "check": {
+            "q": "Matai's staff keep registering their own apps in the tenant. Where does Leilani stop this?",
+            "options": [
+              "Tenant properties",
+              "User settings: Users can register applications",
+              "Admin consent workflow settings",
+              "Restrict access to the Entra admin center"
+            ],
+            "answer": 1,
+            "why": "The Users can register applications setting controls this, and developers can be given the Application Developer role instead. Restricting the admin center only hides pages, so registration through other tools still works. Admin consent settings govern permissions, not registration."
+          },
+          "key": "Tenant properties, user settings, group settings and device settings set tenant wide defaults such as who can register apps, create groups or join devices."
+        },
+        {
+          "title": "Users and groups",
+          "steps": [
+            [
+              "Creating and managing users",
+              "Users are **members** (staff) or **guests** (outsiders), and either cloud only or synced from on premises AD. A new user needs a display name, a **user principal name** on a verified domain, a password and a **usage location**, which must be set before many licences can apply. For synced users, attributes are changed in AD, because the next sync would overwrite cloud edits."
+            ],
+            [
+              "Deleting and restoring",
+              "Deleted users are **soft deleted** for 30 days and can be restored with their properties and licences. After that, or after a permanent delete, they are gone. When a Matai engineer leaves by mistake on the wrong date, Leilani restores the account in minutes."
+            ],
+            [
+              "Group types",
+              "**Security groups** grant access to apps, resources and licences and can contain users, devices, service principals and other groups. **Microsoft 365 groups** provide a shared mailbox, calendar and site for collaboration and contain users only."
+            ],
+            [
+              "Dynamic membership",
+              "Membership is **assigned** by owners or **dynamic**, worked out by a rule such as department equals Structural. Dynamic groups add and remove members automatically and cannot be edited by hand. A rule for all staff but no guests must check user type equals Member. Dynamic user groups need P1 for every member."
+            ]
+          ],
+          "check": {
+            "q": "Leilani wants every user whose department is Structural to be added to and removed from a group automatically. What should she create?",
+            "options": [
+              "A Microsoft 365 group with assigned members",
+              "A dynamic user security group",
+              "An administrative unit with dynamic membership",
+              "A role assignable group"
+            ],
+            "answer": 1,
+            "why": "A dynamic user group keeps membership in step with an attribute rule. An administrative unit can be dynamic but scopes admin roles rather than granting access, and role assignable groups must use assigned membership."
+          },
+          "key": "Users need a UPN and usage location, deleted users can be restored for 30 days, and dynamic groups manage membership by rule."
+        },
+        {
+          "title": "Custom security attributes and bulk operations",
+          "steps": [
+            [
+              "Custom security attributes",
+              "**Custom security attributes** are business specific labels, such as a project code or clearance level, added to users and service principals. They are grouped into **attribute sets**, with types String, Integer or Boolean, and can be limited to predefined values. They can drive filtering and Azure access conditions."
+            ],
+            [
+              "Who can see them",
+              "By default even Global Administrators cannot read or assign custom security attributes. Dedicated roles do it: **Attribute Definition Administrator** creates them and **Attribute Assignment Administrator** assigns values. That keeps sensitive values away from general admins. Attribute names cannot be renamed, and definitions are deactivated rather than deleted."
+            ],
+            [
+              "Bulk operations in the portal",
+              "The Users page offers **bulk create** (members, from a CSV template with name, user name and initial password), **bulk invite** (guests), bulk delete, bulk restore and download. Leilani downloads the latest template, fills one row per user, uploads it and checks the results. Very large jobs can time out, so she splits them."
+            ],
+            [
+              "Microsoft Graph PowerShell",
+              "For repeatable automation, **Microsoft Graph PowerShell** is the supported tool, because the older MSOnline and AzureAD modules are retired. Connect-MgGraph signs in with the scopes needed, then cmdlets such as New-MgUser, Update-MgUser and New-MgGroupMember do the work, often looping over a CSV."
+            ]
+          ],
+          "check": {
+            "q": "Leilani needs a script to create 300 Ridge Survey accounts each time a project team joins. Which tool should she use?",
+            "options": [
+              "The MSOnline PowerShell module",
+              "The AzureAD PowerShell module",
+              "Bulk create in the admin center each time",
+              "Microsoft Graph PowerShell"
+            ],
+            "answer": 3,
+            "why": "Microsoft Graph PowerShell is the current supported tool for scripted directory tasks. MSOnline and AzureAD PowerShell are retired. Bulk create works but is manual every time, which defeats the point of a repeatable script."
+          },
+          "key": "Custom security attributes hold sensitive business labels with their own admin roles, and bulk jobs use CSV templates or Microsoft Graph PowerShell."
+        },
+        {
+          "title": "Device join and registration",
+          "steps": [
+            [
+              "Why devices need identities",
+              "A device identity lets Conditional Access, Intune and single sign on recognise the device. Without one, Leilani cannot require a compliant laptop before an engineer opens project files."
+            ],
+            [
+              "Three join types",
+              "**Entra registered** suits personal phones and laptops: the user adds a work account to a device they sign in to personally. **Entra joined** suits organisation owned Windows PCs that staff sign in to with their work account, with no on premises domain needed. **Hybrid joined** PCs are joined to on premises AD and also registered in Entra ID, which needs sync and a service connection point."
+            ],
+            [
+              "Controlling join and registration",
+              "Device settings decide who may join or register devices and how many each user may have. A Conditional Access policy on the **register or join devices** user action can require MFA. Turning off registration also blocks Intune enrolment of personal devices."
+            ],
+            [
+              "Managing device objects",
+              "**Disabling** a device blocks it from authenticating and is reversible. **Deleting** removes the object and its BitLocker recovery keys and cannot be undone. Stale devices should be disabled first and deleted after a grace period. On a Windows PC, dsregcmd status shows whether it is Entra joined, domain joined or both."
+            ]
+          ],
+          "check": {
+            "q": "A Matai laptop is reported stolen. Leilani wants to stop it authenticating immediately but keep its BitLocker key for now. What should she do?",
+            "options": [
+              "Disable the device object",
+              "Delete the device object",
+              "Revoke the user's sessions only",
+              "Remove the device from the user's Intune enrolment"
+            ],
+            "answer": 0,
+            "why": "Disabling stops the device authenticating and can be reversed, while keeping its details such as BitLocker keys. Deleting removes those keys for good. Revoking the user's sessions or changing Intune enrolment does not stop the device itself authenticating."
+          },
+          "key": "Devices are Entra registered, joined or hybrid joined, and disabling a device is reversible while deleting removes it and its BitLocker keys."
+        },
+        {
+          "title": "Licence assignment",
+          "steps": [
+            [
+              "Direct and group based",
+              "A licence is assigned **directly** to a user or **inherited** through **group based licensing**. Group based licensing works with security and Microsoft 365 groups, including dynamic ones, so new joiners get licences automatically. Leilani licenses a dynamic All Staff group instead of 600 individual users."
+            ],
+            [
+              "Assigning and trimming",
+              "A License Administrator assigns a product to users or groups and can turn off individual services inside it, such as a planning app Matai does not use. A user's **usage location** must be set first, or licences with location restricted services fail."
+            ],
+            [
+              "Common errors",
+              "Group licensing errors include not enough licences, conflicting service plans (such as two versions of the same email plan), dependencies, disallowed usage location and duplicate addresses. After fixing the cause, admins **reprocess** the group. Nested groups are not supported: only direct members get licences."
+            ],
+            [
+              "Changing and reporting",
+              "A directly assigned licence cannot be removed while the same licence is inherited, so remove the user from the group instead. When moving users between licensed groups, add them to the new group first, confirm, then remove them from the old one. Graph PowerShell can report licence use per product."
+            ]
+          ],
+          "check": {
+            "q": "Matai licenses the All Staff group, which contains a nested Sydney Staff group. Sydney engineers report they have no licence. Why?",
+            "options": [
+              "Licences only apply to directly assigned users",
+              "Sydney is not an allowed usage location",
+              "Nested group members do not inherit the licence",
+              "The group must be a Microsoft 365 group"
+            ],
+            "answer": 2,
+            "why": "Only direct members of a licensed group receive the licence, so users in a nested group miss out. Group based licensing does work for security groups, and Sydney is a valid usage location."
+          },
+          "key": "Group based licensing gives licences to direct members of a group, needs usage location set, and errors are fixed then reprocessed."
+        },
+        {
+          "title": "External collaboration and inviting guests",
+          "steps": [
+            [
+              "Tenant wide guest settings",
+              "**External collaboration settings** control B2B for the whole tenant. **Guest user access** sets how much of the directory guests can see, with limited access the default. **Guest invite settings** set who may invite, from anyone to no one. **Collaboration restrictions** allow invitations to any domain, deny listed domains, or allow only listed domains."
+            ],
+            [
+              "Leave settings",
+              "Guests can be allowed to remove themselves from the tenant, but only once privacy contact information is filled in. Self service sign up through **user flows** can be enabled for apps that external people should join on their own."
+            ],
+            [
+              "Inviting guests",
+              "Guests are invited one at a time from New user, in bulk from a CSV with the email and redirect URL, or with Graph PowerShell. Sharing in Teams and SharePoint and approved access package requests also create guests. Matai invites 25 staff from a client's engineering team for a shared project."
+            ],
+            [
+              "What a guest looks like",
+              "A guest gets a user object with user type Guest and a user name with EXT in it, and stays in **pending acceptance** until they redeem the invitation by signing in with their own identity. Leilani can resend invitations to people who have not redeemed them."
+            ]
+          ],
+          "check": {
+            "q": "Matai must only ever invite guests from three named client domains. Which setting enforces this?",
+            "options": [
+              "Guest user access set to most restrictive",
+              "Guest invite settings limited to admins",
+              "Cross-tenant access settings for each client",
+              "Collaboration restrictions with an allow list"
+            ],
+            "answer": 3,
+            "why": "Collaboration restrictions with an allow list limit invitations to the listed domains. Guest user access controls what guests can see, invite settings control who may invite, and cross-tenant settings only cover other Entra tenants, not every domain."
+          },
+          "key": "External collaboration settings control who can invite, which domains are allowed and what guests can see, and guests stay pending until they redeem."
+        },
+        {
+          "title": "Managing external accounts and identity providers",
+          "steps": [
+            [
+              "Guest properties",
+              "**User type** (member or guest) describes the relationship with your organisation, not how someone signs in, and can be changed. The **identities** property shows the guest's identity provider, such as another Entra tenant, a Microsoft account, email one time passcode or Google. **Sponsors** record who is responsible for the guest."
+            ],
+            [
+              "Resetting redemption",
+              "If a guest's email or home account changes, **reset redemption status** lets them redeem again with the new identity while keeping their object, groups and app access. Helpdesk Administrator is the least privileged role that can do it, so there is no need to delete and re invite."
+            ],
+            [
+              "Built-in identity providers",
+              "Guests can sign in with Microsoft Entra accounts, Microsoft accounts, **email one time passcode** (on by default, for anyone without another option), and Google, which needs a client ID from Google. Facebook works only for self service sign up flows, not for invitations."
+            ],
+            [
+              "SAML and WS-Fed federation",
+              "**SAML or WS-Fed identity provider federation** lets a partner's own identity system, such as AD FS, sign in their people as guests in your tenant. Leilani enters the partner's domain, the issuer, the passive sign in endpoint and the signing certificate, ideally through a metadata URL so certificates renew automatically."
+            ]
+          ],
+          "check": {
+            "q": "A client engineer's company changed its email domain, and she can no longer reach Matai's shared site as a guest. What is the least disruptive fix?",
+            "options": [
+              "Delete the guest and invite her again",
+              "Change her user type to Member",
+              "Reset her redemption status",
+              "Add her new address as a proxy address"
+            ],
+            "answer": 2,
+            "why": "Resetting redemption keeps her object, groups and app assignments while letting her sign in with the new identity. Deleting and re-inviting loses all of that, and changing user type or adding an address does not change which identity she signs in with."
+          },
+          "key": "Guest user type and identities describe each external user, reset redemption fixes changed identities, and SAML or WS-Fed federation uses a partner's own sign in."
+        },
+        {
+          "title": "Cross-tenant access settings",
+          "steps": [
+            [
+              "Per organisation control",
+              "**Cross tenant access settings** control B2B with other Microsoft Entra tenants, one organisation at a time. **Default settings** apply to every external tenant: B2B collaboration in and out is allowed, partner MFA and device claims are not trusted, and B2B direct connect is blocked."
+            ],
+            [
+              "Organisational settings",
+              "Leilani adds Ridge Survey's tenant as an organisation and overrides the defaults. She can limit inbound and outbound access to particular users, groups and apps. Per user and app scoping needs P1."
+            ],
+            [
+              "Trust settings",
+              "**Inbound trust** lets Matai accept a partner tenant's **MFA**, **compliant device** and **hybrid joined device** claims, so Ridge Survey staff are not asked for MFA twice when Matai's Conditional Access requires it. **Automatic redemption** suppresses the consent prompt, but only when both the home tenant's outbound and the resource tenant's inbound settings enable it."
+            ],
+            [
+              "B2B direct connect",
+              "**B2B direct connect** gives partner users access to **Teams shared channels** without creating guest objects. It must be set up by both tenants, and if your policies require MFA you must trust the partner's MFA. **Tenant restrictions v2** is a separate control over which outside tenants your own users may sign in to on your devices."
+            ]
+          ],
+          "check": {
+            "q": "Ridge Survey staff already complete MFA in their own tenant, but are prompted again when opening Matai's apps. What should Leilani configure?",
+            "options": [
+              "Inbound trust: accept MFA from Ridge's tenant",
+              "Outbound settings: allow Ridge's users",
+              "Turn on B2B direct connect with Ridge",
+              "A Conditional Access policy excluding guests"
+            ],
+            "answer": 0,
+            "why": "Trusting the partner's MFA claim in inbound trust settings lets Matai's Conditional Access be satisfied by MFA done at home. Outbound settings control Matai's own users, direct connect covers Teams shared channels, and excluding guests from policy would remove protection entirely."
+          },
+          "key": "Cross-tenant access settings control inbound and outbound B2B per organisation, trust partner MFA and device claims, and enable direct connect for shared channels."
+        },
+        {
+          "title": "Cross-tenant synchronization",
+          "steps": [
+            [
+              "Keeping two tenants in step",
+              "**Cross tenant synchronisation** automatically creates, updates and removes users from a **source** tenant in a **target** tenant. It is one way and pushed from the source. Matai uses it so every Ridge Survey employee exists in Matai's tenant without manual invitations."
+            ],
+            [
+              "Set-up order",
+              "In the **target**, enable inbound user synchronisation and automatic redemption for the source. In the **source**, enable outbound automatic redemption, then create a sync configuration with the target tenant ID and test the connection. Scope it, ideally to assigned users only, review the attribute mappings, test with **provision on demand**, then start provisioning."
+            ],
+            [
+              "How users appear",
+              "Synced users are created as **external members** by default, which gives them a fuller experience than guests. Only internal members of the source are synced. Removing a user from scope soft deletes them in the target, and disabling them in the source blocks sign in in the target."
+            ],
+            [
+              "Multitenant organisations",
+              "A **multitenant organisation** groups tenants, with one owner, so Teams and Viva Engage work more smoothly across them. It does not merge tenants: each keeps its own policies and admins. Cross tenant sync needs P1 for each synced user in the source tenant."
+            ]
+          ],
+          "check": {
+            "q": "Ridge Survey users must appear automatically in Matai's tenant and disappear when they leave Ridge Survey. Which feature fits?",
+            "options": [
+              "A monthly bulk invite from a CSV",
+              "Cross-tenant synchronization",
+              "B2B direct connect",
+              "Microsoft Entra Cloud Sync"
+            ],
+            "answer": 1,
+            "why": "Cross-tenant synchronization provisions and deprovisions users automatically from one tenant to another. Bulk invites are manual and never remove anyone, direct connect only covers Teams shared channels, and Cloud Sync copies on premises AD into a tenant, not tenant to tenant."
+          },
+          "key": "Cross-tenant synchronization pushes users one way from source to target as external members, after both tenants enable automatic redemption."
+        },
+        {
+          "title": "Microsoft Entra Connect Sync and Cloud Sync",
+          "steps": [
+            [
+              "Two sync tools",
+              "**Hybrid identity** gives each person one identity across on premises AD and the cloud. Two tools copy AD objects to Entra ID. **Microsoft Entra Connect Sync** is a Windows service on a domain joined server. **Microsoft Entra Cloud Sync** uses light provisioning agents, with configuration held in the Entra admin center."
+            ],
+            [
+              "Connect Sync details",
+              "Connect Sync needs a full Windows Server, treated as a Tier 0 asset as sensitive as a domain controller. It syncs every 30 minutes by default. Only one server exports at a time, and a second in **staging mode** stands ready. Filtering by domain, OU or attribute decides which objects sync, and accidental delete protection stops large deletions."
+            ],
+            [
+              "Cloud Sync details",
+              "Cloud Sync agents keep an outbound connection and sync about every two minutes. Several active agents give high availability. It handles **disconnected forests**, such as Ridge Survey's AD with no trust to Matai's, and can provision cloud groups back to AD."
+            ],
+            [
+              "When Connect Sync is still needed",
+              "Connect Sync is still required for pass-through authentication and AD FS set up, advanced custom sync rules and very large directories. Both tools can run side by side for different scopes, as long as each object is synced by only one. Matai keeps Connect Sync for its main forest and uses Cloud Sync for Ridge Survey's."
+            ]
+          ],
+          "check": {
+            "q": "Ridge Survey's on premises AD forest has no trust with Matai's forest. Which tool most easily syncs both into Matai's tenant?",
+            "options": [
+              "Microsoft Entra Connect Sync in staging mode",
+              "AD FS",
+              "Microsoft Entra Cloud Sync",
+              "Cross-tenant access settings"
+            ],
+            "answer": 2,
+            "why": "Cloud Sync can bring disconnected forests into one tenant using light agents. Staging mode is a standby Connect Sync server, not a way to add a second forest, AD FS is federation rather than sync, and cross-tenant settings govern B2B between cloud tenants."
+          },
+          "key": "Connect Sync is a full sync server with staging mode and advanced rules, while Cloud Sync uses light agents and handles disconnected forests."
+        },
+        {
+          "title": "PHS, PTA and Seamless SSO",
+          "steps": [
+            [
+              "Password hash synchronisation",
+              "With **password hash sync (PHS)**, the sync engine takes the AD password hash, adds a salt and hashes it many more times before sending it, so neither the password nor the original hash leaves the network. Entra ID then checks passwords in the cloud. Microsoft recommends it: no extra servers, sign in survives an on premises outage, and it enables **leaked credentials** detection."
+            ],
+            [
+              "Pass-through authentication",
+              "With **pass-through authentication (PTA)**, Entra ID queues the sign in and an on premises **authentication agent** checks the password against a domain controller. Agents use outbound connections only, and Microsoft recommends at least three. On premises rules such as logon hours and expired accounts apply instantly."
+            ],
+            [
+              "PTA's weakness",
+              "If every PTA agent is unreachable, sign in fails and nothing switches over automatically. Microsoft advises enabling PHS as a **backup** that admins can switch to, which also adds leaked credential detection. PTA is set up only with Connect Sync."
+            ],
+            [
+              "Seamless single sign-on",
+              "**Seamless SSO** works with PHS or PTA. It creates a computer account in AD, and browsers on domain joined devices use Kerberos to sign users in silently. It is mainly for older Windows versions, because Windows 10 and 11 joined devices use the Primary Refresh Token. Its Kerberos key should be rolled over regularly."
+            ]
+          ],
+          "check": {
+            "q": "Matai's security policy requires that on premises logon hour restrictions apply immediately at cloud sign in. Which method fits?",
+            "options": [
+              "Pass-through authentication",
+              "Password hash synchronization",
+              "Email one time passcode",
+              "Cloud only accounts"
+            ],
+            "answer": 0,
+            "why": "PTA checks each sign in against a domain controller, so on premises restrictions such as logon hours apply immediately. PHS checks in the cloud, where logon hours are not evaluated. The other options do not use AD at all."
+          },
+          "key": "PHS checks passwords in the cloud and survives outages, PTA checks them on premises through agents, and Seamless SSO gives silent sign in on domain joined PCs."
+        },
+        {
+          "title": "Moving off AD FS and Connect Health",
+          "steps": [
+            [
+              "Why leave AD FS",
+              "Many organisations used **AD FS** to federate sign in. It means servers to patch and keep available. Microsoft recommends moving to cloud authentication with PHS or PTA. Matai's AD FS farm is ageing, so Leilani plans the move."
+            ],
+            [
+              "Staged rollout",
+              "**Staged rollout** lets chosen security groups use PHS, PTA or certificate based authentication while the domain stays federated. Up to 10 groups per feature are allowed, nested and dynamic groups are not, and only synced users are in scope. Leilani starts with the IT team."
+            ],
+            [
+              "Cutting over",
+              "If Entra Connect set up AD FS, the Change user sign in option in the wizard converts the domain to PHS or PTA. Otherwise she enables the method and converts each domain to managed with Graph PowerShell. Apps that trusted AD FS are moved one by one, using the **AD FS application activity** report to see which relying parties are in use and how ready they are."
+            ],
+            [
+              "Microsoft Entra Connect Health",
+              "**Connect Health** monitors the sync service, AD FS and AD DS through agents. It shows sync errors such as duplicate attributes, AD FS usage, bad password attempts and risky IP reports, and domain controller health. It needs P1 or P2, with extra licences per additional agent, and alerts go to Global Administrators by default."
+            ]
+          ],
+          "check": {
+            "q": "Leilani wants 50 IT staff to test password hash sync sign in before converting Matai's federated domain. What should she use?",
+            "options": [
+              "Convert the domain to managed right away",
+              "Delete the AD FS farm first",
+              "A dynamic group in staged rollout",
+              "Staged rollout with an IT security group"
+            ],
+            "answer": 3,
+            "why": "Staged rollout moves chosen security groups to cloud authentication while the domain stays federated. Dynamic groups are not supported there, and converting the domain or removing AD FS before testing risks breaking sign in for everyone."
+          },
+          "key": "Staged rollout tests cloud authentication by group before converting a federated domain, and Connect Health monitors sync, AD FS and AD DS."
+        }
+      ]
+    },
+    {
+      "title": "Implement authentication and access management",
+      "intro": "This is the largest part of the exam (about 25 to 30 percent). It covers how people prove who they are, how Conditional Access decides what they can reach, how ID Protection reacts to risk, and how Global Secure Access replaces Matai's old VPN. Matai Engineering's engineers work on client sites with laptops and phones, so strong sign in and smart access rules matter more than the office firewall.",
+      "lessons": [
+        {
+          "title": "Planning authentication",
+          "steps": [
+            [
+              "Weak to strong",
+              "Authentication methods range from weak (passwords, text messages) to **phishing resistant**: passkeys (FIDO2), Windows Hello for Business and multifactor certificate based authentication. Planning means choosing which methods each group of users should use and moving people up that scale over time."
+            ],
+            [
+              "One policy for methods",
+              "The **authentication methods policy** is now the single place to enable each method and target it to groups. The older per user MFA and SSPR method settings are being retired, and tenants move through migration states until only the new policy is used. The **Authentication Policy Administrator** role manages it."
+            ],
+            [
+              "System preferred MFA",
+              "**System preferred MFA** prompts users with the strongest method they have registered, rather than the one they picked as default. That nudges Matai's engineers away from text messages without forcing anyone to re register."
+            ],
+            [
+              "Baseline choice",
+              "**Security defaults** are free, all or nothing protection: everyone registers Authenticator, admins always use MFA and legacy authentication is blocked. **Conditional Access** needs P1 and is fully customisable, and security defaults must be turned off to use it. Matai, with P1, uses Conditional Access."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants to enable passkeys only for the IT group first, then for everyone. Where does Leilani configure that?",
+            "options": [
+              "Security defaults",
+              "The authentication methods policy",
+              "Per user MFA settings",
+              "A registration campaign"
+            ],
+            "answer": 1,
+            "why": "The authentication methods policy enables each method and scopes it to groups. Security defaults are all or nothing, legacy per user MFA settings are being retired, and a registration campaign nudges registration of a method that must already be enabled."
+          },
+          "key": "Plan to move users toward phishing resistant methods, managed in the authentication methods policy, with Conditional Access instead of security defaults when you have P1."
+        },
+        {
+          "title": "Certificate based authentication and Temporary Access Pass",
+          "steps": [
+            [
+              "Smart cards without AD FS",
+              "**Certificate based authentication (CBA)** lets Entra ID check X.509 certificates, such as smart cards, directly, without AD FS. Leilani uploads the trusted certificate authorities with their revocation list addresses, enables CBA for a group, then sets bindings. If no revocation list is set, revoked certificates are not caught."
+            ],
+            [
+              "Bindings",
+              "The **authentication binding** decides whether a certificate counts as single factor (the default) or multifactor, using rules by issuer or policy identifier. The **username binding** maps a field in the certificate to a user attribute, by default the principal name to the user principal name. Stronger, high affinity bindings use values unique to the certificate."
+            ],
+            [
+              "Temporary Access Pass",
+              "A **Temporary Access Pass (TAP)** is a time limited passcode an admin issues so a user can sign in and register a passwordless method, for example on day one or after losing a phone. Its lifetime, length and whether it is single use are configurable in the methods policy."
+            ],
+            [
+              "Who can issue it",
+              "Authentication Administrators issue TAPs for ordinary users, and **Privileged Authentication Administrators** issue them for admins. A one time TAP used to set up a passwordless method must be used within a short window. A new Matai graduate signs in with a TAP and registers a passkey before lunch."
+            ]
+          ],
+          "check": {
+            "q": "A Matai engineer loses her phone on site and cannot sign in to register a new passkey. What should the service desk give her?",
+            "options": [
+              "A new user principal name",
+              "A Temporary Access Pass",
+              "A one time SMS code from the service desk",
+              "Self-service password reset"
+            ],
+            "answer": 1,
+            "why": "A Temporary Access Pass lets her sign in for a limited time and register a new passwordless method. SSPR only resets a password and needs a registered method she no longer has, and a new user name does not prove who she is."
+          },
+          "key": "CBA validates certificates directly with authentication and username bindings, and a Temporary Access Pass bootstraps passwordless registration."
+        },
+        {
+          "title": "Microsoft Authenticator, passkeys and tenant MFA settings",
+          "steps": [
+            [
+              "Authenticator settings",
+              "**Microsoft Authenticator** can allow push approvals and passwordless phone sign in. **Number matching** is always on for push, and admins can show **extra context**, the app name and location, so users spot approval requests they did not start, such as an attacker spamming prompts."
+            ],
+            [
+              "Passkeys",
+              "**Passkeys (FIDO2)** use key pairs bound to the real sign in site, so they resist phishing. **Device bound** passkeys keep the private key on one device, such as a security key or in Authenticator. **Synced** passkeys live in a provider such as a phone platform's password manager. Passkey profiles can enforce attestation and allow or block specific key models."
+            ],
+            [
+              "Tenant wide MFA settings",
+              "**Report suspicious activity** lets users report an MFA prompt they did not start, which marks them as high user risk so risk policies can act. Other tenant settings cover hardware **OATH tokens**, phone call options, and legacy options such as trusted IPs and remember MFA."
+            ],
+            [
+              "Prefer Conditional Access",
+              "Microsoft recommends Conditional Access **named locations** and **sign in frequency** over the legacy trusted IP and remember MFA settings, and remember MFA should be turned off before sign in frequency is used. Leilani removes the old trusted IP range for Matai's Auckland office and replaces it with a named location."
+            ]
+          ],
+          "check": {
+            "q": "An engineer receives an MFA prompt at 2am that she did not start. What should she do, and what happens next?",
+            "options": [
+              "Approve it, then change her password",
+              "Ask for a Temporary Access Pass",
+              "Deny it and change her phone number",
+              "Report it as suspicious activity"
+            ],
+            "answer": 3,
+            "why": "Reporting marks her as high user risk, so risk based Conditional Access can force remediation. Approving lets the attacker in. Denying stops this one prompt but leaves the stolen password in use and alerts no one."
+          },
+          "key": "Authenticator uses number matching and context, passkeys are phishing resistant, and report suspicious activity raises user risk for unexpected prompts."
+        },
+        {
+          "title": "Windows Hello for Business and Entra Kerberos",
+          "steps": [
+            [
+              "How it works",
+              "**Windows Hello for Business** creates a key pair on the device, ideally protected by the TPM chip, and registers the public key with Entra ID. A PIN or biometric releases it and never leaves the device, so it is phishing resistant and satisfies Conditional Access MFA requirements."
+            ],
+            [
+              "Trust types for on premises access",
+              "Hybrid users also need tickets for on premises file shares. **Cloud Kerberos trust**, recommended for hybrid, lets Entra ID issue a partial ticket that a domain controller completes, with no certificate infrastructure. **Key trust** and **certificate trust** are older options that need PKI."
+            ],
+            [
+              "Deploying it",
+              "Leilani configures Windows Hello for Business with Intune policy, or with Group Policy for domain joined PCs that Intune does not manage. Users must complete MFA before creating their PIN. Hybrid joined devices need to reach a domain controller the first time the PIN is used."
+            ],
+            [
+              "Microsoft Entra Kerberos",
+              "**Microsoft Entra Kerberos** makes cloud Kerberos trust work. Admins create a Kerberos server object in each AD domain with a PowerShell module, using Domain Admin and Enterprise Admin rights on premises and Hybrid Identity Administrator in Entra. After a passwordless sign in, users can reach on premises resources without a password."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants Windows Hello for Business on hybrid joined laptops to open on premises file shares, without building a certificate infrastructure. Which trust type fits?",
+            "options": [
+              "Cloud Kerberos trust",
+              "Key trust",
+              "Certificate trust",
+              "Password hash sync only"
+            ],
+            "answer": 0,
+            "why": "Cloud Kerberos trust uses Microsoft Entra Kerberos to issue tickets and needs no PKI. Certificate and key trust both depend on certificates. PHS is a sign in method, not a Hello trust type."
+          },
+          "key": "Windows Hello for Business is phishing resistant, and cloud Kerberos trust, powered by Microsoft Entra Kerberos, reaches on premises resources without PKI."
+        },
+        {
+          "title": "Self-service password reset and password protection",
+          "steps": [
+            [
+              "Turning on SSPR",
+              "**Self service password reset** is enabled for none, a selected group or all users. Admins choose how many methods are needed (one or two) and which are allowed. Users register through combined registration and can be asked to reconfirm periodically. Raising the requirement from one method to two can strand users who registered only one."
+            ],
+            [
+              "Hybrid and admins",
+              "**Password writeback**, set up through Connect Sync or Cloud Sync, writes cloud resets back to AD so the new password works everywhere. Admin accounts always use a stricter two method policy with no security questions."
+            ],
+            [
+              "Password Protection",
+              "**Microsoft Entra Password Protection** normalises each new password, fuzzy matches banned terms and the user's name, then scores it. The global banned list is always on. A **custom banned list** of up to 1,000 terms needs P1. Leilani adds Matai, the office cities and local rugby teams."
+            ],
+            [
+              "On premises and lockout",
+              "To protect AD passwords too, install the **proxy service** and the **DC agent** on every domain controller, starting in **audit** mode to see what would be blocked, then **enforced**. **Smart lockout** locks cloud sign ins after repeated failures and separates familiar from unfamiliar locations. With PTA, keep the cloud lockout threshold below AD's."
+            ]
+          ],
+          "check": {
+            "q": "Leilani installs Password Protection agents on Matai's domain controllers and wants to see the impact before rejecting any passwords. Which mode should she start in?",
+            "options": [
+              "Enforced",
+              "Disabled",
+              "Audit",
+              "Smart lockout"
+            ],
+            "answer": 2,
+            "why": "Audit mode logs which passwords would fail without rejecting them, so she can judge the impact first. Enforced mode rejects passwords straight away, and smart lockout is a separate feature about failed sign ins."
+          },
+          "key": "SSPR lets users reset with registered methods and writeback keeps AD in step, while Password Protection bans weak passwords in the cloud and on premises."
+        },
+        {
+          "title": "Disabling accounts and revoking sessions",
+          "steps": [
+            [
+              "Layers of blocking",
+              "When an account may be compromised or someone leaves in a hurry, blocking access has layers. **Disabling** the account stops new sign ins. For synced users, disable it in AD, because AD is the source, and Microsoft suggests resetting the AD password twice."
+            ],
+            [
+              "Revoking sessions",
+              "**Revoke sessions** invalidates refresh tokens and browser session cookies issued by Entra ID, and clears remember MFA. Without it, an attacker with a valid refresh token could keep getting new access tokens for days."
+            ],
+            [
+              "Access tokens linger",
+              "Existing **access tokens** usually last about an hour and stay valid until they expire, except in apps that support **continuous access evaluation**, such as Exchange, SharePoint and Teams, which react to the revocation almost immediately. Sessions issued by other apps must be ended in those apps."
+            ],
+            [
+              "Devices too",
+              "Leilani also disables the person's registered devices and wipes Intune managed ones if needed. Ordinary users are handled by User Administrators, admin accounts need a Privileged Authentication Administrator, and devices a Cloud Device Administrator."
+            ]
+          ],
+          "check": {
+            "q": "A Matai account is phished. Leilani disables it, but the attacker still reads mail for a while. Which extra step cuts off existing sessions fastest?",
+            "options": [
+              "Remove the user's licences",
+              "Reset the user's MFA registration",
+              "Block sign in again in AD",
+              "Revoke the user's sessions"
+            ],
+            "answer": 3,
+            "why": "Revoking sessions invalidates refresh tokens and session cookies, and CAE aware apps like Exchange react quickly. Removing licences, resetting MFA or blocking sign in again stop new sign ins but do not end tokens already issued."
+          },
+          "key": "Disable the account, revoke sessions to kill refresh tokens, and rely on CAE aware apps to drop access tokens quickly."
+        },
+        {
+          "title": "Planning Conditional Access and assignments",
+          "steps": [
+            [
+              "How policies combine",
+              "Conditional Access evaluates signals **after first factor sign in**. Every matching policy applies: if any blocks, access is blocked, otherwise the user must meet every requirement from every policy. It needs P1, risk conditions need P2, and the least privileged admin role is **Conditional Access Administrator**."
+            ],
+            [
+              "Planning rules",
+              "Turn off security defaults first. **Exclude emergency access accounts** from every policy so a mistake cannot lock everyone out. Use a naming convention, start each policy in **report only**, and favour a few broad baselines such as MFA for everyone, MFA for admins and blocking legacy authentication."
+            ],
+            [
+              "Users and resources",
+              "**Assignments** include and exclude users, groups, roles, guests or workload identities. **Target resources** can be all resources, specific apps such as Office 365 or the Azure management API, **user actions** such as registering security info or joining devices, or an **authentication context**."
+            ],
+            [
+              "Conditions",
+              "**Conditions** add detail: user and sign in risk, **device platforms**, **locations** (named IP ranges or countries), **client apps** (including the legacy Exchange ActiveSync and other clients), **filter for devices**, and authentication flows such as device code. Matai blocks device code flow except for meeting room devices."
+            ]
+          ],
+          "check": {
+            "q": "Two Conditional Access policies apply to a Matai engineer: one requires MFA, the other requires a compliant device. What must she do to get in?",
+            "options": [
+              "Whichever policy was created first",
+              "Either one of the two requirements",
+              "Both MFA and a compliant device",
+              "Neither, because the policies conflict"
+            ],
+            "answer": 2,
+            "why": "All matching policies apply together, so every grant requirement must be met. Only a block overrides grants. Policy order and creation date do not matter."
+          },
+          "key": "All matching Conditional Access policies apply together, so plan baselines, exclude emergency accounts and start in report only."
+        },
+        {
+          "title": "Grant controls and device restrictions",
+          "steps": [
+            [
+              "Grant options",
+              "Grant controls are **block access**, or grant while requiring **MFA**, an **authentication strength**, a **compliant device**, a **hybrid joined device**, an **app protection policy**, a **password change**, **risk remediation** or **terms of use**. Several controls can be combined with require all or require one."
+            ],
+            [
+              "Authentication strengths",
+              "An **authentication strength** names which method combinations count. Built in strengths are multifactor, passwordless MFA and phishing resistant MFA, and custom ones can be made. A policy cannot use require MFA and require authentication strength together. Matai requires phishing resistant MFA for admins."
+            ],
+            [
+              "Device based controls",
+              "**Compliant device** relies on Intune (or a partner MDM) marking the device as meeting policy. **Hybrid joined** accepts domain joined PCs. Using require one of the selected controls lets either pass. **Filter for devices** targets properties such as trust type or model, for example allowing admin portals only from privileged access workstations."
+            ],
+            [
+              "Unmanaged devices",
+              "For personal phones without enrolment, **app protection policy** requires Intune app protection in approved apps. **App enforced restrictions** let Exchange Online and SharePoint give a limited, browser only experience on unmanaged devices, with no download, print or sync. Matai's engineers can read drawings on their own phones but not save them."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants admins to use only phishing resistant methods, such as passkeys, when signing in to admin portals. Which grant control should Leilani use?",
+            "options": [
+              "Authentication strength: phishing resistant MFA",
+              "Require multifactor authentication",
+              "Require a compliant device",
+              "Sign in frequency set to every time"
+            ],
+            "answer": 0,
+            "why": "An authentication strength restricts which methods count, so phishing resistant MFA excludes text messages and push. Plain require MFA accepts any second factor, a compliant device does not limit the method, and sign in frequency controls how often, not how."
+          },
+          "key": "Grant controls block or require MFA, authentication strengths, compliant or hybrid devices or app protection, and app enforced restrictions limit unmanaged devices."
+        },
+        {
+          "title": "Session management and continuous access evaluation",
+          "steps": [
+            [
+              "Default sessions",
+              "By default Entra ID uses a rolling 90 day session window, so users are not asked again while nothing changes. **Session controls** tighten this for sensitive cases."
+            ],
+            [
+              "Session controls",
+              "**Sign in frequency** forces reauthentication after a set number of hours or days, or every time. **Persistent browser session** decides whether users stay signed in after closing the browser. **Conditional Access App Control** routes sessions through Defender for Cloud Apps. **Token protection** binds tokens to the device so stolen tokens cannot be replayed elsewhere."
+            ],
+            [
+              "Continuous access evaluation",
+              "Normally access tokens live about an hour. With **continuous access evaluation (CAE)**, supporting services such as Exchange and SharePoint listen for **critical events**: the user is disabled or deleted, their password changes, sessions are revoked, or high user risk is detected. Access is cut in near real time."
+            ],
+            [
+              "Location enforcement",
+              "CAE can also enforce IP based **named locations** instantly, so a stolen token used from outside Matai's allowed networks fails. In return, CAE aware apps get longer lived tokens. Leilani must list all Matai egress addresses, including IPv6, or users may be blocked by mistake."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants engineers using the payroll app to sign in again every four hours, whatever else happens. Which control does that?",
+            "options": [
+              "Persistent browser session set to always",
+              "Sign in frequency session control",
+              "Report only mode",
+              "Terms of use"
+            ],
+            "answer": 1,
+            "why": "Sign in frequency sets how often reauthentication is required. Persistent browser session would keep users signed in longer, report only mode does not enforce, and terms of use only asks for acceptance."
+          },
+          "key": "Session controls such as sign in frequency and token protection shape sessions, and CAE cuts access in near real time on critical events."
+        },
+        {
+          "title": "Authentication context and protected actions",
+          "steps": [
+            [
+              "Step up inside an app",
+              "Normal policies apply when someone opens an app. An **authentication context** applies when they touch something sensitive inside it. Leilani creates a context labelled c1, publishes it to apps, then builds a Conditional Access policy targeting c1 that requires phishing resistant MFA."
+            ],
+            [
+              "Who uses authentication contexts",
+              "SharePoint sites and Teams can require a context through **sensitivity labels**. Defender for Cloud Apps session policies can require step up before a download. **PIM** can require a context when someone activates a role. Custom apps can request it too. Matai labels its tender documents site with c1."
+            ],
+            [
+              "Protected actions",
+              "**Protected actions** add step up to specific admin operations, such as creating or deleting Conditional Access policies, changing cross tenant access settings, changing named locations or hard deleting directory objects. They apply at the moment of the action, whatever role grants the permission."
+            ],
+            [
+              "Setting them up",
+              "First create an authentication context and a policy for it, excluding an emergency account. Then, under Roles and admins, protected actions, assign the context to the chosen permissions. Protected actions are not a way to block someone: role assignments still decide who may act at all."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants any admin who deletes a Conditional Access policy to have just completed phishing resistant MFA, even if they signed in hours ago. What should Leilani configure?",
+            "options": [
+              "Require MFA for all admin roles",
+              "Sign in frequency of one hour for admins",
+              "A protected action with an authentication context",
+              "PIM approval for Conditional Access Administrator"
+            ],
+            "answer": 2,
+            "why": "Protected actions require step up at the moment of a sensitive operation, using an authentication context policy. Sign in frequency and MFA apply at sign in, and PIM approval applies at activation, so neither forces fresh authentication right before the delete."
+          },
+          "key": "Authentication contexts trigger step up for sensitive content or actions, and protected actions apply them to specific admin operations."
+        },
+        {
+          "title": "Testing policies and using templates",
+          "steps": [
+            [
+              "Report only",
+              "**Report only** mode evaluates a policy on real sign ins without enforcing it. Each sign in log entry shows whether the policy would have succeeded, failed, needed user action or not applied. Leilani runs every new Matai policy this way for a week before switching it on."
+            ],
+            [
+              "What If",
+              "The **What If** tool simulates a sign in from a chosen user, app, platform, location and risk, and lists which enabled or report only policies would apply and which would not, with the reason. It is the fastest way to answer why was this person blocked."
+            ],
+            [
+              "Logs and workbooks",
+              "The **Conditional Access** tab in each sign in log shows every policy's result. With sign in logs sent to Log Analytics, the **insights and reporting workbook** shows the effect of policies across the whole organisation."
+            ],
+            [
+              "Templates",
+              "**Templates** create common policies quickly, such as MFA for admins, blocking legacy authentication or securing security info registration. They are created in report only. They exclude only the admin who creates them, so Leilani edits each to exclude the emergency accounts. Policies can be exported as JSON and imported elsewhere."
+            ]
+          ],
+          "check": {
+            "q": "An engineer in Sydney says she is blocked from the drawings app. Leilani wants to see which policies would apply to that exact situation. Which tool should she use?",
+            "options": [
+              "The What If tool",
+              "The audit log for the policy",
+              "Identity Secure Score",
+              "The provisioning logs"
+            ],
+            "answer": 0,
+            "why": "What If simulates a sign in with given user, app and conditions, showing which policies would and would not apply. The audit log shows policy changes, not evaluation, Secure Score rates posture, and provisioning logs cover account sync."
+          },
+          "key": "Report only mode, the What If tool and sign in logs test policies, and templates create baseline policies quickly in report only."
+        },
+        {
+          "title": "User risk, sign-in risk and MFA registration",
+          "steps": [
+            [
+              "Risk in Conditional Access",
+              "**Microsoft Entra ID Protection** (full features need P2) calculates **user risk** (is the account compromised?) and **sign in risk** (is this sign in suspicious?). The older risk policies inside ID Protection are being retired, so risk policies are built in **Conditional Access**."
+            ],
+            [
+              "User risk policy",
+              "Microsoft's recommended policy targets all users except emergency accounts and all resources, with user risk high. It requires **risk remediation** (or MFA plus a secure password change) and sign in frequency every time. Hybrid users need password writeback for this to work."
+            ],
+            [
+              "Sign in risk policy",
+              "A sign in risk policy for medium and high risk requires MFA or an authentication strength. Passing MFA proves the real user is there and **self remediates** the risky sign in. Keep user risk and sign in risk in separate policies."
+            ],
+            [
+              "Registration comes first",
+              "Users can only self remediate if they have registered MFA. A **registration campaign** nudges users to set up Authenticator or a passkey during sign in, with limited snoozes. The ID Protection **MFA registration policy** requires it. A Conditional Access policy on the **register security information** action stops attackers registering their own methods."
+            ]
+          ],
+          "check": {
+            "q": "A Matai user who never registered MFA triggers a medium sign in risk policy that requires MFA. What happens?",
+            "options": [
+              "The user is let in without MFA",
+              "The risk is dismissed automatically",
+              "The user is sent a Temporary Access Pass",
+              "The user is blocked"
+            ],
+            "answer": 3,
+            "why": "Without a registered method the user cannot satisfy the MFA requirement, so access is blocked. That is why registration campaigns and the MFA registration policy matter. Risk is not dismissed or bypassed automatically."
+          },
+          "key": "Build user and sign-in risk policies in Conditional Access, and make sure users register MFA first so they can self remediate."
+        },
+        {
+          "title": "Investigating risky users, sign-ins and workload identities",
+          "steps": [
+            [
+              "The reports",
+              "ID Protection has three reports: **risky users** (risk level, state and history), **risky sign ins** (detail per sign in) and **risk detections** (every detection with its type and timing). Security Reader, Security Operator or Security Administrator can view them."
+            ],
+            [
+              "Admin actions",
+              "Leilani can **confirm user compromised**, which raises risk and teaches the model, **dismiss user risk** for false positives, **reset the password**, or **block** the user. On a sign in she can confirm it safe or compromised. For a confirmed compromise she also revokes sessions and disables devices."
+            ],
+            [
+              "Risky workload identities",
+              "Apps sign in as **service principals** and can be compromised too, for example when a client secret is leaked in public code. ID Protection detects suspicious sign ins, leaked credentials and anomalous activity for service principals. Managed identities are not in scope. Full details and risk based policies need **Workload Identities Premium**."
+            ],
+            [
+              "Responding for an app",
+              "A Conditional Access policy can target workload identities and **block** service principals with high risk. To remediate, Leilani lists the app's credentials, adds a new certificate, removes the leaked secret and rotates any Key Vault secrets the app could reach. She can also disable the service principal outright."
+            ]
+          ],
+          "check": {
+            "q": "ID Protection flags a Matai integration app because its client secret appeared on a public code site. What should Leilani do first?",
+            "options": [
+              "Dismiss the risk as a false positive",
+              "Replace and remove the leaked secret",
+              "Reset the developer's password",
+              "Turn on MFA for the app's owners"
+            ],
+            "answer": 1,
+            "why": "The leaked secret lets anyone authenticate as the app, so it must be replaced and removed. Dismissing ignores a real compromise, and changes to people's passwords or MFA do nothing to the app's own credential."
+          },
+          "key": "Use the risky users, sign-ins and detections reports to investigate, and treat leaked app credentials as compromised workload identities to rotate."
+        },
+        {
+          "title": "Global Secure Access clients and Private Access",
+          "steps": [
+            [
+              "What Global Secure Access is",
+              "**Global Secure Access** is Microsoft's identity aware network access service. Traffic forwarding **profiles** decide what traffic it handles, and a **client** on each device sends that traffic to it. Matai wants to replace its ageing VPN."
+            ],
+            [
+              "The client",
+              "The Windows client runs on Entra joined, hybrid joined or registered devices (registered devices support private traffic only). It is installed by hand or through Intune and uses a light network filter rather than a VPN tunnel. Microsoft recommends disabling QUIC and DNS over HTTPS in browsers so traffic can be inspected. macOS, iOS and Android have clients too."
+            ],
+            [
+              "Microsoft Entra Private Access",
+              "**Private Access** reaches internal apps without a VPN. A **private network connector** inside the network makes outbound only connections. **Application segments** define destinations by address, name or range plus ports. **Quick Access** puts many segments in one app as a quick VPN replacement."
+            ],
+            [
+              "Per app access",
+              "For better control, Leilani creates separate **per app** enterprise applications, each with its own segments, user assignments and Conditional Access policy. The engineering file server requires a compliant device and MFA, while the timesheet server needs only MFA. Private Access needs its own licence or Entra Suite."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants engineers to reach an internal drawing server from client sites without a VPN, with a compliant device required. What should Leilani deploy?",
+            "options": [
+              "Microsoft Entra Application Proxy alone",
+              "Microsoft Entra Private Access, per app",
+              "Microsoft Entra Internet Access",
+              "A site to site VPN for each client"
+            ],
+            "answer": 1,
+            "why": "Private Access publishes internal apps through connectors without a VPN, and per app applications can carry their own Conditional Access. Internet Access filters web browsing, and a VPN per client is what Matai is trying to replace. Application Proxy suits web apps, not general server access."
+          },
+          "key": "Global Secure Access clients send traffic to Microsoft's edge, and Private Access uses connectors and app segments to replace VPN access to internal apps."
+        },
+        {
+          "title": "Internet Access and the Microsoft traffic profile",
+          "steps": [
+            [
+              "Microsoft Entra Internet Access",
+              "**Internet Access** protects web traffic. **Web content filtering** policies allow or block by web category, domain name or URL, and when rules conflict, block wins. Policies are grouped into **security profiles** with priorities."
+            ],
+            [
+              "Applying profiles",
+              "A **baseline profile** applies to all Internet Access traffic. A Conditional Access policy that targets internet resources with the session control use Global Secure Access security profile applies a profile to chosen users. **TLS inspection** decrypts HTTPS to enforce full URL rules and needs a certificate that devices trust."
+            ],
+            [
+              "The Microsoft traffic profile",
+              "The **Microsoft traffic profile** sends Exchange Online, SharePoint and OneDrive, Teams and other Microsoft 365 traffic through Global Secure Access. Rules can forward or bypass specific destinations. If the client cannot connect, Microsoft traffic **fails open** and goes direct."
+            ],
+            [
+              "Compliant network check",
+              "To stop access from outside Global Secure Access, enable Conditional Access signalling, then create a policy that blocks every network except **all compliant network locations**. Combined with tenant restrictions, it also stops users signing in to other organisations' tenants. Matai uses it to keep project data on its own path."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants Microsoft 365 to be reachable only through its Global Secure Access path, not from any other network. What should Leilani add?",
+            "options": [
+              "A web category allow rule for Microsoft 365",
+              "Enable the Microsoft traffic profile only",
+              "Named locations for each office",
+              "Block all but compliant network locations"
+            ],
+            "answer": 3,
+            "why": "The compliant network check uses Conditional Access to block traffic that does not arrive through the tenant's Global Secure Access. The traffic profile alone fails open, web category rules filter browsing, and office named locations would block engineers on client sites."
+          },
+          "key": "Internet Access filters web traffic with security profiles, the Microsoft profile tunnels Microsoft 365 traffic, and the compliant network check blocks other paths."
+        }
+      ]
+    },
+    {
+      "title": "Plan and implement workload identities",
+      "intro": "Software needs identities as much as people do. This module covers managed identities for Azure workloads, enterprise apps and single sign on, app registrations and permissions, and watching cloud app use with Defender for Cloud Apps (about 20 to 25 percent of the exam). Matai Engineering runs a project portal in Azure, uses a dozen SaaS tools, and still has an old on premises timesheet app, so Leilani has plenty to secure.",
+      "lessons": [
+        {
+          "title": "Choosing the right identity for a workload",
+          "steps": [
+            [
+              "What a workload identity is",
+              "A **workload identity** is the identity software uses to authenticate: an app, a script, a virtual machine or a pipeline. Choosing the right type removes stored passwords, which are among the most common things attackers find and reuse."
+            ],
+            [
+              "Managed identities first",
+              "A **managed identity** is an Entra identity tied to an Azure resource. Azure creates and rotates its credentials, so code never handles a secret. It is the first choice for code running on Azure, such as Matai's project portal on App Service."
+            ],
+            [
+              "Service principals",
+              "A **service principal** is an app's identity in a tenant, authenticated with a certificate, a client secret or a **federated credential**. Use it for workloads outside Azure, multitenant apps and SaaS integrations. Prefer workload identity federation where the platform supports it, then a certificate, and a secret only as a last resort."
+            ],
+            [
+              "What to avoid and on premises options",
+              "A **user account** used as a service account brings password, MFA and Conditional Access problems. On premises, Windows services should use **managed service accounts**: a **group managed service account (gMSA)** can be shared by several servers and AD rotates its password automatically. Matai's old timesheet service moves to a gMSA."
+            ]
+          ],
+          "check": {
+            "q": "Matai's project portal runs on Azure App Service and needs to read from Azure Storage. Which identity should it use?",
+            "options": [
+              "A managed identity",
+              "A shared user account with a long password",
+              "A service principal with a client secret",
+              "A group managed service account"
+            ],
+            "answer": 0,
+            "why": "Code running on an Azure resource should use a managed identity, so there is no secret to store or rotate. A service principal with a secret works but leaves a credential to manage, a user account is meant for people, and gMSAs are for on premises Windows services."
+          },
+          "key": "Use managed identities for Azure workloads, service principals with federation or certificates elsewhere, and gMSAs for on premises services."
+        },
+        {
+          "title": "Creating, assigning and using managed identities",
+          "steps": [
+            [
+              "System assigned",
+              "A **system assigned** managed identity is switched on in a resource's Identity page. Azure creates an identity for that one resource, and deleting the resource deletes the identity. It cannot be shared."
+            ],
+            [
+              "User assigned",
+              "A **user assigned** managed identity is a separate Azure resource with its own lifecycle. One can be attached to many resources, and one resource can have several. Microsoft recommends them when resources are rebuilt often or many need the same access. **Managed Identity Contributor** creates them and **Managed Identity Operator** assigns them to resources."
+            ],
+            [
+              "Grant access separately",
+              "Attaching an identity grants nothing by itself. Leilani gives the portal's identity a role on the target through access control, choosing a **data plane** role such as Storage Blob Data Reader or Key Vault Secrets User. A management role such as Contributor does not let it read the data."
+            ],
+            [
+              "Getting a token",
+              "Code on a virtual machine asks the local **Instance Metadata Service** for a token for the target resource. App Service and Functions provide a similar local endpoint. Most developers simply use the Azure Identity library with DefaultAzureCredential. Anything running on that resource can request tokens, so the resource is the security boundary."
+            ]
+          ],
+          "check": {
+            "q": "Matai's portal identity has the Contributor role on a storage account but gets access denied when reading files. What is missing?",
+            "options": [
+              "Owner on the storage account",
+              "A user assigned identity instead",
+              "A data plane role on the storage account",
+              "Managed Identity Operator on the identity"
+            ],
+            "answer": 2,
+            "why": "Contributor and Owner manage the storage account but do not grant access to its data. A data plane role such as Storage Blob Data Reader does. Switching identity type or giving Managed Identity Operator changes nothing about data access."
+          },
+          "key": "System assigned identities live and die with one resource, user assigned ones are shared, and either needs a data plane role on the target."
+        },
+        {
+          "title": "Enterprise app settings and admin roles",
+          "steps": [
+            [
+              "What enterprise apps are",
+              "**Enterprise applications** are the service principals in your tenant: gallery SaaS apps, your own apps, Application Proxy apps and Microsoft apps. Settings exist for the whole tenant and for each app."
+            ],
+            [
+              "Tenant level settings",
+              "Tenant settings include whether users can register apps, **user consent** rules, the **admin consent workflow** and **permission classifications**. They set the guardrails that every app works within."
+            ],
+            [
+              "App level properties",
+              "Each app's properties include **enabled for users to sign in** (set to No to stop all tokens, a kill switch for a suspicious app), **assignment required** (only assigned principals can sign in) and **visible to users** (only controls the My Apps tile). Hiding an app does not block it."
+            ],
+            [
+              "Admin roles for apps",
+              "**Application Administrator** manages all apps, including Application Proxy. **Cloud Application Administrator** is the same without Application Proxy. **Application Developer** can register apps even when users cannot. An app's own **owners** can manage just that app. Leilani scopes Cloud Application Administrator to the HR app for the HR systems lead."
+            ]
+          ],
+          "check": {
+            "q": "Matai's CRM app must be usable only by the sales team, not by everyone in the tenant. Which app setting enforces this?",
+            "options": [
+              "Visible to users set to No",
+              "Owners limited to the sales team",
+              "Enabled for users to sign in set to No",
+              "Assignment required, sales group assigned"
+            ],
+            "answer": 3,
+            "why": "Assignment required means only assigned users and groups can get tokens. Hiding the tile does not stop access, owners manage the app rather than limit who signs in, and disabling sign in would block the sales team too."
+          },
+          "key": "Tenant settings set app guardrails, assignment required restricts who can sign in, and Application or Cloud Application Administrator manage apps."
+        },
+        {
+          "title": "Microsoft Entra Application Proxy",
+          "steps": [
+            [
+              "Publishing on premises apps",
+              "**Application Proxy** publishes on premises web apps to remote users without opening inbound firewall ports. A user goes to an **external URL**, Entra ID signs them in, and the request travels to a **connector** inside the network, which forwards it to the **internal URL**."
+            ],
+            [
+              "Connectors",
+              "The **private network connector** runs on Windows Server and makes outbound connections only. Microsoft advises at least two per **connector group** for availability, and groups let you place connectors close to each app's back end. The same connector serves Global Secure Access Private Access."
+            ],
+            [
+              "Pre-authentication",
+              "With **Microsoft Entra ID pre authentication**, only signed in users reach the app, and Conditional Access, MFA and Defender for Cloud Apps all apply. **Passthrough** skips that check and is rarely the right choice."
+            ],
+            [
+              "Single sign on to the back end",
+              "Application Proxy can sign users into the back end with **Kerberos constrained delegation** for Windows authentication, header based sign on, password based or SAML. Matai publishes the old timesheet app with Entra pre authentication and Kerberos SSO, so engineers on site use it without a VPN or a second password."
+            ]
+          ],
+          "check": {
+            "q": "Matai's on premises timesheet app must be reachable from client sites with MFA enforced, and the security team will not open inbound firewall ports. What should Leilani use?",
+            "options": [
+              "A public IP on the timesheet server",
+              "Application Proxy with passthrough",
+              "Application Proxy, Entra pre-authentication",
+              "A site to site VPN to each client"
+            ],
+            "answer": 2,
+            "why": "Application Proxy uses outbound only connectors, and Entra pre-authentication lets Conditional Access require MFA. Passthrough skips Entra sign in, so MFA cannot be enforced, and a public IP or VPN means opening inbound access."
+          },
+          "key": "Application Proxy publishes on premises apps through outbound connectors, with Entra pre authentication bringing Conditional Access and MFA."
+        },
+        {
+          "title": "Integrating SaaS apps",
+          "steps": [
+            [
+              "Adding an app",
+              "Leilani adds SaaS apps from the **Microsoft Entra app gallery**, which has templates for thousands of apps, or creates a non gallery app for anything else."
+            ],
+            [
+              "SSO options",
+              "**SAML** single sign on is set up with the app's identifier and reply URL, the claims to send, and a signing certificate to load into the app (watch its expiry date). **OpenID Connect** apps are usually added through consent. **Password based** SSO stores credentials for apps without federation. **Linked** is just a tile."
+            ],
+            [
+              "Provisioning with SCIM",
+              "Many apps need an account before SSO works. **Automatic provisioning** uses **SCIM**, a standard protocol, to create, update and disable accounts. Leilani enters the app's tenant URL and token, maps attributes, scopes it to assigned users and groups, tests with **provision on demand**, then turns it on."
+            ],
+            [
+              "Why SCIM beats just in time",
+              "SAML **just in time** provisioning creates an account at first sign in but never removes it. SCIM also deprovisions, so when an engineer leaves Matai, their accounts in the project management and CAD licensing apps are disabled automatically. Repeated failures put a provisioning job into quarantine until fixed."
+            ]
+          ],
+          "check": {
+            "q": "When Matai staff leave, their accounts in a SaaS app stay active because they were created by SAML just in time provisioning. What should Leilani set up?",
+            "options": [
+              "SCIM automatic provisioning",
+              "Password based SSO",
+              "A shorter SAML session lifetime",
+              "A quarterly access review of the app"
+            ],
+            "answer": 0,
+            "why": "SCIM provisioning updates and disables app accounts as users change or leave. Just in time provisioning only creates accounts. An access review removes the Entra assignment but does not delete the account inside the SaaS app, and session lifetime or password SSO do not manage accounts."
+          },
+          "key": "Gallery apps simplify SAML or OIDC single sign on, and SCIM provisioning creates and removes app accounts automatically."
+        },
+        {
+          "title": "Assignments, app roles and collections",
+          "steps": [
+            [
+              "Assigning users and groups",
+              "On an app's Users and groups page, Leilani assigns users or groups and optionally picks one of the app's **app roles**. Group based assignment needs P1, and only direct members of an assigned group get access, because nested groups are not expanded."
+            ],
+            [
+              "App roles in the token",
+              "**App roles**, such as Reader or Approver, are defined in the app and arrive in the user's token in the roles claim, so the app can decide what they may do. Assigning an app role does not grant any directory role."
+            ],
+            [
+              "Self service and reviews",
+              "The self service page lets users request access from My Apps, optionally with approval. Access reviews can later check whether assignments are still needed. Graph PowerShell can assign app roles in bulk."
+            ],
+            [
+              "Collections in My Apps",
+              "**My Apps** shows every app a user is assigned. **Collections** group apps into tabs, such as Finance or Engineering, for chosen users and groups. A collection is a filter, not an assignment: users only see collection apps they are already assigned to. Collections need P1."
+            ]
+          ],
+          "check": {
+            "q": "Leilani creates an Engineering collection containing the CAD licence portal, but an engineer cannot see the portal in it. What is the most likely reason?",
+            "options": [
+              "Collections need Entra ID P2",
+              "She is not assigned to that app",
+              "The app defines app roles",
+              "The collection has too many apps"
+            ],
+            "answer": 1,
+            "why": "Collections only show apps the user is already assigned to, they never grant access. Assigning her to the app fixes it. Collections need P1, not P2, and app roles or collection size do not hide apps."
+          },
+          "key": "Assign users and groups to apps with optional app roles, and use collections to organise My Apps without granting access."
+        },
+        {
+          "title": "User and admin consent",
+          "steps": [
+            [
+              "What consent is",
+              "When an app asks for permissions, such as reading a user's profile or mail, someone must **consent**. **User consent** covers only that user and only delegated permissions that do not need an admin. **Admin consent** covers the whole tenant."
+            ],
+            [
+              "User consent settings",
+              "Options are: do not allow user consent; allow it only for apps from **verified publishers** and only for permissions classified **low impact** (Microsoft's recommended setting); or allow it for any app, which is risky. **Permission classifications** mark low impact delegated permissions such as reading a basic profile."
+            ],
+            [
+              "When admin consent is needed",
+              "Admin consent is required for **application permissions** (where the app acts as itself with no user), for delegated permissions marked admin only, and for anything once user consent is turned off. Cloud Application Administrator and Application Administrator can grant most consent. Microsoft Graph application permissions need Privileged Role Administrator or Global Administrator."
+            ],
+            [
+              "The admin consent workflow",
+              "The **admin consent workflow** gives users a path when they cannot consent: they submit a request with a reason, and chosen reviewers approve or deny it. Being a reviewer does not itself give consent rights. Matai turns it on so engineers stop granting broad permissions to unknown apps."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants staff to be able to consent only to low risk permissions for apps from verified publishers, and to request approval for anything else. What should Leilani configure?",
+            "options": [
+              "Disable user consent, with no workflow",
+              "Allow user consent for all apps",
+              "Verified publisher consent plus the workflow",
+              "Give staff the Application Developer role"
+            ],
+            "answer": 2,
+            "why": "Verified publisher consent with low impact classifications limits what users can approve, and the workflow gives a path for everything else. Allowing all consent is risky, disabling with no workflow leaves users stuck, and Application Developer is for registering apps, not consent."
+          },
+          "key": "Limit user consent to verified publishers and low impact permissions, and use the admin consent workflow for everything else."
+        },
+        {
+          "title": "Planning and creating app registrations",
+          "steps": [
+            [
+              "Application object and service principal",
+              "An **app registration** creates an **application object** in its home tenant, a template holding the app's name, redirect addresses, credentials and requested permissions. A **service principal** is created in every tenant that uses the app, and that is where assignments, consent and Conditional Access apply."
+            ],
+            [
+              "Planning choices",
+              "Choose the **supported account types**: single tenant (most internal apps), multitenant, or including personal Microsoft accounts. Decide who may register apps, naming and ownership (at least two owners), the credential type, and delegated or application permissions. Leilani registers Matai's project portal as single tenant."
+            ],
+            [
+              "Creating and authentication settings",
+              "After registering, the overview shows the **application (client) ID**, the object ID and the tenant ID. The authentication page sets **redirect URIs** by platform: web apps, single page apps using authorisation code flow with PKCE, and mobile or desktop apps. Tokens go only to registered redirect URIs, which stops them being sent to an attacker's site. Implicit flow should stay off for new apps."
+            ],
+            [
+              "Credentials",
+              "Apps prove their identity with a **certificate** (recommended), a **client secret** (shown only once, best kept short lived and out of production) or a **federated credential**, which trusts tokens from an outside platform such as GitHub Actions so no secret is stored at all."
+            ]
+          ],
+          "check": {
+            "q": "Matai's build pipeline in GitHub Actions needs to deploy to Azure without any stored secret. Which credential should its app registration use?",
+            "options": [
+              "A federated credential for GitHub Actions",
+              "A client secret with a 24 month expiry",
+              "A certificate stored in the repository",
+              "A system assigned managed identity"
+            ],
+            "answer": 0,
+            "why": "Workload identity federation swaps GitHub's own tokens for Entra tokens, so nothing secret is stored. Secrets and certificates must both be kept somewhere, and a system assigned managed identity only works for code running on an Azure resource."
+          },
+          "key": "App registrations create an application object, service principals live in each tenant, and redirect URIs plus certificates or federated credentials secure sign in."
+        },
+        {
+          "title": "API permissions and app roles",
+          "steps": [
+            [
+              "Delegated permissions",
+              "**Delegated permissions** let an app act on behalf of a signed in user. The app can only do what both the permission and the user allow. Some, such as reading the whole directory, need admin consent."
+            ],
+            [
+              "Application permissions",
+              "**Application permissions** let an app act as itself with no user, as a background job does. They always need admin consent and often reach the whole tenant, such as reading every mailbox. Requesting a permission on the registration is only a request: the grant lives on the service principal after consent."
+            ],
+            [
+              "Least privilege and your own API",
+              "Ask for the narrowest permission, such as reading the signed in user rather than all users, and remove unused ones. To expose your own API, set its Application ID URI and add **scopes** for delegated access. Application access to your API is defined with **app roles** whose allowed members are applications."
+            ],
+            [
+              "Creating app roles",
+              "An app role has a display name, allowed member types (users and groups, applications or both), a **value** that appears in the roles claim and must match the code exactly, and an enabled flag. Roles must be disabled before deletion. Matai's portal defines Project Reader and Project Approver roles."
+            ]
+          ],
+          "check": {
+            "q": "Matai's nightly report job reads every user's calendar with no one signed in. What kind of permission does it need, and who must approve it?",
+            "options": [
+              "Delegated, approved by any user",
+              "Delegated, approved by an admin",
+              "Application, approved by any user",
+              "Application, with admin consent"
+            ],
+            "answer": 3,
+            "why": "With no signed in user, the job needs application permissions, and those always require admin consent. Delegated permissions need a user present, and users can never consent to application permissions."
+          },
+          "key": "Delegated permissions act for a user, application permissions act as the app and always need admin consent, and app roles define roles inside the app."
+        },
+        {
+          "title": "Cloud discovery and the cloud app catalog",
+          "steps": [
+            [
+              "Defender for Cloud Apps",
+              "**Microsoft Defender for Cloud Apps** is Microsoft's cloud access security broker (CASB). **Cloud discovery** compares network traffic against its **cloud app catalog** and gives each app a risk score, revealing shadow IT: cloud apps used without IT's knowledge."
+            ],
+            [
+              "Data sources",
+              "Discovery data comes from **snapshot reports** (a firewall log uploaded once), continuous reports from **Defender for Endpoint** on devices on or off the network, a **log collector** receiving logs from network appliances, or secure web gateway integrations. Matai's engineers work on client sites, so the Defender for Endpoint integration gives the best view."
+            ],
+            [
+              "Governing discovered apps",
+              "Leilani tags apps **sanctioned**, **unsanctioned** or **monitored**. With Defender for Endpoint enforcement, unsanctioned apps are blocked on devices and monitored apps show a warning users can bypass. Discovery policies can alert on newly found risky apps."
+            ],
+            [
+              "The catalog and scores",
+              "The catalog assesses many thousands of apps on general, security, compliance and legal risk factors, giving a score from 0 to 10 where **higher means lower risk**. Admins can change the weighting of factors, tag apps before they are discovered, suggest score corrections and request new apps."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants to block a risky file sharing site on engineers' laptops wherever they are. What should Leilani do in Defender for Cloud Apps?",
+            "options": [
+              "Tag it as monitored",
+              "Tag it unsanctioned, with enforcement",
+              "Lower its weight in the score metrics",
+              "Create an OAuth app policy for it"
+            ],
+            "answer": 1,
+            "why": "Unsanctioned apps are blocked on devices onboarded to Defender for Endpoint when enforcement is on. Monitored apps only warn, score weighting changes how risk is shown, and OAuth app policies watch apps users grant permissions to, not websites."
+          },
+          "key": "Cloud discovery finds shadow IT from traffic sources, the catalog scores app risk, and unsanctioned apps can be blocked through Defender for Endpoint."
+        },
+        {
+          "title": "Connected apps, app enforced restrictions and Conditional Access app control",
+          "steps": [
+            [
+              "App connectors",
+              "**App connectors** use a sanctioned app's own API to read users, activities, permissions and files, and to take actions such as suspending users or removing sharing. They work after the fact. Leilani connects Microsoft 365 and Matai's file sharing service."
+            ],
+            [
+              "App enforced restrictions",
+              "**App enforced restrictions** are a Conditional Access session control. Entra ID tells SharePoint, OneDrive or Exchange whether the device is managed, and the app itself gives full or limited, browser only access. It needs no proxy but only works with those supported apps."
+            ],
+            [
+              "Conditional Access app control",
+              "**Conditional Access app control** works in real time. A Conditional Access policy routes the browser session to Defender for Cloud Apps, enforced in Edge for Business or through a **reverse proxy** for other browsers. Apps using Entra SSO onboard automatically after the first sign in through such a policy."
+            ],
+            [
+              "Limits",
+              "Session control covers browser sessions. Native desktop and mobile apps cannot be proxied, so an access policy should block them where session control is required. It needs no agent on the device, which suits contractors' personal laptops."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants to block downloads of files labelled Highly Confidential from a non Microsoft SaaS app on unmanaged laptops, while allowing other downloads. Which feature fits?",
+            "options": [
+              "App enforced restrictions",
+              "Conditional Access app control",
+              "An app connector for the SaaS app",
+              "A Conditional Access block on unmanaged devices"
+            ],
+            "answer": 1,
+            "why": "Conditional Access app control inspects sessions in real time and can block downloads based on labels in many SaaS apps. App enforced restrictions work only for a few Microsoft apps and give full or limited access. Connectors act after the fact, and a full block would stop all use."
+          },
+          "key": "App connectors work through APIs after the fact, app enforced restrictions let supported Microsoft apps limit unmanaged devices, and app control enforces policies in real time."
+        },
+        {
+          "title": "Access, session and OAuth app policies",
+          "steps": [
+            [
+              "Access policies",
+              "An **access policy** in Defender for Cloud Apps decides whether a session may start, using filters such as app, client type, device tags (compliant or hybrid joined), location or IP address. Actions are audit or block. Matai blocks desktop sync clients from unmanaged devices so users must use the browser, where session control applies."
+            ],
+            [
+              "Session policies",
+              "A **session policy** controls what happens inside the session: monitor only, block activities such as copy or print, control file downloads (audit, block or protect with a sensitivity label) and control uploads. It can also require step up authentication through an authentication context. When policies conflict, the more restrictive action wins."
+            ],
+            [
+              "OAuth apps",
+              "Many apps ask users for permission to their data through **OAuth**. The OAuth apps page, part of **app governance**, shows each app's permission level, how common it is and how many users authorised it. Leilani can approve an app, which only marks it reviewed, or **ban** it, which disables it."
+            ],
+            [
+              "OAuth app policies",
+              "**OAuth app policies** alert on, or revoke, apps that match conditions such as high permission level, rare use or many authorising users. Prevention sits in Entra consent settings, and detection and response sit in Defender for Cloud Apps."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants an automatic alert when any rarely used app is granted high level permissions by staff. What should Leilani create?",
+            "options": [
+              "An app discovery policy",
+              "A session policy blocking downloads",
+              "An anomaly detection policy for mass downloads",
+              "An OAuth app policy"
+            ],
+            "answer": 3,
+            "why": "OAuth app policies watch apps users authorise and can alert or revoke based on permission level and how common the app is. Discovery policies watch traffic to cloud apps, and session or anomaly policies watch user activity rather than OAuth grants."
+          },
+          "key": "Access policies decide whether sessions start, session policies control activity inside them, and OAuth app policies flag risky app permissions."
+        }
+      ]
+    },
+    {
+      "title": "Plan and automate identity governance",
+      "intro": "Governance makes sure access is right today and stays right tomorrow (about 20 to 25 percent of the exam). This module covers entitlement management, access reviews, Privileged Identity Management, emergency accounts, and the logs and reports that prove it all works. With Ridge Survey staff, client guests and 600 engineers changing projects every month, Matai Engineering cannot manage access by hand any more.",
+      "lessons": [
+        {
+          "title": "Planning entitlements and catalogs",
+          "steps": [
+            [
+              "Four building blocks",
+              "**Entitlement management** answers who needs what, for how long and who decides. A **catalog** holds resources and the people who manage them. An **access package** bundles resource roles from one catalog. A **policy** says who can request, who approves and when access ends. An **assignment** is a user holding the package."
+            ],
+            [
+              "What goes in a catalog",
+              "Catalogs can hold cloud created **security groups** and **Microsoft 365 groups** (and therefore Teams), **enterprise applications** and **SharePoint Online sites**. On premises synced groups and Exchange distribution groups cannot be added. A package lives in exactly one catalog and cannot be moved."
+            ],
+            [
+              "Delegation",
+              "**Catalog creators** create catalogs. **Catalog owners** manage resources and packages in them. **Access package managers** build packages from existing resources. **Access package assignment managers** handle assignments and requests only. The least privileged directory role for all of it is **Identity Governance Administrator**."
+            ],
+            [
+              "Licensing and planning",
+              "Core entitlement management needs P2 or **Microsoft Entra ID Governance**, and some newer features, such as automatic assignment and custom extensions, need ID Governance. Leilani creates one catalog per practice area, owned by each practice manager, and turns on **enabled for external users** for the catalog that client partners will use."
+            ]
+          ],
+          "check": {
+            "q": "Leilani wants to add an on premises synced AD group to an entitlement management catalog. What happens?",
+            "options": [
+              "It cannot be added to a catalog",
+              "It works like any other group",
+              "It is converted to a cloud group",
+              "It can be added, but only for guests"
+            ],
+            "answer": 0,
+            "why": "Catalogs accept cloud created security and Microsoft 365 groups, enterprise apps and SharePoint sites, but not groups synced from on premises. No automatic conversion happens."
+          },
+          "key": "Catalogs hold cloud groups, apps and sites, access packages bundle them, policies govern requests, and Identity Governance Administrator manages it all."
+        },
+        {
+          "title": "Access packages and requests",
+          "steps": [
+            [
+              "Building a package",
+              "Leilani creates a **Bridge Projects** package with membership of the project team, the drawings site and a reader role in the project portal. Adding a resource later grants it to everyone already assigned."
+            ],
+            [
+              "Who can request",
+              "Policies can target users in your directory (specific groups, all members, or all users including guests), users not in your directory (specific **connected organisations**, all configured ones, or any external user), or no one, for admin assignment only. One package can have several policies, such as one for staff and one for partners."
+            ],
+            [
+              "Approval and lifecycle",
+              "Approvals can have one to three stages with managers, sponsors or named approvers, fallback approvers and justification. Assignments can expire on a date, after a number of days, or never, can be extended, and can require recurring reviews. **Separation of duties** settings stop someone holding two incompatible packages, and the rule must be set on both packages to work both ways."
+            ],
+            [
+              "Handling requests",
+              "Users request at the **My Access** portal. Requests move through pending approval, then denied, expired, delivering or **delivered**. Admins see request history and can **reprocess** partially delivered requests. Removing a request record does not remove access: the assignment itself must be removed. **Automatic assignment policies**, which assign by attribute, need ID Governance."
+            ]
+          ],
+          "check": {
+            "q": "Matai must stop anyone holding both the Approve Invoices package and the Create Vendors package. What should Leilani configure?",
+            "options": [
+              "A multi-stage approval on both packages",
+              "A 30 day expiry on both packages",
+              "Separation of duties on both packages",
+              "A monthly access review of both"
+            ],
+            "answer": 2,
+            "why": "Separation of duties blocks requests for incompatible packages, and because the rule is one directional it is set on both. Approval, expiry and reviews can catch the problem later but do not stop someone holding both."
+          },
+          "key": "Access packages bundle resources with request, approval and expiry policies, separation of duties blocks toxic combinations, and users request in My Access."
+        },
+        {
+          "title": "Terms of use, external users and connected organisations",
+          "steps": [
+            [
+              "Terms of use",
+              "**Terms of use** are PDF documents users must accept before reaching resources, enforced as a Conditional Access grant control. Options include requiring users to expand the document, accepting on every device, and expiring consents so users accept again periodically. Documents cannot be edited: upload a new version and optionally require re acceptance."
+            ],
+            [
+              "Who accepted",
+              "The terms of use page shows accepted and declined counts, and each acceptance is written to the audit log. Matai requires all client guests to accept a confidentiality agreement before opening project sites."
+            ],
+            [
+              "Lifecycle of external users",
+              "When an external user is approved for a package, they are invited as a guest. **Entitlement management settings** decide what happens when their last assignment ends: block sign in, remove them from the directory, and after how many days (30 by default). This only affects guests that entitlement management brought in."
+            ],
+            [
+              "Connected organisations",
+              "A **connected organisation** is a partner, defined by its Entra tenant or domain, whose users may request packages. **Internal sponsors** and **external sponsors** can act as approvers. Organisations created automatically when an unknown domain requests a package are **proposed**, and must be changed to **configured** to count as configured connected organisations."
+            ]
+          ],
+          "check": {
+            "q": "A client engineer's last access package expires. Matai wants her guest account removed automatically after a week. Where is this set?",
+            "options": [
+              "The access package's expiry setting",
+              "Terms of use expiry",
+              "A guest access review",
+              "External user lifecycle settings"
+            ],
+            "answer": 3,
+            "why": "The lifecycle of external users settings in entitlement management block and remove guests after their last assignment ends, after a set number of days. Package expiry ends the assignment, not the guest account, and reviews and terms of use do not remove accounts on that trigger."
+          },
+          "key": "Terms of use are enforced by Conditional Access, entitlement settings remove external users after their last assignment, and connected organisations define approved partners."
+        },
+        {
+          "title": "Planning and creating access reviews",
+          "steps": [
+            [
+              "What, who, how often",
+              "**Access reviews** ask chosen reviewers whether people still need their access. Planning means deciding what to review, who reviews, how often, and what happens to unanswered or denied users. Groups and enterprise apps are reviewed under ID Governance, access packages in their lifecycle settings, and Entra and Azure roles in PIM."
+            ],
+            [
+              "Reviewers",
+              "Reviewers can be **group owners**, chosen users, **managers**, or the users themselves (**self review**), with fallback reviewers where no owner or manager exists. **Multi stage** reviews chain up to three stages, such as self review then manager. Creating group reviews needs at least Identity Governance Administrator unless group owners are allowed to."
+            ],
+            [
+              "Key settings",
+              "Scope can be everyone, guests only or **inactive users** only. Recurrence ranges from one time to annually, and the review duration must fit inside it. **Auto apply results** removes denied users without manual work. If reviewers do not respond, choose no change, remove access, approve access or take recommendations. Denied guests can be removed or blocked and then deleted."
+            ],
+            [
+              "Decision helpers",
+              "Recommendations such as no sign in within 30 days help reviewers decide. Reviews of inactive users only and user to group affiliation recommendations need ID Governance. Leilani sets a quarterly review of all guests in project Teams, reviewed by Team owners, with auto apply turned on."
+            ]
+          ],
+          "check": {
+            "q": "Matai wants a quarterly review of guests in project Teams, where denied guests lose access without anyone doing extra work. Which setting is essential?",
+            "options": [
+              "Reminder emails to reviewers",
+              "Self review by each guest",
+              "Auto apply results to resource",
+              "Multi-stage review"
+            ],
+            "answer": 2,
+            "why": "Auto apply removes denied users automatically when the review ends. Without it, an admin applies results by hand. Reminders, self review and extra stages change how decisions are made, not whether they take effect."
+          },
+          "key": "Access reviews define scope, reviewers, recurrence and outcomes, and auto apply removes denied access without manual work."
+        },
+        {
+          "title": "Monitoring and responding to access reviews",
+          "steps": [
+            [
+              "Watching progress",
+              "Each review shows the current instance with progress, status and each decision with reviewer and reason. The results can be downloaded as CSV. **Review history** reports cover many reviews over a date range and stay downloadable for 30 days."
+            ],
+            [
+              "Longer term",
+              "For long term analysis, Leilani sends audit logs to a Log Analytics workspace, where review events can be queried and charted in workbooks. Reviewers get a start email and an automatic reminder halfway through, and admins can send extra reminders."
+            ],
+            [
+              "Reviewer decisions",
+              "Reviewers use the email link or My Access. For each person they choose **approve**, **deny** or **don't know**, with a reason if required, and can accept recommendations in bulk. Decisions can change until the review ends, and denied users keep access until results are applied."
+            ],
+            [
+              "Admin actions",
+              "Admins can **stop** a review early (it cannot be restarted), **apply** results if auto apply was off, move a multi stage review to its next stage, and reset decisions. Applying cannot remove people from on premises synced groups or dynamic groups, or remove access that comes through a nested group, so those need fixing at the source."
+            ]
+          ],
+          "check": {
+            "q": "A review denies several users who get access through a dynamic group. After applying results, they still have access. Why?",
+            "options": [
+              "Dynamic members cannot be removed by a review",
+              "The review was multi stage",
+              "Reviewers chose don't know",
+              "Auto apply was switched on"
+            ],
+            "answer": 0,
+            "why": "Dynamic group membership is controlled by its rule, so access reviews cannot remove those members. The attribute or rule must change. A multi stage design, don't know answers or auto apply do not explain denied users keeping access."
+          },
+          "key": "Track reviews through results and history reports, reviewers approve or deny in My Access, and synced, dynamic or nested access must be fixed at the source."
+        },
+        {
+          "title": "PIM for Microsoft Entra roles",
+          "steps": [
+            [
+              "Eligible and active",
+              "**Privileged Identity Management (PIM)** gives just in time admin access. An **eligible** assignment must be activated in My roles before it works. An **active** assignment works straight away. Either can be permanent or time bound. PIM needs P2 or ID Governance for users with eligible or time bound assignments."
+            ],
+            [
+              "Making assignments",
+              "A Privileged Role Administrator assigns roles in PIM to users, role assignable groups or agent identities, at the directory, an administrative unit or a single app. PIM never removes the last Global Administrator. Users can ask to extend an assignment that is about to expire or renew one that has expired."
+            ],
+            [
+              "Role settings",
+              "Each role has its own settings. **Activation** sets the maximum duration (1 to 24 hours), whether to require MFA or a Conditional Access **authentication context**, justification, ticket information and **approval**. **Assignment** settings decide whether permanent eligible or active assignments are allowed. **Notification** settings decide who gets emails."
+            ],
+            [
+              "Default approvers",
+              "If approval is required but no approvers are named, Privileged Role Administrators and Global Administrators approve by default. Leilani makes the security engineers eligible for Security Administrator with a four hour maximum, phishing resistant MFA through an authentication context, and justification."
+            ]
+          ],
+          "check": {
+            "q": "Leilani wants Matai's Exchange admins to hold their role only while working, for at most two hours, after MFA. How should she assign it?",
+            "options": [
+              "Permanent active assignment",
+              "Eligible, two hours, MFA on activation",
+              "Active assignment ending in two hours",
+              "Eligible, with no activation settings"
+            ],
+            "answer": 1,
+            "why": "An eligible assignment needs activation, and role settings enforce the two hour limit and MFA each time. A permanent or time bound active assignment gives standing access, and eligibility with default settings does not require MFA."
+          },
+          "key": "PIM eligible assignments need activation, and per role settings control duration, MFA or authentication context, justification and approval."
+        },
+        {
+          "title": "PIM for Azure resources and for groups",
+          "steps": [
+            [
+              "Azure resource roles",
+              "PIM also manages Azure roles such as Owner and Contributor on management groups, subscriptions, resource groups and resources. The resource's **Owner** or **User Access Administrator** manages its PIM settings and assignments."
+            ],
+            [
+              "Inheritance differs",
+              "Role **assignments** follow normal Azure inheritance: an eligible Contributor on a subscription covers its resource groups once activated. Role **settings** do not inherit, so settings on a subscription do not flow down to a resource group. Unlike Entra roles, Azure roles have no default approvers, so at least one must be chosen when approval is required."
+            ],
+            [
+              "PIM for Groups",
+              "**PIM for Groups** gives just in time **membership** or **ownership** of a security or Microsoft 365 group, with separate settings for each. Anything the group grants, such as app access, Azure roles or, for role assignable groups, Entra roles, then becomes just in time too. Dynamic and on premises synced groups are not supported."
+            ],
+            [
+              "Matai's design",
+              "Leilani puts the Azure Contributor role for the project portal on a group, then makes engineers eligible members of that group through PIM with approval required. Membership changes made outside PIM override it, so she restricts who can edit the group directly."
+            ]
+          ],
+          "check": {
+            "q": "Leilani sets PIM approval for Contributor on Matai's subscription. A resource group under it does not require approval. Why?",
+            "options": [
+              "Resource groups cannot use PIM",
+              "Approval only works for Entra roles",
+              "Role settings do not inherit down",
+              "Assignments do not inherit down"
+            ],
+            "answer": 2,
+            "why": "PIM role settings apply per role and per scope and do not flow to child scopes, even though assignments do inherit. Approval works for Azure roles, and resource groups can use PIM."
+          },
+          "key": "PIM for Azure resources inherits assignments but not settings, and PIM for Groups makes group membership or ownership just in time."
+        },
+        {
+          "title": "PIM requests, approvals and audit",
+          "steps": [
+            [
+              "Activation flow",
+              "A user opens PIM, My roles, picks an eligible role and activates it, giving a duration, justification and ticket if required and passing MFA or the authentication context. Without approval the role activates in moments. With approval the request waits."
+            ],
+            [
+              "Approvals",
+              "Approvers get an email and approve or deny in PIM with their own justification. They have 24 hours, after which the user must request again. With several approvers, the first decision wins. Approvers cannot approve their own requests. Users can deactivate early when finished."
+            ],
+            [
+              "Audit history",
+              "PIM's **resource audit** shows all assignments, activations and setting changes for the past 30 days, and **my audit** shows a user's own activity. For longer retention, audit logs are sent to Log Analytics or storage through diagnostic settings and queried there."
+            ],
+            [
+              "Alerts",
+              "PIM raises alerts such as roles assigned outside PIM, potential stale accounts in privileged roles, admins not using their roles, roles that do not require MFA and too many Global Administrators. Leilani reviews them weekly and pairs them with quarterly access reviews of privileged roles."
+            ]
+          ],
+          "check": {
+            "q": "Matai's auditor needs evidence of every Global Administrator activation over the past year. PIM's audit view only shows 30 days. What should Leilani have done?",
+            "options": [
+              "Routed audit logs out with diagnostic settings",
+              "Made every assignment permanent",
+              "Exported a PIM alert report monthly",
+              "Raised the PIM audit retention to a year"
+            ],
+            "answer": 0,
+            "why": "PIM's built-in audit covers 30 days, so longer retention needs audit logs routed to Log Analytics or storage. That retention cannot be raised in PIM itself, alerts are not an activation history, and permanent assignments remove activations altogether."
+          },
+          "key": "PIM activations may need approval within 24 hours, audit history covers 30 days in the portal, and alerts flag risky role use."
+        },
+        {
+          "title": "Emergency access accounts",
+          "steps": [
+            [
+              "Why they exist",
+              "**Emergency access accounts**, often called break glass accounts, stop the tenant being locked out if federation, MFA, Conditional Access or every admin becomes unavailable. They are insurance you hope never to use."
+            ],
+            [
+              "How to set them up",
+              "Microsoft advises at least **two** accounts that are **cloud only**, on the onmicrosoft.com domain, not synced or federated, and not tied to one person or phone. They hold **Global Administrator** as a **permanent active** assignment, not an eligible one, because PIM itself might be what is broken."
+            ],
+            [
+              "Strong but different sign in",
+              "They should use a **phishing resistant, passwordless** method such as passkeys on security keys, ideally different from the methods normal admins use. They are **excluded** from Conditional Access policies that could block them, usually through a dedicated group, and their credentials are stored securely in separate places."
+            ],
+            [
+              "Watching and testing",
+              "Any use should alert immediately. Leilani sends sign in logs to Log Analytics and creates an alert rule that fires whenever either account's object ID signs in. Microsoft recommends validating the accounts at least every 90 days and after staff or licensing changes."
+            ]
+          ],
+          "check": {
+            "q": "How should Matai assign Global Administrator to its emergency access accounts?",
+            "options": [
+              "Time bound, renewed every month",
+              "Eligible, with approval required",
+              "Eligible, with MFA on activation",
+              "Permanent active"
+            ],
+            "answer": 3,
+            "why": "Emergency accounts must work even if PIM, approvers or MFA systems fail, so Global Administrator is permanent active. Eligible or expiring assignments could leave the tenant locked out exactly when the account is needed."
+          },
+          "key": "Keep at least two cloud only emergency accounts with permanent active Global Administrator, phishing resistant sign in, policy exclusions and alerts on any use."
+        },
+        {
+          "title": "Sign-in, audit and provisioning logs",
+          "steps": [
+            [
+              "Sign in logs",
+              "**Sign in logs** have tabs for interactive user sign ins, non interactive sign ins (clients using tokens on the user's behalf), service principal sign ins and managed identity sign ins. Each entry shows location, device, authentication details and the **Conditional Access** result for every policy. Error codes, such as one for a Conditional Access block, help troubleshooting."
+            ],
+            [
+              "Audit logs",
+              "**Audit logs** record changes: who did what to which object, with category, service and result. They cannot be edited. Reading logs needs at least Reports Reader. Logs are kept for 7 days on the Free edition and 30 days with P1 or P2."
+            ],
+            [
+              "Provisioning logs",
+              "**Provisioning logs** show each object's result when syncing to SaaS apps or across tenants: success, failure, skipped (often because the user is out of scope) or warning, with steps and the attributes changed. Leilani uses them when a new engineer has no account in the CAD licensing app."
+            ],
+            [
+              "Diagnostic settings",
+              "**Diagnostic settings** send log categories to destinations for longer or richer use. **Log Analytics** is for querying, alerts, workbooks and Microsoft Sentinel. A **storage account** keeps logs cheaply for long periods. **Event Hubs** streams them to another SIEM. The destination must already exist, and all destinations cost money."
+            ]
+          ],
+          "check": {
+            "q": "Matai must keep sign in logs for seven years for compliance, with rare access. Which diagnostic setting destination fits best?",
+            "options": [
+              "Event Hubs",
+              "A storage account",
+              "The default 30 day retention",
+              "Log Analytics with default retention"
+            ],
+            "answer": 1,
+            "why": "A storage account suits long, low cost retention with rare access. Event Hubs streams logs to other systems rather than storing them, 30 days is far too short, and Log Analytics is built for active querying, which costs more for years of rarely used data."
+          },
+          "key": "Sign-in, audit and provisioning logs answer who signed in, what changed and what synced, and diagnostic settings route them to Log Analytics, storage or Event Hubs."
+        },
+        {
+          "title": "KQL, workbooks and Identity Secure Score",
+          "steps": [
+            [
+              "Querying with KQL",
+              "Once logs reach Log Analytics, **KQL (Kusto Query Language)** queries them. Main tables include SigninLogs, AuditLogs and the provisioning and risk tables. A query filters with where, groups with summarize and charts with render. For example, counting failed sign ins per user over the last day shows who is being targeted. A saved query can become an alert rule."
+            ],
+            [
+              "Workbooks",
+              "**Workbooks** are interactive reports built on Log Analytics data, so diagnostic settings must be in place first. Useful templates include sign ins using legacy authentication, Conditional Access gap analysis, MFA gaps and authentication prompts, sensitive operations and cross tenant access activity. Leilani uses the legacy authentication workbook to find who would break before blocking it."
+            ],
+            [
+              "Identity Secure Score",
+              "**Identity Secure Score** measures how well the tenant follows Microsoft's identity recommendations. Each **improvement action** carries points, some all or nothing and some partial by share of users covered, such as MFA for admins, blocking legacy authentication or enabling SSPR."
+            ],
+            [
+              "Using the score",
+              "Actions can be marked to address, planned, risk accepted (no points), resolved through a third party or alternate mitigation (points given but not verified) or ignored. The score measures adoption of controls, not the chance of a breach. Matai's score rises sharply once legacy authentication is blocked."
+            ]
+          ],
+          "check": {
+            "q": "Before blocking legacy authentication, Leilani wants to see which users and apps still use it. What is the quickest tool?",
+            "options": [
+              "Identity Secure Score",
+              "The legacy authentication workbook",
+              "The provisioning logs",
+              "PIM audit history"
+            ],
+            "answer": 1,
+            "why": "That workbook shows who still signs in with legacy protocols, so they can be fixed before the block. Secure Score only recommends blocking it, and provisioning logs and PIM history do not report on sign-in protocols."
+          },
+          "key": "KQL queries identity logs in Log Analytics, workbooks visualise them, and Identity Secure Score tracks adoption of recommended controls."
+        }
+      ]
+    }
+  ]
+}

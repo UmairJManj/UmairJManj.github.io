@@ -1,0 +1,943 @@
+{
+  "id": "ai-901",
+  "code": "AI-901",
+  "title": "Microsoft Azure AI Fundamentals",
+  "modules": [
+    {
+      "title": "AI concepts and capabilities",
+      "intro": "This module explains what AI can do and how to build it responsibly, before you touch any tools (about 40 to 45 percent of the exam). Meet **Ridgeline Outdoors**, an online shop selling tramping and camping gear with 30 staff. Its one developer, Aroha, has been asked to add AI: a support chat assistant, analysis of customer reviews, a phone line that understands speech, product photo checks and automatic reading of supplier invoices. Every lesson returns to one of those jobs.",
+      "lessons": [
+        {
+          "title": "Fairness",
+          "steps": [
+            [
+              "Same situation, same answer",
+              "**Fairness** is the first of Microsoft's six **responsible AI** principles. An AI system should treat people with similar circumstances the same way, whatever their gender, ethnicity, age or other unrelated traits. If Ridgeline uses AI to decide who gets a credit account, two customers with the same payment history should get the same result."
+            ],
+            [
+              "Where bias comes from",
+              "Models learn patterns from **training data**, and that data can carry **bias**. Historical bias repeats unfair past decisions. Representation bias appears when a group is rare in the data, so the model works worse for them. Removing a column such as gender does not fix it, because other fields, such as postcode or first name, can act as **proxies** for it."
+            ],
+            [
+              "Two kinds of harm",
+              "An **allocation harm** happens when people are denied an opportunity or resource, such as a loan or a job. A **quality of service harm** happens when a system simply works worse for some groups, such as speech recognition that struggles with some accents."
+            ],
+            [
+              "Measuring and fixing",
+              "Fairness comes from deliberate testing, not from a bigger dataset. Teams choose **sensitive features**, compare metrics such as error rates across groups, then reduce gaps by rebalancing data or changing the model. The **Responsible AI dashboard** in Azure Machine Learning helps, with fairness assessment built on the open source Fairlearn package and error analysis that finds groups with higher error rates."
+            ]
+          ],
+          "check": {
+            "q": "Aroha removes the gender column from Ridgeline's credit model, but approval rates still differ between men and women. What is the most likely reason?",
+            "options": [
+              "The model needs more training time",
+              "Fairness cannot be measured",
+              "Other features, such as first name, act as proxies for gender",
+              "The dataset is too large"
+            ],
+            "answer": 2,
+            "why": "Dropping a sensitive column does not remove bias when other fields still correlate with it. Training longer or shrinking the data does not address that, and fairness can be measured by comparing metrics across groups."
+          },
+          "key": "Fairness means similar people get similar outcomes, and bias must be measured across groups because proxies keep it alive."
+        },
+        {
+          "title": "Reliability and safety",
+          "steps": [
+            [
+              "Models are sometimes wrong",
+              "AI models give **probabilistic** answers, so even a good one makes mistakes. The **reliability and safety** principle asks you to design for that from the start: test widely, including unusual inputs, plan for misuse, and define when a person takes over."
+            ],
+            [
+              "Confidence thresholds and hand-off",
+              "Many models return a **confidence score** with each answer. A system can act only when confidence is above a set threshold and otherwise pass the case to a human. Ridgeline's photo checker approves a product image automatically only when it is confident, and flags the rest for staff."
+            ],
+            [
+              "Hallucination and grounding",
+              "Generative models can **hallucinate**, stating something false with total confidence. The main fix is **grounding**: giving the model trusted data to answer from, often with **retrieval augmented generation (RAG)**. Microsoft Foundry also runs **evaluations** that score answers for groundedness, relevance and safety before and after release."
+            ],
+            [
+              "Guardrails and content filters",
+              "Foundry applies **content filters** to both the prompt and the reply. They rate four harm categories (hate and fairness, sexual, violence, self-harm) as safe, low, medium or high, and by default block medium and above. **Prompt Shields** detect attempts to trick the model into ignoring its rules, including instructions hidden inside documents it reads."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline's support assistant sometimes invents return policies that do not exist. What is the best first fix?",
+            "options": [
+              "Ground the assistant on Ridgeline's real policy documents",
+              "Raise the temperature",
+              "Turn off content filters",
+              "Remove the system prompt"
+            ],
+            "answer": 0,
+            "why": "Grounding gives the model trusted text to answer from, which directly reduces hallucination. A higher temperature makes answers more random, not more accurate. Content filters and the system prompt are unrelated to invented facts, and removing them makes things worse."
+          },
+          "key": "Design for wrong answers with testing, confidence thresholds, human hand-off, grounding and content filters."
+        },
+        {
+          "title": "Privacy and security",
+          "steps": [
+            [
+              "Data from start to finish",
+              "AI depends on data, and that data often includes personal information. The **privacy and security** principle covers it from collection through training and use to deletion. Ridgeline's support chats contain names, addresses and order numbers, so they need care."
+            ],
+            [
+              "Collect less, keep less",
+              "**Data minimisation** means collecting only what the purpose needs, and **purpose limitation** means using it only for that purpose. Keep personal data only as long as needed. **PII detection** in Azure Language can find and redact names, phone numbers and other identifiers in text before it is stored or analysed."
+            ],
+            [
+              "Microsoft's commitments",
+              "For models sold directly by Azure in Microsoft Foundry, your prompts and replies are not available to other customers or to the model's maker, and are not used to train foundation models without permission. Stored data such as fine tuning files is encrypted at rest."
+            ],
+            [
+              "Controls you set",
+              "Aroha signs her app in with **Microsoft Entra ID** and a **managed identity** instead of putting keys in code, uses role based access so each person and app gets only the access it needs, and makes sure the assistant can only retrieve documents the signed in user is allowed to see. Models can repeat private details from their data, so tests check they do not."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline wants to analyse chat transcripts for common complaints without storing customers' phone numbers. What should Aroha use first?",
+            "options": [
+              "Sentiment analysis",
+              "Speech synthesis",
+              "Image generation",
+              "PII detection with redaction"
+            ],
+            "answer": 3,
+            "why": "PII detection finds personal identifiers and can return redacted text, so complaints can be analysed without the phone numbers. Sentiment analysis would still keep the numbers in the text, and the other two features do not process transcripts."
+          },
+          "key": "Collect and keep only the personal data you need, redact identifiers, and secure access with Entra ID and least privilege."
+        },
+        {
+          "title": "Inclusiveness",
+          "steps": [
+            [
+              "AI for everyone",
+              "**Inclusiveness** means AI systems should work for and empower everyone, not just the typical user. Features such as captions, image descriptions and voice control can open services to people with disabilities, but only if they are designed in."
+            ],
+            [
+              "Inclusive design principles",
+              "Microsoft's inclusive design starts with **recognising exclusion**: asking who could be left out and why. **Solve for one, extend to many**: captions built for deaf users also help someone in a noisy room. **Learn from diversity** by involving people with different experiences."
+            ],
+            [
+              "In practice",
+              "Offer several ways in and out, such as speech, text, touch and keyboard. Support screen readers. Train and test speech and vision models on diverse accents, languages and skin tones, and include people with disabilities in user testing. Ridgeline's phone line must understand callers with strong regional accents."
+            ],
+            [
+              "Inclusiveness versus fairness",
+              "The two overlap but differ. Fairness is about equal outcomes from a decision. Inclusiveness is about access and participation. A chat assistant that a blind customer cannot use with a screen reader is an inclusiveness problem."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline's new voice ordering line works well for most callers but often fails for elderly customers with hearing aids and soft voices. Which principle is most directly involved?",
+            "options": [
+              "Transparency",
+              "Inclusiveness",
+              "Accountability",
+              "Privacy and security"
+            ],
+            "answer": 1,
+            "why": "A system that some people cannot use is an inclusiveness problem, and the fix is to test with those users and offer other ways in. Transparency is about explaining AI, accountability about ownership, and privacy about personal data."
+          },
+          "key": "Inclusiveness means designing so everyone can use the system, by recognising exclusion and testing with diverse people."
+        },
+        {
+          "title": "Transparency",
+          "steps": [
+            [
+              "No magic boxes",
+              "**Transparency** means people understand when AI is used and how it behaves. It has two parts: **disclosure**, being honest about when and why AI is used, and **intelligibility**, helping people understand how the system reaches its outputs."
+            ],
+            [
+              "Disclosure",
+              "Ridgeline's chat window tells customers they are talking to an AI assistant and that answers may contain mistakes. If AI helps decide credit accounts, customers should know that and roughly what kinds of data it considers, without revealing confidential details."
+            ],
+            [
+              "Intelligibility",
+              "**Model interpretability** explains behaviour. **Global explanations** show which features drive a model overall. **Local explanations** show why one particular prediction was made. When stakes are high, a simpler, more explainable model may be the better choice."
+            ],
+            [
+              "Transparency documents",
+              "Microsoft publishes **Transparency Notes** for its AI services, describing capabilities, limitations and intended uses. **Model cards** in the Foundry model catalog describe a model's purpose, training and limits. Images from Azure OpenAI image models carry **Content Credentials**, a signed record based on the C2PA standard saying they are AI generated. Content Credentials show tampering but do not stop copying."
+            ]
+          ],
+          "check": {
+            "q": "A customer asks why the credit model declined their application. Which technique helps Ridgeline answer that specific question?",
+            "options": [
+              "A global explanation of the model",
+              "A local explanation for that prediction",
+              "Content Credentials",
+              "A content filter"
+            ],
+            "answer": 1,
+            "why": "A local explanation shows which factors drove one particular prediction, which is what the customer wants. A global explanation describes the model overall, which is useful but not specific to this person. Content Credentials and filters are unrelated."
+          },
+          "key": "Transparency means disclosing AI use and making its behaviour understandable, using explanations and documents such as Transparency Notes."
+        },
+        {
+          "title": "Accountability",
+          "steps": [
+            [
+              "People are responsible",
+              "An AI system cannot be held responsible, but people can. **Accountability** means the organisation that builds or uses AI owns its results, including harms. That stays true when the model comes from someone else: Ridgeline is accountable for how its assistant uses a third party model."
+            ],
+            [
+              "Structures for ownership",
+              "Accountability needs a **governance framework** with policies and named owners, a review group for sensitive uses, and a **human in the loop** who can inspect and override AI decisions about people. Microsoft's own framework is the Microsoft Responsible AI Standard."
+            ],
+            [
+              "Identify, measure, mitigate, operate",
+              "Microsoft's practical process for generative AI has four stages. **Identify** likely harms through impact assessment and testing. **Measure** them with metrics and test sets. **Mitigate** them in layers: the model, the safety system, the system prompt and grounding, and the user experience. **Operate** with a rollout plan, incident response and feedback channels."
+            ],
+            [
+              "Limited Access features",
+              "Microsoft restricts some high risk capabilities, such as Face identification, custom neural voice and changes to content filters, behind **Limited Access**. Customers must apply and be approved for a specific use before using them."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline uses a model built by another company. Its assistant gives a customer harmful advice. Who is accountable for how the assistant behaves?",
+            "options": [
+              "Only the model's maker",
+              "The customer, for asking the question",
+              "Nobody, because AI made the decision",
+              "Ridgeline, because it built and deployed the solution"
+            ],
+            "answer": 3,
+            "why": "Accountability cannot be outsourced. Ridgeline chose the model, wrote the instructions and deployed the assistant, so it owns the result. The model maker has its own duties, but that does not remove Ridgeline's."
+          },
+          "key": "Organisations stay accountable for their AI, using governance, human oversight and the identify, measure, mitigate, operate cycle."
+        },
+        {
+          "title": "How generative AI models work",
+          "steps": [
+            [
+              "Creating, not just classifying",
+              "**Generative AI** creates new content such as text, code, images or audio. Most text models are **large language models (LLMs)** built on the **transformer** architecture. A **foundation model** is trained on huge, broad data and then adapted to many tasks."
+            ],
+            [
+              "Tokens and embeddings",
+              "Text is first split into **tokens**: whole words, word pieces or punctuation. Each token becomes an **embedding**, a list of numbers where similar meanings sit close together. Billing and limits are counted in tokens, for both the prompt you send and the reply you get."
+            ],
+            [
+              "Attention and prediction",
+              "Transformer layers use **attention** to let each token weigh how relevant every other token is, so tent means something different next to pole than next to sale. The model then predicts a probability for every possible next token, picks one, adds it and repeats until it stops."
+            ],
+            [
+              "Why it hallucinates",
+              "Because the model predicts plausible text rather than looking facts up, it can produce fluent answers that are false. That is why Ridgeline's assistant must be grounded in real policies. Grounding with RAG adds data to the prompt and does not change the model. **Fine tuning** does change it, by training it further on your own examples."
+            ]
+          ],
+          "check": {
+            "q": "Aroha adds Ridgeline's returns policy to every prompt so the assistant answers from it. What has she changed?",
+            "options": [
+              "Only the input the model reads, by grounding the prompt",
+              "The model's weights, through fine tuning",
+              "The model's tokeniser",
+              "The content filter severity"
+            ],
+            "answer": 0,
+            "why": "Putting trusted text into the prompt is grounding. It changes what the model reads for each request, not the model itself. Fine tuning is the tempting answer but involves further training that changes the weights."
+          },
+          "key": "LLMs turn text into tokens and embeddings, use attention, and predict the next token, which is why they can sound right and be wrong."
+        },
+        {
+          "title": "Prompts, context and choosing a model",
+          "steps": [
+            [
+              "Messages with roles",
+              "A chat request is a list of **messages**. The **system prompt** sets behaviour for the whole conversation, such as persona and rules. The **user prompt** is what the person asks. **Assistant** messages are earlier replies sent back as history. The **context window** is the most tokens the model can consider at once, covering prompt, history and reply."
+            ],
+            [
+              "The model catalog",
+              "The **Microsoft Foundry model catalog** lists models from Microsoft, OpenAI, Meta, Mistral and others, each with a **model card** describing its intended use and limits. Benchmarks and leaderboards compare models on quality, safety, speed and cost."
+            ],
+            [
+              "Model types",
+              "An **LLM** has broad knowledge and strong reasoning but costs more. A **small language model (SLM)** such as Microsoft Phi is faster and cheaper for focused tasks. **Reasoning models** spend extra tokens thinking, which suits hard maths and planning. **Multimodal** models accept more than one input type, such as an image and a question. **Embedding models** turn text into vectors for search and do not generate text."
+            ],
+            [
+              "Ridgeline's choices",
+              "For the support chat Aroha picks a general chat model. For tagging thousands of reviews cheaply she considers an SLM. For searching the policy library she needs an embedding model. For checking product photos she needs a multimodal model."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline needs to turn its policy documents into vectors so the assistant can find the most relevant ones. Which kind of model does this?",
+            "options": [
+              "An image generation model",
+              "A reasoning model",
+              "An embedding model",
+              "A speech synthesis model"
+            ],
+            "answer": 2,
+            "why": "Embedding models turn text into vectors for semantic search, which is the retrieval step of RAG. A reasoning model generates answers rather than vectors, and image and speech models handle other kinds of output."
+          },
+          "key": "Pick models by capability: LLMs for broad chat, SLMs for cheap focused tasks, reasoning models for hard problems, multimodal for mixed input, embeddings for search."
+        },
+        {
+          "title": "Deployment options and parameters",
+          "steps": [
+            [
+              "Deploying a model",
+              "A **deployment** makes a model available at an **endpoint** that code can call, authenticated with an API key or Microsoft Entra ID. Code refers to the **deployment name**, which Aroha chooses and which can differ from the model name."
+            ],
+            [
+              "Where it runs",
+              "**Standard deployment** in a Foundry resource is the preferred option for models sold by Azure. Within it, **Global Standard** may process requests in any region and has the highest default quota, **Data Zone Standard** keeps processing inside a zone such as the EU, and **Provisioned** reserves capacity for steady high volume. **Batch** handles big files of requests more cheaply with a slower turnaround. **Managed compute** runs open models on dedicated machines, billed by the hour even when idle."
+            ],
+            [
+              "Temperature and top-p",
+              "**Temperature** controls randomness: low values give focused, repeatable answers, high values more creative ones. **Top-p** limits choices to the most likely tokens. Change one or the other, not both. Ridgeline's policy assistant uses a low temperature, its product description writer a higher one."
+            ],
+            [
+              "Length and repetition",
+              "**Max tokens** caps the length and cost of a reply, and too low a value cuts answers off. **Stop sequences** end generation when a set string appears. A **frequency penalty** reduces repeated words, and a **presence penalty** nudges the model toward new topics."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline's policy assistant gives different wording each time for the same refund question, and staff want consistent answers. Which change helps most?",
+            "options": [
+              "Raise the temperature",
+              "Switch to a Batch deployment",
+              "Raise the presence penalty",
+              "Lower the temperature"
+            ],
+            "answer": 3,
+            "why": "A lower temperature makes the model choose the most likely tokens, giving more consistent answers. Raising it does the opposite. The presence penalty pushes toward new topics, and Batch changes how requests are processed, not how consistent they are."
+          },
+          "key": "Deployments expose models at endpoints with types such as Global Standard or Batch, and temperature, top-p and max tokens shape the replies."
+        },
+        {
+          "title": "Generative and agentic workloads",
+          "steps": [
+            [
+              "What a workload is",
+              "A **workload** is a kind of job AI does. Matching a business need to the right workload is the first design decision. A useful habit is to ask what goes in (text, audio, an image, a document) and what should come out (a label, text, audio, fields or new content)."
+            ],
+            [
+              "Generative AI",
+              "**Generative AI** workloads produce new content: chat assistants, drafting emails, summarising reports, writing code, creating images. Ridgeline's support chat and its product description writer are generative workloads."
+            ],
+            [
+              "Agents",
+              "**Agentic AI** adds the ability to act. An **AI agent** uses a model to reason about a request, decide what to do and call **tools** to fetch data or take actions, possibly over several steps. In Foundry Agent Service each agent has a model, **instructions** that set its goals and limits, and tools such as file search, code interpreter or calls to your own functions."
+            ],
+            [
+              "The other workloads",
+              "**Text analysis** pulls meaning from text, such as sentiment in reviews. **Speech** turns audio into text and back. **Computer vision** interprets images. **Information extraction** turns invoices, forms, recordings or videos into structured fields. Ridgeline's order tracking agent, which looks up a parcel and replies, is agentic. Its invoice reader is information extraction."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline wants an assistant that checks the courier system for a customer's parcel and then tells them where it is. Which workload is this?",
+            "options": [
+              "Text analysis",
+              "Computer vision",
+              "Agentic AI",
+              "Speech synthesis"
+            ],
+            "answer": 2,
+            "why": "The assistant must decide to call a tool, the courier lookup, and use the result, which makes it an agent. Text analysis would only extract meaning from text. Vision and speech synthesis deal with images and audio."
+          },
+          "key": "Generative AI creates content, agents use models plus tools to act, and other workloads analyse text, speech, images or documents."
+        },
+        {
+          "title": "Text analysis techniques",
+          "steps": [
+            [
+              "Azure Language",
+              "**Azure Language in Foundry Tools** provides ready made natural language processing. Ridgeline has 20,000 product reviews and wants to know what customers talk about and how they feel, without reading them all."
+            ],
+            [
+              "Key phrases and entities",
+              "**Key phrase extraction** returns the main ideas, such as zip quality or waterproofing. **Named entity recognition (NER)** finds things such as people, places, organisations and dates and labels each with a category. **Entity linking** connects an entity to a knowledge base to settle which one is meant, such as Everest the mountain or a brand of the same name."
+            ],
+            [
+              "Sentiment",
+              "**Sentiment analysis** labels text positive, negative, neutral or mixed, with confidence scores for the whole review and each sentence. **Opinion mining** ties sentiment to targets: in the tent was great but the pegs bent, the tent is positive and the pegs are negative."
+            ],
+            [
+              "Summarisation and language",
+              "**Extractive summarisation** picks the most important sentences unchanged. **Abstractive summarisation** writes new, shorter sentences that capture the meaning. **Language detection** identifies the language, so Ridgeline can route reviews in te reo Māori or Japanese to the right person."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline wants to know which specific product features customers complain about, not just whether a review is negative overall. Which technique fits?",
+            "options": [
+              "Opinion mining",
+              "Language detection",
+              "Extractive summarisation",
+              "Entity linking"
+            ],
+            "answer": 0,
+            "why": "Opinion mining links sentiment to the aspects mentioned, such as pegs or zips. Plain sentiment would only label the whole review. Language detection, summarisation and entity linking do not attach feelings to features."
+          },
+          "key": "Text analysis covers key phrases, entities, sentiment with opinion mining, summarisation and language detection."
+        },
+        {
+          "title": "Speech recognition and synthesis",
+          "steps": [
+            [
+              "Speech to text",
+              "**Speech recognition**, or speech to text, turns spoken audio into text. **Azure Speech in Foundry Tools** offers real time transcription for live captions and voice assistants, fast transcription of a recorded file, and batch transcription for large archives such as a call recording library."
+            ],
+            [
+              "Getting it right",
+              "**Custom speech** improves accuracy for accents, background noise or specialist words, such as Ridgeline's product codes. **Language identification** detects which language is spoken. **Diarisation** separates who spoke when, so a call transcript shows the customer and the staff member separately."
+            ],
+            [
+              "Text to speech",
+              "**Speech synthesis**, or text to speech, produces spoken audio from text. **Neural voices** sound natural and are chosen by name. **SSML (Speech Synthesis Markup Language)** is an XML format that controls pronunciation, speed, pitch, pauses and speaking style."
+            ],
+            [
+              "Translation and conversation",
+              "**Speech translation** turns speech in one language into text or speech in another, in real time. **Voice Live** combines recognition, a model and synthesis into one service for natural real time conversations with an agent. Ridgeline's phone line uses recognition to understand callers and synthesis to answer them."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline's phone line reads out order numbers too fast and mispronounces the brand name. What should Aroha use to fix the spoken output?",
+            "options": [
+              "Diarisation",
+              "SSML",
+              "Custom speech",
+              "Language identification"
+            ],
+            "answer": 1,
+            "why": "SSML controls how synthesised speech sounds, including rate, pauses and pronunciation. Custom speech is the tempting answer but improves recognition of incoming speech, not the voice output. Diarisation and language identification also work on incoming audio."
+          },
+          "key": "Speech recognition turns audio into text, speech synthesis turns text into audio, and SSML controls how the voice sounds."
+        },
+        {
+          "title": "Computer vision and image generation",
+          "steps": [
+            [
+              "Seeing images",
+              "**Computer vision** lets software interpret images. **Image classification** gives the whole image a label, such as damaged or fine. **Object detection** finds each object and returns a **bounding box** and confidence, so you can count and locate items. **OCR (optical character recognition)** reads printed and handwritten text."
+            ],
+            [
+              "Describing images",
+              "**Image captioning** writes a sentence describing a picture, and **tagging** adds keywords for objects and scenes. **Azure Vision in Foundry Tools** provides these as ready made features with consistent, structured output."
+            ],
+            [
+              "Multimodal models",
+              "Vision enabled chat models accept an image plus a question and answer in natural language, such as asking whether a product photo shows the tent's rain fly. They are flexible, while prebuilt vision features give consistent coordinates and labels for automation."
+            ],
+            [
+              "Generating images",
+              "**Image generation** runs the other way: a text **prompt** goes in and a new image comes out. Many generators are **diffusion models**, which start from random noise and refine it step by step toward the prompt. In Foundry, GPT-image models create and edit images, and content filters check both prompts and results."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline wants to count how many sleeping bags appear on each warehouse shelf photo and know where each one is. Which capability fits?",
+            "options": [
+              "Image classification",
+              "Image generation",
+              "Object detection",
+              "Image captioning"
+            ],
+            "answer": 2,
+            "why": "Object detection returns each object with a bounding box, which supports counting and locating. Classification gives one label for the whole image, captioning a sentence, and image generation creates new pictures."
+          },
+          "key": "Vision classifies, detects, reads and describes images, while image generation creates new images from prompts."
+        },
+        {
+          "title": "Information extraction",
+          "steps": [
+            [
+              "Turning content into fields",
+              "**Information extraction** pulls specific facts out of content and returns them as structured data. Ridgeline receives hundreds of supplier invoices as PDFs and photos, and wants the supplier, date and total in its accounts system without typing them."
+            ],
+            [
+              "Documents and forms",
+              "**Forms processing** turns documents into data. OCR reads the text, layout analysis finds tables and checkboxes, and prebuilt models for invoices, receipts and identity documents return named fields. Each field carries a **confidence score**, so low confidence values can go to a person."
+            ],
+            [
+              "Images, audio and video",
+              "Extraction is not only for documents. From an image you might extract a defect type. From a call recording you might extract the caller's request and callback number. From a video you might extract what happens in each scene."
+            ],
+            [
+              "Azure Content Understanding",
+              "**Azure Content Understanding** is the Foundry Tool that extracts information from documents, images, audio and video. You define the fields you want, and it uses generative models to fill them consistently for every file. Module 2 shows how to build with it."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline wants the invoice total pulled from each supplier PDF into its accounts system. Which workload is this?",
+            "options": [
+              "Information extraction",
+              "Image generation",
+              "Speech synthesis",
+              "Sentiment analysis"
+            ],
+            "answer": 0,
+            "why": "Turning a document into named fields such as a total is information extraction. Sentiment analysis judges feelings in text, and the other options create content rather than reading it."
+          },
+          "key": "Information extraction turns documents, images, audio and video into structured fields with confidence scores."
+        }
+      ]
+    },
+    {
+      "title": "Building AI solutions with Microsoft Foundry",
+      "intro": "This is the larger part of the exam (about 55 to 60 percent), and it is hands on. You will see how Aroha deploys models, writes prompts, builds a chat client and an agent, and adds text, speech, vision and extraction features for Ridgeline Outdoors, using the Foundry portal and small Python apps. You do not need to be a programmer, but you should recognise what each piece of a simple app does.",
+      "lessons": [
+        {
+          "title": "Writing system and user prompts",
+          "steps": [
+            [
+              "Two kinds of prompt",
+              "The **system prompt** is written by the developer and applies to every turn. In the Foundry playground it is the Instructions box. It sets persona, scope, tone, safety rules and output format. The **user prompt** is what the person types, and it changes every turn."
+            ],
+            [
+              "What makes a good prompt",
+              "Good prompts are specific, put the task first and give the model a way out. Ridgeline's system prompt says: you are Ridgeline's support assistant, answer only questions about orders and products, reply in short paragraphs, and if the answer is not in the policy, say you do not know and offer to connect a person."
+            ],
+            [
+              "Techniques",
+              "**Zero shot** prompting just asks. **Few shot** prompting includes a few example questions and answers so the model copies the pattern. **Grounding** pastes trusted source text into the prompt. You can also specify an exact output format, ask the model to work step by step, and repeat key instructions at the end of a long prompt."
+            ],
+            [
+              "What a prompt does not do",
+              "A prompt shapes one request but does not retrain the model. The system prompt must be sent with every call, or stored with an agent. Few shot examples guide the answer without changing the model's weights."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline's assistant answers questions about the weather and sports. Where should Aroha restrict it to orders and products?",
+            "options": [
+              "In each user prompt",
+              "In the model catalog",
+              "In the temperature setting",
+              "In the system prompt"
+            ],
+            "answer": 3,
+            "why": "The system prompt holds rules that apply to the whole conversation, including scope. Users write their own prompts, so restrictions cannot live there. Temperature controls randomness, and the catalog is where models are chosen."
+          },
+          "key": "The system prompt sets lasting rules and scope, the user prompt carries each request, and techniques such as few shot and grounding improve answers."
+        },
+        {
+          "title": "Deploying a model and using the playground",
+          "steps": [
+            [
+              "Projects and resources",
+              "Work in Foundry happens in a **project** inside a **Foundry resource**, which is an Azure resource in a subscription. Aroha creates one project for Ridgeline's AI features."
+            ],
+            [
+              "Deploying from the catalog",
+              "Aroha picks a chat model from the **model catalog** and deploys it. The deployment fixes the model version and settings and sets a **tokens per minute** limit. Going over that limit causes rate limit errors, which can be eased by lowering max tokens or how many requests run at once."
+            ],
+            [
+              "The playground",
+              "The **chat playground** is the no code way to try a deployment. Aroha writes the system prompt in Instructions, types test questions, adjusts temperature and max tokens, and starts a **new chat** to clear the history between tests."
+            ],
+            [
+              "From playground to code",
+              "Every deployment has a default content filter for the four harm categories plus prompt attack detection. When the prompts work, the playground's code view shows Python that reproduces the same settings, which becomes the starting point for Ridgeline's app."
+            ]
+          ],
+          "check": {
+            "q": "During testing, Aroha's earlier questions keep influencing the assistant's answers. What should she do in the playground?",
+            "options": [
+              "Delete the deployment",
+              "Start a new chat to clear the history",
+              "Raise the tokens per minute limit",
+              "Turn off the content filter"
+            ],
+            "answer": 1,
+            "why": "Earlier messages are sent as history, so starting a new chat gives a clean test. Deleting the deployment is unnecessary, the rate limit does not affect history, and the content filter is unrelated."
+          },
+          "key": "Deploy a model from the catalog into a project, then test prompts and parameters in the playground before moving to code."
+        },
+        {
+          "title": "A chat client with the Foundry SDK",
+          "steps": [
+            [
+              "A tiny program",
+              "Because the model runs in Azure, a chat client can be very small: read the user's question, send it, print the reply, repeat. The **Foundry SDK** for Python is the azure-ai-projects package, used with azure-identity and openai."
+            ],
+            [
+              "Connecting",
+              "Aroha creates an AIProjectClient with the **project endpoint** shown on the project overview and a DefaultAzureCredential, which signs in with Microsoft Entra ID. That identity needs a Foundry role on the project. get_openai_client then returns a client that calls the model through the Responses API, using the deployment name as the model."
+            ],
+            [
+              "Keeping the conversation",
+              "Each call to a model is independent. To remember context, an app either sends the whole message list each time, with the system message first, or with the Responses API passes the ID of the previous response, or uses a conversation object that stores history in the service. Long chats use more tokens and can fill the context window."
+            ],
+            [
+              "Keys versus identities",
+              "An app can authenticate with an endpoint and API key, kept out of code in an environment file or Key Vault. Microsoft recommends Entra ID instead, with a **managed identity** when the app runs in Azure, so there is no long lived secret to leak."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline's chat client forgets what the customer said one message earlier. What is the cause?",
+            "options": [
+              "The model's temperature is too low",
+              "Each call is independent, and the app is not sending history or a previous response ID",
+              "The content filter removed the earlier message",
+              "The deployment type is wrong"
+            ],
+            "answer": 1,
+            "why": "Models keep no memory between calls, so the app must pass the history, a previous response ID or a conversation. Temperature, content filters and deployment type do not cause this behaviour."
+          },
+          "key": "A Foundry SDK chat client connects to the project with Entra ID, calls the deployment by name and must pass history to keep context."
+        },
+        {
+          "title": "Creating and testing an agent",
+          "steps": [
+            [
+              "From model to agent",
+              "A model call is just prompt in, text out. An **agent** in **Foundry Agent Service** packages a model with **instructions** and **tools**, so it can pursue a goal, call tools by itself and keep conversation state. A **prompt agent** is defined entirely by configuration in the portal, with no code to host."
+            ],
+            [
+              "Building one in the portal",
+              "Aroha chooses a deployed model, writes instructions for an order help agent, adds tools, saves it (each save creates a new **version**) and tests it in the agent playground. If it drifts off topic, she tightens the instructions and tests again."
+            ],
+            [
+              "Tools to know",
+              "**File search** lets the agent answer from uploaded documents, with citations. **Code interpreter** runs Python for calculations and charts. **Web search** finds current public information. **Function calling** lets the agent ask your app to run a function you described, such as looking up an order, and your app returns the result. **MCP servers** expose tools through the open Model Context Protocol."
+            ],
+            [
+              "Testing and publishing",
+              "After adding a tool, Aroha starts a new chat and checks that the agent chooses it when it should. Guardrails can check tool calls too. When it works, she publishes the agent to a stable endpoint, and versions let her roll back."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline wants its agent to answer questions from 40 PDF product manuals and cite them. Which tool should Aroha add?",
+            "options": [
+              "Code interpreter",
+              "Image generation",
+              "Web search",
+              "File search"
+            ],
+            "answer": 3,
+            "why": "File search indexes uploaded documents and lets the agent retrieve from them with citations. Code interpreter runs code, web search reaches public sites rather than Ridgeline's manuals, and image generation creates pictures."
+          },
+          "key": "A Foundry agent combines a model, instructions and tools such as file search, code interpreter and function calling, tested in the agent playground."
+        },
+        {
+          "title": "A client application for an agent",
+          "steps": [
+            [
+              "Calling the agent from code",
+              "Once the agent works in the portal, Ridgeline's website needs to talk to it. The portal's code view shows sample code to start from. The project client creates or finds the agent, and an OpenAI client tied to that agent sends messages."
+            ],
+            [
+              "Conversations",
+              "Aroha's app creates a **conversation** and sends each customer message as a response request in that conversation. Reusing the same conversation ID gives the agent memory across turns, so it remembers the order number mentioned earlier."
+            ],
+            [
+              "Old and new names",
+              "Older Agent Service material talks about threads, messages and runs. In the current API, a thread is a conversation, a message is an item, a polled run is replaced by a response, and an agent is stored as versions. Recognising both sets of names helps when reading samples."
+            ],
+            [
+              "Signing in",
+              "The client authenticates with Microsoft Entra ID through DefaultAzureCredential, the same way as the chat client. In Azure, a managed identity removes any stored secret."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline's website client creates a new conversation for every customer message, and the agent forgets the order number. What should change?",
+            "options": [
+              "Reuse the same conversation ID for the whole chat",
+              "Create a new agent version per message",
+              "Raise max tokens",
+              "Switch from Entra ID to API keys"
+            ],
+            "answer": 0,
+            "why": "The conversation holds the history, so reusing it gives the agent memory across turns. New agent versions, more tokens or a different sign in method do not keep earlier messages."
+          },
+          "key": "An agent client sends messages within a conversation, and reusing its ID keeps context across turns."
+        },
+        {
+          "title": "Building a text analysis app",
+          "steps": [
+            [
+              "Two approaches",
+              "Aroha can analyse reviews with a general chat model, asking it to classify sentiment in a prompt, or with **Azure Language in Foundry Tools**. The model is flexible but its wording varies between calls. Azure Language returns structured, predictable results, which suits automated pipelines."
+            ],
+            [
+              "The SDK",
+              "With the azure-ai-textanalytics package, Aroha creates a TextAnalyticsClient with the endpoint and key, kept in an environment file. Methods such as detect_language, analyze_sentiment, extract_key_phrases, recognize_entities and recognize_pii_entities take a list of documents and return one result per document, each with confidence scores."
+            ],
+            [
+              "Results to use",
+              "PII results include redacted text and each entity found with its category. Sentiment results include an overall label and per sentence scores, and opinion mining can be switched on to tie sentiment to aspects. Ridgeline writes these into a dashboard of complaint topics."
+            ],
+            [
+              "Language as an agent tool",
+              "Azure Language can also be added to an agent as a tool, connected through its MCP server. The agent is the MCP client and the Language service is the server. A Foundry resource already includes Language, so no separate resource is needed."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline's nightly job must label 5,000 reviews in exactly the same format every time. Which approach suits it best?",
+            "options": [
+              "Ask a chat model in free text",
+              "Use speech synthesis",
+              "Use Azure Language's sentiment analysis",
+              "Use image generation"
+            ],
+            "answer": 2,
+            "why": "Azure Language returns structured, predictable results that a pipeline can rely on. A chat model can do the task but its wording varies, which makes automation harder. Speech and image features do not analyse text."
+          },
+          "key": "Azure Language gives structured text analysis through an SDK or as an agent tool, while chat models offer flexibility with less predictable output."
+        },
+        {
+          "title": "Spoken prompts with a multimodal model",
+          "steps": [
+            [
+              "Speaking instead of typing",
+              "An audio capable **multimodal model** lets a user speak the prompt. Ridgeline wants customers to leave a spoken question in the app and get an answer, without a separate transcription step."
+            ],
+            [
+              "Sending audio",
+              "The app reads the audio file, **base64 encodes** it (turns the bytes into plain text that fits in a request) and sends a user message containing both a text part, such as answer the question in this recording, and an audio part. To get a spoken reply, the request asks for text and audio output and names a voice."
+            ],
+            [
+              "The reply",
+              "The response contains a transcript of the answer and the answer as base64 audio, which the app decodes and plays. For live conversation, **realtime** models stream speech in and out with low delay, and voice activity detection decides when the user has finished speaking."
+            ],
+            [
+              "Voice Live",
+              "Building a voice agent by hand means joining recognition, a model and synthesis, plus handling interruptions. **Voice Live** does that as one managed service with noise suppression, echo cancellation and natural turn taking. In the portal, Aroha turns on voice mode for her agent, starts a session and talks to it."
+            ]
+          ],
+          "check": {
+            "q": "Aroha sends a recorded question to an audio capable model. What must she do with the audio file before adding it to the request?",
+            "options": [
+              "Convert it to an image",
+              "Upload it to the model catalog",
+              "Translate it to English text by hand",
+              "Base64 encode it"
+            ],
+            "answer": 3,
+            "why": "Audio bytes are base64 encoded so they can travel inside the JSON request alongside the text instruction. The whole point of a multimodal model is that no manual transcription is needed, and the catalog is for models, not inputs."
+          },
+          "key": "Audio capable multimodal models accept base64 encoded speech and can reply in audio, and Voice Live manages full voice conversations."
+        },
+        {
+          "title": "Building an app with Azure Speech",
+          "steps": [
+            [
+              "Setting up",
+              "The Speech SDK for Python starts with a SpeechConfig holding the key or Entra ID token and the endpoint, plus an AudioConfig that points to the microphone or a file. Aroha first tries her settings in the portal's speech playgrounds."
+            ],
+            [
+              "Recognising speech",
+              "A SpeechRecognizer with recognize_once handles one short utterance and returns text. For longer audio, continuous recognition raises events as words arrive. The result reason tells the app whether speech was recognised, nothing matched, or the request was cancelled, for example by a wrong key."
+            ],
+            [
+              "Speaking text",
+              "For output, Aroha sets a neural voice name on the config and creates a SpeechSynthesizer. speak_text sends plain text, and speak_ssml sends SSML so she can control pauses and pronunciation. Sending SSML through the plain text method would read the tags aloud."
+            ],
+            [
+              "Translating speech",
+              "A translation config sets the spoken language and adds target languages. A TranslationRecognizer then returns the recognised speech translated into each target, so Ridgeline's phone line can serve Japanese speaking tourists with an English speaking team."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline's app sends SSML to the synthesiser but the caller hears the angle bracket tags read out. What went wrong?",
+            "options": [
+              "The voice name is wrong",
+              "The recogniser language is wrong",
+              "The SSML was sent with the plain text method instead of the SSML method",
+              "The audio was not base64 encoded"
+            ],
+            "answer": 2,
+            "why": "The plain text method speaks whatever it is given, tags included. SSML must go through the SSML method. Voice name and recogniser language affect other things, and base64 is not needed for the Speech SDK's text input."
+          },
+          "key": "The Speech SDK uses a config, an audio source and a recogniser, synthesiser or translator, with SSML sent through its own method."
+        },
+        {
+          "title": "Visual input with a multimodal model",
+          "steps": [
+            [
+              "One model, many visual tasks",
+              "Classic vision needed a separately trained model for each task. A vision enabled **multimodal model** is trained on text and images, so one deployment can describe photos, read charts and screenshots, and answer questions about what it sees."
+            ],
+            [
+              "Trying it first",
+              "Aroha deploys a vision capable model, opens it in the chat playground, attaches a product photo and asks whether the photo shows any visible damage. When the prompt works, she moves it into code."
+            ],
+            [
+              "In code",
+              "With the Responses API, the user message holds an input text part and an input image part. A local image is base64 encoded and wrapped in a **data URL**, which states the image type before the encoded data. A public web image can be passed by URL, but private URLs fail because the service fetches them from outside your network."
+            ],
+            [
+              "Detail and cost",
+              "Images count as input tokens. The **detail** setting chooses low, which is faster and cheaper but can miss fine print, high, which examines tiles for small details at higher cost, or auto. The answer is generated, so it can be wrong, and content filters still apply."
+            ]
+          ],
+          "check": {
+            "q": "The model keeps missing small serial numbers on photographed product labels. Which setting should Aroha change?",
+            "options": [
+              "Set image detail to high",
+              "Lower the temperature",
+              "Remove the system prompt",
+              "Switch to an embedding model"
+            ],
+            "answer": 0,
+            "why": "High detail examines the image in tiles, which helps with fine print, at the cost of more tokens. Temperature affects randomness of wording, not what the model can see. Embedding models do not answer questions about images."
+          },
+          "key": "Multimodal models take an image plus a question, sent as a data URL or public URL, with the detail setting trading cost for precision."
+        },
+        {
+          "title": "Generating new visual content",
+          "steps": [
+            [
+              "Image models in Foundry",
+              "Image generation turns a prompt into pixels. Foundry offers GPT-image models, including a mini version that is cheaper and faster, and partner models such as FLUX. Aroha deploys one to create lifestyle images of Ridgeline's tents in different settings."
+            ],
+            [
+              "Generating in code",
+              "One way is the Images API, passing the deployment name, prompt, size, quality and number of images. Another is the Responses API with the image generation tool. Either way the image comes back as base64 data, which the app decodes into bytes and saves as a PNG file."
+            ],
+            [
+              "Editing with a mask",
+              "To change part of an existing image, the edit operation takes the image, a prompt and optionally a **mask**: an image the same size in which transparent pixels mark the area to repaint. Aroha uses it to swap the background of a product shot while leaving the tent untouched."
+            ],
+            [
+              "Video and safeguards",
+              "Foundry's Sora models generate short video clips from a prompt as an asynchronous job: start the job, check its status until it completes, then download the file. Content filters check prompts and outputs for images and video, and Ridgeline labels generated images as AI made."
+            ]
+          ],
+          "check": {
+            "q": "Aroha wants to replace only the sky in a product photo and keep the tent exactly as it is. What should she supply with the edit request?",
+            "options": [
+              "A higher temperature",
+              "A mask marking the sky area",
+              "A stop sequence",
+              "An embedding of the tent"
+            ],
+            "answer": 1,
+            "why": "A mask tells the model which pixels to repaint, so the rest of the image stays unchanged. Temperature and stop sequences control text generation, and embeddings are for search, not image edits."
+          },
+          "key": "Image models return base64 images from a prompt, and an edit with a mask changes only the marked area."
+        },
+        {
+          "title": "Building an app with vision capabilities",
+          "steps": [
+            [
+              "What the app does",
+              "Ridgeline's returns team wants an app where staff upload a photo of a returned item and get a short damage report. Aroha builds a small Python client around her vision capable deployment."
+            ],
+            [
+              "The steps",
+              "Install the openai package, create a client with the resource's endpoint and either a key or Entra ID, read the photo in binary mode, base64 encode it and build a data URL. Then send a message with the instruction and the image, using the deployment name as the model, and print the text reply."
+            ],
+            [
+              "Shaping the answer",
+              "A system or developer message sets the role, such as you are a returns inspector, and asks for a fixed format: item, visible damage, likely cause, recommended action. Setting enough max tokens stops long reports being cut off mid sentence."
+            ],
+            [
+              "Prebuilt or generative",
+              "If the team only needs consistent labels or text coordinates, Azure Vision's prebuilt features give structured results. For open ended questions about what is in the photo, the multimodal model is the better fit. Either way, a person still approves refunds."
+            ]
+          ],
+          "check": {
+            "q": "Aroha's vision app passes a link to a photo stored on Ridgeline's private network, and the request fails. What is the best fix?",
+            "options": [
+              "Use a speech model instead",
+              "Raise the temperature",
+              "Base64 encode the file and send it as a data URL",
+              "Remove the system message"
+            ],
+            "answer": 2,
+            "why": "The service cannot reach private URLs, so the image must be sent inside the request as a base64 data URL. The other changes do not help the service read the photo."
+          },
+          "key": "A vision app base64 encodes the image into a data URL, sends it with an instruction to the deployment, and reads the text reply."
+        },
+        {
+          "title": "Content Understanding and documents",
+          "steps": [
+            [
+              "Analyzers",
+              "**Azure Content Understanding in Foundry Tools** is part of a Foundry resource. Its central idea is the **analyzer**, a reusable configuration that holds extraction settings, a **field schema** listing the fields you want and their types, and the model deployments it uses. Applying one analyzer to every file gives consistent results."
+            ],
+            [
+              "Prebuilt and custom",
+              "Prebuilt analyzers cover common jobs: reading text, reading layout with tables, preparing documents for search, and domain forms such as invoices, receipts and identity documents. Custom analyzers use your own schema. Ridgeline starts with the prebuilt invoice analyzer, then builds a custom one for its main supplier's packing slips."
+            ],
+            [
+              "Three field methods",
+              "**Extract** copies a value exactly as it appears, such as the invoice date, and works for documents only. **Classify** picks from a fixed list, such as document type. **Generate** creates a value by reasoning over the content, such as a one line summary of the order."
+            ],
+            [
+              "Confidence and grounding",
+              "Each value can carry a **confidence** score from 0 to 1 and **grounding** showing where in the document it came from. Ridgeline lets high confidence totals flow straight into accounts and sends low confidence ones to a person. Results come back as JSON for automation and Markdown for search."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline wants a field that records whether each document is an invoice, a credit note or a packing slip. Which field method fits?",
+            "options": [
+              "Classify",
+              "Extract",
+              "Generate",
+              "Transcribe"
+            ],
+            "answer": 0,
+            "why": "Classify chooses one value from a fixed list of categories. Extract copies text exactly as written, and generate writes free text, so neither guarantees one of the three types. Transcribe is for audio."
+          },
+          "key": "Content Understanding uses analyzers with a field schema, and fields are filled by extract, classify or generate with confidence and grounding."
+        },
+        {
+          "title": "Extracting from images, audio and video",
+          "steps": [
+            [
+              "Images",
+              "An image analyzer applies a schema to pictures. Because images have no fixed text layout, fields use generate or classify, not extract. Ridgeline uses it to classify defects in returned gear. Photos of receipts or forms belong with a document analyzer, which also accepts image files, because image analyzers are not built for text heavy content."
+            ],
+            [
+              "Audio",
+              "For audio, Content Understanding first transcribes speech with timestamps, separates speakers with **diarisation** and can detect roles such as agent and customer in support calls. Then generate and classify fields pull out facts. A prebuilt call centre analyzer returns a summary, sentiment and topics for each call."
+            ],
+            [
+              "Video",
+              "For video it produces a transcript, picks **key frames** and detects shot changes. Fields can describe the whole video or, with segmentation turned on, each segment you describe in plain words, such as one segment per product shown. It samples about one frame per second, so very brief events can be missed."
+            ],
+            [
+              "Why not just chat?",
+              "A vision or audio chat model gives a free form answer to each prompt. Content Understanding applies the same schema to every file and returns consistent JSON, which is what Ridgeline needs to feed its systems automatically."
+            ]
+          ],
+          "check": {
+            "q": "Ridgeline wants each recorded support call to produce the caller's issue, the agent's resolution and an overall sentiment. What should Aroha use?",
+            "options": [
+              "Speech synthesis with SSML",
+              "The prebuilt invoice analyzer",
+              "An image generation model",
+              "A Content Understanding audio analyzer such as the call centre prebuilt"
+            ],
+            "answer": 3,
+            "why": "An audio analyzer transcribes the call, separates the speakers and fills generate and classify fields such as summary and sentiment. The invoice analyzer is for documents, image generation creates pictures, and speech synthesis produces audio rather than analysing it."
+          },
+          "key": "Content Understanding extracts consistent fields from images, audio and video using generate and classify, after transcription, diarisation and key frames."
+        },
+        {
+          "title": "A Content Understanding client app",
+          "steps": [
+            [
+              "A long running job",
+              "Analysing a file takes time, so it is a **long running operation**: the service accepts the job and the client waits for it to finish. The Python SDK, azure-ai-contentunderstanding, does the waiting for you."
+            ],
+            [
+              "The code path",
+              "Aroha creates a ContentUnderstandingClient with the Foundry resource endpoint and a key or Entra ID credential. She calls begin_analyze with an analyzer ID, such as the prebuilt invoice analyzer, and the file's URL, then calls result on the returned poller."
+            ],
+            [
+              "Reading results",
+              "The result has one content item per input or segment. Each holds Markdown text, or a transcript for audio, and the fields from the schema, each with a type, a typed value and usually a confidence score. The same code handles audio or video by changing the analyzer ID and the input."
+            ],
+            [
+              "REST and custom analyzers",
+              "Over REST, the app posts the request, receives a 202 Accepted response with an operation location, and checks that address until the status says succeeded. A custom analyzer is created by sending a definition with a base analyzer, the models, settings and field schema. For production, Ridgeline saves its own copy of any prebuilt analyzer it depends on, because prebuilt definitions can change between versions."
+            ]
+          ],
+          "check": {
+            "q": "Aroha's REST call to analyse an invoice returns 202 Accepted with no fields. What should her app do next?",
+            "options": [
+              "Treat it as an error and stop",
+              "Poll the operation location until the status is succeeded, then read the results",
+              "Send the same file again immediately",
+              "Switch to a speech model"
+            ],
+            "answer": 1,
+            "why": "202 Accepted means the long running job has started. The app checks the operation location until it succeeds, then reads the contents. Resending wastes work, and it is not an error."
+          },
+          "key": "Content Understanding analysis is a long running job: start it with an analyzer ID, wait for it, then read Markdown and typed fields with confidence."
+        }
+      ]
+    }
+  ]
+}

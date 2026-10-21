@@ -1,0 +1,1384 @@
+{
+  "id": "sc-900",
+  "code": "SC-900",
+  "title": "Microsoft Security, Compliance, and Identity Fundamentals",
+  "modules": [
+    {
+      "title": "Security, compliance and identity concepts",
+      "intro": "This module gives you the vocabulary every later lesson uses: who secures what in the cloud, how layered defence and Zero Trust work, and what identity really means (about 10 to 15 percent of the exam). Meet **Tui Bay Physio**, a four clinic physiotherapy practice with 45 staff. Its patient notes sit on an ageing server in a back office, and Sam, the part time IT lead, is moving everything to Microsoft 365 and Azure. You will follow Sam's decisions through the whole course.",
+      "lessons": [
+        {
+          "title": "The shared responsibility model",
+          "steps": [
+            [
+              "Who secures what",
+              "On the old server, Tui Bay Physio secured everything: the room, the hardware, the operating system, the apps and the data. In the cloud some of that work moves to the provider. The **shared responsibility model** is the agreement that says which security tasks belong to the provider and which stay with the customer."
+            ],
+            [
+              "IaaS, PaaS and SaaS",
+              "How much moves depends on the service. With **IaaS** (infrastructure as a service, such as an Azure virtual machine) Microsoft runs the datacentre and hosts, but Sam still patches the operating system. With **PaaS** (platform as a service, such as Azure App Service) Microsoft also runs the operating system. With **SaaS** (software as a service, such as Microsoft 365) Microsoft runs the whole application."
+            ],
+            [
+              "What never moves",
+              "Whatever the service, the customer always keeps responsibility for its data, its accounts and identities, the devices that connect, and the settings it chooses. If a physio's account is phished, or Sam shares a folder with the whole internet, that is Tui Bay's problem on a perfectly secured platform."
+            ],
+            [
+              "The same idea for AI",
+              "Microsoft splits AI apps into three layers: the AI platform (infrastructure, model and built in safety filters), the AI application (the app, its data sources and connectors) and AI usage (how people use it). The provider usually secures the platform. The customer still decides what data the AI can reach, who may use it, and what staff are allowed to type into it."
+            ]
+          ],
+          "check": {
+            "q": "Sam moves the booking system onto an Azure virtual machine. Who is responsible for installing Windows Server security updates on it?",
+            "options": [
+              "Microsoft, because it is in Azure",
+              "Nobody, Azure virtual machines update themselves",
+              "Tui Bay Physio, because a virtual machine is IaaS",
+              "The booking software vendor"
+            ],
+            "answer": 2,
+            "why": "A virtual machine is IaaS. Microsoft secures the physical datacentre and hosts, but the operating system belongs to the customer, so Sam patches it. Assuming the cloud provider handles everything is the most common misunderstanding of the model."
+          },
+          "key": "The provider's share grows from IaaS to PaaS to SaaS, but data, identities, devices and settings always stay with the customer."
+        },
+        {
+          "title": "Defence in depth and the CIA triad",
+          "steps": [
+            [
+              "Layers, not one wall",
+              "**Defence in depth** means using many overlapping controls instead of one big barrier. Each layer slows an attacker and gives defenders another chance to notice. One mistake, such as a weak password, should not lead straight to a breach."
+            ],
+            [
+              "The seven layers",
+              "From the outside in, the layers are physical security (locked rooms), identity and access (sign in checks), perimeter (protection at the network edge), network (splitting the network into zones), compute (patched, locked down servers), application (code that checks its input) and data (encryption and access rules on the data itself). Data sits in the middle because it is what attackers want."
+            ],
+            [
+              "What the layers protect",
+              "The **CIA triad** names three goals. **Confidentiality**: only the right people can read patient notes. **Integrity**: the notes stay accurate and change only through approved actions. **Availability**: clinicians can reach the notes when a patient is on the table. Every control Sam adds serves at least one of these."
+            ],
+            [
+              "Goals can pull apart",
+              "The three goals sometimes conflict. Strong encryption protects confidentiality, but if Tui Bay loses the key the notes become unavailable. Security work is a balance chosen by how sensitive the data is and what each kind of failure would cost the business."
+            ]
+          ],
+          "check": {
+            "q": "Ransomware locks Tui Bay's booking system so no one can see appointments, but no data leaves the building. Which goal of the CIA triad was hit?",
+            "options": [
+              "Availability",
+              "Integrity",
+              "Confidentiality",
+              "Authentication"
+            ],
+            "answer": 0,
+            "why": "Staff cannot reach the system when they need it, which is a loss of availability. Confidentiality would be hit if someone unauthorised read the data, and integrity if records were secretly changed. Authentication is not part of the triad at all."
+          },
+          "key": "Defence in depth stacks layers from physical to data, and every layer protects confidentiality, integrity or availability."
+        },
+        {
+          "title": "The Zero Trust model",
+          "steps": [
+            [
+              "No more trusted inside",
+              "Older security trusted anything on the office network. **Zero Trust** drops that assumption: every request is checked as if it came from the open internet. That suits Tui Bay, whose physios work from four clinics, home and patients' houses."
+            ],
+            [
+              "Three guiding principles",
+              "**Verify explicitly**: decide on every request using all the signals available, such as who the user is, their device, their location and whether anything looks unusual. **Use least privileged access**: give only the access needed, only for as long as it is needed. **Assume breach**: design as if an attacker is already in, so one stolen account cannot reach everything."
+            ],
+            [
+              "Least privilege in practice",
+              "Least privilege has named techniques. **Just in time** access is granted when needed and removed afterwards. **Just enough access** gives only the specific permissions a task needs. Risk based policies tighten access automatically when something looks wrong. A receptionist does not need the payroll folder, and Sam does not need admin rights while reading email."
+            ],
+            [
+              "The six pillars",
+              "Microsoft applies Zero Trust across six pillars: identities, devices, applications, data, infrastructure and networks. A seventh layer, visibility, automation and orchestration, joins the signals together using tools such as a SIEM and SOAR, which you will meet in module 3."
+            ]
+          ],
+          "check": {
+            "q": "Sam designs the network so that if a front desk PC is infected, it still cannot reach the server holding patient notes. Which Zero Trust principle is he applying most directly?",
+            "options": [
+              "Verify explicitly",
+              "Single sign-on",
+              "Shared responsibility",
+              "Assume breach"
+            ],
+            "answer": 3,
+            "why": "Planning for a device that is already compromised, and limiting how far it can reach, is assume breach. Verify explicitly is about checking each request with many signals. Shared responsibility and single sign-on are real ideas but not Zero Trust principles."
+          },
+          "key": "Zero Trust means verify explicitly, use least privileged access and assume breach, applied across identities, devices, apps, data, infrastructure and networks."
+        },
+        {
+          "title": "Encryption and hashing",
+          "steps": [
+            [
+              "Encryption with one key",
+              "**Encryption** turns readable data into scrambled ciphertext that is useless without the right **key**. In **symmetric** encryption the same key encrypts and decrypts. It is fast, so it suits disks and databases, but both sides must somehow share that one key safely."
+            ],
+            [
+              "Encryption with a key pair",
+              "**Asymmetric** encryption uses a linked **public key** and **private key**. Anything locked with Tui Bay's public key can only be opened with its private key, so the public key can be handed out freely. A **digital signature** works the other way: signing with the private key lets anyone check, with the public key, who sent a message and that it was not changed."
+            ],
+            [
+              "Data at rest, in transit, in use",
+              "Data needs protection in three states. **At rest** it sits on a disk or in storage. **In transit** it moves across a network, protected by TLS on websites. **In use** it is being processed in memory, where confidential computing can keep it shielded. Keys themselves live in a protected store such as **Azure Key Vault**, away from the data."
+            ],
+            [
+              "Hashing is one way",
+              "**Hashing** runs data through an algorithm to produce a fixed length fingerprint called a **hash**. There is no key and it cannot be reversed. The same input always gives the same hash, and changing one character changes it completely, so hashes prove integrity. Systems store password hashes, not passwords, and add a random **salt** to each so attackers cannot look them up in precomputed tables."
+            ]
+          ],
+          "check": {
+            "q": "Tui Bay's patient portal must store passwords so that even a database leak does not reveal them. What should it store?",
+            "options": [
+              "Each password encrypted with a symmetric key kept on the same server",
+              "A salted hash of each password",
+              "Each password encrypted with the clinic's public key",
+              "The passwords in plain text inside Key Vault"
+            ],
+            "answer": 1,
+            "why": "A salted hash cannot be turned back into the password, and the salt stops lookup tables. Encryption is designed to be reversed, so anyone who also steals the key gets every password back. Storing passwords in any reversible form misses the point."
+          },
+          "key": "Encryption is reversible with a key, hashing is a one way fingerprint, and salted hashes are how passwords should be stored."
+        },
+        {
+          "title": "Governance, risk and compliance",
+          "steps": [
+            [
+              "Three linked disciplines",
+              "**GRC** stands for governance, risk and compliance. **Governance** is the set of rules and processes that direct the organisation, such as who approves admin access and how long records are kept. Risk and compliance work inside that structure."
+            ],
+            [
+              "Managing risk",
+              "**Risk management** means finding threats to the business, judging how likely and how harmful each is, then choosing a response: accept it, reduce it, transfer it (for example with insurance) or avoid it. The goal is informed choices, not zero risk. For Tui Bay, a lost laptop full of patient notes is a high impact risk worth reducing with encryption."
+            ],
+            [
+              "Meeting obligations",
+              "**Compliance** means following the laws, standards and contracts that apply to you, which depend on your industry, location and the kind of data you hold. Health privacy law applies to Tui Bay. Being compliant is not the same as being secure: an organisation can pass an audit and still have serious holes."
+            ],
+            [
+              "Where data lives and whose law applies",
+              "Three terms are easy to confuse. **Data residency** is about where data is physically stored. **Data sovereignty** means data is subject to the laws of the country where it is collected, held or processed. **Data privacy** is about handling personal information properly: being open about its use, getting consent where needed and respecting people's rights to see or correct it."
+            ]
+          ],
+          "check": {
+            "q": "Sam is asked which country's laws apply to patient notes stored in an overseas Azure region. Which concept is that question about?",
+            "options": [
+              "Data residency",
+              "Data sovereignty",
+              "Data classification",
+              "Data integrity"
+            ],
+            "answer": 1,
+            "why": "Which laws apply to data is data sovereignty. Data residency is the narrower question of where the data physically sits, which is the tempting answer because the two often come up together. Classification and integrity are unrelated."
+          },
+          "key": "Governance sets the rules, risk management chooses responses to threats, and compliance proves you follow the laws that apply."
+        },
+        {
+          "title": "Identity, authentication and authorisation",
+          "steps": [
+            [
+              "Identity is the new perimeter",
+              "Tui Bay's staff work from clinics, home and phones, using cloud apps that never touch the office network. A firewall around the back office no longer protects much. What every request does have is an **identity**, the set of details that defines a person, device or piece of software. That is why identity is now called the **primary security perimeter**."
+            ],
+            [
+              "Proving who you are",
+              "**Authentication** proves an identity is genuine. Evidence comes in three categories: something you know (a password), something you have (a phone or security key) and something you are (a fingerprint or face). **Multifactor authentication (MFA)** needs two or more different categories. A password plus a security question is still two things you know, so it is not MFA."
+            ],
+            [
+              "Deciding what you may do",
+              "**Authorisation** decides what an authenticated identity can reach and do, such as read but not delete. It is usually based on roles, permissions or attributes like department. Authentication always comes first, because you cannot check permissions until you know who is asking. Think of a hotel: showing ID at the desk is authentication, the room keycard is authorisation."
+            ],
+            [
+              "Four pillars of identity",
+              "A complete identity system covers four jobs: administration (creating and removing identities), authentication, authorisation and auditing (recording who did what and when). Identities are not only people. Devices, apps and scripts, and now AI agents, all have identities that need the same care."
+            ]
+          ],
+          "check": {
+            "q": "A physio signs in successfully but gets an error when opening the payroll folder. Which process stopped her?",
+            "options": [
+              "Authentication",
+              "Auditing",
+              "Federation",
+              "Authorisation"
+            ],
+            "answer": 3,
+            "why": "Her sign in worked, so authentication succeeded. Being refused a specific resource is authorisation doing its job. Auditing would only record the attempt, and federation is about trust between organisations."
+          },
+          "key": "Authentication proves who you are, authorisation decides what you can do, and identity is now the main perimeter."
+        },
+        {
+          "title": "Identity providers, single sign-on and directories",
+          "steps": [
+            [
+              "Hand sign in to a specialist",
+              "With **modern authentication**, apps stop keeping their own passwords. They send users to an **identity provider (IdP)**, a central service that checks credentials and MFA, then issues a time limited **security token**. The app trusts the IdP, checks the token and lets the user in. Microsoft Entra ID, Google and GitHub are examples of IdPs."
+            ],
+            [
+              "Tokens and protocols",
+              "A token carries **claims**, facts such as the user's ID, name and groups. An ID token tells an app who signed in. An access token lets an app call an API on the user's behalf. The standard protocols are **OpenID Connect** for sign in, **OAuth 2.0** for authorisation and **SAML** for many older enterprise apps."
+            ],
+            [
+              "One sign in, many apps",
+              "Because every app trusts the same IdP, a user who signs in once can reach them all. That is **single sign-on (SSO)**. For Tui Bay it means fewer passwords to reuse, MFA set once for every app, and one place to disable a leaver so their access ends everywhere at the same moment."
+            ],
+            [
+              "Directories and Active Directory",
+              "A **directory service** stores information about users, devices and groups and answers questions like which groups a user is in. Microsoft's long standing on premises version is **Active Directory Domain Services (AD DS)**, run on servers called domain controllers. It uses Group Policy and Kerberos for Windows PCs on a company network, but it was not built for cloud apps, phones or modern protocols, which is why Microsoft Entra ID exists."
+            ]
+          ],
+          "check": {
+            "q": "Tui Bay connects its booking, payroll and email apps to one identity provider. What is the biggest security gain when a staff member leaves?",
+            "options": [
+              "Disabling one account removes access to every connected app at once",
+              "Their passwords are automatically emailed to the manager",
+              "Each app keeps a copy of the account for audit",
+              "The leaver's devices are wiped automatically"
+            ],
+            "answer": 0,
+            "why": "With a central IdP and SSO, every app trusts the same account, so disabling it ends access everywhere. Without it, forgotten accounts in individual apps often stay active. An IdP does not wipe devices or share passwords."
+          },
+          "key": "An identity provider issues tokens that apps trust, which gives single sign-on and one place to control access."
+        },
+        {
+          "title": "Federation",
+          "steps": [
+            [
+              "Trust between organisations",
+              "**Federation** lets people use services across organisational boundaries by setting up trust between two separate identity providers. The user signs in with their own home IdP and never needs a new account in the other organisation. It works like a passport: one country issues it and others choose to accept it."
+            ],
+            [
+              "Trust has a direction",
+              "If Tui Bay's IdP trusts a partner's IdP, the partner's staff can reach Tui Bay's shared resources. That does not mean Tui Bay staff can reach the partner's resources. Trust is not automatically two way, and a two way trust must be set up on purpose."
+            ],
+            [
+              "Where you meet it",
+              "Common examples are business to business collaboration (a radiology partner's staff opening a shared workspace with their own work accounts), social sign in on customer apps (sign in with Google) and **Active Directory Federation Services (AD FS)**, which lets on premises AD DS users get tokens that cloud services accept. Standard protocols such as SAML and OpenID Connect make federation work between vendors."
+            ],
+            [
+              "Federation versus SSO",
+              "The two are easy to mix up. SSO means one sign in across many apps that all trust a single IdP. Federation means two different IdPs, usually in different organisations, trusting each other. Federation often produces an SSO experience, but the trust relationship is the defining part."
+            ]
+          ],
+          "check": {
+            "q": "Tui Bay sets its identity provider to trust a radiology partner's identity provider. What does that allow?",
+            "options": [
+              "Tui Bay staff can open the partner's systems with their Tui Bay accounts",
+              "Both organisations now share one directory",
+              "Partner staff can reach Tui Bay's shared resources using their own work accounts",
+              "Partner staff get new Tui Bay passwords"
+            ],
+            "answer": 2,
+            "why": "Tui Bay trusting the partner means Tui Bay accepts sign ins done by the partner's IdP, so partner staff get in with their own accounts. The reverse needs its own trust, which is the tempting wrong answer. No accounts or directories are merged."
+          },
+          "key": "Federation is trust between separate identity providers, and the trust only runs in the direction it was set up."
+        }
+      ]
+    },
+    {
+      "title": "Microsoft Entra",
+      "intro": "Microsoft Entra is the family of identity services that turns the concepts from module 1 into working products (about 25 to 30 percent of the exam). You will see how Tui Bay Physio gets its staff, devices and apps into Microsoft Entra ID, how they sign in safely, who gets which access, and how risky sign ins are caught.",
+      "lessons": [
+        {
+          "title": "Microsoft Entra ID and the tenant",
+          "steps": [
+            [
+              "Identity as a service",
+              "**Microsoft Entra ID**, formerly Azure Active Directory, is Microsoft's cloud identity and access service. Microsoft runs the infrastructure and Sam manages the users, groups, devices and apps. It handles sign in, issues tokens using OpenID Connect, OAuth 2.0 and SAML, and gives single sign-on to Microsoft 365, Azure and thousands of other apps."
+            ],
+            [
+              "The tenant",
+              "When Tui Bay signed up for Microsoft 365 it got a **tenant**: its own dedicated instance of Entra ID holding its users, groups, devices and app registrations. Everything in this module happens inside that tenant."
+            ],
+            [
+              "Not AD in the cloud",
+              "Entra ID is not AD DS moved online. It has no domain controllers, no organisational units and no Group Policy, and cloud apps do not use Kerberos to reach it. It was built for internet apps and phones from the start."
+            ],
+            [
+              "Editions",
+              "The **Free** edition comes with Microsoft cloud subscriptions and covers users, groups, SSO and security defaults. **P1** adds Conditional Access and dynamic groups. **P2** adds ID Protection and Privileged Identity Management. The wider Microsoft Entra family also includes ID Governance, External ID and Workload ID, among others."
+            ]
+          ],
+          "check": {
+            "q": "Sam wants to create Group Policy objects in Microsoft Entra ID to control clinic PCs, as he did on the old server. What should he understand?",
+            "options": [
+              "Group Policy is available only in the P2 edition",
+              "Entra ID applies Group Policy only to guests",
+              "Group Policy must be enabled in the tenant settings first",
+              "Entra ID is a cloud identity service and does not include Group Policy or domain controllers"
+            ],
+            "answer": 3,
+            "why": "Entra ID is not AD DS in the cloud. It has no Group Policy, organisational units or domain controllers. Device settings in the cloud come from other tools such as Microsoft Intune. No edition adds Group Policy."
+          },
+          "key": "Microsoft Entra ID is a cloud identity service, each organisation gets its own tenant, and it is not AD DS moved online."
+        },
+        {
+          "title": "Identity types, including workload identities",
+          "steps": [
+            [
+              "Users and groups",
+              "**Users** can be created directly in the cloud or copied from an on premises directory. They are gathered into **groups**: security groups for access and Microsoft 365 groups for shared mailboxes and Teams. Membership can be assigned by hand or **dynamic**, worked out from a rule such as department equals Reception."
+            ],
+            [
+              "People from outside",
+              "**Microsoft Entra External ID** handles people who are not staff. With **B2B collaboration**, Sam invites the radiology partner's staff as **guests**. A guest object appears in Tui Bay's directory, but the guest signs in with their own home account, so Sam never manages their password. A separate external tenant can serve customer facing apps, such as a patient booking portal with self service sign up."
+            ],
+            [
+              "Identities for software",
+              "Apps and scripts need identities too. These are **workload identities**. An **application registration** describes an app. A **service principal** is that app's identity inside one tenant, defining what it may reach. A **managed identity** is a service principal that Azure manages, so developers never store or rotate a secret: system assigned ones live and die with one resource, user assigned ones can be shared."
+            ],
+            [
+              "Device identities",
+              "Devices get identities as well. **Registered** suits personal phones that add a work account. **Joined** suits organisation owned Windows PCs that staff sign in to with their Entra account. **Hybrid joined** suits PCs still joined to an on premises domain. Once a device has an identity it can be checked for compliance before it is allowed in."
+            ]
+          ],
+          "check": {
+            "q": "Tui Bay's Azure booking app needs to read from a storage account without any password written in its code. What should it use?",
+            "options": [
+              "A guest account",
+              "A dynamic group",
+              "A managed identity",
+              "A shared admin password in a config file"
+            ],
+            "answer": 2,
+            "why": "A managed identity gives the app its own identity that Azure manages, with no secret to store or rotate. Guests are for outside people, dynamic groups organise users, and a password in a config file is exactly what managed identities exist to avoid."
+          },
+          "key": "Entra ID holds people, guests, devices and workload identities, and managed identities let Azure apps authenticate without stored secrets."
+        },
+        {
+          "title": "Hybrid identity",
+          "steps": [
+            [
+              "One identity in two places",
+              "Many organisations still run AD DS on premises. **Hybrid identity** gives each user one identity that works for both on premises and cloud resources. It depends on **synchronisation**, keeping the on premises and cloud copies of each account matched."
+            ],
+            [
+              "The sync tools",
+              "**Microsoft Entra Connect Sync** is software installed on an on premises server. It syncs accounts and also sets up how sign in works. **Microsoft Entra Cloud Sync** uses a light agent on premises with its settings held in the cloud, and can bring several separate directories into one tenant. For synced users, the on premises directory normally stays the place where changes are made."
+            ],
+            [
+              "Three ways to sign in",
+              "With **password hash synchronisation (PHS)**, a hash of the password hash is synced and Entra ID checks sign ins in the cloud. It needs the least infrastructure and keeps working if the office is offline. With **pass-through authentication (PTA)**, Entra ID passes each sign in to small agents that check it against on premises AD DS, so on premises rules apply instantly. With **federation**, sign in is handed to a separate system such as AD FS, which is the most complex to run."
+            ],
+            [
+              "Tui Bay's choice",
+              "Tui Bay still has a few domain joined PCs during the move. Sam picks Entra Connect Sync with PHS, because it is the simplest option and sign in still works if the back office server fails. PHS also lets ID Protection warn him if a staff password turns up in a public leak."
+            ]
+          ],
+          "check": {
+            "q": "Tui Bay wants staff to keep signing in to cloud apps even if the on premises server room loses power. Which sign in method suits that best?",
+            "options": [
+              "Password hash synchronisation",
+              "Pass-through authentication",
+              "Federation with AD FS",
+              "Group Policy"
+            ],
+            "answer": 0,
+            "why": "With PHS, Entra ID validates sign ins in the cloud, so the on premises servers are not needed at sign in time. PTA and AD FS both rely on on premises components, so an outage there blocks sign in. Group Policy is not a sign in method."
+          },
+          "key": "Hybrid identity syncs on premises accounts to Entra ID, and password hash sync, pass-through authentication or federation decides where sign in is checked."
+        },
+        {
+          "title": "Authentication methods and MFA",
+          "steps": [
+            [
+              "Beyond the password",
+              "Passwords are the most common and weakest method because they can be guessed, phished and reused. Entra ID also supports text message codes, voice calls, **Microsoft Authenticator** push notifications, one time codes from apps or hardware tokens (**OATH** tokens) and email codes for guests. Sam manages which ones are allowed in one place, the **authentication methods policy**."
+            ],
+            [
+              "Passwordless methods",
+              "**Windows Hello for Business** signs in with a PIN or face that opens a key stored on the PC, and the PIN never leaves the device. **Passkeys (FIDO2)** are key pairs on a security key or phone that only work on the genuine website, so a fake login page cannot reuse them. **Certificate based authentication** uses certificates such as smart cards. These three are called **phishing resistant**. A **Temporary Access Pass** is a time limited code that lets a new starter sign in and set up a passwordless method."
+            ],
+            [
+              "Requiring MFA",
+              "**Microsoft Entra MFA** asks for a second factor such as an Authenticator approval. **Number matching**, where the user types the number shown on screen, stops attackers who spam approval requests hoping someone taps yes. Microsoft rates Authenticator and passkeys above text and voice, which can be intercepted."
+            ],
+            [
+              "Security defaults",
+              "Not every organisation has P1 licences. **Security defaults** are a free baseline: everyone registers for MFA, admins use it every time, and old protocols that cannot do MFA are blocked. They are all or nothing, with no exceptions, and they cannot run alongside Conditional Access. Tui Bay starts on security defaults, then moves to Conditional Access once it buys P1."
+            ]
+          ],
+          "check": {
+            "q": "Tui Bay wants a sign in method that a convincing fake login page cannot steal and replay. Which should Sam choose?",
+            "options": [
+              "Text message codes",
+              "Passkeys (FIDO2)",
+              "Voice call approval",
+              "A longer password"
+            ],
+            "answer": 1,
+            "why": "A passkey is tied to the genuine website, so a phishing page cannot use it. Text and voice codes can be typed into a fake page or intercepted, which makes them weaker second factors. A longer password is still a password and can still be phished."
+          },
+          "key": "Passkeys, Windows Hello for Business and certificate based authentication are phishing resistant, and security defaults give free baseline MFA."
+        },
+        {
+          "title": "Password protection and self-service reset",
+          "steps": [
+            [
+              "Banning weak passwords",
+              "**Microsoft Entra Password Protection** checks every new password. A **global banned password list**, built by Microsoft from attack data, applies to everyone automatically. A **custom banned password list** lets Sam add terms attackers would guess for Tui Bay, such as the clinic name or local sports teams. Simple swaps like 0 for o are caught too."
+            ],
+            [
+              "Protecting on premises too",
+              "Small agents installed on domain controllers can apply the same banned lists when users change passwords in on premises AD DS. That stops a weak password being set on premises and then synced to the cloud."
+            ],
+            [
+              "Smart lockout",
+              "**Smart lockout** is always on. After repeated failed sign ins it locks the account for a short time, and it tries to tell the real user's familiar location apart from an attacker guessing from elsewhere. That slows down password guessing without locking out a physio who mistyped twice."
+            ],
+            [
+              "Self-service password reset",
+              "A password **change** means you know the old one. A **reset** means you forgot it. **Self-service password reset (SSPR)** lets users prove who they are with registered methods, such as an Authenticator code, and set a new password without calling Sam. With **password writeback**, a reset in the cloud is also written to on premises AD DS, so one new password works everywhere."
+            ]
+          ],
+          "check": {
+            "q": "Sam wants to stop staff choosing passwords like TuiBay2026. What should he configure?",
+            "options": [
+              "Smart lockout",
+              "Self-service password reset",
+              "A custom banned password list",
+              "Password writeback"
+            ],
+            "answer": 2,
+            "why": "A custom banned password list blocks organisation specific terms, and the checking also catches simple variations. Smart lockout slows guessing but does not stop a weak password being chosen. SSPR and writeback deal with resetting, not password quality."
+          },
+          "key": "Password Protection bans weak and guessable passwords, smart lockout slows guessing, and SSPR lets users reset safely on their own."
+        },
+        {
+          "title": "Conditional Access",
+          "steps": [
+            [
+              "If this, then that",
+              "**Conditional Access** is the Entra ID policy engine that puts Zero Trust's verify explicitly into practice. Each policy reads like a sentence: if a member of Finance opens payroll from outside a clinic, then require MFA. It needs the P1 licence."
+            ],
+            [
+              "Signals",
+              "The if part uses signals: which users or groups, which app, the device platform and whether it is compliant, the location by IP range or country, the type of client app, and with P2, how risky the sign in or user looks. Policies run after the first sign in step, so they are not a defence against floods of traffic."
+            ],
+            [
+              "Decisions",
+              "The then part is a decision. **Block access**, or **grant access** with requirements such as MFA, a phishing resistant method, a compliant or hybrid joined device, a password change or accepting terms of use. When several policies apply, all their requirements must be met, and a block always wins."
+            ],
+            [
+              "Session controls and safe rollout",
+              "**Session controls** shape what happens after sign in, such as how often users must sign in again, or routing the session through Defender for Cloud Apps to block downloads on personal devices. Sam runs new policies in **report only** mode first to see their effect, and excludes two emergency access accounts so a mistake cannot lock everyone out."
+            ]
+          ],
+          "check": {
+            "q": "Sam wants physios on personal phones to read patient notes in the browser but not download them. Which part of Conditional Access fits?",
+            "options": [
+              "A session control",
+              "A block access grant control",
+              "A named location",
+              "Security defaults"
+            ],
+            "answer": 0,
+            "why": "Session controls shape what users can do after sign in, such as blocking downloads through Defender for Cloud Apps. Blocking access would stop them reading notes at all. A named location is a signal, not an enforcement, and security defaults cannot do targeted rules."
+          },
+          "key": "Conditional Access combines signals into decisions to block, grant with requirements, or limit the session."
+        },
+        {
+          "title": "Microsoft Entra roles and RBAC",
+          "steps": [
+            [
+              "Roles instead of one-off grants",
+              "**Role based access control (RBAC)** gives permissions through roles rather than handing them out one by one. A **role assignment** has three parts: who gets it (a user, group or service principal), the **role definition** (a named set of permissions) and the **scope** (where it applies, such as the whole tenant or one administrative unit)."
+            ],
+            [
+              "Built-in Entra roles",
+              "Entra ID comes with **built in roles**. Some manage Entra itself, such as User Administrator or Helpdesk Administrator, who can reset passwords for ordinary users. Some manage one service, such as Exchange Administrator. Some span services, such as **Global Administrator**, which can do almost everything, and Global Reader, its read only twin. Built in roles cannot be edited, but **custom roles** can be built from the same permissions."
+            ],
+            [
+              "Least privilege for admins",
+              "Sam gives the clinic manager Helpdesk Administrator, not Global Administrator, because resetting passwords is all she needs. Microsoft advises fewer than five Global Administrators, cloud only accounts for admin roles, and two emergency access accounts kept aside for disasters."
+            ],
+            [
+              "Entra roles versus Azure roles",
+              "There are two RBAC systems with the same model. **Entra roles** control identity objects such as users, groups and apps. **Azure roles** such as Owner, Contributor and Reader control Azure resources like virtual machines and storage. Being Owner of Tui Bay's Azure subscription does not let Sam create users, and the reverse is also true."
+            ]
+          ],
+          "check": {
+            "q": "The Rotorua clinic manager needs to reset forgotten passwords for her staff. Which approach follows least privilege?",
+            "options": [
+              "Make her a Global Administrator",
+              "Give her the emergency access account password",
+              "Make her Owner of the Azure subscription",
+              "Assign her the Helpdesk Administrator role"
+            ],
+            "answer": 3,
+            "why": "Helpdesk Administrator covers password resets for non admin users and little else. Global Administrator works but gives far more power than she needs. Azure subscription roles do not manage Entra users, and emergency accounts are not for daily use."
+          },
+          "key": "RBAC assigns a role definition to a principal at a scope, and least privilege means the narrowest role that does the job."
+        },
+        {
+          "title": "Microsoft Entra ID Governance and access reviews",
+          "steps": [
+            [
+              "Joiners, movers, leavers",
+              "**Identity governance** makes sure the right people have the right access, for the right time, with proof for auditors. Its core is the **identity lifecycle**. A joiner needs accounts on day one, a mover needs access changed when they switch role, and a leaver needs access removed on their last day. **Lifecycle workflows** in **Microsoft Entra ID Governance** automate these steps from triggers such as a hire date."
+            ],
+            [
+              "Access packages",
+              "Handing out access one group at a time does not scale. **Entitlement management** bundles the groups, apps and sites someone needs into an **access package**. A policy on the package says who can request it, who approves, and when it expires. A new physio requests the Clinician package and gets everything at once, and a visiting contractor's package ends automatically."
+            ],
+            [
+              "Access creep",
+              "People collect access as they change jobs and rarely give it back. This is called **access creep**. **Access reviews** ask the right people, on a schedule, whether each person still needs their access. Reviewers can be group owners, managers or the users themselves."
+            ],
+            [
+              "Reviews that act",
+              "Reviews can cover group memberships, app assignments, access packages and admin roles, and can include guests. Sam sets a quarterly review of the radiology partner's guests, with the partner sponsor as reviewer, and turns on automatic removal so anyone denied loses access without manual work."
+            ]
+          ],
+          "check": {
+            "q": "Guests from the radiology partner keep their access long after projects end. What should Sam set up?",
+            "options": [
+              "A stronger password policy",
+              "A recurring access review of the guests with automatic removal of denied users",
+              "Password writeback",
+              "Security defaults"
+            ],
+            "answer": 1,
+            "why": "Access reviews regularly ask whether access is still needed and can remove it automatically, which is the cure for access creep. Password policy, writeback and security defaults all strengthen sign in but never take away access that is no longer needed."
+          },
+          "key": "ID Governance automates joiner, mover and leaver changes, bundles access into packages, and uses access reviews to remove access no longer needed."
+        },
+        {
+          "title": "Privileged Identity Management",
+          "steps": [
+            [
+              "Standing admin rights are risky",
+              "An admin account that always has full rights is valuable to an attacker every hour of every day. **Microsoft Entra Privileged Identity Management (PIM)** makes powerful roles **just in time**: available only when someone asks for them, and only for a limited time."
+            ],
+            [
+              "Eligible and active",
+              "In PIM a role assignment is either **eligible** or **active**. An eligible user holds no power until they **activate** the role. An active user has the permissions straight away. Either kind can be permanent or end on a set date."
+            ],
+            [
+              "Rules for activation",
+              "For each role Sam can set the longest activation time and require MFA, a written reason, a ticket number or approval from a named person. When he needs to change a Conditional Access policy, he activates Conditional Access Administrator for an hour, gives a reason, and the rights fall away afterwards."
+            ],
+            [
+              "Oversight",
+              "PIM sends notifications when roles are activated, keeps an audit history for auditors, runs access reviews of who holds roles, and raises alerts such as too many Global Administrators. It covers Entra roles, Azure resource roles and groups, and needs P2 or ID Governance licences."
+            ]
+          ],
+          "check": {
+            "q": "Sam makes the practice manager eligible for the User Administrator role in PIM. What happens when she signs in tomorrow?",
+            "options": [
+              "She has User Administrator rights all day",
+              "She has no admin rights until she activates the role and meets its requirements",
+              "Her account is blocked until an access review runs",
+              "She becomes a Global Administrator for one hour"
+            ],
+            "answer": 1,
+            "why": "Eligible means she must activate the role, meeting rules such as MFA or approval, before the rights apply. Having the rights straight away describes an active assignment. Eligibility does not block her account or raise her to Global Administrator."
+          },
+          "key": "PIM gives admin roles just in time: eligible users activate a role for a limited time with MFA, reasons or approval."
+        },
+        {
+          "title": "Microsoft Entra ID Protection",
+          "steps": [
+            [
+              "Spotting compromised accounts",
+              "**Microsoft Entra ID Protection** studies sign in signals across Microsoft to spot accounts that may be in an attacker's hands. It reports two kinds of risk, each rated low, medium or high."
+            ],
+            [
+              "Sign-in risk",
+              "**Sign in risk** asks whether this particular sign in looks wrong. Examples are an anonymous IP address such as Tor, **atypical travel** (two sign ins too far apart to travel between in time), unfamiliar sign in properties, a known malicious IP and password spray attempts."
+            ],
+            [
+              "User risk",
+              "**User risk** asks whether the account itself is likely compromised. The clearest example is **leaked credentials**: the user's username and password turned up in a public or dark web leak. Unusual activity and Microsoft threat intelligence also raise user risk, and so does an admin confirming the account is compromised."
+            ],
+            [
+              "Acting on risk",
+              "Risk feeds into Conditional Access. A medium sign in risk can require MFA, and passing it proves the real user is there and clears the risk. A high user risk can require a secure password change. Sam also reviews the risky users and risky sign ins reports and can confirm an account safe or compromised. Full detections need P2."
+            ]
+          ],
+          "check": {
+            "q": "ID Protection reports that a physio's username and password appear in a leaked list online. What kind of risk is this?",
+            "options": [
+              "Sign-in risk, because it concerns a sign in",
+              "Compliance risk",
+              "Device risk",
+              "User risk, because it suggests the account itself is compromised"
+            ],
+            "answer": 3,
+            "why": "Leaked credentials say the account is likely exposed, regardless of any one sign in, so they raise user risk. Sign in risk is about a particular attempt, such as one from Tor. Device and compliance risk are not ID Protection categories."
+          },
+          "key": "ID Protection rates sign in risk and user risk, and Conditional Access can demand MFA or a password change in response."
+        }
+      ]
+    },
+    {
+      "title": "Microsoft security solutions",
+      "intro": "This is the largest part of the exam (about 35 to 40 percent). It covers the Azure services that protect networks and secrets, Microsoft Defender for Cloud for cloud posture, Microsoft Sentinel for watching everything, and the Microsoft Defender XDR family that guards email, devices, apps and identities. Tui Bay Physio now runs its booking app and patient portal in Azure and uses Microsoft 365 for everything else, so each product has a real job to do.",
+      "lessons": [
+        {
+          "title": "Azure DDoS Protection and Web Application Firewall",
+          "steps": [
+            [
+              "Flooding a service",
+              "A **denial of service** attack tries to knock a service offline by using up its bandwidth or capacity. A **distributed denial of service (DDoS)** attack sends the traffic from thousands of hijacked machines at once, so blocking a single address does nothing. Tui Bay's patient booking portal is an obvious target."
+            ],
+            [
+              "Azure DDoS Protection",
+              "**Azure DDoS Protection** spots and absorbs floods at the network and transport layers (layers 3 and 4) using always on monitoring and the size of Microsoft's network. Basic infrastructure protection is automatic and free for everything in Azure with a public address. Paid tiers add tuning for your own resources, alerts, reports and access to Microsoft's rapid response team."
+            ],
+            [
+              "Attacks inside normal traffic",
+              "Some attacks look like ordinary web requests: SQL injection that tricks a database, or cross site scripting that plants code in a page. These are **layer 7** attacks, and DDoS Protection is not designed for them. Microsoft's answer is a web application firewall."
+            ],
+            [
+              "Azure Web Application Firewall",
+              "**Azure Web Application Firewall (WAF)** sits in front of web apps on Azure Application Gateway (regional) or Azure Front Door (at Microsoft's global edge). It uses managed rule sets that Microsoft keeps updated, plus custom rules on things like country or request rate. Sam runs it in **detection** mode first to see what it would block, then switches to **prevention**."
+            ]
+          ],
+          "check": {
+            "q": "Someone tries SQL injection against Tui Bay's booking portal. Which service is built to stop it?",
+            "options": [
+              "Azure Web Application Firewall",
+              "Azure DDoS Protection",
+              "A network security group",
+              "Azure Bastion"
+            ],
+            "answer": 0,
+            "why": "SQL injection is a layer 7 web attack, which is what WAF rule sets inspect. DDoS Protection deals with floods at layers 3 and 4, so it is the tempting but wrong choice. NSGs filter by address and port, and Bastion is for admin connections."
+          },
+          "key": "DDoS Protection absorbs network floods, and WAF blocks web attacks such as SQL injection at layer 7."
+        },
+        {
+          "title": "Virtual networks, NSGs and Azure Firewall",
+          "steps": [
+            [
+              "Segmenting the network",
+              "**Segmentation** splits a network into zones so a problem in one zone cannot spread. An **Azure virtual network (VNet)** is a private, isolated network in one region, and separate VNets cannot talk by default. **Subnets** divide a VNet. Sam puts Tui Bay's web front end, app logic and database in separate subnets so the database only accepts traffic from the app tier."
+            ],
+            [
+              "Network security groups",
+              "A **network security group (NSG)** is a list of allow and deny rules based on source, destination, port and protocol, attached to a subnet or a network card. Rules are checked in priority order, lowest number first, and checking stops at the first match. NSGs are **stateful**, so replies to allowed traffic are let back in automatically."
+            ],
+            [
+              "Default NSG rules",
+              "Every NSG has default rules that cannot be deleted: traffic inside the VNet is allowed, outbound internet is allowed, and all other inbound traffic is denied. Sam's own rules, with lower priority numbers, take effect before them."
+            ],
+            [
+              "Azure Firewall",
+              "**Azure Firewall** is a managed, central firewall service that Microsoft runs and scales. It usually sits in a hub network that all other networks route through, so one policy covers everything. Unlike an NSG it understands domain names, so Sam can allow outbound traffic only to approved websites, and it can use Microsoft threat intelligence to block known bad addresses."
+            ]
+          ],
+          "check": {
+            "q": "Sam wants one central place to allow the booking servers to reach only a short list of approved websites by name. What should he use?",
+            "options": [
+              "A network security group on each subnet",
+              "VNet peering",
+              "Azure Firewall with application rules",
+              "Azure DDoS Protection"
+            ],
+            "answer": 2,
+            "why": "Azure Firewall is central and can filter outbound traffic by domain name. NSGs work on IP addresses and ports and are attached per subnet or card, so they cannot filter by website name. Peering connects networks and DDoS Protection handles floods."
+          },
+          "key": "VNets and subnets segment workloads, NSGs filter by address and port, and Azure Firewall gives central filtering that understands domain names."
+        },
+        {
+          "title": "Azure Bastion and Azure Key Vault",
+          "steps": [
+            [
+              "The open admin port problem",
+              "Admins manage servers with remote desktop (RDP) or SSH. Opening those ports to the internet invites constant scanning and password guessing. Tui Bay's previous IT provider did exactly that on the old server."
+            ],
+            [
+              "Azure Bastion",
+              "**Azure Bastion** is deployed into its own subnet in the virtual network. Sam signs in to the Azure portal, picks a VM and connects through his browser over an encrypted connection on port 443. Bastion then opens RDP or SSH to the VM's private address. The VMs need no public IP at all, and NSGs can refuse admin traffic from anywhere except Bastion."
+            ],
+            [
+              "Secrets in code",
+              "Developers often paste passwords and connection strings into code or config files, where they leak through file shares and code history. **Azure Key Vault** stores three kinds of object centrally: **secrets** (passwords, API keys), **keys** (for encryption and signing) and **certificates** (for HTTPS sites)."
+            ],
+            [
+              "Who can read the vault",
+              "Access to Key Vault is checked with Entra ID and controlled with Azure RBAC roles, such as one that can read secret values and one that can only see their names. Tui Bay's booking app reads its database password through a managed identity, so no credential is stored anywhere. **Soft delete** keeps deleted items recoverable for a period, and **purge protection** stops anyone wiping them permanently before that period ends."
+            ]
+          ],
+          "check": {
+            "q": "Sam needs to manage a Windows VM without giving it a public IP address or opening RDP to the internet. What should he deploy?",
+            "options": [
+              "Azure Key Vault",
+              "A VPN on every physio's laptop",
+              "Azure Web Application Firewall",
+              "Azure Bastion"
+            ],
+            "answer": 3,
+            "why": "Bastion lets admins reach VMs over their private addresses through the browser, so no public IP or open RDP port is needed. Key Vault stores secrets and WAF protects websites. A VPN could work but is not the purpose built answer and adds far more to manage."
+          },
+          "key": "Bastion removes public admin ports from VMs, and Key Vault keeps secrets, keys and certificates out of code."
+        },
+        {
+          "title": "Microsoft Defender for Cloud and CSPM",
+          "steps": [
+            [
+              "Two questions about cloud security",
+              "Securing cloud resources means asking two things: is it configured safely, and is it being attacked right now? **Microsoft Defender for Cloud** answers both, and also checks the code that deploys resources. Microsoft calls this combination a cloud native application protection platform."
+            ],
+            [
+              "What posture means",
+              "**Posture** is how well your environment is set up: open management ports, storage open to the public, missing MFA, unpatched machines. Most cloud breaches start from mistakes like these rather than clever exploits. **Cloud security posture management (CSPM)** is the practice of finding and fixing them continuously."
+            ],
+            [
+              "Free and paid CSPM",
+              "**Foundational CSPM** is free. It assesses resources, lists **recommendations** with steps to fix them and calculates a **secure score**. **Defender CSPM** is a paid plan that adds, among other things, **attack path analysis**, which shows a chain an attacker could follow, such as an internet facing VM with a flaw that can reach a storage account full of patient notes."
+            ],
+            [
+              "Beyond Azure",
+              "Defender for Cloud can also connect to AWS and Google Cloud accounts and assess them alongside Azure, and it can cover on premises servers through Azure Arc. It can connect to code repositories to flag misconfigured templates and secrets left in code. Sam sees one prioritised list instead of several consoles."
+            ]
+          ],
+          "check": {
+            "q": "Sam wants to know which of Tui Bay's Azure resources are misconfigured, such as storage left open to the internet. Which capability answers that?",
+            "options": [
+              "Defender for Office 365 Safe Links",
+              "Microsoft Sentinel playbooks",
+              "Cloud security posture management in Defender for Cloud",
+              "Azure Bastion"
+            ],
+            "answer": 2,
+            "why": "CSPM continuously assesses configuration and produces recommendations to fix weaknesses. Sentinel playbooks automate responses to incidents, Safe Links checks email links and Bastion handles admin connections, so none of them assess cloud configuration."
+          },
+          "key": "Defender for Cloud covers posture and active threats, and CSPM finds misconfigurations before attackers do."
+        },
+        {
+          "title": "Policies, standards, recommendations and secure score",
+          "steps": [
+            [
+              "Standards define good",
+              "A **security standard** is a list of what good looks like. Defender for Cloud applies the **Microsoft cloud security benchmark** by default. With a paid plan, Sam can add regulatory standards such as ISO 27001 and track them on a compliance dashboard, or build a custom standard from chosen checks."
+            ],
+            [
+              "From policy to recommendation",
+              "A **security policy** assigns standards to a scope such as a subscription, and in Azure it is enforced using Azure Policy. Defender for Cloud assesses each resource against each control. A resource that fails is marked unhealthy and a **recommendation** appears with the issue, the affected resources, the severity and the steps to fix it."
+            ],
+            [
+              "Fixing at scale",
+              "Sam can fix an issue by hand, use a quick fix button, or set enforce or deny so new resources cannot be created in the bad state. When a finding is a deliberate, accepted exception, he records an **exemption** rather than ignoring it."
+            ],
+            [
+              "Secure score",
+              "**Secure score** turns posture into one number to track over time. Recommendations are grouped into controls, such as enable MFA, and a control's points come in full only when all its recommendations are fixed on all resources. The potential increase shown on each control tells Sam which fix improves posture most, which helps when time is short."
+            ]
+          ],
+          "check": {
+            "q": "Sam has an hour this week for cloud security. How can secure score help him choose what to fix first?",
+            "options": [
+              "It shows the potential score increase for each control, pointing to the most valuable fixes",
+              "It lists every attacker currently active in the tenant",
+              "It automatically fixes the lowest scoring resources",
+              "It replaces the need for recommendations"
+            ],
+            "answer": 0,
+            "why": "Each control shows how much the score would rise if fixed, so Sam can pick the biggest improvement. Secure score measures posture, it does not track attackers or fix things by itself, and it is built from recommendations rather than replacing them."
+          },
+          "key": "Standards are assigned through policies, failed checks become recommendations, and secure score shows which fixes matter most."
+        },
+        {
+          "title": "Cloud workload protection",
+          "steps": [
+            [
+              "Detecting attacks in progress",
+              "Good posture reduces weaknesses, but attackers still try. **Cloud workload protection** watches running resources and raises **security alerts** when it sees suspicious behaviour. In Defender for Cloud these are the paid **Defender plans**, which Microsoft calls enhanced security features, usually switched on per subscription."
+            ],
+            [
+              "The plans",
+              "There are plans for each kind of workload: **Defender for Servers**, **Defender for Storage** (including malware scanning of uploads), **Defender for Databases**, **Defender for Containers**, Defender for App Service, Defender for Key Vault (unusual access to the vault), Defender for Resource Manager (suspicious management actions), Defender for APIs, and threat protection for AI workloads."
+            ],
+            [
+              "Defender for Servers",
+              "Defender for Servers Plan 1 brings in Microsoft Defender for Endpoint to detect attacks on servers. Plan 2 adds more, including vulnerability scanning without an agent, file integrity monitoring and **just in time VM access**: admin ports stay closed until an approved user asks, then open only for that user's IP address for a limited time."
+            ],
+            [
+              "From alert to incident",
+              "Each alert describes the threat, the resource, the attacker technique and how to respond. Related alerts are grouped into incidents. When someone uploads a malicious file to the patient portal's storage, Defender for Storage flags it, and the alert can flow on to Microsoft Sentinel and the Defender portal."
+            ]
+          ],
+          "check": {
+            "q": "Tui Bay's posture is good, but Sam wants to be alerted if someone starts accessing the Key Vault in an unusual way. What should he enable?",
+            "options": [
+              "Foundational CSPM",
+              "The Defender for Key Vault plan",
+              "A Key Vault soft delete setting",
+              "A WAF custom rule"
+            ],
+            "answer": 1,
+            "why": "Detecting active suspicious behaviour is workload protection, here the Defender for Key Vault plan. Foundational CSPM finds misconfigurations but does not watch for attacks in progress. Soft delete recovers deleted items, and WAF protects web apps."
+          },
+          "key": "Defender plans add threat detection for running workloads, while CSPM handles configuration."
+        },
+        {
+          "title": "SIEM, SOAR and Microsoft Sentinel",
+          "steps": [
+            [
+              "Too many consoles",
+              "Logs come from firewalls, servers, sign ins, email and laptops. Looking at each console separately is slow and misses attacks that cross several. A **security information and event management (SIEM)** system collects all those logs in one place, puts them in a common format, connects related events using rules, and raises alerts and incidents."
+            ],
+            [
+              "Responding automatically",
+              "**Security orchestration, automation and response (SOAR)** acts on what the SIEM finds. It connects tools such as ticketing, email and identity, and runs repeatable steps called **playbooks** without waiting for a person, such as disabling an account or blocking an address."
+            ],
+            [
+              "Microsoft Sentinel collects and detects",
+              "**Microsoft Sentinel** provides SIEM and SOAR as one cloud service, so there is no hardware to buy. **Data connectors** bring in logs from Microsoft and other sources, and the data is searched with **KQL** (Kusto Query Language). **Analytics rules** run queries to raise alerts and group them into **incidents**. **Workbooks** are dashboards, and threat intelligence and watchlists add context."
+            ],
+            [
+              "Investigate, hunt, respond",
+              "Analysts work incidents using a graph of the users, devices and addresses involved. **Threat hunting** means searching proactively for attackers before any alert fires. **Automation rules** handle routine tasks such as assigning an incident, and **playbooks** built on **Azure Logic Apps** take action. For Tui Bay's small team, a playbook that disables a user and messages Sam on Teams saves precious minutes."
+            ]
+          ],
+          "check": {
+            "q": "When Sentinel raises an incident for a compromised account, Tui Bay wants the account disabled and Sam notified without anyone clicking anything. Which Sentinel feature does that?",
+            "options": [
+              "A workbook",
+              "A data connector",
+              "A playbook",
+              "A hunting query"
+            ],
+            "answer": 2,
+            "why": "Playbooks are the SOAR part of Sentinel and carry out actions automatically using Logic Apps. Workbooks only display data, connectors bring data in, and hunting queries are for analysts searching by hand."
+          },
+          "key": "A SIEM collects and correlates logs, SOAR acts on them, and Microsoft Sentinel provides both, with playbooks built on Logic Apps."
+        },
+        {
+          "title": "Microsoft Defender XDR",
+          "steps": [
+            [
+              "Extended detection and response",
+              "**XDR**, extended detection and response, combines signals from several areas instead of each product alerting alone. **Microsoft Defender XDR** brings together Defender for Endpoint (devices), Defender for Office 365 (email and collaboration), Defender for Identity (on premises Active Directory), Defender for Cloud Apps (SaaS apps) and Defender Vulnerability Management."
+            ],
+            [
+              "One attack, one incident",
+              "Real attacks cross areas: a phishing email, then malware on a laptop, then a stolen password used against a server. Defender XDR stitches those alerts into one **incident** that tells the full story, and can respond across products, for example removing the email, isolating the laptop and disabling the user."
+            ],
+            [
+              "Automation that buys time",
+              "**Automated investigation and response** examines alerts, decides whether evidence is malicious and fixes it, with actions reviewed in the Action center. **Automatic attack disruption** goes further for high confidence attacks such as ransomware in progress, containing the device or disabling the user so the team has time to act. Every automatic action can be undone."
+            ],
+            [
+              "XDR and SIEM together",
+              "XDR gives deep, built in protection for Microsoft products. A SIEM such as Sentinel takes data from almost anything. Microsoft brings both together in the Defender portal, so Tui Bay's incidents from Microsoft 365 and from other sources sit in one queue."
+            ]
+          ],
+          "check": {
+            "q": "A phishing email led to malware on a laptop and then a suspicious sign in. What does Defender XDR do with the three separate alerts?",
+            "options": [
+              "Correlates them into one incident showing the whole attack",
+              "Keeps them in three product consoles",
+              "Deletes the older alerts",
+              "Sends them only to the compliance team"
+            ],
+            "answer": 0,
+            "why": "Correlating alerts from email, endpoint and identity into one incident is the core value of XDR. Keeping them in separate consoles is exactly the problem XDR solves. It does not delete alerts or route them to compliance."
+          },
+          "key": "Defender XDR joins alerts from email, devices, identities and apps into single incidents and can respond across all of them."
+        },
+        {
+          "title": "Microsoft Defender for Office 365",
+          "steps": [
+            [
+              "The built-in baseline",
+              "Every Microsoft 365 mailbox gets **Exchange Online Protection (EOP)**: anti malware, anti spam, basic anti phishing and quarantine. It also includes **zero hour auto purge**, which pulls a malicious email out of inboxes after delivery when it is later found to be bad."
+            ],
+            [
+              "Plan 1: new and targeted threats",
+              "**Microsoft Defender for Office 365 Plan 1** adds **Safe Attachments**, which opens unknown attachments in an isolated test environment before delivery to see what they do, and also checks files in SharePoint, OneDrive and Teams. **Safe Links** checks each link at the moment someone clicks it, so a link that turns malicious after the email arrived is still blocked. It also adds impersonation protection against fake bosses and lookalike domains."
+            ],
+            [
+              "Plan 2: investigate and respond",
+              "Plan 2 is for teams that investigate. **Threat Explorer** searches all email by sender, link or attachment and lets analysts remove messages. **Campaigns** show related phishing emails as one campaign. Automated investigation handles reported phish, and **attack simulation training** sends safe, realistic phishing tests and assigns training to people who fall for them."
+            ],
+            [
+              "At Tui Bay",
+              "An email pretending to be from the practice owner asks reception to pay an urgent invoice. Impersonation protection flags it. Months later Sam runs a simulated phishing campaign and assigns a short course to the three staff who clicked."
+            ]
+          ],
+          "check": {
+            "q": "A link in an email was safe when delivered but points to a phishing site two hours later. Which feature still protects the physio who clicks it?",
+            "options": [
+              "Safe Attachments",
+              "Exchange Online Protection spam filter",
+              "Attack simulation training",
+              "Safe Links"
+            ],
+            "answer": 3,
+            "why": "Safe Links checks the link at click time, so a link that changed after delivery is still caught. Safe Attachments tests attachments, not links. Attack simulation is training, and the spam filter judged the email only at delivery."
+          },
+          "key": "Defender for Office 365 adds Safe Attachments, Safe Links and impersonation protection, and Plan 2 adds investigation tools and attack simulation."
+        },
+        {
+          "title": "Defender for Endpoint and Defender Vulnerability Management",
+          "steps": [
+            [
+              "Protecting devices",
+              "**Microsoft Defender for Endpoint** protects laptops, desktops, servers and phones using sensors built into Windows and agents for other systems. **Attack surface reduction** shrinks the ways in, for example rules that stop Office apps launching other programs. **Next generation protection** is Microsoft Defender Antivirus with cloud based detection."
+            ],
+            [
+              "Detection and response",
+              "**Endpoint detection and response (EDR)** records detailed device activity and spots advanced attacks that slip past antivirus. Analysts can **isolate a device**, cutting it off the network while it stays connected to Defender so they can keep investigating. Plan 1 covers prevention, and Plan 2 adds EDR, automated investigation and hunting."
+            ],
+            [
+              "Continuous vulnerability management",
+              "Traditional scanners run on a schedule. **Microsoft Defender Vulnerability Management** works continuously using the Defender for Endpoint sensors already on devices. It keeps an inventory of devices and software, finds known vulnerabilities and weak settings, and ranks them by real risk, such as whether a flaw is being exploited in the wild and how important the device is."
+            ],
+            [
+              "Getting fixes done",
+              "From a finding Sam can raise a remediation request, which can open a task for whoever manages the devices, or record an accepted exception. The vulnerable copy of a PDF reader on the reception PCs rises to the top of his list because attackers are actively using that flaw."
+            ]
+          ],
+          "check": {
+            "q": "A reception PC shows signs of ransomware. Sam wants it off the network immediately but still reachable for investigation. Which action fits?",
+            "options": [
+              "Run a secure score assessment",
+              "Isolate the device in Defender for Endpoint",
+              "Add the PC to an access review",
+              "Block the user in Conditional Access only"
+            ],
+            "answer": 1,
+            "why": "Device isolation cuts the PC off the network while keeping its connection to the Defender service for investigation. Secure score and access reviews do not contain an attack, and blocking the user leaves the infected machine on the network."
+          },
+          "key": "Defender for Endpoint prevents, detects and contains device attacks, and Defender Vulnerability Management continuously finds and ranks weaknesses."
+        },
+        {
+          "title": "Microsoft Defender for Cloud Apps",
+          "steps": [
+            [
+              "What a CASB does",
+              "A **cloud access security broker (CASB)** sits between users and cloud services to apply security rules. Microsoft describes four jobs: visibility (which apps are in use), data security, threat protection and compliance. **Microsoft Defender for Cloud Apps** is Microsoft's CASB."
+            ],
+            [
+              "Finding shadow IT",
+              "**Shadow IT** is cloud apps staff use without IT knowing, such as a free file sharing site for big MRI images. **Cloud Discovery** reads firewall and proxy logs, or uses Defender for Endpoint on devices, to list the apps in use. Each is matched to a catalogue with a risk score. Sam marks apps **sanctioned** or **unsanctioned**, and unsanctioned ones can be blocked on managed devices."
+            ],
+            [
+              "Controlling sessions",
+              "Working with Conditional Access, Defender for Cloud Apps can sit in the middle of a browser session as a **reverse proxy**. **Session policies** then watch activity in real time and can, for example, block downloads of patient files on unmanaged phones. **App connectors** use a SaaS app's own interface to scan files and activity without any agent."
+            ],
+            [
+              "Apps that act for users",
+              "Many apps ask users for permission to read their mail or files. **App governance** watches these connected apps' permissions and behaviour and flags ones that are overprivileged, unused or acting oddly. Defender for Cloud Apps also checks SaaS app settings against good practice, and its alerts feed Defender XDR incidents."
+            ]
+          ],
+          "check": {
+            "q": "Sam suspects staff are using unapproved file sharing websites to send scans. Which capability finds out?",
+            "options": [
+              "Defender for Identity sensors",
+              "Cloud Discovery in Defender for Cloud Apps",
+              "Azure DDoS Protection",
+              "Compliance Manager"
+            ],
+            "answer": 1,
+            "why": "Cloud Discovery analyses traffic to list the cloud apps in use and rate their risk, which is how shadow IT is found. Defender for Identity watches Active Directory, DDoS Protection stops floods and Compliance Manager tracks regulatory controls."
+          },
+          "key": "Defender for Cloud Apps is Microsoft's CASB: it finds shadow IT, controls sessions and watches connected apps."
+        },
+        {
+          "title": "Defender for Identity and Microsoft Threat Intelligence",
+          "steps": [
+            [
+              "Guarding Active Directory",
+              "Many attacks end with the attacker controlling Active Directory. **Microsoft Defender for Identity** places **sensors** on domain controllers and related servers. They read local traffic and events, learn normal behaviour and send the relevant signals to the cloud."
+            ],
+            [
+              "What it catches",
+              "It detects each stage of an identity attack: **reconnaissance** (mapping users and groups), **compromised credentials** (brute force guessing), **lateral movement** (reusing stolen password hashes to hop between machines) and **domain dominance** (taking control of the directory). It also shows **lateral movement paths**, how an attacker could hop from an ordinary account to a sensitive one. Tui Bay keeps its last domain controller covered until it is retired."
+            ],
+            [
+              "What threat intelligence is",
+              "**Threat intelligence** is knowledge about attackers: who they are, how they work and the signs they leave, such as addresses, domains and file hashes. Microsoft gathers it from the huge volume of signals it sees across its products."
+            ],
+            [
+              "Using Microsoft Threat Intelligence",
+              "In the Defender portal, **threat analytics** reports written by Microsoft researchers describe active threats, show whether your devices are exposed and list recommended actions. The threat intelligence pages let analysts look up an address or domain during an investigation. Microsoft names nation state groups after weather, such as Typhoon and Blizzard, and uses Storm with a number for emerging groups."
+            ]
+          ],
+          "check": {
+            "q": "Sam wants alerts if an attacker on the network starts mapping user accounts and groups in Tui Bay's on premises Active Directory. What should he use?",
+            "options": [
+              "Azure Firewall",
+              "Microsoft Defender for Office 365",
+              "Microsoft Entra Password Protection",
+              "Microsoft Defender for Identity"
+            ],
+            "answer": 3,
+            "why": "Defender for Identity sensors on domain controllers detect reconnaissance like user and group enumeration. Defender for Office 365 protects email, Password Protection blocks weak passwords and Azure Firewall filters cloud network traffic, none of which watch Active Directory behaviour."
+          },
+          "key": "Defender for Identity watches on premises Active Directory for attacks, and Microsoft Threat Intelligence explains who is attacking and how."
+        },
+        {
+          "title": "The Microsoft Defender portal",
+          "steps": [
+            [
+              "One place for security operations",
+              "The **Microsoft Defender portal** at security.microsoft.com brings together work that used to need many consoles. For a small team like Tui Bay's, having one screen matters more than any single feature."
+            ],
+            [
+              "What you find there",
+              "The **incidents and alerts** queue gathers correlated incidents from every Defender product, Entra ID Protection, Purview and Defender for Cloud. **Advanced hunting** lets analysts search raw data with KQL and turn useful queries into custom detections. The **Action center** lists pending and completed automatic fixes, and threat analytics sits under threat intelligence."
+            ],
+            [
+              "Posture and exposure",
+              "**Microsoft Secure Score** in the portal measures posture across identities, devices, apps and data and suggests improvement actions. **Exposure management** covers the attack surface and vulnerability management. Microsoft Sentinel also lives in the Defender portal, so SIEM and XDR share one incident queue."
+            ],
+            [
+              "Who can do what",
+              "Defender XDR **unified role based access control** manages permissions across the Defender products in one place, alongside Entra roles such as Security Reader. Compliance tools such as sensitivity labels and eDiscovery are not here: they live in the Microsoft Purview portal, which the next module covers."
+            ]
+          ],
+          "check": {
+            "q": "Sam wants to create sensitivity labels for patient documents. Where should he go?",
+            "options": [
+              "The Microsoft Purview portal",
+              "The Microsoft Defender portal",
+              "The Azure portal's Bastion page",
+              "The Service Trust Portal"
+            ],
+            "answer": 0,
+            "why": "Sensitivity labels are a compliance feature managed in the Microsoft Purview portal. The Defender portal is for security operations such as incidents and hunting, which makes it the tempting wrong answer. Bastion and the Service Trust Portal have nothing to do with labels."
+          },
+          "key": "The Defender portal unifies incidents, hunting, Secure Score and Sentinel, while compliance tools live in the Purview portal."
+        }
+      ]
+    },
+    {
+      "title": "Microsoft compliance solutions",
+      "intro": "Security keeps attackers out. Compliance proves you handle data the way laws and policies require (about 20 to 25 percent of the exam). This module covers Microsoft's own evidence and privacy promises, then Microsoft Purview: tracking compliance, finding and labelling sensitive data, stopping leaks, keeping and deleting records, and investigating people and events. Tui Bay Physio holds health records, so every tool here answers a question an auditor or patient might ask.",
+      "lessons": [
+        {
+          "title": "Service Trust Portal and Microsoft's privacy principles",
+          "steps": [
+            [
+              "Evidence about Microsoft",
+              "When an auditor asks Tui Bay how it knows Microsoft 365 is secure, Sam goes to the **Service Trust Portal**. It holds Microsoft's audit reports and certifications (such as ISO/IEC and SOC reports), penetration test and security assessment summaries, whitepapers, and industry and regional material such as healthcare resources. It is Microsoft's half of the shared responsibility model, in writing."
+            ],
+            [
+              "Using the portal",
+              "Some documents are public. Most need a sign in with a work account and acceptance of Microsoft's terms for compliance material. **My Library** lets Sam save documents and get notified when new versions appear. The portal is evidence about Microsoft, and it does not make Tui Bay's own tenant compliant."
+            ],
+            [
+              "The privacy principles",
+              "Microsoft states its cloud privacy commitments as principles. **You control your data**: it belongs to you, you can access or delete it, and Microsoft uses it only to provide the service, not for advertising. **You know where it is located**, through choices of storage geography. **It is secured** at rest and in transit with encryption. **Microsoft defends it**, redirecting government requests to the customer where the law allows."
+            ],
+            [
+              "Why this matters to Tui Bay",
+              "Patients trust Tui Bay with health information, and Tui Bay trusts Microsoft with it in turn. The privacy principles tell Sam what Microsoft promises, so he can explain to the practice owner what remains Tui Bay's job: deciding who sees notes and how long they are kept."
+            ]
+          ],
+          "check": {
+            "q": "An auditor asks for Microsoft's latest independent audit report for Microsoft 365. Where does Sam find it?",
+            "options": [
+              "Compliance Manager",
+              "Activity explorer",
+              "The Service Trust Portal",
+              "The Microsoft Defender portal"
+            ],
+            "answer": 2,
+            "why": "The Service Trust Portal publishes Microsoft's audit reports and certifications. Compliance Manager tracks Tui Bay's own controls, which makes it the tempting answer, but it is not where Microsoft's reports are downloaded. Activity explorer and the Defender portal are unrelated."
+          },
+          "key": "The Service Trust Portal proves Microsoft's side, and Microsoft's privacy principles say customers control their data and know where it lives."
+        },
+        {
+          "title": "The Purview portal and Compliance Manager",
+          "steps": [
+            [
+              "Microsoft Purview",
+              "**Microsoft Purview** is Microsoft's family of data security, data governance and compliance tools. They are managed in the **Microsoft Purview portal**, which groups solutions into areas such as data security (information protection, data loss prevention, insider risk), data governance and risk and compliance (Compliance Manager, eDiscovery, Audit). The portal only shows solutions your role and licence allow."
+            ],
+            [
+              "Compliance Manager",
+              "**Compliance Manager** helps Tui Bay track its own obligations. It offers many prebuilt **regulation templates**, such as ISO/IEC 27001 and NIST frameworks, and custom ones. An **assessment** applies a template's controls to the services in scope. Every tenant starts with a default data protection baseline assessment."
+            ],
+            [
+              "Who owns each control",
+              "Controls come in three kinds. **Microsoft managed** controls are carried out by Microsoft, and you can see the test results. **Your controls** are carried out by your organisation. **Shared** controls need both. This is the shared responsibility model turned into a checklist."
+            ],
+            [
+              "Improvement actions",
+              "**Improvement actions** tell you what to do to meet a control. Technical actions change a setting, such as turning on MFA. Nontechnical actions are documentation (writing a policy) or operational (running staff training). Sam can assign actions to owners, attach evidence for auditors, and many technical actions are tested automatically."
+            ]
+          ],
+          "check": {
+            "q": "In Compliance Manager, a control for physical datacentre security shows as Microsoft managed. What does that mean for Tui Bay?",
+            "options": [
+              "Tui Bay must implement it and upload evidence",
+              "Both must sign it off together",
+              "It is not counted toward any assessment",
+              "Microsoft implements it and Tui Bay can view the results"
+            ],
+            "answer": 3,
+            "why": "Microsoft managed controls are implemented by Microsoft for its cloud, and customers can see implementation details and test results. Customer and shared controls are the ones Tui Bay must act on. Microsoft managed actions do count toward scores."
+          },
+          "key": "Compliance Manager turns regulations into assessments of Microsoft managed, customer and shared controls, with improvement actions to close gaps."
+        },
+        {
+          "title": "Compliance score",
+          "steps": [
+            [
+              "One number for progress",
+              "**Compliance score** shows overall progress on improvement actions in Compliance Manager. Points are earned when actions are implemented and tested. The practice owner can see at a glance where Tui Bay stands without reading every control."
+            ],
+            [
+              "Not all actions are equal",
+              "Each action is rated by type and enforcement. **Preventative** actions stop problems, **detective** actions find them and **corrective** actions fix them. **Mandatory** actions cannot be bypassed, such as an enforced password rule, while **discretionary** ones rely on people following a policy. A mandatory preventative action is worth far more points than a discretionary detective one."
+            ],
+            [
+              "Where the starting score comes from",
+              "The initial score comes from the default data protection baseline assessment. Microsoft managed actions count from the start, so a new tenant does not begin at zero."
+            ],
+            [
+              "Uses and limits",
+              "Compliance score helps Sam prioritise the actions with the biggest effect and show progress to auditors and leadership. It is not the same as **Microsoft Secure Score**, which measures security posture of identities, devices and apps in the Defender portal. A high compliance score is not a guarantee of compliance with any law."
+            ]
+          ],
+          "check": {
+            "q": "Which improvement action would usually add the most points to Tui Bay's compliance score?",
+            "options": [
+              "A discretionary detective action",
+              "A discretionary corrective action",
+              "A mandatory preventative action",
+              "Every action is worth the same"
+            ],
+            "answer": 2,
+            "why": "Preventative actions that cannot be bypassed carry the most weight because they stop problems reliably. Discretionary and detective actions are worth less, so treating all actions as equal misses how the score prioritises."
+          },
+          "key": "Compliance score weights actions by type and enforcement, with mandatory preventative actions counting most, and it differs from Secure Score."
+        },
+        {
+          "title": "Data classification and the explorers",
+          "steps": [
+            [
+              "Find it before you protect it",
+              "You cannot protect sensitive data until you know where it is. **Data classification** in Purview starts with **sensitive information types**: patterns such as credit card or national health numbers, checked with supporting keywords and a confidence level. Microsoft supplies many built in types. Tui Bay can add custom ones, such as its own patient ID format, or exact data match, which compares content against real values from a table."
+            ],
+            [
+              "Trainable classifiers",
+              "Some content has no neat pattern. A referral letter does not contain a fixed number. **Trainable classifiers** use machine learning to recognise categories of document. Microsoft provides pretrained ones, such as resumes and source code, and Tui Bay can train its own by giving examples of referral letters."
+            ],
+            [
+              "Content explorer",
+              "**Content explorer** answers what sensitive data you have and where it is now. It shows a current snapshot of items that match a sensitive information type or classifier, or carry a label, across email, SharePoint and OneDrive. Because the list itself can expose sensitive data, viewing it needs specific roles."
+            ],
+            [
+              "Activity explorer",
+              "**Activity explorer** answers what has been happening to that data. Drawing on the audit log, it shows up to 30 days of activity such as labels applied, changed or removed, and data loss prevention matches. Sam spots a user downgrading labels on many documents in one afternoon and asks why."
+            ]
+          ],
+          "check": {
+            "q": "Sam wants to see which documents were relabelled from Highly Confidential to General last week. Which tool should he use?",
+            "options": [
+              "Activity explorer",
+              "Content explorer",
+              "Compliance Manager",
+              "The Service Trust Portal"
+            ],
+            "answer": 0,
+            "why": "Activity explorer records label changes and other actions over time. Content explorer shows what sensitive data exists and where right now, but not the history of changes, which makes it the tempting wrong choice. The other two do not track activity."
+          },
+          "key": "Sensitive information types and trainable classifiers find sensitive data, Content explorer shows where it is, and Activity explorer shows what happened to it."
+        },
+        {
+          "title": "Sensitivity labels and label policies",
+          "steps": [
+            [
+              "Labels that do something",
+              "A **sensitivity label** is a tag such as General, Confidential or Highly Confidential that also takes action. It can **encrypt** the item so only chosen people can open it, add **markings** such as a header or watermark, and apply settings to Teams, groups and SharePoint sites, such as blocking external sharing."
+            ],
+            [
+              "Labels travel",
+              "The label is stored with the file or email and stays with it wherever it goes, even when emailed outside Tui Bay. An item can have only one sensitivity label. Labels are built into Office apps on desktop, mobile and the web, and can be applied automatically when content matches a sensitive information type."
+            ],
+            [
+              "Order matters",
+              "Labels are listed in order of priority, with the most restrictive, Highly Confidential, at the bottom. That order lets Purview tell when a user moves a document to a lower label."
+            ],
+            [
+              "Publishing with a policy",
+              "A label does nothing until it is published with a **sensitivity label policy**. The policy chooses which users and groups see which labels, can set a **default label**, can make labelling **mandatory** before saving or sending, and can require a reason when someone lowers or removes a label. Sam publishes the labels to all staff and sets General as the default."
+            ]
+          ],
+          "check": {
+            "q": "Sam creates a Highly Confidential label but nobody can see it in Word. What has he most likely missed?",
+            "options": [
+              "Creating a retention policy",
+              "Publishing the label with a sensitivity label policy",
+              "Turning on Audit (Premium)",
+              "Adding the label to Compliance Manager"
+            ],
+            "answer": 1,
+            "why": "Labels only appear for users once a label policy publishes them to those users or groups. Retention policies, Audit and Compliance Manager are separate tools and do not make sensitivity labels visible."
+          },
+          "key": "Sensitivity labels encrypt and mark content and travel with it, but users only see them once a label policy publishes them."
+        },
+        {
+          "title": "Data loss prevention",
+          "steps": [
+            [
+              "Stopping data leaving",
+              "**Data loss prevention (DLP)** stops people sharing sensitive data inappropriately, whether by accident or on purpose. A physio emailing a full patient list to a personal address is exactly what DLP is built to catch."
+            ],
+            [
+              "How a policy works",
+              "A DLP policy has **rules** made of **conditions** and **actions**. Conditions include content that contains a sensitive information type, carries a sensitivity label or is being shared outside the organisation. Actions include blocking, encrypting or restricting access. **Policy tips** warn users in the app, and **overrides** let them continue with a business reason. Alerts go to admins."
+            ],
+            [
+              "Where DLP reaches",
+              "DLP covers Exchange email, SharePoint, OneDrive, Teams chats, Windows and macOS devices, on premises file shares, other cloud apps through Defender for Cloud Apps, and Microsoft 365 Copilot. **Endpoint DLP** extends policies to devices, where it can audit or block copying to USB drives, printing, uploading to unapproved websites or pasting into a browser."
+            ],
+            [
+              "Rolling it out safely",
+              "Sam starts a new policy in **simulation mode**, which records what would happen without enforcing anything. He reviews the matches in Activity explorer, tunes the rules to cut false alarms, then turns the policy on."
+            ]
+          ],
+          "check": {
+            "q": "Tui Bay wants to stop staff copying files that contain patient numbers to USB drives from their laptops. Which feature fits?",
+            "options": [
+              "Content explorer",
+              "Retention labels",
+              "Endpoint DLP",
+              "Safe Attachments"
+            ],
+            "answer": 2,
+            "why": "Endpoint DLP applies DLP rules on the device and can block copying sensitive files to removable storage. Retention labels control how long content is kept, Content explorer only shows where data is, and Safe Attachments tests email attachments for malware."
+          },
+          "key": "DLP rules combine conditions and actions to stop sensitive data leaving, and Endpoint DLP extends them to devices."
+        },
+        {
+          "title": "Retention policies and retention labels",
+          "steps": [
+            [
+              "Keep what you must, delete the rest",
+              "**Retention** means keeping content you are required to keep and deleting content you no longer should keep. Both matter: keeping too little breaks the law, keeping too much adds risk and clutter. Tui Bay must keep clinical records for a set period but has no reason to keep old rosters forever."
+            ],
+            [
+              "Retention policies",
+              "A **retention policy** applies one setting to a whole location, such as all mailboxes or all SharePoint sites. It can retain only, delete only, or retain and then delete. Teams chats and channel messages can only use retention policies, not labels. When people edit or delete kept content, the original is held in a hidden location they cannot see."
+            ],
+            [
+              "Retention labels",
+              "A **retention label** applies to individual items, so different content in the same place can follow different rules. The period can start from when an item was created, last changed, labelled or when an event happens, such as a patient's discharge. An item can have only one retention label. Labels reach users through a **retention label policy**, which publishes them to locations, or an **auto apply** policy, which applies one label when content matches set conditions."
+            ],
+            [
+              "When rules conflict",
+              "Purview settles conflicts with fixed principles: keeping wins over deleting, the longest retention period wins, an explicit label beats a broad policy, and the shortest deletion period wins. So a document under both a seven year label and a three year policy is kept for seven years."
+            ]
+          ],
+          "check": {
+            "q": "A clinical letter in SharePoint has a retention label to keep it 10 years, and the site has a retention policy that deletes content after 3 years. What happens?",
+            "options": [
+              "It is kept for 10 years",
+              "It is deleted after 3 years",
+              "It is kept forever",
+              "The label and policy cancel each other out"
+            ],
+            "answer": 0,
+            "why": "Retention wins over deletion and the longest retention period wins, so the letter is kept 10 years. The tempting idea that the site wide policy overrides the item misreads the principles. Nothing is kept forever unless a setting says so."
+          },
+          "key": "Retention policies set broad rules for locations, retention labels set item level rules, and in conflicts keeping beats deleting."
+        },
+        {
+          "title": "Records management",
+          "steps": [
+            [
+              "What a record is",
+              "A **record** is business, legal or regulatory content that must be kept unchanged for a set time and then disposed of in a way you can prove. **Records management** in Purview builds on retention labels to do this."
+            ],
+            [
+              "Declaring records",
+              "A retention label can **declare an item a record**. Deleting it is then blocked. A record can be **locked**, so no edits are allowed, or **unlocked**, so edits are allowed with versions kept. A **regulatory record** is stricter still: nobody, not even a Global Administrator, can remove the label, and edits are blocked."
+            ],
+            [
+              "The file plan and events",
+              "A **file plan** holds the organisation's retention schedule in one place, with details such as category and department. **Event based retention** starts the clock when something happens, such as a contract ending or an employee leaving, rather than when the file was created."
+            ],
+            [
+              "Proof of disposal",
+              "At the end of the period, a **disposition review** lets chosen reviewers approve deletion, and Purview keeps proof of what was disposed of. Tui Bay's signed patient consent forms are declared records, kept for the required period, then reviewed and destroyed with evidence for the auditor."
+            ]
+          ],
+          "check": {
+            "q": "Tui Bay needs signed consent forms that cannot be edited or deleted during their retention period. What should Sam apply?",
+            "options": [
+              "A sensitivity label with encryption",
+              "A Conditional Access policy",
+              "A DLP policy",
+              "A retention label that declares the item a record"
+            ],
+            "answer": 3,
+            "why": "Declaring an item a record through a retention label blocks deletion and, when locked, edits. Sensitivity labels and encryption control who can read content, not whether it can be deleted, and DLP and Conditional Access deal with sharing and sign in."
+          },
+          "key": "Records management uses retention labels to declare records that cannot be deleted, then proves disposal through disposition review."
+        },
+        {
+          "title": "Insider risk management",
+          "steps": [
+            [
+              "Threats from inside",
+              "Not every threat comes from outside. **Insider risk** covers employees or contractors who leak data, steal intellectual property or break security rules, whether on purpose or by accident. A physio leaving to open a rival clinic might take the patient list with them."
+            ],
+            [
+              "Policies from templates",
+              "**Microsoft Purview Insider Risk Management** builds policies from templates such as data theft by departing users, data leaks, security policy violations and risky AI usage. The departing users template can be triggered by a resignation date from an HR connector or by the account being deleted in Entra ID."
+            ],
+            [
+              "From alert to case",
+              "Activity that matches a policy raises an **alert**. Reviewers triage it, dismiss it or open a **case**, investigate the user's activity, then send the user a notice, resolve the case or escalate it to eDiscovery."
+            ],
+            [
+              "Privacy by design",
+              "Usernames are **pseudonymised** by default, so reviewers see a placeholder rather than a name until there is a reason to reveal it, and access is tightly limited and audited. **Adaptive Protection** gives users an insider risk level of minor, moderate or elevated and can apply stricter DLP rules automatically to riskier users. **Communication compliance**, a related tool, finds messages in Teams, email and Copilot that break policy."
+            ]
+          ],
+          "check": {
+            "q": "A physio resigns, and in her last week she downloads hundreds of patient files. Which Purview solution is designed to flag this pattern?",
+            "options": [
+              "Compliance Manager",
+              "Insider risk management",
+              "Records management",
+              "The Service Trust Portal"
+            ],
+            "answer": 1,
+            "why": "The data theft by departing users template in insider risk management combines the resignation signal with unusual downloads. Compliance Manager tracks controls, records management keeps and disposes of records, and the Service Trust Portal holds Microsoft's documents."
+          },
+          "key": "Insider risk management uses templates and signals to flag risky insider activity while protecting privacy with pseudonymised names."
+        },
+        {
+          "title": "eDiscovery and audit",
+          "steps": [
+            [
+              "Finding evidence",
+              "**Electronic discovery (eDiscovery)** is finding electronic information that may be used as evidence, for a legal case or an investigation. Purview eDiscovery searches mailboxes, OneDrive, SharePoint, Teams and Microsoft 365 groups."
+            ],
+            [
+              "The eDiscovery workflow",
+              "Work happens inside a **case**, which controls who can see it. Sam adds data sources such as the people involved, places a **hold** so their content cannot be permanently deleted, searches with keywords and conditions, and exports what is relevant for the lawyers. Premium features add a **review set** where results can be tagged, deduplicated and analysed."
+            ],
+            [
+              "Recording who did what",
+              "**Audit** answers who did what, where and when. **Audit (Standard)** is on by default for eligible subscriptions. It records thousands of event types across Exchange, SharePoint, OneDrive, Teams and Entra ID in the **unified audit log**, keeps them for 180 days, and can be searched and exported."
+            ],
+            [
+              "Audit (Premium)",
+              "**Audit (Premium)** keeps key records for one year by default, allows custom retention policies, with up to 10 years using an add on licence, and records extra detail for investigations, such as which mail items were read. When a patient complains that a former partner read her notes, Sam uses audit to show exactly who opened the file and when."
+            ]
+          ],
+          "check": {
+            "q": "Tui Bay's lawyer needs all email and Teams messages from two staff preserved before they can be deleted, for a dispute. What should Sam do first?",
+            "options": [
+              "Export the audit log to CSV",
+              "Create an eDiscovery case and place a hold on those users' content",
+              "Apply a sensitivity label to their mailboxes",
+              "Run an access review"
+            ],
+            "answer": 1,
+            "why": "An eDiscovery hold preserves content so it cannot be permanently deleted while the case runs. The audit log records actions but does not preserve messages, a sensitivity label controls access rather than deletion, and an access review is about permissions."
+          },
+          "key": "eDiscovery finds and preserves evidence in cases with holds, and Audit records who did what, with Premium keeping more for longer."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1396 @@
+{
+  "id": "governance",
+  "code": "GOV",
+  "title": "AI and Security Governance Frameworks",
+  "modules": [
+    {
+      "title": "NIST AI Risk Management Framework",
+      "intro": "This track is not a single exam. It covers six frameworks and laws that governance, risk and privacy roles use every day, each worth about a sixth of the course. Meet **Tōtara Health**, a Wellington startup of 25 people building **TriageMate**, an AI tool that reads patient messages sent to GP clinics, summarises them and suggests how urgent each one is for a nurse to check. Tōtara stores data in an Australian cloud region and wants to sell to clinics in Ireland. This first module uses the NIST AI Risk Management Framework to decide how Tōtara should think about TriageMate's risks.",
+      "lessons": [
+        {
+          "title": "What the AI RMF is",
+          "steps": [
+            [
+              "A voluntary framework",
+              "The **NIST AI Risk Management Framework 1.0** (published as NIST AI 100-1 on 26 January 2023) is guidance from the US National Institute of Standards and Technology. It is **voluntary**, rights preserving and not tied to any sector or use case. Tōtara does not have to follow it, but it gives the team a shared way to talk about AI risk."
+            ],
+            [
+              "What AI risk means here",
+              "Part 1 of the framework frames AI risk as possible harm to **people** (such as a patient whose urgent message is missed), to **organisations** (such as damage to Tōtara's reputation) and to **ecosystems** (such as wider loss of trust in health AI). Risk combines how likely a harm is with how bad it would be."
+            ],
+            [
+              "Why AI risk is hard",
+              "NIST names four challenges. **Measurement** is difficult because AI risks are often new or hard to quantify. **Risk tolerance** differs between organisations and contexts. **Prioritisation** is needed because not every risk can be removed. **Organisational integration** means AI risk should sit inside wider enterprise risk work, not in a separate silo."
+            ],
+            [
+              "A living document",
+              "NIST publishes a companion **AI RMF Playbook** with suggested actions for each part of the framework. NIST has also said the RMF is being revised under the US AI Action Plan, so wording may change. Tōtara notes the version it follows in its own documents."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara's investor asks whether the NIST AI RMF is a legal requirement for TriageMate. What is the accurate answer?",
+            "options": [
+              "Yes, every AI product sold anywhere must comply",
+              "Only in the European Union",
+              "No, it is voluntary guidance that helps organisations manage AI risk",
+              "Only for products used by US government agencies"
+            ],
+            "answer": 2,
+            "why": "The AI RMF is voluntary and not tied to a sector. It can support legal compliance, but it is not itself a law. EU obligations come from the EU AI Act, which is a separate instrument covered later."
+          },
+          "key": "The NIST AI RMF 1.0 is voluntary, sector neutral guidance that frames AI risk as harm to people, organisations and ecosystems."
+        },
+        {
+          "title": "Trustworthy AI characteristics",
+          "steps": [
+            [
+              "Seven characteristics",
+              "NIST describes **trustworthy AI** through seven characteristics: valid and reliable; safe; secure and resilient; accountable and transparent; explainable and interpretable; privacy enhanced; and fair with harmful bias managed. They are the qualities Tōtara wants TriageMate to have."
+            ],
+            [
+              "The base and the span",
+              "**Valid and reliable** is the base: a system that does not work correctly cannot be trustworthy, however well it scores on the rest. **Accountable and transparent** spans all the others, because people need to know what the system does and who answers for it. Validity means it does what it is meant to do, and reliability means it keeps doing so over time."
+            ],
+            [
+              "The other five",
+              "**Safe** means it does not endanger life, health or property. **Secure and resilient** means it withstands attacks and recovers from problems. **Explainable and interpretable** means people can understand how and why it reached an output. **Privacy enhanced** means it protects people's autonomy and data. **Fair with harmful bias managed** means it does not treat groups unjustly."
+            ],
+            [
+              "Trade-offs are normal",
+              "The characteristics can pull against each other. Making TriageMate more interpretable might mean using a simpler model that is a little less accurate. Stronger privacy measures might reduce accuracy for small groups. NIST expects these trade-offs and asks organisations to balance them openly for each context."
+            ]
+          ],
+          "check": {
+            "q": "TriageMate explains every suggestion clearly, but in testing it marks one in five urgent messages as routine. Which characteristic fails first?",
+            "options": [
+              "Valid and reliable",
+              "Explainable and interpretable",
+              "Privacy enhanced",
+              "Accountable and transparent"
+            ],
+            "answer": 0,
+            "why": "Validity and reliability is the base of trustworthiness. A system that gets urgent cases wrong is not trustworthy no matter how well it explains itself. Explainability is working here, which is why it is the tempting wrong answer."
+          },
+          "key": "Seven characteristics define trustworthy AI, with valid and reliable as the base, accountable and transparent spanning all, and trade-offs balanced in context."
+        },
+        {
+          "title": "AI actors, TEVV, the Core and Profiles",
+          "steps": [
+            [
+              "Who is involved",
+              "**AI actors** are everyone who plays a part across the AI lifecycle: people who design, develop, deploy, operate and evaluate the system, plus those affected by it. At Tōtara that includes the data scientists, the product owner, the clinics that use TriageMate, the nurses who act on it, and patients."
+            ],
+            [
+              "Test, evaluate, verify, validate",
+              "**TEVV** stands for test, evaluation, verification and validation. It should happen throughout the lifecycle, not just once before launch. Tōtara tests TriageMate on sample messages during design, checks it again before each release and keeps evaluating it while clinics use it."
+            ],
+            [
+              "The Core",
+              "Part 2 of the framework is the **Core**: four **functions** (Govern, Map, Measure and Manage), each broken into **categories** and more detailed **subcategories**. Govern runs across everything. Map, Measure and Manage are applied to specific systems."
+            ],
+            [
+              "Profiles",
+              "A **profile** tailors the Core to a situation. A use case profile covers one kind of system, such as clinical triage. A temporal profile compares a **current** state with a **target** state. A cross sectoral profile covers a technology used in many sectors, such as generative AI. Tōtara writes a current and target profile to plan its work."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara writes down how it manages TriageMate's risks today and how it wants to manage them in a year, to plan the gap. What has it created?",
+            "options": [
+              "A use case profile only",
+              "A new Core function",
+              "A TEVV report",
+              "Current and target temporal profiles"
+            ],
+            "answer": 3,
+            "why": "Temporal profiles compare a current state with a target state to show the gap to close. A TEVV report records test results, and the four Core functions are fixed rather than created by users."
+          },
+          "key": "AI actors span the lifecycle, TEVV runs throughout it, the Core has four functions, and profiles tailor the Core to a context."
+        },
+        {
+          "title": "GOVERN 1 to 3: policies, accountability and people",
+          "steps": [
+            [
+              "Govern runs through everything",
+              "**GOVERN** is cross cutting: it informs and is built into Map, Measure and Manage. It sets the policies, roles and culture that make the rest work. Without it, risk work depends on who happens to care that week."
+            ],
+            [
+              "GOVERN 1: policies and processes",
+              "GV 1 asks for policies, processes and procedures for AI risk that are in place, transparent and actually followed. They cover legal requirements, the organisation's risk tolerance, an **inventory** of AI systems, and how systems are **decommissioned** safely. Tōtara's first step is a one page AI policy and a register listing TriageMate and two internal tools."
+            ],
+            [
+              "GOVERN 2: accountability",
+              "GV 2 asks for accountability structures, so the right teams are empowered, responsible and trained. Executive leadership owns decisions about AI risk. Tōtara's chief executive signs off TriageMate's risk tolerance, not just the data science lead."
+            ],
+            [
+              "GOVERN 3: diverse teams and oversight roles",
+              "GV 3 asks that workforce diversity, equity, inclusion and accessibility are prioritised in AI risk work, because varied teams spot more problems. It also asks that roles for **human AI oversight** are clearly defined. Tōtara involves practising nurses in design and defines exactly when a nurse must review a suggestion."
+            ]
+          ],
+          "check": {
+            "q": "Under GOVERN 2, who should own the decision about how much risk Tōtara accepts for TriageMate?",
+            "options": [
+              "The newest data scientist",
+              "Executive leadership",
+              "Each clinic's receptionist",
+              "The cloud provider"
+            ],
+            "answer": 1,
+            "why": "GOVERN 2 places responsibility for AI risk decisions with executive leadership, supported by empowered and trained teams. Technical staff contribute, but accountability for risk tolerance sits at the top. Clinics and suppliers have their own roles."
+          },
+          "key": "GOVERN 1 to 3 cover written AI policies and inventories, accountability owned by leadership, and diverse teams with defined oversight roles."
+        },
+        {
+          "title": "GOVERN 4 to 6: culture, engagement and third parties",
+          "steps": [
+            [
+              "GOVERN 4: a risk aware culture",
+              "GV 4 asks for an organisational culture that considers and communicates AI risk. That means encouraging critical thinking, putting safety first, documenting decisions and sharing incidents openly rather than hiding them. When a developer at Tōtara notices TriageMate behaving oddly, she should feel safe raising it the same day."
+            ],
+            [
+              "GOVERN 5: engaging AI actors",
+              "GV 5 asks for real engagement with relevant AI actors and outside feedback, built into design. Tōtara runs regular sessions with clinic nurses and a patient advisory group, and changes TriageMate's wording when patients find it confusing."
+            ],
+            [
+              "GOVERN 6: third parties",
+              "GV 6 asks for policies and procedures covering risks from third party software, data and supply chains. TriageMate uses a language model from an outside provider and a cloud platform. Tōtara records what it relies on from each one and checks their terms and security."
+            ],
+            [
+              "Planning for supplier failure",
+              "GV 6 also asks for **contingency plans** if a third party fails. If the model provider has an outage or changes its model without warning, Tōtara's plan is to switch TriageMate to a basic keyword ranking mode and alert clinics that nurses must read every message."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara writes a plan for what happens if its language model provider suddenly withdraws the model TriageMate uses. Which GOVERN category is this?",
+            "options": [
+              "GOVERN 3",
+              "GOVERN 6",
+              "GOVERN 5",
+              "GOVERN 4"
+            ],
+            "answer": 1,
+            "why": "GOVERN 6 covers third party software, data and supply chain risks, including contingency for third party failure. GOVERN 4 is about culture and GOVERN 5 about engagement, both important but not about supplier dependence."
+          },
+          "key": "GOVERN 4 to 6 build a culture that shares risk openly, engage outside voices, and manage third party and supply chain risk with contingency plans."
+        },
+        {
+          "title": "MAP: establishing context",
+          "steps": [
+            [
+              "Why map first",
+              "**MAP** establishes the context needed to frame risks. Its results are the basis for Measure and Manage, and they support a clear **go or no go** decision about whether a system should be built or deployed at all."
+            ],
+            [
+              "MAP 1 and MAP 2",
+              "MAP 1 asks that context is established and understood: the intended purpose, the settings it will be used in, relevant laws and norms, deployment expectations and risk tolerances. MAP 2 asks for the system to be **categorised**: what tasks it does, which methods it uses, the limits of its knowledge and what TEVV it will need. TriageMate ranks urgency of written messages and is not designed to diagnose."
+            ],
+            [
+              "MAP 3 and MAP 4",
+              "MAP 3 asks that capabilities, targeted usage, goals and expected benefits and costs are understood against suitable benchmarks, and that human oversight processes are defined. MAP 4 asks that risks and benefits are mapped for every component, including third party software and data and any **intellectual property** issues."
+            ],
+            [
+              "MAP 5: impacts",
+              "MAP 5 asks that the **likelihood and magnitude** of impacts are characterised for individuals, groups, communities, organisations and society. For TriageMate, a missed urgent message could seriously harm one patient, while systematic errors on messages written in te reo Māori could harm a whole community."
+            ]
+          ],
+          "check": {
+            "q": "Before building TriageMate, Tōtara documents that it is meant to rank message urgency, not to diagnose, and lists the health privacy laws that apply. Which part of MAP is this?",
+            "options": [
+              "MANAGE 4",
+              "MAP 5, characterising impacts",
+              "MEASURE 2",
+              "MAP 1, establishing context"
+            ],
+            "answer": 3,
+            "why": "Intended purpose, setting and applicable laws are the context MAP 1 asks for. MAP 5 is about how likely and severe impacts are, and Measure and Manage come later and build on this context."
+          },
+          "key": "MAP sets the context, categorises the system, weighs benefits and costs, maps component risks and characterises impacts, supporting a go or no go decision."
+        },
+        {
+          "title": "MEASURE: assessing and tracking risk",
+          "steps": [
+            [
+              "What Measure does",
+              "**MEASURE** uses quantitative, qualitative or mixed tools to analyse, assess, benchmark and monitor AI risk and its impacts. It turns the risks found in Map into evidence."
+            ],
+            [
+              "MEASURE 1: methods and metrics",
+              "MS 1 asks for suitable methods and metrics, starting with the most significant risks. It also asks for **independent assessors** where appropriate, people who did not build the system. Tōtara measures how often TriageMate under ranks urgent messages first, because that is the most serious risk, and asks an outside clinical reviewer to check the results."
+            ],
+            [
+              "MEASURE 2: each characteristic",
+              "MS 2 evaluates the system against each trustworthy characteristic: validity, safety, security and resilience, transparency, explainability, privacy, fairness and **environmental impact**. Tōtara checks accuracy across age groups and languages, tests attacks on the system, and estimates the compute it uses."
+            ],
+            [
+              "MEASURE 3 and 4: over time",
+              "MS 3 asks for ways to **track** identified risks over time, including new and hard to measure ones. MS 4 asks for **feedback on whether the measurement itself works**, including from end users and affected communities. When nurses say the accuracy reports do not match what they see, Tōtara treats that as a measurement problem to fix."
+            ]
+          ],
+          "check": {
+            "q": "Nurses tell Tōtara that its accuracy metric looks good but does not reflect the mistakes they see in real clinics. Which MEASURE category deals with this?",
+            "options": [
+              "MEASURE 4",
+              "MEASURE 2",
+              "MEASURE 3",
+              "MEASURE 1"
+            ],
+            "answer": 0,
+            "why": "MEASURE 4 is about gathering feedback on whether the measurement approach is effective, including from end users. MEASURE 2 evaluates the characteristics themselves, which is the tempting answer, but the complaint here is about the metric."
+          },
+          "key": "MEASURE picks methods for the biggest risks, evaluates every trustworthy characteristic, tracks risk over time, and checks the measurement itself works."
+        },
+        {
+          "title": "MANAGE: responding to risk",
+          "steps": [
+            [
+              "What Manage does",
+              "**MANAGE** allocates resources to the risks that were mapped and measured, on a regular basis. It is where decisions turn into action and money."
+            ],
+            [
+              "MANAGE 1: prioritise and respond",
+              "MG 1 asks that risks are prioritised and responded to, including a decision on whether development or deployment should **proceed**. Responses are to **mitigate**, **transfer**, **avoid** or **accept** a risk. Tōtara decides to mitigate under ranking by requiring nurse review of all messages flagged as routine during the first six months."
+            ],
+            [
+              "MANAGE 2 and 3",
+              "MG 2 covers strategies that maximise benefits and minimise harm, including ways to **supersede, disengage or deactivate** a system that behaves badly. TriageMate has an off switch clinics can use without calling Tōtara. MG 3 manages risks and benefits from third parties, including **monitoring pre trained models** supplied by others."
+            ],
+            [
+              "MANAGE 4: monitor and communicate",
+              "MG 4 asks that risk treatments, response and recovery plans and communication plans are documented and monitored. That includes **post deployment monitoring** and plans for communicating incidents. When an update makes TriageMate slower, Tōtara's plan says who tells clinics and how quickly."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara builds a switch that lets any clinic turn off TriageMate's suggestions instantly if they look wrong. Which category does this support most directly?",
+            "options": [
+              "GOVERN 5",
+              "MAP 2",
+              "MANAGE 2",
+              "MEASURE 1"
+            ],
+            "answer": 2,
+            "why": "MANAGE 2 includes mechanisms to supersede, disengage or deactivate AI systems that perform badly. MAP 2 categorises the system, GOVERN 5 is about engagement and MEASURE 1 about metrics."
+          },
+          "key": "MANAGE prioritises and responds to risks, keeps the ability to switch systems off, manages third party models, and monitors and communicates after deployment."
+        },
+        {
+          "title": "The Generative AI Profile and its twelve risks",
+          "steps": [
+            [
+              "A profile for generative AI",
+              "**NIST AI 600-1**, the Generative AI Profile, was published on 26 July 2024 as a cross sectoral profile of the AI RMF, following a mandate in a US executive order on AI. TriageMate uses a generative model to write its summaries, so this profile applies."
+            ],
+            [
+              "Risks one to six",
+              "The profile names twelve risks unique to or made worse by generative AI. The first six are: chemical, biological, radiological or nuclear (**CBRN**) information or capabilities; **confabulation**, meaning confidently stated false content; dangerous, violent or hateful content; data privacy; environmental impacts; and harmful bias or **homogenisation**, where outputs become narrow and uniform."
+            ],
+            [
+              "Risks seven to twelve",
+              "The other six are: **human AI configuration**, problems in how people and the system work together, such as over trusting it; information integrity; information security; intellectual property; obscene, degrading or abusive content; and **value chain and component integration**, risks from the many suppliers and parts that make up a generative AI product."
+            ],
+            [
+              "TriageMate's top concerns",
+              "For Tōtara, confabulation matters most, because a summary that invents a symptom could mislead a nurse. Data privacy and human AI configuration follow closely: nurses might start trusting summaries without reading the original message."
+            ]
+          ],
+          "check": {
+            "q": "TriageMate's summary of a patient message mentions chest pain that the patient never wrote. Which Generative AI Profile risk is this?",
+            "options": [
+              "Environmental impacts",
+              "Homogenisation",
+              "Intellectual property",
+              "Confabulation"
+            ],
+            "answer": 3,
+            "why": "Confabulation is the profile's term for confidently stated false or invented content. Homogenisation is about outputs becoming uniform, and the other two risks are unrelated to invented facts."
+          },
+          "key": "NIST AI 600-1 (July 2024) profiles generative AI and lists twelve risks, including confabulation, data privacy and human AI configuration."
+        },
+        {
+          "title": "Using the Generative AI Profile",
+          "steps": [
+            [
+              "How risks are framed",
+              "The profile frames each risk by **lifecycle stage**, by **scope** (the model, the application or the wider ecosystem) and by **source** (design choices, misuse or emergent behaviour). TriageMate's confabulation risk sits at the application scope and comes from the design of the model itself."
+            ],
+            [
+              "Suggested actions with IDs",
+              "The profile maps suggested actions to AI RMF subcategories, each with an action ID such as GV-1.1-001. The ID shows which function and subcategory the action supports. Tōtara uses the IDs to link each control in its risk register back to the framework."
+            ],
+            [
+              "Four primary considerations",
+              "The profile highlights four areas: **governance**, **pre deployment testing** including red teaming (structured attempts to make the system misbehave), **content provenance** (tracking where content came from and whether AI made it), and **incident disclosure**. Tōtara red teams TriageMate before each major release and labels every summary as AI generated."
+            ],
+            [
+              "Information security risk",
+              "The profile's information security risk includes **prompt injection** (text that tricks the model into ignoring its instructions), **data poisoning** (corrupting the data it learns from or reads) and the way generative AI can lower the barrier to offensive cyber operations. A patient message is untrusted input, so Tōtara treats it as possible injection."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara wants each control in its risk register traced back to the exact part of the framework it supports. What in the Generative AI Profile helps?",
+            "options": [
+              "The CE marking",
+              "The twelve risk names alone",
+              "The action IDs mapped to AI RMF subcategories",
+              "The Statement of Applicability"
+            ],
+            "answer": 2,
+            "why": "Suggested actions carry IDs such as GV-1.1-001 that point to specific AI RMF subcategories. The risk names describe problems but not where actions map, and CE marking and the Statement of Applicability belong to other frameworks."
+          },
+          "key": "The Generative AI Profile frames risks by stage, scope and source, maps actions by ID, and stresses governance, testing, provenance and incident disclosure."
+        }
+      ]
+    },
+    {
+      "title": "ISO/IEC 42001 AI management system",
+      "intro": "NIST gives guidance. ISO/IEC 42001 gives requirements an auditor can certify. This module explains what an AI management system is, walks through its clauses and Annex A controls, and shows how an AI system impact assessment works. Tōtara Health's Irish prospects have asked whether it is certified, so the team is building an AI management system around TriageMate.",
+      "lessons": [
+        {
+          "title": "What an AI management system is",
+          "steps": [
+            [
+              "A certifiable standard",
+              "**ISO/IEC 42001**, published in December 2023, is the first certifiable international **management system** standard for AI. A management system is the set of policies, roles, processes and records an organisation uses to reach its goals and keep improving. An **AIMS** (AI management system) applies that idea to AI."
+            ],
+            [
+              "Who it applies to",
+              "It applies to any organisation that provides, develops or uses AI systems, scaled to its role, such as provider, producer, user or partner. Tōtara is both a developer and a provider of TriageMate, and a user of an outside language model."
+            ],
+            [
+              "The Harmonized Structure",
+              "ISO 42001 uses the ISO **Harmonized Structure**, so clauses 4 to 10 line up with ISO/IEC 27001 and ISO 9001. Organisations can run one integrated management system across security, quality and AI instead of three separate ones."
+            ],
+            [
+              "Clauses and PDCA",
+              "Clauses 1 to 3 cover scope, normative references (including ISO/IEC 22989 for AI terms) and definitions. Clauses 4 to 10 hold the auditable requirements. The whole system follows **Plan, Do, Check, Act**: plan what to do, do it, check whether it worked, and act to improve."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara already runs an ISO/IEC 27001 security management system. Why is adding ISO/IEC 42001 easier than starting from scratch?",
+            "options": [
+              "Both use the Harmonized Structure, so clauses 4 to 10 align",
+              "42001 replaces 27001 entirely",
+              "42001 has no clauses of its own",
+              "27001 certificates cover AI automatically"
+            ],
+            "answer": 0,
+            "why": "Shared clause structure means context, leadership, planning, support, operation, evaluation and improvement can be run as one integrated system. 42001 adds AI specific requirements rather than replacing 27001, and a 27001 certificate does not cover AI."
+          },
+          "key": "ISO/IEC 42001 (December 2023) is the first certifiable AI management system standard, built on the Harmonized Structure and Plan, Do, Check, Act."
+        },
+        {
+          "title": "Clauses 4 and 5: context and leadership",
+          "steps": [
+            [
+              "Clause 4: understanding context",
+              "Clause 4 asks the organisation to understand internal and external **issues** that affect its AIMS, the needs of **interested parties** such as clinics, patients and regulators, and to set the **scope** of the AIMS. A 2024 amendment to the Harmonized Structure standards also asks organisations to consider whether climate change is relevant."
+            ],
+            [
+              "Knowing your AI role",
+              "Clause 4 in 42001 also asks the organisation to determine its **roles** with respect to AI, such as provider, developer or user. Tōtara records that it develops and provides TriageMate and uses a third party model inside it. The role decides which controls apply most."
+            ],
+            [
+              "Clause 5: leadership",
+              "Clause 5 asks **top management** to show commitment, set an **AI policy** and assign roles, responsibilities and authorities. Tōtara's AI policy commits to human review of urgency suggestions, honest disclosure to patients and continual improvement."
+            ],
+            [
+              "Why leadership matters",
+              "Auditors look for evidence that leaders are involved, not just named. At Tōtara, the chief executive chairs a quarterly AI review and signs the policy. A policy written by one engineer and never discussed would not meet clause 5."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara's auditor asks who decided which parts of the business the AIMS covers and what role Tōtara plays with AI. Which clause holds those requirements?",
+            "options": [
+              "Clause 7",
+              "Clause 4",
+              "Clause 9",
+              "Clause 10"
+            ],
+            "answer": 1,
+            "why": "Clause 4 covers context, interested parties, the scope of the AIMS and the organisation's AI roles. Clause 7 is support, clause 9 performance evaluation and clause 10 improvement."
+          },
+          "key": "Clause 4 sets context, interested parties, scope and AI roles, and clause 5 needs top management commitment, an AI policy and assigned roles."
+        },
+        {
+          "title": "Clauses 6 and 7: planning and support",
+          "steps": [
+            [
+              "Clause 6: risk criteria and assessment",
+              "Clause 6 asks for actions to address risks and opportunities. The organisation sets **AI risk criteria**, carries out an **AI risk assessment** and decides on **AI risk treatment**. The treatment step produces a **Statement of Applicability** listing which controls apply and why."
+            ],
+            [
+              "Clause 6: impact assessment and objectives",
+              "Clause 6 also requires an **AI system impact assessment**, covered in its own lesson later, plus **AI objectives** and planning of changes. One of Tōtara's objectives is that fewer than one in a hundred urgent messages are ranked as routine in monitored use."
+            ],
+            [
+              "Clause 7: support",
+              "Clause 7 covers **resources**, **competence**, **awareness**, **communication** and **documented information**. Staff need the skills for their role, must know the AI policy and their part in it, and the organisation decides what it communicates, to whom and when."
+            ],
+            [
+              "Documented information",
+              "Documented information means the records and documents the AIMS needs, kept under control so the right version is in use. Tōtara keeps TriageMate's model versions, test results and policy approvals in one controlled repository."
+            ]
+          ],
+          "check": {
+            "q": "During planning, Tōtara decides which AI controls apply to TriageMate and records why any are excluded. What document does this produce?",
+            "options": [
+              "A CE declaration",
+              "A management review report",
+              "A Statement of Applicability",
+              "An internal audit plan"
+            ],
+            "answer": 2,
+            "why": "AI risk treatment under clause 6 produces a Statement of Applicability that lists applicable controls and justifies exclusions. Management reviews and audits belong to clause 9, and CE declarations come from the EU AI Act."
+          },
+          "key": "Clause 6 covers AI risk criteria, assessment, treatment with a Statement of Applicability, impact assessment and objectives, and clause 7 covers resources, competence, awareness, communication and records."
+        },
+        {
+          "title": "Clauses 8 to 10: operation, evaluation and improvement",
+          "steps": [
+            [
+              "Clause 8: operation",
+              "Clause 8 asks for operational planning and control. It also requires the organisation to carry out AI risk assessments, risk treatment and AI system impact assessments **at planned intervals** or when a **significant change** happens. When Tōtara switches TriageMate to a new language model, it repeats all three."
+            ],
+            [
+              "Clause 9: performance evaluation",
+              "Clause 9 asks for monitoring, measurement, analysis and evaluation, an **internal audit** programme and **management review**. Internal audit checks whether the AIMS meets the standard and Tōtara's own rules. Management review is where leaders look at the results and decide what to change."
+            ],
+            [
+              "Clause 10: improvement",
+              "Clause 10 asks for **continual improvement** and for handling **nonconformities**, meaning failures to meet a requirement, with **corrective action** that fixes the root cause. When an audit finds that two staff skipped AI awareness training, Tōtara fixes the onboarding process, not just those two people."
+            ],
+            [
+              "Evidence for certification",
+              "Documented information must be kept as evidence. A certification auditor will ask to see impact assessments, audit reports, management review minutes and corrective actions. If it is not recorded, the auditor treats it as not done."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara replaces TriageMate's underlying model. What does clause 8 require it to do?",
+            "options": [
+              "Repeat the AI risk assessment, risk treatment and impact assessment because of the significant change",
+              "Nothing until the next annual audit",
+              "Apply for a new certificate immediately",
+              "Note the change for the next management review"
+            ],
+            "answer": 0,
+            "why": "Clause 8 requires assessments at planned intervals or on significant change, and a new model is a significant change. Waiting for the audit leaves the risk unassessed, and a new certificate is not required for every change."
+          },
+          "key": "Clause 8 repeats assessments on schedule or significant change, clause 9 adds audit and management review, and clause 10 drives corrective action and improvement."
+        },
+        {
+          "title": "Annex A controls A.2 to A.6",
+          "steps": [
+            [
+              "What Annex A is",
+              "**Annex A** is normative, meaning its controls are part of the requirements. It lists **38 reference controls** across **9 objective areas**, numbered A.2 to A.10. An organisation can exclude a control only with a justification recorded in its Statement of Applicability."
+            ],
+            [
+              "A.2 to A.4",
+              "**A.2** covers AI related policies. **A.3** covers internal organisation, such as roles and a way for people to report concerns about AI. **A.4** covers **resources for AI systems**: data, tools, computing and people. Tōtara documents the cloud compute and the people that TriageMate depends on."
+            ],
+            [
+              "A.5: assessing impacts",
+              "**A.5** covers assessing the impacts of AI systems on individuals, groups and society. It is the control area behind the impact assessment that clause 6 requires."
+            ],
+            [
+              "A.6: the AI system life cycle",
+              "**A.6** covers the AI system life cycle: setting objectives, design, **verification and validation**, deployment, operation, technical documentation and **event logs**. Tōtara keeps logs of every suggestion TriageMate makes so it can investigate a complaint months later."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara keeps records of each version of TriageMate, its validation results and logs of its suggestions. Which Annex A area does this mainly satisfy?",
+            "options": [
+              "A.2 AI related policies",
+              "A.4 Resources for AI systems",
+              "A.10 Third party relationships",
+              "A.6 AI system life cycle"
+            ],
+            "answer": 3,
+            "why": "A.6 covers the life cycle, including verification and validation, technical documentation and event logs. A.2 is policies, A.4 resources and A.10 supplier and customer relationships."
+          },
+          "key": "Annex A has 38 controls in 9 areas, with A.2 to A.6 covering policies, organisation, resources, impact assessment and the AI life cycle."
+        },
+        {
+          "title": "Annex A controls A.7 to A.10 and Annexes B to D",
+          "steps": [
+            [
+              "A.7: data for AI systems",
+              "**A.7** covers data used by AI systems: how it is **acquired**, its **quality**, its **provenance** (where it came from) and how it is **prepared**. Tōtara records which clinics' historic messages trained TriageMate, under what agreement, and how identifiers were removed."
+            ],
+            [
+              "A.8: information for interested parties",
+              "**A.8** covers information for interested parties: what users are told, how incidents are reported, and external reporting. Clinics get a plain guide explaining what TriageMate does and does not do, and how to report a bad suggestion."
+            ],
+            [
+              "A.9 and A.10",
+              "**A.9** covers the **use of AI systems**: processes for responsible use, objectives and staying within the intended use. **A.10** covers third party and customer relationships, including what each supplier is responsible for. Tōtara's contract with its model provider spells out data handling and change notice."
+            ],
+            [
+              "Annexes B, C and D",
+              "**Annex B** gives implementation guidance for each Annex A control. **Annex C** lists possible organisational AI objectives and risk sources. **Annex D** covers using the AIMS across different domains and sectors. Tōtara reads Annex B before writing each control."
+            ]
+          ],
+          "check": {
+            "q": "A clinic asks how to report a TriageMate suggestion that looked dangerous. Which Annex A area covers giving users this information?",
+            "options": [
+              "A.7 Data for AI systems",
+              "A.8 Information for interested parties",
+              "A.9 Use of AI systems",
+              "Annex C"
+            ],
+            "answer": 1,
+            "why": "A.8 covers user information and incident reporting for interested parties. A.7 is about data, A.9 about responsible use, and Annex C lists objectives and risk sources rather than controls."
+          },
+          "key": "A.7 to A.10 cover data, information for interested parties, responsible use and third party relationships, and Annexes B to D give guidance, objectives and sector use."
+        },
+        {
+          "title": "The AI system impact assessment",
+          "steps": [
+            [
+              "Different from a risk assessment",
+              "An **AI system impact assessment** focuses on the consequences for **individuals, groups and societies** of developing, providing or using an AI system. An organisational risk assessment asks what could go wrong for the organisation. The impact assessment asks what could happen to people."
+            ],
+            [
+              "What it considers",
+              "It looks at the intended use and **reasonably foreseeable misuse**, the technical and societal context, and the jurisdictions where the system will be used. Tōtara considers a clinic using TriageMate to replace nurse review entirely, which it never intended but could happen."
+            ],
+            [
+              "Typical impact areas",
+              "Common areas are fairness, accountability, transparency, privacy, safety, human rights and the environment. Results are documented, retained and can feed into risk treatment and into what Tōtara tells clinics and patients."
+            ],
+            [
+              "Supporting standards",
+              "Related standards help. **ISO/IEC 42005** gives guidance on impact assessment. **ISO/IEC 23894** gives guidance on AI risk management. **ISO/IEC 42006** sets requirements for bodies that certify AI management systems. **ISO/IEC 22989** defines AI terms."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara wants to understand how TriageMate could affect patients who write in languages other than English. Which assessment fits best?",
+            "options": [
+              "A financial audit",
+              "An AI system impact assessment",
+              "A penetration test",
+              "A management review"
+            ],
+            "answer": 1,
+            "why": "The impact assessment looks at consequences for individuals and groups, including fairness across language groups. A penetration test checks security and a management review evaluates the AIMS, so neither focuses on effects on people."
+          },
+          "key": "An AI system impact assessment examines effects on people and society, including foreseeable misuse, and is supported by ISO/IEC 42005."
+        }
+      ]
+    },
+    {
+      "title": "ISO/IEC 27001 information security management",
+      "intro": "ISO/IEC 27001 is the best known security standard in the world, and the model that ISO 42001 copied. This module covers what an information security management system is, how certification works, how risk assessment, treatment and the Statement of Applicability fit together, and the 93 Annex A controls. Tōtara Health holds patient messages, so its clinic customers insist on a 27001 certificate.",
+      "lessons": [
+        {
+          "title": "ISMS fundamentals and certification",
+          "steps": [
+            [
+              "What an ISMS is",
+              "**ISO/IEC 27001** specifies requirements to establish, implement, maintain and continually improve an **information security management system (ISMS)**. Its purpose is to protect the **confidentiality, integrity and availability** of information through managed risk, not through a fixed checklist."
+            ],
+            [
+              "Editions and companions",
+              "The third edition was published in October 2022, and **Amendment 1:2024** added climate change considerations to clauses 4.1 and 4.2. The transition from the 2013 edition ended on 31 October 2025. **ISO/IEC 27002:2022** gives guidance for each Annex A control, and **ISO/IEC 27005** gives risk management guidance."
+            ],
+            [
+              "Certification audits",
+              "An accredited certification body audits in two stages. **Stage 1** reviews documentation and readiness. **Stage 2** checks that the ISMS is actually implemented and working. After certification, **surveillance audits** check it continues, and full **recertification** happens every three years."
+            ],
+            [
+              "Tōtara's path",
+              "Tōtara first scopes its ISMS to TriageMate and the systems that support it. Its stage 1 audit finds a missing risk methodology, which it fixes before stage 2."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara's auditor spends the first visit reviewing its documents and readiness, then returns later to check the controls really work. What were the two visits?",
+            "options": [
+              "Two internal audits",
+              "Two surveillance audits",
+              "A recertification and a surveillance audit",
+              "Stage 1 and stage 2 audits"
+            ],
+            "answer": 3,
+            "why": "Stage 1 reviews documentation and readiness, and stage 2 checks implementation. Surveillance audits happen after certification, and internal audits are run by the organisation itself rather than the certification body."
+          },
+          "key": "ISO/IEC 27001 sets ISMS requirements to protect confidentiality, integrity and availability, certified through stage 1 and 2 audits, surveillance and three yearly recertification."
+        },
+        {
+          "title": "Clauses 4 to 10",
+          "steps": [
+            [
+              "Context and leadership",
+              "**Clause 4** covers context: internal and external issues, interested parties, and the scope and boundaries of the ISMS. **Clause 5** covers leadership: top management commitment, an **information security policy**, and roles and authorities."
+            ],
+            [
+              "Planning and support",
+              "**Clause 6** covers planning, including **risk assessment (6.1.2)** and **risk treatment (6.1.3)**, security objectives and planning of changes. **Clause 7** covers support: resources, competence, awareness, communication and documented information."
+            ],
+            [
+              "Operation and evaluation",
+              "**Clause 8** covers operation: planning and controlling operations, performing risk assessments and carrying out the risk treatment plan. **Clause 9** covers performance evaluation: monitoring and measurement, internal audit and management review."
+            ],
+            [
+              "Improvement",
+              "**Clause 10** covers continual improvement and handling nonconformity with corrective action. Because the clauses match ISO 42001, Tōtara runs one internal audit and one management review that cover both standards together."
+            ]
+          ],
+          "check": {
+            "q": "Which ISO/IEC 27001 clause contains the requirement to perform an information security risk assessment?",
+            "options": [
+              "Clause 6.1.2",
+              "Clause 5.2",
+              "Clause 9.2",
+              "Clause 10.2"
+            ],
+            "answer": 0,
+            "why": "Clause 6.1.2 sets out information security risk assessment, and 6.1.3 covers treatment. Clause 5 is leadership, clause 9 performance evaluation including internal audit, and clause 10 improvement."
+          },
+          "key": "Clauses 4 to 10 run context, leadership, planning with risk assessment and treatment, support, operation, evaluation and improvement."
+        },
+        {
+          "title": "Risk assessment",
+          "steps": [
+            [
+              "Set the criteria first",
+              "Before assessing anything, the organisation defines **risk acceptance criteria** (how much risk is acceptable) and criteria for performing assessments, so that repeated assessments give **consistent, valid and comparable** results. Without this, two people would score the same risk differently."
+            ],
+            [
+              "Identify risks",
+              "Risk identification finds risks to the confidentiality, integrity and availability of information within the ISMS scope. Each risk gets a **risk owner**, the person with the authority and accountability to manage it. Tōtara's head of engineering owns the risk of patient messages being exposed from the cloud database."
+            ],
+            [
+              "Analyse and evaluate",
+              "**Analysis** estimates the likelihood of each risk and its consequences. **Evaluation** compares the result against the risk criteria to decide which risks need treatment and in what order. A likely breach of patient messages with severe consequences sits far above a rare outage of the marketing site."
+            ],
+            [
+              "Keeping it repeatable",
+              "Tōtara uses a simple five by five scale for likelihood and consequence, written into its methodology, and repeats the assessment yearly and whenever it makes a major change. That repeatability is exactly what its stage 1 audit found missing."
+            ]
+          ],
+          "check": {
+            "q": "Two Tōtara engineers score the same risk very differently. What is missing from the ISMS?",
+            "options": [
+              "A Statement of Applicability",
+              "A larger firewall",
+              "Defined risk assessment criteria that give consistent, comparable results",
+              "A certification body"
+            ],
+            "answer": 2,
+            "why": "ISO 27001 requires criteria for performing risk assessments so that results are consistent and comparable. The Statement of Applicability comes after treatment, and firewalls and certifiers do not make scoring consistent."
+          },
+          "key": "Risk assessment needs agreed criteria, then identifies risks with owners, analyses likelihood and consequence, and evaluates against the criteria."
+        },
+        {
+          "title": "Risk treatment and residual risk",
+          "steps": [
+            [
+              "Four treatment options",
+              "For each risk that needs treatment, the organisation chooses an option. **Modify** the risk by applying controls. **Retain** or accept it. **Avoid** it by stopping the activity. **Share** or transfer it, for example through insurance or a contract. Tōtara modifies the database exposure risk with encryption and access controls."
+            ],
+            [
+              "Choose controls, then check Annex A",
+              "The organisation decides which **controls** are needed to carry out the treatment, then compares them with **Annex A** to confirm none have been overlooked. Annex A is a checklist of common controls, not a menu that must be adopted in full."
+            ],
+            [
+              "The risk treatment plan",
+              "The **risk treatment plan** records what will be done, by whom and when. Tōtara's plan lists encryption of the database by the end of the month, owned by the head of engineering."
+            ],
+            [
+              "Accepting residual risk",
+              "**Residual risk** is the risk left after treatment. Risk owners must **approve** the plan and formally **accept** the residual risk. That step makes sure someone with authority has consciously agreed to what remains, rather than leaving it unnoticed."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara buys cyber insurance to cover the cost of a possible data breach. Which treatment option is this?",
+            "options": [
+              "Modify",
+              "Retain",
+              "Avoid",
+              "Share"
+            ],
+            "answer": 3,
+            "why": "Insurance shares or transfers part of the risk's financial impact to another party. Modifying would mean applying controls, retaining means accepting it as it is, and avoiding means stopping the activity altogether."
+          },
+          "key": "Treat risks by modifying, retaining, avoiding or sharing them, check chosen controls against Annex A, and have risk owners approve the plan and accept residual risk."
+        },
+        {
+          "title": "The Statement of Applicability",
+          "steps": [
+            [
+              "A mandatory document",
+              "The **Statement of Applicability (SoA)** is a required document. It lists the controls the organisation has decided are necessary, why each is included, whether each is implemented, and the justification for **excluding** any Annex A control."
+            ],
+            [
+              "The central audit artefact",
+              "Auditors use the SoA as a map. It links each risk treatment decision to the controls that carry it out, so an auditor can pick any control and trace it back to a risk and forward to evidence that it works."
+            ],
+            [
+              "Exclusions need reasons",
+              "Tōtara has no physical office with its own servers, so it excludes some physical equipment controls and explains that its cloud provider handles them under contract. An exclusion without a reason is a common audit finding."
+            ],
+            [
+              "Controls from other sources",
+              "Controls do not have to come only from Annex A. Organisations can add controls from sector frameworks or their own needs. Tōtara adds health sector specific controls for handling patient identifiers alongside the Annex A list."
+            ]
+          ],
+          "check": {
+            "q": "An auditor finds that Tōtara has marked several Annex A controls as not applicable without saying why. What is the problem?",
+            "options": [
+              "Annex A controls can never be excluded",
+              "The controls must be moved to Annex B",
+              "Exclusions must be justified in the Statement of Applicability",
+              "Only the certification body can exclude controls"
+            ],
+            "answer": 2,
+            "why": "Excluding an Annex A control is allowed, but the SoA must record the justification. Saying controls can never be excluded is the tempting wrong answer. Exclusion decisions belong to the organisation, not the certifier."
+          },
+          "key": "The Statement of Applicability lists necessary controls, why they apply, whether they are implemented and why any Annex A control is excluded."
+        },
+        {
+          "title": "Annex A: organisational and people controls",
+          "steps": [
+            [
+              "93 controls in four themes",
+              "Annex A of the 2022 edition holds **93 controls** grouped into four themes: organisational, people, physical and technological. The themes replaced the older structure of 14 domains."
+            ],
+            [
+              "Organisational controls",
+              "Clause 5 of Annex A holds **37 organisational controls**. They include policies, roles, **threat intelligence**, an asset inventory, supplier security and **cloud services security**, incident management and legal compliance. For Tōtara, supplier and cloud controls cover its model provider and cloud host."
+            ],
+            [
+              "People controls",
+              "Clause 6 holds **8 people controls**: screening before employment, terms and conditions of employment, awareness and training, a disciplinary process, responsibilities after leaving, confidentiality agreements, remote working and reporting of security events."
+            ],
+            [
+              "Why people controls matter",
+              "Many incidents start with a person, such as a phished login or a laptop left on a bus. Tōtara's staff work from home three days a week, so the remote working control and event reporting are part of every new starter's first day."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara needs a control making sure its cloud hosting is used securely. Which Annex A theme contains cloud services security?",
+            "options": [
+              "Organisational controls",
+              "People controls",
+              "Physical controls",
+              "None, cloud is out of scope"
+            ],
+            "answer": 0,
+            "why": "Cloud services security is one of the organisational controls, alongside supplier security and threat intelligence. People controls cover staff, physical controls cover premises and equipment, and cloud is definitely in scope."
+          },
+          "key": "Annex A has 93 controls in four themes, including 37 organisational controls such as cloud security and 8 people controls such as screening and training."
+        },
+        {
+          "title": "Annex A: physical and technological controls",
+          "steps": [
+            [
+              "Physical controls",
+              "Clause 7 of Annex A holds **14 physical controls**: security perimeters, physical entry, securing offices and rooms, **physical security monitoring**, a clear desk and clear screen rule, equipment protection and storage media. Tōtara's small office still needs a clear screen rule for laptops showing patient messages."
+            ],
+            [
+              "Technological controls",
+              "Clause 8 holds **34 technological controls**: endpoint devices, privileged access, authentication, protection against malware, vulnerability management, logging, secure development and cryptography, among others. Most of TriageMate's day to day protection lives here."
+            ],
+            [
+              "What changed in 2022",
+              "The 2022 edition consolidated the old **114 controls into 93** and added **11 new ones**: threat intelligence, cloud services security, ICT readiness for business continuity, physical security monitoring, configuration management, information deletion, data masking, data leakage prevention, monitoring activities, web filtering and secure coding."
+            ],
+            [
+              "Control attributes",
+              "Each control carries **attributes** that help sort and filter them: control type (such as preventive or detective), security properties (confidentiality, integrity, availability), cybersecurity concepts, operational capabilities and security domains. Tōtara filters by the detective type to see all its monitoring controls at once."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara wants to hide real patient names when developers test TriageMate with production like data. Which control, new in the 2022 edition, fits?",
+            "options": [
+              "Clear desk and clear screen",
+              "Data masking",
+              "Physical entry",
+              "Disciplinary process"
+            ],
+            "answer": 1,
+            "why": "Data masking hides sensitive values such as names while keeping data usable for testing, and it was one of the 11 new controls. The other options are real controls but do nothing to hide data in test environments."
+          },
+          "key": "Annex A has 14 physical and 34 technological controls, the 2022 edition cut 114 controls to 93 with 11 new ones, and attributes help sort them."
+        }
+      ]
+    },
+    {
+      "title": "NIST Cybersecurity Framework 2.0",
+      "intro": "The NIST Cybersecurity Framework is a common language for describing and improving cyber security, used well beyond the United States. Version 2.0 added a Govern function and widened its audience to every organisation. This module covers its structure, each of its six functions and how profiles turn it into a plan. Tōtara Health uses it to explain its security programme to its board in plain terms.",
+      "lessons": [
+        {
+          "title": "CSF 2.0 overview and structure",
+          "steps": [
+            [
+              "Broader than before",
+              "**NIST CSF 2.0** was released on 26 February 2024. Earlier versions were aimed at critical infrastructure. Version 2.0 is written for **all organisations**, whatever their size or sector, which suits a 25 person startup like Tōtara."
+            ],
+            [
+              "Three components",
+              "The CSF has three parts. The **Core** is a set of outcomes arranged as functions, categories and subcategories. **Organisational Profiles** describe an organisation's current and target state against the Core. **Tiers** describe how rigorous its cyber risk governance and management are."
+            ],
+            [
+              "The Core by numbers",
+              "The Core has **6 functions**, **22 categories** and **106 subcategories**. The functions are Govern, Identify, Protect, Detect, Respond and Recover. **Informative References**, which map to other standards, and **Implementation Examples** are published online rather than inside the document."
+            ],
+            [
+              "Tiers and adoption help",
+              "The four **Tiers** are Partial (1), Risk Informed (2), Repeatable (3) and Adaptive (4). They describe rigour, not a score to maximise for its own sake. NIST also offers **Quick Start Guides**, **Community Profiles** for shared needs, and the **Cybersecurity and Privacy Reference Tool (CPRT)** to browse the content."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara's board asks what Tier 3 means in the CSF. What is the best description?",
+            "options": [
+              "A certification level awarded by NIST",
+              "The third function, Protect",
+              "A Repeatable level of rigour in cyber risk governance and management",
+              "The number of subcategories implemented"
+            ],
+            "answer": 2,
+            "why": "Tiers describe how rigorous an organisation's cyber risk practices are, and Tier 3 is Repeatable. Tiers are not functions, NIST does not certify organisations against the CSF, and they are not a count of subcategories."
+          },
+          "key": "CSF 2.0 (February 2024) has a Core of 6 functions, 22 categories and 106 subcategories, plus Profiles and Tiers 1 to 4."
+        },
+        {
+          "title": "GOVERN",
+          "steps": [
+            [
+              "The new centre",
+              "**GOVERN (GV)** is new in CSF 2.0 and sits at the centre of the CSF wheel. It informs how the other five functions are carried out, much as Govern does in the AI RMF. It is about setting direction, not operating tools."
+            ],
+            [
+              "Context, strategy and roles",
+              "**GV.OC** covers organisational context: mission, stakeholders and legal duties. **GV.RM** covers the risk management strategy, including risk appetite. **GV.RR** covers roles, responsibilities and authorities. Tōtara records that its mission depends on clinics trusting it with patient messages."
+            ],
+            [
+              "Policy and oversight",
+              "**GV.PO** covers cybersecurity policy. **GV.OV** covers oversight: reviewing whether the strategy is working and adjusting it. Tōtara's board reviews security results every quarter under GV.OV."
+            ],
+            [
+              "Supply chain",
+              "**GV.SC** covers cybersecurity supply chain risk management. TriageMate depends on a cloud host and a model provider, so Tōtara assesses them before signing contracts and reviews them yearly."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara's board meets each quarter to review whether its cyber risk strategy is working and to adjust it. Which CSF category is this?",
+            "options": [
+              "GV.OV Oversight",
+              "ID.AM Asset Management",
+              "PR.AT Awareness and Training",
+              "RS.MA Incident Management"
+            ],
+            "answer": 0,
+            "why": "GV.OV is about overseeing and adjusting the risk strategy. Asset management, training and incident management are operational categories in other functions."
+          },
+          "key": "GOVERN sits at the centre of CSF 2.0, covering context, risk strategy, roles, policy, oversight and supply chain risk."
+        },
+        {
+          "title": "IDENTIFY and PROTECT",
+          "steps": [
+            [
+              "IDENTIFY: know what you have",
+              "**IDENTIFY (ID)** helps an organisation understand its current cyber risks. **ID.AM** covers asset management: knowing the hardware, software, data and services you rely on. **ID.RA** covers risk assessment. **ID.IM** covers improvement, finding ways to do better across all functions."
+            ],
+            [
+              "Tōtara's asset list",
+              "Tōtara's inventory lists staff laptops, the cloud database, the TriageMate service, the model provider and the data flows between them. You cannot protect what you do not know exists, which is why ID.AM comes early."
+            ],
+            [
+              "PROTECT: people and access",
+              "**PROTECT (PR)** uses safeguards to manage risk. **PR.AA** covers identity management, authentication and access control. **PR.AT** covers awareness and training. Tōtara requires multifactor sign in for every staff account and runs phishing awareness sessions."
+            ],
+            [
+              "PROTECT: data and platforms",
+              "**PR.DS** covers data security, such as encryption. **PR.PS** covers platform security, such as patching and secure configuration. **PR.IR** covers technology infrastructure resilience, such as backups and capacity, so services keep running under stress."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara encrypts patient messages stored in its database. Which CSF category does this belong to?",
+            "options": [
+              "GV.PO Policy",
+              "ID.AM Asset Management",
+              "DE.CM Continuous Monitoring",
+              "PR.DS Data Security"
+            ],
+            "answer": 3,
+            "why": "Encrypting stored data is a data security safeguard under PR.DS. Asset management lists what you have, continuous monitoring watches for events, and policy sets rules rather than applying the safeguard."
+          },
+          "key": "IDENTIFY covers assets, risk assessment and improvement, and PROTECT covers access, training, data security, platform security and resilience."
+        },
+        {
+          "title": "DETECT, RESPOND and RECOVER",
+          "steps": [
+            [
+              "DETECT",
+              "**DETECT (DE)** finds and analyses possible attacks and compromises. **DE.CM** covers continuous monitoring of networks, systems and people for signs of trouble. **DE.AE** covers adverse event analysis: working out what suspicious events mean and whether they add up to an incident."
+            ],
+            [
+              "RESPOND",
+              "**RESPOND (RS)** acts on a detected incident. **RS.MA** covers incident management. **RS.AN** covers incident analysis. **RS.CO** covers incident response reporting and communication with stakeholders. **RS.MI** covers mitigation, containing the incident and stopping it spreading."
+            ],
+            [
+              "RECOVER",
+              "**RECOVER (RC)** restores assets and operations. **RC.RP** covers carrying out the incident recovery plan. **RC.CO** covers recovery communication, keeping clinics and others informed while services come back."
+            ],
+            [
+              "How they run over time",
+              "Detect, Respond and Recover run **concurrently** during an incident: Tōtara may still be investigating while it restores the database and updates clinics. Govern, Identify and Protect are **continuous** and keep running all the time."
+            ]
+          ],
+          "check": {
+            "q": "During an outage, Tōtara emails clinics every hour with progress on restoring TriageMate. Which category covers this?",
+            "options": [
+              "DE.CM Continuous monitoring",
+              "RC.CO Incident recovery communication",
+              "ID.RA Risk assessment",
+              "PR.AT Awareness and training"
+            ],
+            "answer": 1,
+            "why": "Keeping stakeholders informed while services are restored is recovery communication. Monitoring detects events, risk assessment happens before incidents, and training builds awareness."
+          },
+          "key": "DETECT monitors and analyses events, RESPOND manages, analyses, communicates and mitigates incidents, and RECOVER restores and communicates."
+        },
+        {
+          "title": "Profiles and enterprise risk",
+          "steps": [
+            [
+              "From profile to plan",
+              "An **Organisational Profile** describes outcomes against the Core. Tōtara writes a **current profile** (where it is today) and a **target profile** (where it needs to be), analyses the **gaps**, and builds a **prioritised action plan**. This turns the CSF from a list into a roadmap."
+            ],
+            [
+              "Linking to enterprise risk",
+              "Cyber risk should sit inside **enterprise risk management (ERM)**, the organisation's overall approach to risk. NIST's **IR 8286 series** explains how to integrate cyber risk with ERM, so the board compares cyber risks against financial and clinical risks on one register."
+            ],
+            [
+              "Supply chain now has a home",
+              "**Cybersecurity supply chain risk management (C-SCRM)** is now a dedicated Govern category, GV.SC. Earlier versions treated it as part of Identify. The move reflects how much organisations now depend on suppliers."
+            ],
+            [
+              "Mapping to other frameworks",
+              "**Informative References** map CSF outcomes to other frameworks such as **ISO/IEC 27001**, **NIST SP 800-53** and the **NIST Privacy Framework**. Tōtara uses the 27001 mapping so its ISMS evidence also shows CSF progress, without doing the work twice."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara compares its current CSF profile with its target profile. What should it produce next?",
+            "options": [
+              "A CE declaration",
+              "A prioritised action plan to close the gaps",
+              "A new Tier definition",
+              "A list of all 106 subcategories marked as done"
+            ],
+            "answer": 1,
+            "why": "Gap analysis between current and target profiles leads to a prioritised action plan. Tiers are defined by NIST, CE declarations belong to EU product law, and marking everything done ignores the gaps found."
+          },
+          "key": "Current and target profiles reveal gaps for a prioritised plan, cyber risk joins enterprise risk through IR 8286, and references map the CSF to 27001 and others."
+        }
+      ]
+    },
+    {
+      "title": "The EU Artificial Intelligence Act",
+      "intro": "The EU AI Act (Regulation (EU) 2024/1689) is law, with fines, and it reaches organisations outside Europe. This module covers its risk based tiers, the duties for high risk systems, the rules for general purpose AI models, and the key dates and penalties. Tōtara Health wants to sell TriageMate to clinics in Ireland, so it must work out where TriageMate sits and what that means.",
+      "lessons": [
+        {
+          "title": "Risk tiers and prohibited practices",
+          "steps": [
+            [
+              "A risk based law",
+              "The AI Act sorts AI by risk: the higher the risk, the heavier the rules. The tiers are **unacceptable** (prohibited), **high**, **limited** (transparency duties) and **minimal**. Classification depends on what a system is used for, not on the technology inside it."
+            ],
+            [
+              "Banned: manipulation and scoring",
+              "Article 5 prohibits some practices outright. They include manipulative or deceptive techniques and exploiting vulnerabilities that distort behaviour and cause significant harm, **social scoring** that leads to unjustified treatment, and predicting that a person will commit a crime based solely on profiling."
+            ],
+            [
+              "Banned: biometric uses",
+              "Also prohibited are untargeted scraping of facial images to build recognition databases, **emotion recognition at work or in education** (except for medical or safety reasons), biometric categorisation to infer sensitive traits such as political opinions, and real time remote biometric identification in public spaces for law enforcement, except in narrow listed situations."
+            ],
+            [
+              "No paperwork fix",
+              "A prohibited practice cannot be made acceptable with documentation or controls. If Tōtara's sales team suggested an add on that read employees' emotions from webcam footage during shifts, the answer would be no, because that use is banned."
+            ]
+          ],
+          "check": {
+            "q": "A clinic group asks Tōtara to add a feature that uses webcams to detect whether reception staff are stressed during shifts. How does the AI Act treat this?",
+            "options": [
+              "Minimal risk, no rules apply",
+              "High risk, allowed after a conformity assessment",
+              "Limited risk, needing only a notice",
+              "Prohibited as emotion recognition in the workplace"
+            ],
+            "answer": 3,
+            "why": "Emotion recognition in the workplace is a prohibited practice unless it is for medical or safety reasons, and staff stress monitoring is neither. Treating it as merely needing a notice confuses it with the transparency duty that applies to other emotion recognition systems."
+          },
+          "key": "The AI Act has four risk tiers, and Article 5 bans practices such as social scoring, manipulation and workplace emotion recognition outright."
+        },
+        {
+          "title": "What counts as high risk",
+          "steps": [
+            [
+              "Two routes in",
+              "A system is **high risk** in two ways. The first covers AI that is a **safety component** of a product, or is itself a product, under the EU product safety laws listed in **Annex I**, such as medical devices, machinery and toys, where that product needs a third party conformity assessment. The second covers stand alone uses listed in **Annex III**."
+            ],
+            [
+              "Annex III areas",
+              "Annex III lists eight areas: biometrics; critical infrastructure; education and vocational training; employment and managing workers; access to essential private and public services, including credit scoring; law enforcement; migration, asylum and border control; and the administration of justice and democratic processes."
+            ],
+            [
+              "A filter for low impact uses",
+              "An Annex III system is not high risk if it poses no significant risk of harm, for example when it only performs a narrow procedural task. Providers relying on this must document their assessment."
+            ],
+            [
+              "Where TriageMate might sit",
+              "Tōtara's advisers think TriageMate may count as medical device software in the EU. If so, it would be high risk through the Annex I route, because medical devices need third party conformity assessment. Tōtara treats it as high risk while it gets formal legal advice."
+            ]
+          ],
+          "check": {
+            "q": "A recruitment company uses AI to filter job applicants' CVs in the EU. How is this most likely classified?",
+            "options": [
+              "High risk under Annex III employment use cases",
+              "Minimal risk",
+              "Prohibited",
+              "Limited risk only"
+            ],
+            "answer": 0,
+            "why": "Recruitment and CV filtering are listed in the Annex III employment area, so the system is high risk unless the narrow filter applies. It is not banned, and its effect on people's jobs puts it well above minimal or limited risk."
+          },
+          "key": "High risk AI is either a safety component of an Annex I regulated product or a use listed in the eight Annex III areas."
+        },
+        {
+          "title": "High risk duties for providers and deployers",
+          "steps": [
+            [
+              "Design requirements",
+              "Providers of high risk systems must meet design requirements: a **risk management system** across the lifecycle, **data governance** so training data is relevant, representative and checked for bias, **technical documentation**, automatic **logging**, clear **instructions** for deployers, **human oversight** so people can understand, override or stop the system, and appropriate accuracy, resilience and cybersecurity."
+            ],
+            [
+              "Getting to market",
+              "Providers must also run a **quality management system**, complete a **conformity assessment**, draw up an EU declaration of conformity, attach the **CE marking**, **register** the system in the EU database and run **post market monitoring**, reporting serious incidents to authorities."
+            ],
+            [
+              "Deployer duties",
+              "A **deployer** is an organisation using an AI system in a professional capacity, such as an Irish clinic using TriageMate. Deployers of high risk systems must use it according to the instructions, assign competent human oversight, monitor it, report risks and serious incidents, and keep its logs."
+            ],
+            [
+              "Fundamental rights impact assessment",
+              "Some deployers, including public bodies and private bodies providing public services, and deployers of systems for credit scoring or life and health insurance pricing, must carry out a **fundamental rights impact assessment** before first use. It looks at how the system could affect people's rights."
+            ]
+          ],
+          "check": {
+            "q": "An Irish clinic uses TriageMate as a high risk system. Which duty falls on the clinic rather than on Tōtara?",
+            "options": [
+              "Attaching the CE marking",
+              "Registering the system in the EU database",
+              "Assigning competent staff to oversee the system and following the instructions for use",
+              "Running the quality management system"
+            ],
+            "answer": 2,
+            "why": "Using the system as instructed and assigning human oversight are deployer duties. CE marking, registration and the quality management system are provider duties, which fall on Tōtara as the organisation placing TriageMate on the market."
+          },
+          "key": "High risk providers meet design, quality, conformity, CE and registration duties, while deployers follow instructions, assign oversight, monitor and sometimes assess rights impacts."
+        },
+        {
+          "title": "Limited and minimal risk",
+          "steps": [
+            [
+              "Transparency duties",
+              "**Article 50** sets transparency duties, often called limited risk. Providers must design systems that talk with people, such as chatbots, so people know they are dealing with AI, unless that is obvious. Providers of generative systems must **mark synthetic audio, images, video and text** in a machine readable way so it can be detected as AI made."
+            ],
+            [
+              "Deployer transparency",
+              "Deployers must tell people when they are exposed to emotion recognition or biometric categorisation, and must disclose **deepfakes**, meaning content that falsely appears authentic. AI generated text published to inform the public on matters of public interest must also be disclosed."
+            ],
+            [
+              "Minimal risk",
+              "**Minimal risk** covers everything else, such as spam filters or AI in video games. The Act adds no new mandatory obligations for this tier. Organisations can sign up to **voluntary codes of conduct** that apply some high risk practices anyway."
+            ],
+            [
+              "Still not a free pass",
+              "Other laws such as data protection and consumer law still apply to minimal risk systems. The Act's **AI literacy** duty also covers providers and deployers of any AI system: they must take measures so their staff understand the AI they work with. Tōtara's patient facing chatbot, a separate product, needs a clear notice that patients are talking to AI."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara launches a website chatbot that answers clinics' billing questions. What does Article 50 require?",
+            "options": [
+              "A conformity assessment and CE marking",
+              "Registration in the EU high risk database",
+              "Nothing at all",
+              "That users are told they are interacting with AI, unless that is obvious"
+            ],
+            "answer": 3,
+            "why": "Systems that interact with people must be designed so people know they are dealing with AI. Conformity assessment, CE marking and registration are high risk duties, and a billing chatbot is not high risk."
+          },
+          "key": "Article 50 requires chatbot disclosure, machine readable marking of synthetic content and deepfake disclosure, while minimal risk AI has no new mandatory duties."
+        },
+        {
+          "title": "General purpose AI models",
+          "steps": [
+            [
+              "What a GPAI model is",
+              "A **general purpose AI (GPAI) model** shows significant generality, can perform a wide range of distinct tasks and can be built into many downstream systems. The large language model inside TriageMate is one. Its provider, not Tōtara, carries the GPAI model duties."
+            ],
+            [
+              "Duties for every GPAI provider",
+              "All GPAI providers must keep **technical documentation**, give **information to downstream providers** so they can understand the model and meet their own duties, have a **copyright policy**, and publish a **summary of the content used for training**. Tōtara relies on that downstream information when writing its own documentation."
+            ],
+            [
+              "Systemic risk models",
+              "A GPAI model has **systemic risk** if it has high impact capabilities, presumed when training used more than **10^25 FLOPs** of compute. These providers must also carry out model evaluations including **adversarial testing**, report serious incidents and ensure cybersecurity for the model."
+            ],
+            [
+              "Code of Practice and the AI Office",
+              "The **GPAI Code of Practice**, published in 2025, offers a voluntary way for providers to show compliance. GPAI rules are supervised by the **EU AI Office**, part of the European Commission."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara builds TriageMate on another company's large language model. Who must publish a summary of the content used to train that model?",
+            "options": [
+              "Tōtara",
+              "Each clinic that uses TriageMate",
+              "The model's provider",
+              "The EU AI Office"
+            ],
+            "answer": 2,
+            "why": "The training content summary is a duty of the GPAI model provider. Tōtara is a downstream provider of an AI system that uses the model, and it relies on the information the model provider supplies. The AI Office supervises but does not write the summary."
+          },
+          "key": "All GPAI providers document, inform downstream providers, keep a copyright policy and summarise training data, and systemic risk models face extra testing and reporting."
+        },
+        {
+          "title": "Key dates and enforcement",
+          "steps": [
+            [
+              "Staged application",
+              "The AI Act **entered into force on 1 August 2024**. **Prohibitions and AI literacy** applied from **2 February 2025**. **GPAI obligations**, governance bodies and penalty rules applied from **2 August 2025**. **General application**, including most Article 50 transparency duties, began on **2 August 2026**."
+            ],
+            [
+              "The Digital Omnibus on AI",
+              "The **Digital Omnibus on AI**, in force from mid 2026, moved the deadlines for high risk systems. **Annex III** high risk obligations now apply from **2 December 2027**, and **Annex I** product embedded high risk obligations from **2 August 2028**. It also added prohibitions on AI that generates non consensual intimate imagery or child sexual abuse material."
+            ],
+            [
+              "Fines",
+              "The highest fines, for prohibited practices, reach **EUR 35 million or 7 percent** of worldwide annual turnover, whichever is higher. Lower tiers apply to other breaches."
+            ],
+            [
+              "Reach beyond the EU",
+              "The Act is **extraterritorial**: it applies to providers placing systems on the EU market wherever they are based, and where an AI system's output is used in the EU. Tōtara is in New Zealand, but selling TriageMate to Irish clinics brings it fully within scope, and its timeline now points to the Annex I date."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara is based in Wellington with no EU office. Does the AI Act apply when it sells TriageMate to clinics in Ireland?",
+            "options": [
+              "Yes, it applies to providers placing systems on the EU market wherever they are established",
+              "No, it only applies to EU companies",
+              "Only if Tōtara opens an EU office",
+              "Only after 2030"
+            ],
+            "answer": 0,
+            "why": "The Act's scope covers providers placing AI systems on the EU market regardless of where they are based, and systems whose output is used in the EU. Location of the company does not remove the duties."
+          },
+          "key": "The AI Act took effect on 1 August 2024 with staged dates, high risk deadlines moved to December 2027 and August 2028, top fines reach EUR 35 million or 7 percent, and it applies to non EU providers."
+        }
+      ]
+    },
+    {
+      "title": "NZ Privacy Act 2020 and Health Information Privacy Code",
+      "intro": "Tōtara Health is a New Zealand company handling health information, so New Zealand privacy law applies to everything it does. This module covers the Privacy Act 2020 and its Information Privacy Principles, sending information overseas, notifiable breaches, the Privacy Commissioner's powers, and the Health Information Privacy Code 2020, which replaces the principles for health information.",
+      "lessons": [
+        {
+          "title": "Scope and collection principles",
+          "steps": [
+            [
+              "The Privacy Act 2020",
+              "The **Privacy Act 2020** came into force on 1 December 2020, replacing the 1993 Act. It applies to **agencies**, a very broad term covering public and private organisations of any size, and to overseas agencies carrying on business in New Zealand. It governs **personal information**, meaning information about an identifiable individual."
+            ],
+            [
+              "IPP1 and IPP2",
+              "The Act sets out **Information Privacy Principles (IPPs)**. **IPP1** says collect personal information only for a lawful purpose connected with your functions, and only if it is necessary. **IPP2** says collect it from the person concerned, unless an exception applies."
+            ],
+            [
+              "IPP3 and IPP3A",
+              "**IPP3** says tell people what you are collecting and why, who will receive it and their rights, when you collect directly from them. **IPP3A**, added by the Privacy Amendment Act 2025, applies from 1 May 2026: when you collect information about someone **indirectly** from another source, you must take reasonable steps to tell them, subject to exceptions."
+            ],
+            [
+              "IPP4: manner of collection",
+              "**IPP4** says collect information lawfully, fairly and without unreasonable intrusion, taking particular care with **children and young people**. Tōtara collects patient messages through clinics, so it relies on clinics' notices and checks how IPP3A applies to information it receives from them."
+            ]
+          ],
+          "check": {
+            "q": "From 1 May 2026, Tōtara receives information about patients from clinics rather than from patients directly. Which principle may require Tōtara to make patients aware of this collection?",
+            "options": [
+              "IPP9",
+              "IPP3A",
+              "IPP13",
+              "IPP6"
+            ],
+            "answer": 1,
+            "why": "IPP3A covers notice when information is collected indirectly from another source, subject to exceptions. IPP9 is about retention, IPP13 about unique identifiers and IPP6 about access. IPP3 covers direct collection, which is not the case here."
+          },
+          "key": "The Privacy Act 2020 applies to almost every agency, and IPPs 1 to 4 plus IPP3A govern why, from whom, with what notice and how information is collected."
+        },
+        {
+          "title": "Storage, access, use and disclosure principles",
+          "steps": [
+            [
+              "IPP5: security",
+              "**IPP5** requires reasonable security safeguards against loss, unauthorised access, use, modification or disclosure. What counts as reasonable scales with sensitivity, so health information needs strong protection such as encryption and tight access control."
+            ],
+            [
+              "IPP6 to IPP8: people's rights",
+              "**IPP6** gives people a right to access information about them. **IPP7** lets them request correction. **IPP8** requires an agency to check information is accurate, up to date and relevant before using or disclosing it."
+            ],
+            [
+              "IPP9 to IPP11: keeping and sharing",
+              "**IPP9** says do not keep information longer than needed. **IPP10** limits using information for purposes other than the one it was collected for. **IPP11** limits disclosing it to others. Tōtara cannot reuse patient messages to train a new marketing tool just because it holds them."
+            ],
+            [
+              "IPP12, IPP13 and enforcement",
+              "**IPP12** covers disclosure overseas, covered next. **IPP13** limits assigning and using **unique identifiers**. Only IPP6 access requests against public sector agencies (and some others) are enforceable in court. Other breaches go through complaints to the Privacy Commissioner and, if needed, the Human Rights Review Tribunal."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara's marketing lead wants to use stored patient messages to train a sales email generator. Which principle most directly limits this?",
+            "options": [
+              "IPP7, correction",
+              "IPP2, source of collection",
+              "IPP10, limits on use for other purposes",
+              "IPP13, unique identifiers"
+            ],
+            "answer": 2,
+            "why": "IPP10 stops information collected for one purpose being used for another unless an exception applies. Sales email training is unrelated to triaging patient messages. The other principles cover different stages."
+          },
+          "key": "IPP5 to IPP13 cover security, access, correction, accuracy, retention, use, disclosure, overseas transfer and unique identifiers, with only some access rights enforceable in court."
+        },
+        {
+          "title": "Cross border disclosure under IPP12",
+          "steps": [
+            [
+              "When IPP12 applies",
+              "**IPP12** applies when an agency discloses personal information to a **foreign person or entity** that is not subject to the New Zealand Act. Disclosure is allowed only if a ground applies."
+            ],
+            [
+              "The grounds",
+              "The grounds are: the person **authorises** it after being told the recipient may not protect it to the same standard; the recipient is subject to **comparable privacy laws**; the recipient is in a **prescribed binding scheme** or **prescribed country**; or **contractual or other safeguards** give comparable protection. The Commissioner publishes **model contract clauses** to help with the contract route."
+            ],
+            [
+              "Cloud storage is not disclosure",
+              "Storing or processing information with an overseas cloud provider that uses it only **on the agency's behalf** is not treated as a disclosure. Tōtara's Australian cloud region therefore does not trigger IPP12, but Tōtara remains fully responsible for security, access requests and breaches."
+            ],
+            [
+              "Onward transfers",
+              "The Commissioner can also issue a **transfer prohibition notice** under section 193 to stop information received in New Zealand being passed on to a third country without comparable protection. If Tōtara ever shared data with an overseas research partner that used it for its own purposes, IPP12 would apply and model clauses would be the practical route."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara hosts patient messages in an Australian cloud region. The provider only stores and processes them on Tōtara's instructions. What does IPP12 say?",
+            "options": [
+              "It is not treated as a disclosure, but Tōtara remains responsible",
+              "It is a cross border disclosure needing patient authorisation",
+              "It is prohibited for health information",
+              "It requires a transfer prohibition notice"
+            ],
+            "answer": 0,
+            "why": "Information held by an agent solely on the agency's behalf is not treated as disclosed, so IPP12 is not triggered. Tōtara still answers for security and breaches. Treating it as a disclosure is the tempting mistake."
+          },
+          "key": "IPP12 allows overseas disclosure only on set grounds such as comparable safeguards or model contract clauses, and cloud hosting on your behalf is not a disclosure."
+        },
+        {
+          "title": "Notifiable privacy breaches",
+          "steps": [
+            [
+              "What a privacy breach is",
+              "A **privacy breach** is unauthorised or accidental access to, or disclosure, alteration, loss or destruction of, personal information, or an action that stops the agency accessing it. Ransomware that locks Tōtara's database is a privacy breach even if nothing is copied out."
+            ],
+            [
+              "When it must be notified",
+              "A breach is **notifiable** when it has caused or is likely to cause **serious harm**. Factors include how sensitive the information is, what mitigation has been taken, the nature of the possible harm, and who has or may get the information. Health information is sensitive, so serious harm is often likely."
+            ],
+            [
+              "Who to tell and when",
+              "The agency must notify the **Privacy Commissioner** and affected people **as soon as practicable** after becoming aware. Office of the Privacy Commissioner guidance expects notice to the Commissioner within **72 hours**. Notification uses **NotifyUs**, the Commissioner's online tool, and can be updated as more is learned."
+            ],
+            [
+              "Exceptions and penalties",
+              "There are limited exceptions or delays for telling individuals, for example to protect security, health or safety, and public notice is used when direct notice is impracticable. Failing to notify the Commissioner without reasonable excuse is an **offence** with a fine up to **NZD 10,000**."
+            ]
+          ],
+          "check": {
+            "q": "A Tōtara engineer accidentally emails a spreadsheet of patient messages to the wrong clinic. The clinic cannot confirm it deleted the file. What should Tōtara do?",
+            "options": [
+              "Wait a month to see if harm happens",
+              "Nothing, because it was accidental",
+              "Notify only if the media find out",
+              "Assess serious harm, and if likely, notify the Commissioner through NotifyUs and the affected patients as soon as practicable"
+            ],
+            "answer": 3,
+            "why": "Accidental disclosure is a privacy breach. Health information is sensitive and the file is uncontrolled, so serious harm is likely and notification should happen as soon as practicable. Accidents are covered, and waiting is not allowed."
+          },
+          "key": "Breaches likely to cause serious harm must be notified to the Commissioner and affected people as soon as practicable, using NotifyUs, with a fine for failing to notify."
+        },
+        {
+          "title": "The Privacy Commissioner's powers",
+          "steps": [
+            [
+              "An independent regulator",
+              "The **Privacy Commissioner** is an independent Crown entity. The Commissioner investigates complaints, tries to settle them through **conciliation**, and can refer matters to the **Director of Human Rights Proceedings**, who can take them to the **Human Rights Review Tribunal**."
+            ],
+            [
+              "Binding tools",
+              "The Commissioner can issue **compliance notices** requiring an agency to do or stop doing something, and can make **access decisions** on access complaints that bind the agency. The Tribunal can award **damages**, including for humiliation and injury to feelings."
+            ],
+            [
+              "Codes of practice",
+              "The Commissioner can issue **codes of practice** that modify the IPPs for a sector or type of information. Codes include the **Health Information Privacy Code 2020**, the Credit Reporting Privacy Code, the Telecommunications Information Privacy Code and the **Biometric Processing Privacy Code 2025**."
+            ],
+            [
+              "Offences and privacy officers",
+              "Offences include misleading an agency to obtain someone's information and destroying information that has been requested. Every agency must appoint at least one **privacy officer**. At Tōtara, the operations manager holds that role and handles access requests and breach reports."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara has never appointed anyone to handle privacy requests. What does the Privacy Act require?",
+            "options": [
+              "Nothing, only large agencies need one",
+              "Every agency must appoint at least one privacy officer",
+              "The Commissioner appoints one for each agency",
+              "Only health agencies need one"
+            ],
+            "answer": 1,
+            "why": "Every agency must appoint at least one privacy officer, whatever its size or sector. The Commissioner does not appoint them, and there is no small business exemption."
+          },
+          "key": "The Commissioner investigates, conciliates, issues compliance notices and codes, the Tribunal awards damages, and every agency needs a privacy officer."
+        },
+        {
+          "title": "The Health Information Privacy Code 2020",
+          "steps": [
+            [
+              "Rules instead of principles",
+              "The **Health Information Privacy Code 2020 (HIPC)** is issued under the Privacy Act. It applies to **health agencies** handling health information about identifiable people, and for that information its **rules replace the IPPs**. Tōtara handles patient messages for GP clinics, so it follows the HIPC rules."
+            ],
+            [
+              "Rules 1 to 4 and 3A",
+              "Rules 1 to 4 mirror the collection principles: purpose, source (collect from the individual), what to tell the individual, and manner of collection. **Rule 3A**, from 1 May 2026, covers **indirect collection** of health information, matching IPP3A."
+            ],
+            [
+              "Rules 5 to 11",
+              "**Rule 5** covers storage and security, **rule 6** access, **rule 7** correction and **rule 8** accuracy. **Rule 9** covers retention, **rule 10** limits on use and **rule 11** limits on disclosure, with health specific exceptions such as disclosure to the person's representative or to prevent a serious threat."
+            ],
+            [
+              "Rules 12 and 13",
+              "**Rule 12** covers cross border disclosure, matching IPP12. **Rule 13** covers unique identifiers, including the **National Health Index (NHI) number**. Health agencies must also consider the code's commentary, and the notifiable breach rules apply to them just as to other agencies."
+            ]
+          ],
+          "check": {
+            "q": "Tōtara handles health information for GP clinics. Which set of rules governs that information?",
+            "options": [
+              "Only the general IPPs",
+              "The Health Information Privacy Code rules, which replace the IPPs for health information",
+              "Only the EU AI Act",
+              "The Credit Reporting Privacy Code"
+            ],
+            "answer": 1,
+            "why": "For health information held by health agencies, the HIPC's rules take the place of the IPPs. The general IPPs would be the tempting answer, but the code modifies them for this information. The other two do not cover NZ health information."
+          },
+          "key": "The HIPC 2020 replaces the IPPs for health information with rules 1 to 13 plus 3A, including rule 13 on identifiers such as the NHI number."
+        }
+      ]
+    }
+  ]
+}
