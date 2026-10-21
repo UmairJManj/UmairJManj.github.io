@@ -86,9 +86,11 @@ export function createGame(canvas, cb = {}) {
   const audio = createAudio();
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let W = 0, H = 0, dpr = 1, R = 0, cx = 0, cy = 0, bg = null;
-  let aim = { x: 0, y: 0 }, aimSet = false, ready = true, pressing = false, touchLift = 0;
+  // Aim and stuck darts live in board units (radius 1 = outside of the doubles), so a resize keeps them on the board.
+  let aim = { x: 0, y: 0 }, ready = true, pressing = false, touchLift = 0;
   let level = 0, accent = "#3b82f6", fly = null, raf = 0, visible = true, last = performance.now(), t = 0;
   const stuck = [];
+  const toPx = (p) => ({ x: cx + p.x * R, y: cy + p.y * R });
 
   function sway() {
     // A hand never holds still: a slow Lissajous wobble that grows with the level.
@@ -100,8 +102,8 @@ export function createGame(canvas, cb = {}) {
     if (!ready) return;
     audio.unlock();
     const s = sway();
-    const scatter = R * 0.012;
-    const to = { x: aim.x + s.x + (Math.random() - 0.5) * scatter, y: aim.y + s.y + (Math.random() - 0.5) * scatter };
+    const a = toPx(aim), scatter = R * 0.012;
+    const to = { x: a.x + s.x + (Math.random() - 0.5) * scatter, y: a.y + s.y + (Math.random() - 0.5) * scatter };
     ready = false;
     fly = { from: { x: W / 2 + W * 0.12, y: H * 1.08 }, to, t: 0 };
   }
@@ -109,8 +111,9 @@ export function createGame(canvas, cb = {}) {
   function land() {
     const { to } = fly;
     fly = null;
-    const hit = scoreAt((to.x - cx) / R, (to.y - cy) / R);
-    stuck.push(to);
+    const b = { x: (to.x - cx) / R, y: (to.y - cy) / R };
+    const hit = scoreAt(b.x, b.y);
+    stuck.push(b);
     if (stuck.length > KEEP) stuck.shift();
     audio.board(hit.ring === "miss" ? 1.5 : 4);
     if (hit.ring === "bull" || hit.ring === "treble") audio.cheer(2);
@@ -126,14 +129,14 @@ export function createGame(canvas, cb = {}) {
     if (fly && (fly.t += dt / FLIGHT) >= 1) land();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.drawImage(bg, 0, 0, W, H);
-    for (const p of stuck) drawDart(ctx, p.x, p.y, R / 150, accent, false);
+    for (const p of stuck) { const q = toPx(p); drawDart(ctx, q.x, q.y, R / 150, accent, false); }
     if (fly) {
       const k = fly.t, e = 1 - (1 - k) ** 2;
       const x = fly.from.x + (fly.to.x - fly.from.x) * e;
       const y = fly.from.y + (fly.to.y - fly.from.y) * e - Math.sin(Math.PI * k) * H * 0.06;
       drawDart(ctx, x, y, (R / 150) * (1 + (1 - k) * 2.2), accent, true);
     } else if (ready) {
-      const s = sway(), x = aim.x + s.x, y = aim.y + s.y, r = R * 0.07;
+      const s = sway(), a = toPx(aim), x = a.x + s.x, y = a.y + s.y, r = R * 0.07;
       ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.shadowColor = accent; ctx.shadowBlur = 8;
       ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.moveTo(x - r * 1.5, y); ctx.lineTo(x - r * 0.5, y); ctx.moveTo(x + r * 0.5, y); ctx.lineTo(x + r * 1.5, y);
@@ -148,7 +151,6 @@ export function createGame(canvas, cb = {}) {
     dpr = Math.min(2, window.devicePixelRatio || 1);
     canvas.width = W * dpr; canvas.height = H * dpr;
     R = Math.min(W, H) * 0.33; cx = W / 2; cy = H * 0.44;
-    if (!aimSet) aim = { x: cx, y: cy };
     // The wall and the board never change between throws, so they are drawn once per size.
     bg = document.createElement("canvas");
     bg.width = W * dpr; bg.height = H * dpr;
@@ -165,7 +167,7 @@ export function createGame(canvas, cb = {}) {
 
   /* --- input: aim follows the pointer, release throws ----------------------- */
   const local = (e) => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
-  const setAim = (p) => { aim = { x: p.x, y: p.y - touchLift }; aimSet = true; };
+  const setAim = (p) => { aim = { x: (p.x - cx) / R, y: (p.y - touchLift - cy) / R }; };
   function onDown(e) {
     if (!ready) return;
     canvas.setPointerCapture?.(e.pointerId);
@@ -176,9 +178,9 @@ export function createGame(canvas, cb = {}) {
   function onMove(e) { if (pressing || e.pointerType === "mouse") { if (!pressing) touchLift = 0; setAim(local(e)); } }
   function onUp() { if (!pressing) return; pressing = false; throwDart(); }
   function onKey(e) {
-    const step = R * 0.04;
+    const step = 0.04;
     const d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
-    if (d) { e.preventDefault(); aim = { x: aim.x + d[0], y: aim.y + d[1] }; aimSet = true; }
+    if (d) { e.preventDefault(); aim = { x: aim.x + d[0], y: aim.y + d[1] }; }
     else if (e.key === " " || e.key === "Enter") { e.preventDefault(); throwDart(); }
   }
   const onCancel = () => { pressing = false; };
